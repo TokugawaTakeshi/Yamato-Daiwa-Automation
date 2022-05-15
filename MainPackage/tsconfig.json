@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "experimentalDecorators": true,
+
+    "baseUrl": "./",
+    "paths": {
+      "@ProjectBuilding/*": [ "./Source/ProjectBuilding/*" ],
+      "@ProjectBuilding:Common/*": [ "./Source/ProjectBuilding/Common/*" ],
+      "@MarkupProcessing/*": [ "./Source/ProjectBuilding/SourceCodeProcessing/Markup/*" ],
+      "@StylesProcessing/*": [ "./Source/ProjectBuilding/SourceCodeProcessing/Styles/*" ],
+      "@ECMA_ScriptProcessing/*": [ "./Source/ProjectBuilding/SourceCodeProcessing/ECMA_Script/*" ],
+      "@ImagesProcessing/*": [ "./Source/ProjectBuilding/AssetsProcessing/Images/*" ],
+      "@FontsProcessing/*": [ "./Source/ProjectBuilding/AssetsProcessing/Fonts/*" ],
+      "@AudiosProcessing/*": [ "./Source/ProjectBuilding/AssetsProcessing/Audios/*" ],
+      "@VideosProcessing/*": [ "./Source/ProjectBuilding/AssetsProcessing/Videos/*" ],
+      "@BrowserLiveReloading/*": [ "./Source/ProjectBuilding/BrowserLiveReloading/*" ],
+      "@ThirdPartySolutionsSpecialists/*": [ "./Source/ThirdPartySolutionsSpecialists/*" ],
+      "@Utils/*": [ "./Source/Utils/*" ],
+      "@UtilsIncubator/*": [ "./Source/UtilsIncubator/*" ]
+    }
+  }
+}

@@ -1,0 +1,3 @@
+const CONFIG_FILE_DEFAULT_NAME_WITH_EXTENSION: string = "yda.config.yaml";
+
+export default CONFIG_FILE_DEFAULT_NAME_WITH_EXTENSION;

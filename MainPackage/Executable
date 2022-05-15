@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+require("./EntryPoint")
+   .default
+   .interpretAndExecuteConsoleCommand(process.argv);

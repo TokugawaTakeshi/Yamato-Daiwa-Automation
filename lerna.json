@@ -1,0 +1,13 @@
+{
+  "version": "0.0.0",
+  "command": {
+    "init": {
+      "exact": true
+    }
+  },
+  "packages": [
+    "MainPackage",
+    "FunctionalTests",
+    "Types/*"
+  ]
+}

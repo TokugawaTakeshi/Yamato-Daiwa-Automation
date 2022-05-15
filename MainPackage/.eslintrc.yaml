@@ -1,0 +1,5 @@
+extends: ./node_modules/@yamato-daiwa/style_guides/BasicPreset.js
+
+globals:
+  __IS_DEVELOPMENT_BUILDING_MODE__: readonly
+  __IS_PRODUCTION_BUILDING_MODE__: readonly

@@ -1,0 +1,169 @@
+# Yamato-Daiwa Automation 〔YDA〕
+
+The project building tool with declarative YAML configuration based on Gulp and Webpack.
+Specializing on Pug, Stylus and TypeScript as source code languages; also works with images, fonts, videos and audios. 
+
+![Main visual of Yamato-Daiwa Automation tool](https://user-images.githubusercontent.com/41653501/167278259-b2ac61e9-b781-4d0c-93d6-4b9709387974.png)
+
+[📖 Documentation](https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/README.md)
+
+
+## Dependencies list
+
+<dl>
+
+  <dt>@vue/compiler-sfc, vue, vue-loader</dt>
+  <dd>Used to provide the support of Vue Single File Components for ECMAScript logic processing</dd>
+
+  <dt>@yamato-daiwa/es-extensions, @yamato-daiwa/es-extensions-nodejs</dt>
+  <dd>Used to reduce the routine code</dd>
+
+  <dt>@yamato-daiwa/style_guides</dt>
+  <dd>The code style guides to which this project obeying and also suggested for consuming project.</dd>
+
+  <dt>autoprefixer</dt>
+  <dd>Used for adding of the vendor prefixes to CSS properties in processed stylesheets the better cross-browser adaptations</dd>
+
+  <dt>browser-sync</dt>
+  <dd>Used to provide the automation of browser reloading when project incrementally rebuilt</dd>
+
+  <dt>cheerio</dt>
+  <dd>Used for manipulation with compiled HTML code like resolving of paths aliases</dd>
+
+  <dt>css-loader</dt>
+  <dd>Used to provide the imports of stylesheets to ECMAScript bundles</dd>
+
+  <dt>cssnano</dt>
+  <dd>Used to provide optimization and minification of compiled CSS code</dd>
+
+  <dt>eslint-webpack-plugin</dt>
+  <dd>Used to provide the ESLint inspection with output to terminal during processing of ECMAScript logic</dd>
+
+  <dt>fork-ts-checker-webpack-plugin</dt>
+  <dd>Used to improve the performance of TypeScript transpiling functionality</dd>
+
+  <dt>gulp</dt>
+  <dd>Used as main task manager, the tool to provide the arranging of the tasks to sequences and series and running them</dd>
+
+  <dt>gulp-debug</dt>
+  <dd>Used to outputs the processed files names and quantity to the terminal</dd>
+
+  <dt>gulp-html-prettify</dt>
+  <dd>Used to provide the formatting of output HTML code better than suggested by Pug pre-processor</dd>
+
+  <dt>gulp-if</dt>
+  <dd>Used for providing of conditional processing according to various settings</dd>
+
+  <dt>gulp-imagemin</dt>
+  <dd>Used to provide the automation of images files optimization</dd>
+
+  <dt>gulp-intercept</dt>
+  <dd>Used for defining of configuration-dependent logic inside Gulp pipelines</dd>
+
+  <dt>gulp-plumber</dt>
+  <dd>Used for errors handing inside Gulp pipelines</dd>
+
+  <dt>gulp-postcss</dt>
+  <dd>Used to provide the post-processing of CSS code with PostCSS plugins</dd>
+
+  <dt>gulp-pug</dt>
+  <dd>Used to provide the basic Pug-to-HTML transpiling</dd>
+
+  <dt>gulp-stylus</dt>
+  <dd>Used to provide the basic Stylus-to-CSS transpiling</dd>
+
+  <dt>html-loader</dt>
+  <dd>Used to provide the import of HTML code as string to JavaScript bundle</dd>
+
+  <dt>html-validator</dt>
+  <dd>Used to get the HTML validation data from W3C service. The formatted output to terminal has been implemented by YDA developer.</dd>
+
+  <dt>imagemin-pngquant</dt>
+  <dd>Used to provides the optimization of PNG files</dd>
+
+  <dt>json5-loader</dt>
+  <dd>Used to provide the imports of JSON5 as ECMAScript native object to JavaScript bundle</dd>
+
+  <dt>node-notifier</dt>
+  <dd>Used for accessing to native toast message functionality</dd>
+
+  <dt>pug-plain-loader</dt>
+  <dd>Used to providing of the Pug source code language for Vue templates in Single File Components</dd>
+
+  <dt>pug-html-loader</dt>
+  <dd>
+    Used in combination with <b>html-loader</b> to provide the importing of HTML code compiled from Pug language as string 
+    to JavaScript bundle.
+  </dd>
+
+  <dt>rev-hash</dt>
+  <dd>
+    Used for generating of file content dependent postfixes to prevent the outdated stylesheets, scripts etc. 
+    because of browser caching (thus actual for the Browser runtime only).
+  </dd>
+
+  <dt>stlint</dt>  
+  <dd>Used for linting of styles written by Stylus. The formatted output to terminal has been implemented by YDA developer</dd>
+
+  <dd>style-loader</dd>
+  <dt>Used to provide the dynamic injection of CSS functionality which has been imported to JavaScript bundle built by Webpack</dt>
+
+  <dt>stylus-loader</dt>
+  <dd>
+    Used to provide the dynamic injection of CSS witten by Stylus pre-processor which has been imported to JavaScript
+    bundle built by Webpack
+  </dd>
+
+  <dt>ts-loader</dt>
+  <dd>Used to provide the integration of TypeScript and Webpack</dd>
+
+  <dt>vue-style-loader</dt>
+  <dd>Used to provide the dynamical injection of CSS written in Vue Single File Components to HTML document</dd>
+  
+  <dt>webpack</dt>
+  <dd>Used as basic tool for the ECMAScript logic processing.</dd>
+  
+  <dt>webpack-node-externals</dt>
+  <dd>
+    Used to prevent the bundling of NodeJS modules by Webpack because this bundling brings a lot of warning and/or errors
+    while not required for console and server applications.
+  </dd>  
+  
+  <dt>yaml-loader</dt>
+  <dd>Used to provide the import of content of YAML files converted to JavaScript native object.</dd> 
+
+</dl>
+
+
+### For development needs only
+
+All **@types** are the TypeScript types definitions required for normal transpiling of the TypeScript.
+
+<dl>
+
+  <dt>ts-node</dt>
+  <dd>Used to support the Webpack building written by TypeScript</dd>
+
+  <dt>typescript</dt>
+  <dd>Used to provide the TypeScript as source code language.</dd>
+
+  <dt>webpack-cli</dt>
+  <dd>Used for the project building.</dd>
+
+</dl>
+
+
+### Temporary dependencies
+
+<dl>
+
+  <dt>glob</dt>
+  <dd>Used by <b>ImprovedGlob</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency.</dd>
+
+  <dt>json5</dt>
+  <dd>Used by <b>ConsoleCommandsParser</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency.</dd>
+
+  <dt>yamljs</dt>
+  <dd>Used for reading and parsing of YAML files. Will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency.</dd>
+
+</dl>

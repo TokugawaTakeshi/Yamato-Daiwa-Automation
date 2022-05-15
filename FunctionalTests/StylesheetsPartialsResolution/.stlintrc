@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "color": false,
+    "colons": {
+      "enabled": true
+    },
+    "depthControl": {
+      "indentPref": 2
+    }
+  }
+}
