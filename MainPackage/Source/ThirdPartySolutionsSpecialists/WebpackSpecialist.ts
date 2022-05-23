@@ -7,7 +7,6 @@ namespace WebpackSpecialist {
     none = "none"
   }
 
-  // TODO Проверь ещё раз
   /* [ Reference ] https://webpack.js.org/configuration/devtool/ */
   export enum BuildInSourceMapsTypes {
     eval = "eval",

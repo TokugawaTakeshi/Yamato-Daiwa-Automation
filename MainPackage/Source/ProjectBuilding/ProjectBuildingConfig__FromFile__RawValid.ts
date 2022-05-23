@@ -48,6 +48,11 @@ type ProjectBuildingConfig__FromFile__RawValid = {
   [ProjectBuildingTasksIDsForConfigFile.stylesProcessing]?: StylesProcessingSettings__FromFile__RawValid;
   [ProjectBuildingTasksIDsForConfigFile.ECMA_ScriptLogicProcessing]?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid;
 
+  [ProjectBuildingTasksIDsForConfigFile.imagesProcessing]?: ImagesProcessingSettings__FromFile__RawValid;
+  [ProjectBuildingTasksIDsForConfigFile.fontsProcessing]?: FontsProcessingSettings__FromFile__RawValid;
+  [ProjectBuildingTasksIDsForConfigFile.videosProcessing]?: VideosProcessingSettings__FromFile__RawValid;
+  [ProjectBuildingTasksIDsForConfigFile.audiosProcessing]?: AudiosProcessingSettings__FromFile__RawValid;
+
   [ProjectBuildingTasksIDsForConfigFile.browserLiveReloading]?: BrowserLiveReloadingSettings__FromFile__RawValid;
 };
 
@@ -226,7 +231,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               type: Object,
               required: false,
               preValidationModifications: nullToUndefined,
-              properties: AudiosProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
+              properties: AudiosProcessingSettings__FromFile__RawValid.normalize({
                 audiosProcessingLocalization: localization.tasks.audiosProcessing,
                 revisioningPropertiesLocalizedSpecification,
                 consumingProjectLocalizedPreDefinedBuildingModes

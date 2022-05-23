@@ -1,4 +1,4 @@
-import ConsoleCommandsParser from "./UtilsIncubator/ConsoleCommandsParser/ConsoleCommandsParser";
+import { ConsoleCommandsParser } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 namespace ApplicationConsoleLineInterface {

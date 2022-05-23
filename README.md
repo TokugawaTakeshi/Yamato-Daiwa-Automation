@@ -76,29 +76,19 @@ Could be used for development of websites, web applications, console utilities a
 </dl>
 
 
-## Functionality
-### Markup processing
-#### Basic Pug to HTML transpiling
-
-**YDA** compiles Pug to HTML, herewith
-
-* On **development building mode**, automatic recompiling on changes of source files provided, but only files related
-  with changed ones will be recompiled (optimization).
-* If browser live reloading has been set up, this reloading will be provided on **development building mode** when
-  output HTML files will be updated.
-
-
-#### HTML Validation
-
-Outputs the HTML validation result to the terminal.  
-
-
-#### Accessibility check
-
-Outputs the accessibility result to the terminal.
-
-
 ## API
+
+### Configuration file
+
+As default, **yda.config.yaml** file will be searched in project root directory. 
+
+* [Common settings](Documentation/CommonSettings.md)
+* [Markup processing settings](Documentation/MarkupProcessing.md)
+* [Styles processing settings](Documentation/StylesProcessing.md)
+* [ECMAScript logic processing settings](Documentation/ECMA_ScriptProcessing.md)
+* [Assets processing settings](Documentation/AssetsProcessing.md)
+* [Browser live reloading](Documentation/BrowserLiveReloading.md)
+
 
 ### Console
 
@@ -136,7 +126,7 @@ The project building mode; affecting on, for example, output directory or code m
 See `buildingModeDependent` configuration of each task.
 
 ```bash
-yda --mode DEVELOPMENT
+yda build --mode DEVELOPMENT
 ```
 
 ### configurationFile
@@ -153,7 +143,7 @@ The relative path to configuration file.
 The file name extension ("yaml" of "yml") could be omitted.
 
 ```bash
-yda --configurationFile automation.yaml --mode DEVELOPMENT
+yda build --configurationFile automation.yaml --mode DEVELOPMENT
 ```
 
 
@@ -169,17 +159,21 @@ yda --configurationFile automation.yaml --mode DEVELOPMENT
 The ID of selective execution which must be defined in configuration file if to use this option.
 
 ```bash
-yda --selectiveExecution StaticPreview --mode DEVELOPMENT
+yda build --selectiveExecution StaticPreview --mode DEVELOPMENT
 ```
-
-
-### Vulnerabilities
-
-Depending on Gulp and pre-processors, YDA inherits theirs vulnerabilities.
-Once these vulnerabilities will be fixed in dependencies, it will be fixed in YDA.
-
 
 
 ### Configuration file
 
 As default, **yda.config.yaml** will be searched in the directory where cli has been executed.
+
+
+### Vulnerabilities
+
+Depending on Gulp, pre-processors and other utils, YDA inherits theirs vulnerabilities.
+Once these vulnerabilities will be fixed in dependencies, it will be fixed in YDA.
+
+The most problematic packages are
+
+* gulp
+* access-sniff

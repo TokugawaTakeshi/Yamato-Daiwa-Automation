@@ -7,17 +7,19 @@ class Stopwatch {
   private deactivationUnixTimestamp__milliseconds: number = 0;
 
 
-  public start(): this {
-    this.activationUnixTimestamp__milliseconds = Date.now();
+  public startOrRestart(): this {
+
+    if (this.activationUnixTimestamp__milliseconds === 0) {
+      this.activationUnixTimestamp__milliseconds = Date.now();
+    }
+
+
     return this;
   }
 
-  public stop(): this {
+  public stop(): Stopwatch.ElapsedTimeData {
+
     this.deactivationUnixTimestamp__milliseconds = Date.now();
-    return this;
-  }
-
-  public getElapsedTimeData(): Stopwatch.ElapsedTimeData {
 
     const amountOfTimeElapsesBetweenActivationAndDeactivation__milliseconds: number =
         this.deactivationUnixTimestamp__milliseconds - this.activationUnixTimestamp__milliseconds;

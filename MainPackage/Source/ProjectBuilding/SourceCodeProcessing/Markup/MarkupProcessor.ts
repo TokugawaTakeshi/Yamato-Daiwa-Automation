@@ -18,11 +18,11 @@ import gulpHTML_Prettify from "gulp-html-prettify";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import AssetsPathsAliasesResolverForHTML from
-    "@MarkupProcessing/ProcessingHooks/03-RawOutputCode/AssetsPathsAliasesResolverForHTML";
+    "@MarkupProcessing/Plugins/AssetsPathsAliasesResolverForHTML";
 import HTML_Validator from
-    "@MarkupProcessing/ProcessingHooks/04-PostprocessedCode/HTML_Validator/HTML_Validator";
-import AccessibilityInspector from
-    "@MarkupProcessing/ProcessingHooks/04-PostprocessedCode/AccessibilityInspector/AccessibilityInspector";
+    "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
+import AccessibilityInspector from "./Plugins/AccessibilityInspector/AccessibilityInspector";
+import removeExtraSpacesFromJapaneseText from "@MarkupProcessing/Plugins/removeExtraSpacesFromJapaneseText";
 import { PassThrough } from "stream";
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
@@ -37,7 +37,6 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
 > {
 
   protected readonly TASK_NAME_FOR_LOGGING: string = "Markup processing";
-  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "Markup";
 
   private readonly markupProcessingConfigRepresentative: MarkupProcessingSettingsRepresentative;
 
@@ -81,11 +80,11 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
 
   protected processEntryPoints(entryPointsSourceFilesAbsolutePaths: Array<string>): () => NodeJS.ReadWriteStream {
 
-    /* [ Theory ] If to pass the empty array to 'Gulp.src(".")' error will occur but the cause will not be told clearly.
+    /* [ Theory ] If to pass the empty array to 'Gulp.src()' error will occur but the cause will not be told clearly.
      *    However, the empty array is usual scenario (for example when user declared the configuration but has not added
-     *    all files yet).  */
+     *    files of specific entry points group yet).  */
     if (entryPointsSourceFilesAbsolutePaths.length === 0) {
-      return (): NodeJS.ReadWriteStream => Gulp.src(".");
+      return (): NodeJS.ReadWriteStream => new PassThrough().end();
     }
 
 
@@ -97,15 +96,18 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
         pipe(gulpIntercept(this.addActualSourceCodeProcessingSettingsToVinylFile.bind(this))).
 
         pipe(gulpPug({
-          /* eslint-disable-next-line id-denylist --
-           * The "id-denylist" is not desired to affect to object properties, but the applying to add respective option
-           * has been denied. https://github.com/eslint/eslint/issues/15504 */
-          data: {}
+          locals: {
+            __IS_DEVELOPMENT_BUILDING_MODE__: this.masterConfigRepresentative.isDevelopmentBuildingMode,
+            __IS_TESTING_BUILDING_MODE__: this.masterConfigRepresentative.isTestingBuildingMode,
+            __IS_STAGING_BUILDING_MODE__: this.masterConfigRepresentative.isStagingBuildingMode,
+            __IS_PRODUCTION_BUILDING_MODE__: this.masterConfigRepresentative.isProductionBuildingMode
+          }
         })).
 
         pipe(gulpIntercept(this.onRawOutputCode.bind(this))).
 
         pipe(gulpHTML_Prettify({ indent_char: " ", indent_size: 2 })).
+        pipe(gulpIntercept(removeExtraSpacesFromJapaneseText)).
 
         pipe(gulpIntercept(this.onPostProcessedCode.bind(this))).
 
@@ -151,7 +153,7 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
     const compiledHTML_File: MarkupProcessor.MarkupVinylFile = _compiledHTML_File as MarkupProcessor.MarkupVinylFile;
 
     if (compiledHTML_File.processingSettings.HTML_Validation.mustExecute) {
-      HTML_Validator.validateHtml(compiledHTML_File, this.masterConfigRepresentative);
+      HTML_Validator.validateHTML(compiledHTML_File, this.masterConfigRepresentative);
     }
 
     if (compiledHTML_File.processingSettings.accessibilityInspection.mustExecute) {

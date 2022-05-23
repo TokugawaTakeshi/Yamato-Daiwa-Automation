@@ -18,8 +18,8 @@ import {
   AlgorithmMismatchError,
   removeNthCharacter
 } from "@yamato-daiwa/es-extensions";
+import { isErrnoException } from "@yamato-daiwa/es-extensions-nodejs";
 import Stopwatch from "@UtilsIncubator/Stopwatch";
-import isErrnoException from "@UtilsIncubator/isErrnoException";
 
 
 class PartialsFilesMapper {
@@ -56,7 +56,7 @@ class PartialsFilesMapper {
     }
   ): PartialsFilesMapper.PartialFilesAndParentEntryPointsRelationsMap {
 
-    const mappingTimeMeasuringStopwatch: Stopwatch = new Stopwatch().start();
+    const mappingTimeMeasuringStopwatch: Stopwatch = new Stopwatch().startOrRestart();
 
     Logger.logInfo({
       title: "Partial files and parent entry points mapping",
@@ -116,7 +116,7 @@ class PartialsFilesMapper {
     Logger.logInfo({
       title: "Partial files and parent entry points mapping",
       description: `Mapping of ${ sourceFilesTypeLabelForLogging } entry points and partial files relations done. ` +
-          `${ mappingTimeMeasuringStopwatch.getElapsedTimeData().seconds } seconds elapsed.`
+          `${ mappingTimeMeasuringStopwatch.stop().seconds } seconds elapsed.`
     });
 
     /* If (masterConfigRepresentative.mustDebugEntryPointsAndPartialFiles) {
@@ -358,7 +358,9 @@ class PartialsFilesMapper {
 
     Logger.logInfo({
       title: "Partial files and parent entry points accordance map",
-      description: removeNthCharacter(accumulatingString, { targetCharacterNumber: 1, numerationFrom: 1 })
+      description: accumulatingString.length > 0 ?
+          removeNthCharacter(accumulatingString, { targetCharacterNumber: 1, numerationFrom: 1 }) :
+          "No partials files found"
     });
   }
 }

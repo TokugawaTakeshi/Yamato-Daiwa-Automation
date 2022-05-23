@@ -1,8 +1,8 @@
 /* --- Raw valid config ---------------------------------------------------------------------------------------------- */
 import ProjectBuildingConfig__FromFile__RawValid from
-      "./ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid";
+    "./ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid";
 import ProjectBuildingConfigDefaultLocalization__FromFile__RawValid from
-      "@ProjectBuilding:Common/RawConfig/ProjectBuildingConfigFromFileDefaultLocalization";
+    "@ProjectBuilding/ProjectBuildingConfigFromFileDefaultLocalization";
 
 /* --- Normalized config -------------------------------------------------------------------------------------------- */
 import type ProjectBuildingConfig__Normalized from "./ProjectBuilding/ProjectBuildingConfig__Normalized";
@@ -80,10 +80,6 @@ abstract class ProjectBuilder {
 
     Gulp.task(GULP_TASK_NAME, Gulp.parallel([
 
-      // ...masterConfigRepresentative.mustProvideMarkupSourceCodeQualityInspection ? [
-      //   MarkupSourceCodeQualityInspector.provideMarkupSourceCodeQualityInspection(masterConfigRepresentative)
-      // ] : [],
-
       Gulp.series([
 
         Gulp.parallel([
@@ -91,7 +87,7 @@ abstract class ProjectBuilder {
           ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative)
         ]),
 
-        /** 〔 理論 〕 何方でも重たいので、"Gulp.parallel"に結合しない方が良い。 */
+        /* 〔 理論 〕 何方でも重たいので、"Gulp.parallel"に結合しない方が良い。 */
         ImagesProcessor.provideImagesProcessingIfMust(masterConfigRepresentative),
         FontsProcessor.provideFontsProcessingIfMust(masterConfigRepresentative),
         AudiosProcessor.provideAudiosProcessingIfMust(masterConfigRepresentative),

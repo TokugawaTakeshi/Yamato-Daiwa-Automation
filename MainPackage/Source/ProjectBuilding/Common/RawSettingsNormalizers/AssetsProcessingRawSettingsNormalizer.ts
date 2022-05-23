@@ -7,7 +7,7 @@ import type AssetsProcessingSettingsGenericProperties__FromFile__RawValid from
       "@ProjectBuilding:Common/RawConfig/AssetsProcessingSettingsGenericProperties__FromFile__RawValid";
 
 /* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import ProjectBuildingConfig__Normalized from "../../ProjectBuildingConfig__Normalized";
+import ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
 import AssetsGroupID = ProjectBuildingConfig__Normalized.AssetsGroupID;
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
@@ -79,7 +79,7 @@ abstract class AssetsProcessingRawSettingsNormalizer {
           );
 
       const aliasForPathsResolution: string =
-        assetsGroupSettings__rawValid.sourceFilesTopDirectoryPathAliasForReferencingFromHTML ?? `@${groupID}`;
+        assetsGroupSettings__rawValid.sourceFilesTopDirectoryPathAliasForReferencingFromHTML ?? `@${ groupID }`;
 
       const outputFilesBaseDirectoryAbsolutePathActualForCurrentProjectBuildingMode: string =
           ImprovedPath.buildAbsolutePath(

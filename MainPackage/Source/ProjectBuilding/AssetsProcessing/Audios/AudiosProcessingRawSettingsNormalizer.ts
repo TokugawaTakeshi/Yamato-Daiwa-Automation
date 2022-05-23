@@ -24,7 +24,7 @@ export default class AudiosProcessingRawSettingsNormalizer extends AssetsProcess
   private readonly audiosProcessingSettings__fromFile__rawValid: AudiosProcessingSettings__FromFile__RawValid;
 
 
-  public static getNormalizedSettings(
+  public static normalize(
     {
       audiosProcessingSettings__fromFile__rawValid,
       commonSettings__normalized

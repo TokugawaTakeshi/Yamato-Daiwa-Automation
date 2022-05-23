@@ -152,6 +152,14 @@ export default class ProjectBuildingMasterConfigRepresentative {
     return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.development;
   }
 
+  public get isTestingBuildingMode(): boolean {
+    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.testing;
+  }
+
+  public get isStagingBuildingMode(): boolean {
+    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.staging;
+  }
+
   public get isProductionBuildingMode(): boolean {
     return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.production;
   }

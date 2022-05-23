@@ -13,10 +13,9 @@ import PoliteErrorsMessagesBuilder from "./Utils/PoliteErrorsMessagesBuilder";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
 import { Logger, FileReadingFailedError } from "@yamato-daiwa/es-extensions";
-import { ConsoleApplicationLogger } from "@yamato-daiwa/es-extensions-nodejs";
+import { ConsoleApplicationLogger, ConsoleCommandsParser } from "@yamato-daiwa/es-extensions-nodejs";
 import Path from "path";
 import YAML from "yamljs";
-import ConsoleCommandsParser from "./UtilsIncubator/ConsoleCommandsParser/ConsoleCommandsParser";
 
 
 export default abstract class EntryPoint {

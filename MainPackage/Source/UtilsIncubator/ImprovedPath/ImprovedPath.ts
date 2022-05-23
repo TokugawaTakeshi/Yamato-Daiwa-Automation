@@ -267,7 +267,7 @@ abstract class ImprovedPath {
       return targetPath;
     }
 
-    return targetPath.replace(new RegExp(`${filenameExtensionBeginsFromDot__couldBeEmpty}$`, "u"), "");
+    return targetPath.replace(new RegExp(`${ filenameExtensionBeginsFromDot__couldBeEmpty }$`, "u"), "");
   }
 
 
@@ -277,7 +277,7 @@ abstract class ImprovedPath {
 
     removeArrayElementsByPredicates({
       targetArray: targetPath__splitToSegments,
-      predicates: (pathSegment: string): boolean => targetPathSegments.includes(pathSegment),
+      predicate: (pathSegment: string): boolean => targetPathSegments.includes(pathSegment),
       mutably: true
     });
 

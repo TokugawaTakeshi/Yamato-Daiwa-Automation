@@ -42,7 +42,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
     },
 
     revisioning: {
-      disable: { KEY: "skip" },
+      disable: { KEY: "disable" },
       contentHashPostfixSeparator: { KEY: "contentHashPostfixSeparator" }
     },
 
