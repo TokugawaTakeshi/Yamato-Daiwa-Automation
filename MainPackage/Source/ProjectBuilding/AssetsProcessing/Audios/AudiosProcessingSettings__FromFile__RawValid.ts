@@ -23,7 +23,7 @@ namespace AudiosProcessingSettings__FromFile__RawValid {
 
   export type Localization = AssetsProcessingSettingsGenericProperties__FromFile__RawValid.Localization;
 
-  export function getLocalizedPropertiesSpecification(
+  export function normalize(
     namedParameters: {
       audiosProcessingLocalization: Localization;
       revisioningPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;

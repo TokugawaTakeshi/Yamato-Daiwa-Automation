@@ -16,7 +16,7 @@ import AssetsProcessingRawSettingsNormalizer from
 import { isNotUndefined } from "@yamato-daiwa/es-extensions";
 
 
-export default class FontsSettingsRawSettingsNormalizer extends AssetsProcessingRawSettingsNormalizer {
+export default class FontsProcessingSettingsRawSettingsNormalizer extends AssetsProcessingRawSettingsNormalizer {
 
   protected readonly supportedEntryPointsSourceFilenameExtensionsWithoutLeadingDots: Array<string> =
       FontsProcessingRestrictions.supportedSourceFileNameExtensionsWithoutLeadingDots;
@@ -24,7 +24,7 @@ export default class FontsSettingsRawSettingsNormalizer extends AssetsProcessing
   private readonly fontsProcessingSettings__fromFile__rawValid: FontsProcessingSettings__FromFile__RawValid;
 
 
-  public static getNormalizedSettings(
+  public static normalize(
     {
       fontsProcessingSettings__fromFile__rawValid,
       commonSettings__normalized
@@ -34,8 +34,8 @@ export default class FontsSettingsRawSettingsNormalizer extends AssetsProcessing
     }
   ): FontsProcessingSettings__Normalized {
 
-    const dataHoldingSelfInstance: FontsSettingsRawSettingsNormalizer =
-        new FontsSettingsRawSettingsNormalizer({
+    const dataHoldingSelfInstance: FontsProcessingSettingsRawSettingsNormalizer =
+        new FontsProcessingSettingsRawSettingsNormalizer({
           fontsProcessingSettings__fromFile__rawValid,
           consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
           consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
@@ -50,9 +50,9 @@ export default class FontsSettingsRawSettingsNormalizer extends AssetsProcessing
             supportedSourceFileNameExtensionsWithoutLeadingDots
       },
       assetsGroups: dataHoldingSelfInstance.createNormalizedAssetsGroupsSettings(
-          dataHoldingSelfInstance.fontsProcessingSettings__fromFile__rawValid.assetsGroups,
-          FontsSettingsRawSettingsNormalizer.
-              completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings
+        dataHoldingSelfInstance.fontsProcessingSettings__fromFile__rawValid.assetsGroups,
+        FontsProcessingSettingsRawSettingsNormalizer.
+            completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings
       )
     };
   }

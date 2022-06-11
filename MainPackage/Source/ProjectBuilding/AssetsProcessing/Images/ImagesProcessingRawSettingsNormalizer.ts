@@ -24,14 +24,14 @@ export default class ImagesProcessingRawSettingsNormalizer extends AssetsProcess
   private readonly imagesProcessingSettings__fromFile__rawValid: ImagesProcessingSettings__FromFile__RawValid;
 
 
-  public static getNormalizedSettings(
-      {
-        imagesProcessingSettings__fromFile__rawValid,
-        commonSettings__normalized
-      }: {
-        imagesProcessingSettings__fromFile__rawValid: ImagesProcessingSettings__FromFile__RawValid;
-        commonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
-      }
+  public static normalize(
+    {
+      imagesProcessingSettings__fromFile__rawValid,
+      commonSettings__normalized
+    }: {
+      imagesProcessingSettings__fromFile__rawValid: ImagesProcessingSettings__FromFile__RawValid;
+      commonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
+    }
   ): ImagesProcessingSettings__Normalized {
 
     const dataHoldingSelfInstance: ImagesProcessingRawSettingsNormalizer =

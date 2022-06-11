@@ -37,8 +37,6 @@ export default abstract class GulpStreamsBasedSourceCodeProcessor<
   >
 > extends GulpStreamsBasedTaskExecutor {
 
-  protected readonly abstract SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string;
-
   protected readonly globSelectorsOfSourceFilesWithSupportedFilenameExtensionsInEntryPointsGroupRootDirectoryAndBelow:
       Array<string> = [];
   protected mutableGlobSelectorsOfSourceFilesWhichWillBeWatched: Array<string> = [];
@@ -120,7 +118,8 @@ export default abstract class GulpStreamsBasedSourceCodeProcessor<
         on("all", (eventName: string, fileOrDirectoryPath: string): void => {
 
           Logger.logInfo({
-            title: `${ this.SOURCE_FILES_TYPE_LABEL_FOR_LOGGING } files watcher`,
+            title: `${ this.associatedSourceCodeProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM } ` +
+                "files watcher",
             description:
                 `          Event : ${ ChokidarSpecialist.getEventNameInterpretation(eventName) }` +
                 `\n    File path : ${ fileOrDirectoryPath }`
@@ -137,7 +136,8 @@ export default abstract class GulpStreamsBasedSourceCodeProcessor<
 
           clearTimeout(waitingForOtherFilesWillBeSavedDuration);
           Logger.logInfo({
-            title: `${ this.SOURCE_FILES_TYPE_LABEL_FOR_LOGGING } files watcher`,
+            title: `${ this.associatedSourceCodeProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM } ` +
+                "files watcher",
             description: "Waiting for the saving of same type files..."
           });
 

@@ -51,18 +51,19 @@ export default class BrowserLiveReloadingSettingsNormalizer {
             messageSpecificPart: `プロパティ：'selectedBrowserLiveReloadingSetupID'の値：'${ selectedBrowserLiveReloadingSetupID }'に該当する` +
                 "ブラウザ自動リロードの設定は定義されていない。"
           }),
-          occurrenceLocation: "BrowserLiveReloadingSettingsNormalizer.getNormalizedSettings(parametersObject)",
+          occurrenceLocation: "BrowserLiveReloadingSettingsNormalizer.normalize(namedParameters)",
           title: InvalidParameterValueError.localization.defaultTitle
         });
       }
     } else if (
-        !hasSelectiveExecutionBeenDeclared &&
-        Object.values(browserLiveReloadingSettings__fromFile__rawValid).length === 1
+      !hasSelectiveExecutionBeenDeclared &&
+      Object.values(browserLiveReloadingSettings__fromFile__rawValid).length === 1
     ) {
       targetBrowserLiveReloadingProfile__rawValid = Object.values(browserLiveReloadingSettings__fromFile__rawValid)[0];
     } else {
       return;
     }
+
 
     return {
       targetFilesRootDirectoryAbsolutePath: ImprovedPath.buildAbsolutePath(

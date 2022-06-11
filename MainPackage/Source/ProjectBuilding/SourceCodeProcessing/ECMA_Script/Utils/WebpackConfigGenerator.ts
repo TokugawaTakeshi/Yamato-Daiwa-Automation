@@ -159,7 +159,9 @@ export default class WebpackConfigGenerator {
         filename: entryPointsGroupSettings.revisioning.mustExecute ?
             `[name]${ entryPointsGroupSettings.revisioning.contentHashPostfixSeparator }[contenthash].js` : "[name].js",
 
-        chunkFilename: `[id]${ entryPointsGroupSettings.revisioning.contentHashPostfixSeparator }[contenthash].js`
+        chunkFilename: entryPointsGroupSettings.revisioning.mustExecute ?
+            `[id]${ entryPointsGroupSettings.revisioning.contentHashPostfixSeparator }[contenthash].js` :
+            "[id][contenthash].js"
 
         /* [ Reference ] https://webpack.js.org/guides/author-libraries/ */
         /* ...isNotUndefined(entryPointsGroupSettings.entryPointsImportsSharing) ? {
@@ -319,7 +321,9 @@ export default class WebpackConfigGenerator {
         ]
       },
 
-      externals: [ provideAccessToNodeJS_ExternalDependencies() ],
+      ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS ? {
+        externals: [ provideAccessToNodeJS_ExternalDependencies() ]
+      } : null,
 
       plugins: [
 
@@ -364,7 +368,7 @@ export default class WebpackConfigGenerator {
         new VueLoaderWebpackPlugin(),
 
         new ES_LintWebpackPlugin({
-          extensions: [ "js", "ts" ],
+          extensions: [ "js", "ts", "vue" ],
           failOnWarning: this.masterConfigRepresentative.isProductionBuildingMode
         })
       ],

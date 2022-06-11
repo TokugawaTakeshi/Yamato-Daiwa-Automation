@@ -76,7 +76,7 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
     return {
       common: {
         supportedSourceFileNameExtensionsWithoutLeadingDots:
-            StylesProcessingRestrictions.supportedOutputFileNameExtensionsWithoutLeadingDots,
+            StylesProcessingRestrictions.supportedSourceFileNameExtensionsWithoutLeadingDots,
         supportedOutputFileNameExtensionsWithoutLeadingDots:
             StylesProcessingRestrictions.supportedOutputFileNameExtensionsWithoutLeadingDots,
         waitingForSubsequentFilesWillBeSavedPeriod__seconds:

@@ -72,7 +72,10 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
           const directoriesAliasesAbsolutePaths: { [directoryAlias: string]: string; } = {};
 
-          for (const [ directoryAlias, directoryAliasRelativePath ] of Object.entries(directoriesAliasesAbsolutePaths)) {
+          for (
+            const [ directoryAlias, directoryAliasRelativePath ] of
+            Object.entries(ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.common?.directoriesRelativePathsAliases ?? {})
+          ) {
             directoriesAliasesAbsolutePaths[directoryAlias] = ImprovedPath.buildAbsolutePath(
               [ commonSettings__normalized.projectRootDirectoryAbsolutePath, directoryAliasRelativePath ],
               { forwardSlashOnlySeparators: true }
@@ -158,8 +161,8 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
           }`,
 
       ...isNotUndefined(
-          entryPointsGroupSettings__rawValid.
-              associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer
+        entryPointsGroupSettings__rawValid.
+            associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer
       ) ?
           {
             associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer:

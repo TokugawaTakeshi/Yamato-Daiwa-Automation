@@ -24,7 +24,7 @@ export default class VideosProcessingRawSettingsNormalizer extends AssetsProcess
   private readonly videosProcessingSettings__fromFile__rawValid: VideosProcessingSettings__FromFile__RawValid;
 
 
-  public static getNormalizedSettings(
+  public static normalize(
     {
       videosProcessingSettings__fromFile__rawValid,
       commonSettings__normalized

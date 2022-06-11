@@ -36,7 +36,6 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
 > {
 
   protected readonly TASK_NAME_FOR_LOGGING: string = "Styles processing";
-  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "Stylesheets";
 
   private readonly stylesProcessingConfigRepresentative: StylesProcessingSettingsRepresentative;
 
@@ -80,11 +79,11 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
 
   protected processEntryPoints(entryPointsSourceFilesAbsolutePaths: Array<string>): () => NodeJS.ReadWriteStream {
 
-    /* [ Theory ] If to pass the empty array to 'Gulp.src(".")' error will occur but the cause will not be told clearly.
-    *    However, the empty array is usual scenario (for example when user declared the configuration but has not added
-    *    all files yet).  */
+    /* [ Theory ] If to pass the empty array to 'Gulp.src()' error will occur but the cause will not be told clearly.
+     *    However, the empty array is usual scenario (for example when user declared the configuration but has not added
+     *    files of specific entry points group yet).  */
     if (entryPointsSourceFilesAbsolutePaths.length === 0) {
-      return (): NodeJS.ReadWriteStream => Gulp.src(".");
+      return (): NodeJS.ReadWriteStream => new PassThrough().end();
     }
 
 

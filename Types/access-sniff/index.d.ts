@@ -60,7 +60,7 @@ declare namespace AccessSniff {
         issue: string;
         description: string;
         position: IssuePosition;
-        element: IssueOccurrenceDOM_Element
+        element: IssueOccurrenceDOM_Element;
     }
 
     interface IssuePosition {

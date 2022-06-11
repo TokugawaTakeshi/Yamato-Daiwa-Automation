@@ -89,26 +89,27 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      const stylesheetResolvedOutputAbsolutePath: string | null = this.resolveOutputAssetFileAbsolutePathIfPossible({
-        pickedURL: hrefAttributeValue,
-        filePathAliasPrefix: "@",
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          stylesProcessingConfigRepresentative.entryPointsGroupsNormalizedSettingsMappedByPathAliases,
-          (
-            pathAlias: string, stylesEntryPointsGroupNormalizedSettings: StylesProcessingSettings__Normalized.EntryPointsGroup
-          ): [ string, string ] => [
-            pathAlias,
-            stylesEntryPointsGroupNormalizedSettings.isSingeEntryPointGroup ?
-                stylesEntryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
-                stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
-          ]
-        ),
-        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: stylesProcessingConfigRepresentative.
-            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-            stylesProcessingConfigRepresentative.sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
-        fileTypeForLogging: stylesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
-      });
+      const stylesheetResolvedOutputAbsolutePath: string | null = AssetsPathsAliasesResolverForHTML.
+          resolveOutputAssetFileAbsolutePathIfPossible({
+            pickedURL: hrefAttributeValue,
+            filePathAliasPrefix: "@",
+            sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
+              stylesProcessingConfigRepresentative.entryPointsGroupsNormalizedSettingsMappedByPathAliases,
+              (
+                pathAlias: string, stylesEntryPointsGroupNormalizedSettings: StylesProcessingSettings__Normalized.EntryPointsGroup
+              ): [ string, string ] => [
+                pathAlias,
+                stylesEntryPointsGroupNormalizedSettings.isSingeEntryPointGroup ?
+                    stylesEntryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
+                    stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
+              ]
+            ),
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: stylesProcessingConfigRepresentative.
+                supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+            sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+                stylesProcessingConfigRepresentative.sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
+            fileTypeForLogging: stylesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+          });
 
       if (isNull(stylesheetResolvedOutputAbsolutePath)) {
         continue;
@@ -130,7 +131,7 @@ export default class AssetsPathsAliasesResolverForHTML {
     }
 
 
-    const _ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative =
+    const ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative =
         this.masterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative;
 
 
@@ -144,26 +145,28 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      const scriptResolvedOutputAbsolutePath: string | null = this.resolveOutputAssetFileAbsolutePathIfPossible({
-        pickedURL: srcAttributeValue,
-        filePathAliasPrefix: "@",
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          _ECMA_ScriptLogicProcessingConfigRepresentative.entryPointsGroupsNormalizedSettingsMappedByPathAliases,
-          (
-            pathAlias: string, entryPointsGroupNormalizedSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
-          ): [ string, string ] => [
-            pathAlias,
-            entryPointsGroupNormalizedSettings.isSingeEntryPointGroup ?
-                entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
-                entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
-          ]
-        ),
-        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
-            _ECMA_ScriptLogicProcessingConfigRepresentative.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-            _ECMA_ScriptLogicProcessingConfigRepresentative.entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-        fileTypeForLogging: _ECMA_ScriptLogicProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
-      });
+      const scriptResolvedOutputAbsolutePath: string | null = AssetsPathsAliasesResolverForHTML.
+          resolveOutputAssetFileAbsolutePathIfPossible({
+            pickedURL: srcAttributeValue,
+            filePathAliasPrefix: "@",
+            sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
+              ECMA_ScriptLogicProcessingConfigRepresentative.entryPointsGroupsNormalizedSettingsMappedByPathAliases,
+              (
+                pathAlias: string,
+                entryPointsGroupNormalizedSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
+              ): [ string, string ] => [
+                pathAlias,
+                entryPointsGroupNormalizedSettings.isSingeEntryPointGroup ?
+                    entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
+                    entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
+              ]
+            ),
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
+                ECMA_ScriptLogicProcessingConfigRepresentative.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+            sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+                ECMA_ScriptLogicProcessingConfigRepresentative.entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+            fileTypeForLogging: ECMA_ScriptLogicProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+          });
 
       if (isNull(scriptResolvedOutputAbsolutePath)) {
         continue;
@@ -199,21 +202,22 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      const imageResolvedOutputAbsolutePath: string | null = this.resolveOutputAssetFileAbsolutePathIfPossible({
-        pickedURL: srcAttributeValue,
-        filePathAliasPrefix: imagesProcessingConfigRepresentative.filePathAliasPrefix,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          imagesProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
-          (
-              pathAlias: string, stylesEntryPointsGroupNormalizedSettings: ImagesProcessingSettings__Normalized.AssetsGroup
-          ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
-        ),
-        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
-            imagesProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-            imagesProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-        fileTypeForLogging: "画像"
-      });
+      const imageResolvedOutputAbsolutePath: string | null = AssetsPathsAliasesResolverForHTML.
+          resolveOutputAssetFileAbsolutePathIfPossible({
+            pickedURL: srcAttributeValue,
+            filePathAliasPrefix: imagesProcessingConfigRepresentative.filePathAliasPrefix,
+            sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
+              imagesProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
+              (
+                  pathAlias: string, stylesEntryPointsGroupNormalizedSettings: ImagesProcessingSettings__Normalized.AssetsGroup
+              ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
+            ),
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
+                imagesProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+            sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+                imagesProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+            fileTypeForLogging: "画像"
+          });
 
       if (isNull(imageResolvedOutputAbsolutePath)) {
         continue;
@@ -221,6 +225,43 @@ export default class AssetsPathsAliasesResolverForHTML {
 
 
       $ImageElement.attr("src", this.buildFinalAssetURL(imageResolvedOutputAbsolutePath, "画像"));
+    }
+
+    for (const linkElement of Array.from(this.$HTML_FileContentCheerioCapturing("link[type='image/x-icon']"))) {
+
+      const $LinkElement: cheerio.Cheerio = this.$HTML_FileContentCheerioCapturing(linkElement);
+      const hrefAttributeValue: string | undefined = $LinkElement.attr("href");
+
+      if (isUndefined(hrefAttributeValue)) {
+        continue;
+      }
+
+
+      const imageResolvedOutputAbsolutePath: string | null = AssetsPathsAliasesResolverForHTML.
+          resolveOutputAssetFileAbsolutePathIfPossible({
+            pickedURL: hrefAttributeValue,
+            filePathAliasPrefix: imagesProcessingConfigRepresentative.filePathAliasPrefix,
+            sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
+                imagesProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
+                (
+                  pathAlias: string, stylesEntryPointsGroupNormalizedSettings: ImagesProcessingSettings__Normalized.AssetsGroup
+                ): [ string, string ] => [
+                  pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
+                ]
+            ),
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
+            imagesProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+            sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+            imagesProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+            fileTypeForLogging: "画像"
+          });
+
+      if (isNull(imageResolvedOutputAbsolutePath)) {
+        continue;
+      }
+
+
+      $LinkElement.attr("href", this.buildFinalAssetURL(imageResolvedOutputAbsolutePath, "画像"));
     }
 
 
@@ -249,21 +290,22 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      const videoResolvedOutputAbsolutePath: string | null = this.resolveOutputAssetFileAbsolutePathIfPossible({
-        pickedURL: srcAttributeValue,
-        filePathAliasPrefix: videosProcessingConfigRepresentative.filePathAliasPrefix,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          videosProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
-          (
-            pathAlias: string, stylesEntryPointsGroupNormalizedSettings: VideosProcessingSettings__Normalized.AssetsGroup
-          ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
-        ),
-        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
-            videosProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-            videosProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-        fileTypeForLogging: "動画"
-      });
+      const videoResolvedOutputAbsolutePath: string | null = AssetsPathsAliasesResolverForHTML.
+          resolveOutputAssetFileAbsolutePathIfPossible({
+            pickedURL: srcAttributeValue,
+            filePathAliasPrefix: videosProcessingConfigRepresentative.filePathAliasPrefix,
+            sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
+              videosProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
+              (
+                pathAlias: string, stylesEntryPointsGroupNormalizedSettings: VideosProcessingSettings__Normalized.AssetsGroup
+              ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
+            ),
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
+                videosProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+            sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+                videosProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+            fileTypeForLogging: "動画"
+          });
 
       if (isNull(videoResolvedOutputAbsolutePath)) {
         continue;
@@ -299,21 +341,22 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      const audioResolvedOutputAbsolutePath: string | null = this.resolveOutputAssetFileAbsolutePathIfPossible({
-        pickedURL: srcAttributeValue,
-        filePathAliasPrefix: audiosProcessingConfigRepresentative.filePathAliasPrefix,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          audiosProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
-          (
-              pathAlias: string, stylesEntryPointsGroupNormalizedSettings: AudiosProcessingSettings__Normalized.AssetsGroup
-          ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
-        ),
-        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
-        audiosProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-        audiosProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-        fileTypeForLogging: "動画"
-      });
+      const audioResolvedOutputAbsolutePath: string | null = AssetsPathsAliasesResolverForHTML.
+          resolveOutputAssetFileAbsolutePathIfPossible({
+            pickedURL: srcAttributeValue,
+            filePathAliasPrefix: audiosProcessingConfigRepresentative.filePathAliasPrefix,
+            sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
+              audiosProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
+              (
+                  pathAlias: string, stylesEntryPointsGroupNormalizedSettings: AudiosProcessingSettings__Normalized.AssetsGroup
+              ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
+            ),
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
+            audiosProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+            sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+            audiosProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+            fileTypeForLogging: "動画"
+          });
 
       if (isNull(audioResolvedOutputAbsolutePath)) {
         continue;
@@ -328,7 +371,39 @@ export default class AssetsPathsAliasesResolverForHTML {
 
 
   /* --- Helpers ---------------------------------------------------------------------------------------------------- */
-  private resolveOutputAssetFileAbsolutePathIfPossible(
+  private buildFinalAssetURL(assetResolvedOutputAbsolutePath: string, assetTypeForLogging: string): string {
+
+    if (
+      this.masterConfigRepresentative.isDevelopmentBuildingMode ||
+      isUndefined(this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath)
+    ) {
+
+      if (
+        !this.masterConfigRepresentative.isDevelopmentBuildingMode &&
+        isUndefined(this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath)
+      ) {
+        Logger.logWarning({
+          title: `${ assetTypeForLogging }ファイル、諸略絶対パス算出不可能`,
+          description: `プロジェクト構成モード：「${ this.masterConfigRepresentative.consumingProjectBuildingMode }」` +
+              `に該当する公開パスが定義されていない為、${ assetTypeForLogging }の絶対パスの算出は不可能。代わりに相対パスを代入。`
+        });
+      }
+
+      return ImprovedPath.computeRelativePath({
+        basePath: this.compiledHTML_File.outputDirectoryAbsolutePath,
+        comparedPath: assetResolvedOutputAbsolutePath
+      });
+    }
+
+
+    return `/${ ImprovedPath.computeRelativePath({
+      basePath: this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath,
+      comparedPath: assetResolvedOutputAbsolutePath
+    }) }`;
+  }
+
+
+  private static resolveOutputAssetFileAbsolutePathIfPossible(
     {
       pickedURL,
       filePathAliasPrefix,
@@ -339,7 +414,6 @@ export default class AssetsPathsAliasesResolverForHTML {
     }: {
       pickedURL: string;
       filePathAliasPrefix: string;
-      // TODO 名前変更 sourceFilesGroupTopDirectoriesOrSingleFileAliasesAndRespectiveAbsolutePath
       sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: Map<string, string>;
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string>;
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap: Map<string, string>;
@@ -376,7 +450,6 @@ export default class AssetsPathsAliasesResolverForHTML {
     }
 
 
-    // TODO Actual for the sole entry point group only
     const sourceFileComputedAbsolutePath__possiblyWithoutFilenameExtension: string = ImprovedPath.joinPathSegments(
       sourceFilesTopDirectoryAbsolutePathForCurrentAlias, ...pickedURL_Segments.slice(1)
     );
@@ -394,9 +467,9 @@ export default class AssetsPathsAliasesResolverForHTML {
       );
 
       const searchResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> = filterMap(
-          sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
-          (sourceFileAbsolutePath: string): boolean =>
-              sourceFilesPossibleAbsolutePaths.includes(sourceFileAbsolutePath)
+        sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
+        (sourceFileAbsolutePath: string): boolean =>
+            sourceFilesPossibleAbsolutePaths.includes(sourceFileAbsolutePath)
       );
 
       if (searchResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.size === 0) {
@@ -441,37 +514,5 @@ export default class AssetsPathsAliasesResolverForHTML {
 
 
     return resolvedStylesheetOutputAbsolutePath;
-  }
-
-
-  private buildFinalAssetURL(assetResolvedOutputAbsolutePath: string, assetTypeForLogging: string): string {
-
-    if (
-        this.masterConfigRepresentative.isDevelopmentBuildingMode ||
-        isUndefined(this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath)
-    ) {
-
-      if (
-          !this.masterConfigRepresentative.isDevelopmentBuildingMode &&
-          isUndefined(this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath)
-      ) {
-        Logger.logWarning({
-          title: `${ assetTypeForLogging }ファイル、諸略絶対パス算出不可能`,
-          description: `プロジェクト構成モード：「${ this.masterConfigRepresentative.consumingProjectBuildingMode }」` +
-              `に該当する公開パスが定義されていない為、${ assetTypeForLogging }の絶対パスの算出は不可能。代わりに相対パスを代入。`
-        });
-      }
-
-      return ImprovedPath.computeRelativePath({
-        basePath: this.compiledHTML_File.outputDirectoryAbsolutePath,
-        comparedPath: assetResolvedOutputAbsolutePath
-      });
-    }
-
-
-    return `/${ ImprovedPath.computeRelativePath({
-      basePath: this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath,
-      comparedPath: assetResolvedOutputAbsolutePath
-    }) }`;
   }
 }

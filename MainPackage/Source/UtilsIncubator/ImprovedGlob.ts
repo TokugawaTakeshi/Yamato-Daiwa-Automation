@@ -13,7 +13,7 @@ import removeSlashes from "./removeSlashes";
 
 export default class ImprovedGlob {
 
-  /** @description Unline 'glob.sync', allows to pass multiple Glob selectors */
+  /** @description Improved 'glob.sync', allows to pass multiple Glob selectors */
   public static getFilesAbsolutePathsSynchronously(globSelectors: Array<string>): Array<string> {
 
     const inclusiveGlobSelectors: Array<string> = [];

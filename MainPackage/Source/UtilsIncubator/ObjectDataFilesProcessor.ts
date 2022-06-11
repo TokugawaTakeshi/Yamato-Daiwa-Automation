@@ -13,10 +13,9 @@ import {
   isNotUndefined,
   isNull
 } from "@yamato-daiwa/es-extensions";
+import { isErrnoException } from "@yamato-daiwa/es-extensions-nodejs";
 import FileNotFoundError from "@UtilsIncubator/Logging/Errors/FileNotFoundError";
 import DesiredFileActuallyIsDirectoryError from "@UtilsIncubator/Logging/Errors/DesiredFileActuallyIsDirectoryError";
-import isErrnoException from "@UtilsIncubator/isErrnoException";
-
 
 class ObjectDataFilesProcessor {
 
@@ -39,10 +38,10 @@ class ObjectDataFilesProcessor {
 
       if (isNull(fileNameLastExtension)) {
         Logger.throwErrorAndLog({
-          errorInstance: new InvalidParameterValueError({ 
+          errorInstance: new InvalidParameterValueError({
             parameterName: "parametersObject.filePath",
-            messageSpecificPart: "Unable to decide the data parsing algorithm because target file " + 
-                `'${parametersObject.filePath}' has no explicit filename extension. If it is intentional, ` +
+            messageSpecificPart: "Unable to decide the data parsing algorithm because target file " +
+                `'${ parametersObject.filePath }' has no explicit filename extension. If it is intentional, ` +
                 "specify 'parametersObject.dataSchema' with desired element of 'ObjectDataFilesProcessor.SupportedSchemas'" +
                 "enumeration."
           }),
