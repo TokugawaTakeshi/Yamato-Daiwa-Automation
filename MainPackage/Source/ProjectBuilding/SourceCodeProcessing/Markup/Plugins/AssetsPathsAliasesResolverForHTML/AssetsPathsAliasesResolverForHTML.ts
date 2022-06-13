@@ -18,6 +18,10 @@ import type AudiosProcessingSettingsRepresentative from "@AudiosProcessing/Audio
 /* --- Tasks executor ----------------------------------------------------------------------------------------------- */
 import type MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
 
+/* --- Assets ------------------------------------------------------------------------------------------------------- */
+import AssetsPathsAliasesResolverForHTML_Localization__English from
+    "@MarkupProcessing/Plugins/AssetsPathsAliasesResolverForHTML/AssetsPathsAliasesResolverForHTML_Localization.english";
+
 /* --- Applied auxiliaries ------------------------------------------------------------------------------------------ */
 import cheerio from "cheerio";
 import extractStringifiedContentFromVinylFile from "@Utils/extractStringifiedContentFromVinylFile";
@@ -31,10 +35,14 @@ import {
   isUndefined,
   isNull
 } from "@yamato-daiwa/es-extensions";
+import type { WarningLog } from "@yamato-daiwa/es-extensions";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
 
-export default class AssetsPathsAliasesResolverForHTML {
+class AssetsPathsAliasesResolverForHTML {
+
+  public static localization: AssetsPathsAliasesResolverForHTML.Localization =
+      AssetsPathsAliasesResolverForHTML_Localization__English;
 
   private readonly compiledHTML_File: MarkupProcessor.MarkupVinylFile;
   private readonly $HTML_FileContentCheerioCapturing: cheerio.Root;
@@ -116,7 +124,13 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      $LinkElement.attr("href", this.buildFinalAssetURL(stylesheetResolvedOutputAbsolutePath, "意匠計画記法"));
+      $LinkElement.attr(
+        "href",
+        this.buildFinalAssetURL(
+          stylesheetResolvedOutputAbsolutePath,
+          stylesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+        )
+      );
     }
 
 
@@ -173,7 +187,13 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      $ScriptElement.attr("src", this.buildFinalAssetURL(scriptResolvedOutputAbsolutePath, "ECMAScript基本挙動制御"));
+      $ScriptElement.attr(
+        "src",
+        this.buildFinalAssetURL(
+          scriptResolvedOutputAbsolutePath,
+          ECMA_ScriptLogicProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+        )
+      );
     }
 
 
@@ -216,7 +236,7 @@ export default class AssetsPathsAliasesResolverForHTML {
                 imagesProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
             sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
                 imagesProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-            fileTypeForLogging: "画像"
+            fileTypeForLogging: imagesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
           });
 
       if (isNull(imageResolvedOutputAbsolutePath)) {
@@ -224,7 +244,13 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      $ImageElement.attr("src", this.buildFinalAssetURL(imageResolvedOutputAbsolutePath, "画像"));
+      $ImageElement.attr(
+        "src",
+        this.buildFinalAssetURL(
+          imageResolvedOutputAbsolutePath,
+          imagesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+        )
+      );
     }
 
     for (const linkElement of Array.from(this.$HTML_FileContentCheerioCapturing("link[type='image/x-icon']"))) {
@@ -253,7 +279,7 @@ export default class AssetsPathsAliasesResolverForHTML {
             imagesProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
             sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
             imagesProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-            fileTypeForLogging: "画像"
+            fileTypeForLogging: imagesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
           });
 
       if (isNull(imageResolvedOutputAbsolutePath)) {
@@ -261,7 +287,13 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      $LinkElement.attr("href", this.buildFinalAssetURL(imageResolvedOutputAbsolutePath, "画像"));
+      $LinkElement.attr(
+        "href",
+        this.buildFinalAssetURL(
+          imageResolvedOutputAbsolutePath,
+          imagesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+        )
+      );
     }
 
 
@@ -304,7 +336,7 @@ export default class AssetsPathsAliasesResolverForHTML {
                 videosProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
             sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
                 videosProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-            fileTypeForLogging: "動画"
+            fileTypeForLogging: videosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
           });
 
       if (isNull(videoResolvedOutputAbsolutePath)) {
@@ -312,7 +344,13 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      $SourceElement.attr("src", this.buildFinalAssetURL(videoResolvedOutputAbsolutePath, "動画"));
+      $SourceElement.attr(
+        "src",
+        this.buildFinalAssetURL(
+          videoResolvedOutputAbsolutePath,
+          videosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+        )
+      );
     }
 
     return this;
@@ -355,7 +393,7 @@ export default class AssetsPathsAliasesResolverForHTML {
             audiosProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
             sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
             audiosProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-            fileTypeForLogging: "動画"
+            fileTypeForLogging: audiosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
           });
 
       if (isNull(audioResolvedOutputAbsolutePath)) {
@@ -363,7 +401,13 @@ export default class AssetsPathsAliasesResolverForHTML {
       }
 
 
-      $SourceElement.attr("src", this.buildFinalAssetURL(audioResolvedOutputAbsolutePath, "録音"));
+      $SourceElement.attr(
+        "src",
+        this.buildFinalAssetURL(
+          audioResolvedOutputAbsolutePath,
+          audiosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+        )
+      );
     }
 
     return this;
@@ -382,11 +426,10 @@ export default class AssetsPathsAliasesResolverForHTML {
         !this.masterConfigRepresentative.isDevelopmentBuildingMode &&
         isUndefined(this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath)
       ) {
-        Logger.logWarning({
-          title: `${ assetTypeForLogging }ファイル、諸略絶対パス算出不可能`,
-          description: `プロジェクト構成モード：「${ this.masterConfigRepresentative.consumingProjectBuildingMode }」` +
-              `に該当する公開パスが定義されていない為、${ assetTypeForLogging }の絶対パスの算出は不可能。代わりに相対パスを代入。`
-        });
+        Logger.logWarning(AssetsPathsAliasesResolverForHTML.localization.generateUnableToComputeShortenedAbsolutePathWarning({
+          projectBuildingMode: this.masterConfigRepresentative.consumingProjectBuildingMode,
+          filesTypeForLogging: assetTypeForLogging
+        }));
       }
 
       return ImprovedPath.computeRelativePath({
@@ -435,17 +478,18 @@ export default class AssetsPathsAliasesResolverForHTML {
     const sourceFilesTopDirectoryAbsolutePathForCurrentAlias: string | undefined =
         sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.get(firstURL_Segment__possiblyPathAlias);
 
-
     if (isUndefined(sourceFilesTopDirectoryAbsolutePathForCurrentAlias)) {
-      Logger.logWarning({
-        title: `${ fileTypeForLogging }ファイル、不明パスアリアス`,
-        description: `${ fileTypeForLogging }ファイルの指定されたパス：「${ pickedURL }」に在るアリアス：「${ firstURL_Segment__possiblyPathAlias }」` +
-            "該当しているディレクトリが見つけられなかった。下記のアリアスが明示的か、規定で定義してある：\n" +
-            `${ stringifyAndFormatArbitraryValue(
-              Array.from(sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.entries())
-            ) }`
+      Logger.logWarning(
+        AssetsPathsAliasesResolverForHTML.localization.generateUnknownSourceFileTopDirectoryAliasWarning({
+          fileTypeForLogging,
+          firstPathSegment: firstURL_Segment__possiblyPathAlias,
+          pickedPath: pickedURL,
+          formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: stringifyAndFormatArbitraryValue(
+            Array.from(sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.entries())
+          )
+        })
+      );
 
-      });
       return null;
     }
 
@@ -497,13 +541,13 @@ export default class AssetsPathsAliasesResolverForHTML {
     }
 
 
-    const resolvedStylesheetOutputAbsolutePath: string | undefined =
+    const resolvedFileOutputAbsolutePath: string | undefined =
         sourceAndOutputFilesAbsolutePathsCorrespondenceMap.get(
             sourceFileComputedAbsolutePath__possiblyWithoutFilenameExtension
         );
 
 
-    if (isUndefined(resolvedStylesheetOutputAbsolutePath)) {
+    if (isUndefined(resolvedFileOutputAbsolutePath)) {
       Logger.logWarning({
         title: `${ fileTypeForLogging }ファイル、不明パスアリアス`,
         description: `${ fileTypeForLogging }ファイル：「${ pickedURL }」に在るアリアス：${ firstURL_Segment__possiblyPathAlias }に` +
@@ -513,6 +557,43 @@ export default class AssetsPathsAliasesResolverForHTML {
     }
 
 
-    return resolvedStylesheetOutputAbsolutePath;
+    return resolvedFileOutputAbsolutePath;
   }
 }
+
+
+namespace AssetsPathsAliasesResolverForHTML {
+
+  export type Localization = Readonly<{
+
+    generateUnableToComputeShortenedAbsolutePathWarning: (
+      namedParameters: Localization.UnableToComputeShortenedAbsolutePathWarning.NamedParameters
+    ) => Pick<WarningLog, "title" | "description">;
+
+    generateUnknownSourceFileTopDirectoryAliasWarning: (
+      namedParameters: Localization.UnknownSourceFileTopDirectoryAliasWarning.NamedParameters
+    ) => Pick<WarningLog, "title" | "description">;
+  }>;
+
+  export namespace Localization {
+
+    export namespace UnableToComputeShortenedAbsolutePathWarning {
+      export type NamedParameters = Readonly<{
+        filesTypeForLogging: string;
+        projectBuildingMode: string;
+      }>;
+    }
+
+    export namespace UnknownSourceFileTopDirectoryAliasWarning {
+      export type NamedParameters = Readonly<{
+        fileTypeForLogging: string;
+        pickedPath: string;
+        firstPathSegment: string;
+        formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: string;
+      }>;
+    }
+  }
+}
+
+
+export default AssetsPathsAliasesResolverForHTML;

@@ -1,4 +1,4 @@
-import DesiredFileActuallyIsDirectoryError from "@UtilsIncubator/Logging/Errors/DesiredFileActuallyIsDirectoryError";
+import type DesiredFileActuallyIsDirectoryError from "@UtilsIncubator/Logging/Errors/DesiredFileActuallyIsDirectoryError";
 import { insertSubstring } from "@yamato-daiwa/es-extensions";
 
 
@@ -6,10 +6,10 @@ const DesiredFileActuallyIsDirectoryErrorLocalization__English: DesiredFileActua
   defaultTitle: "Desired file actually is the directory",
   genericDescription:
       (namedParameters: DesiredFileActuallyIsDirectoryError.Localization.DescriptionTemplateNamedParameters): string =>
-          `Contrary to expectations, path '${namedParameters.targetPath}' refers to directory, not file.` +
-          `${insertSubstring(namedParameters.messageSpecificPart, {
-            modifier: (messageSpecificPart: string): string => `\n${messageSpecificPart}`
-          })}`
+          `Contrary to expectations, path '${ namedParameters.targetPath }' refers to directory, not file.` +
+          `${ insertSubstring(namedParameters.messageSpecificPart, {
+            modifier: (messageSpecificPart: string): string => `\n${ messageSpecificPart }`
+          }) }`
 };
 
 

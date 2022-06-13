@@ -60,8 +60,8 @@ export default class BrowserLiveReloader {
             Logger.logInfo({
               title: "Output files watcher",
               description:
-                  `          Event : ${ ChokidarSpecialist.getEventNameInterpretation(eventName) }` +
-                  `\n         Path : ${ fileOrDirectoryPath }\n` +
+                  `  Event : ${ ChokidarSpecialist.getEventNameInterpretation(eventName) }` +
+                  `\n  Path : ${ fileOrDirectoryPath }\n` +
                   "Waiting for status changing of other output files..."
             });
 

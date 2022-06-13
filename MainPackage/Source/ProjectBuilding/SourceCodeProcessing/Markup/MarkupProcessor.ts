@@ -18,7 +18,7 @@ import gulpHTML_Prettify from "gulp-html-prettify";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import AssetsPathsAliasesResolverForHTML from
-    "@MarkupProcessing/Plugins/AssetsPathsAliasesResolverForHTML";
+    "@MarkupProcessing/Plugins/AssetsPathsAliasesResolverForHTML/AssetsPathsAliasesResolverForHTML";
 import HTML_Validator from
     "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
 import AccessibilityInspector from "./Plugins/AccessibilityInspector/AccessibilityInspector";

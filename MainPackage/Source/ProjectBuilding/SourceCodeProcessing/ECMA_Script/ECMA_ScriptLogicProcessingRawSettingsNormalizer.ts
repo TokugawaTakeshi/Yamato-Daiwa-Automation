@@ -184,7 +184,10 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
         mustExecute:
             entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
                 revisioning?.disable === true ?
-                false : ECMA_ScriptLogicProcessingSettings__Default.revisioning.mustExecute(this.consumingProjectBuildingMode),
+                false : ECMA_ScriptLogicProcessingSettings__Default.revisioning.mustExecute({
+                  consumingProjectBuildingMode: this.consumingProjectBuildingMode,
+                  targetRuntimeType: entryPointsGroupSettings__rawValid.targetRuntime.type
+                }),
         contentHashPostfixSeparator:
             entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
                 revisioning?.contentHashPostfixSeparator ??

@@ -13,6 +13,8 @@ export default class AudiosProcessingSettingsRepresentative extends AssetsProces
   AudiosProcessingSettings__Normalized.Common, AudiosProcessingSettings__Normalized.AssetsGroup
 > {
 
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Audios";
+
   protected readonly assetsProcessingCommonSettings: AudiosProcessingSettings__Normalized.Common;
   protected readonly actualAssetsGroupsSettings: Map<AssetsGroupID, AudiosProcessingSettings__Normalized.AssetsGroup>;
 

@@ -8,6 +8,13 @@ Specializing on Pug, Stylus and TypeScript as source code languages; also works 
 [📖 Documentation](https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/README.md)
 
 
+## Installation
+
+```
+npm i @yamato-daiwa/automation -D -E
+```
+
+
 ## Dependencies list
 
 <dl>
@@ -19,13 +26,13 @@ Specializing on Pug, Stylus and TypeScript as source code languages; also works 
   <dd>Used to reduce the routine code</dd>
 
   <dt>@yamato-daiwa/style_guides</dt>
-  <dd>The code style guides to which this project obeying and also suggested for consuming project.</dd>
+  <dd>The code style guides to which this project obeying and also suggested for the consuming project</dd>
 
   <dt>autoprefixer</dt>
   <dd>Used for adding of the vendor prefixes to CSS properties in processed stylesheets the better cross-browser adaptations</dd>
 
   <dt>browser-sync</dt>
-  <dd>Used to provide the automation of browser reloading when project incrementally rebuilt</dd>
+  <dd>Used to provide the automation of browser opening and reloading when project incrementally rebuilt</dd>
 
   <dt>cheerio</dt>
   <dd>Used for manipulation with compiled HTML code like resolving of paths aliases</dd>
@@ -43,7 +50,7 @@ Specializing on Pug, Stylus and TypeScript as source code languages; also works 
   <dd>Used to improve the performance of TypeScript transpiling functionality</dd>
 
   <dt>gulp</dt>
-  <dd>Used as main task manager, the tool to provide the arranging of the tasks to sequences and series and running them</dd>
+  <dd>Used as main task manager, the tool for providing of arranging of the tasks to sequences and series and running them</dd>
 
   <dt>gulp-debug</dt>
   <dd>Used to outputs the processed files names and quantity to the terminal</dd>
@@ -76,7 +83,7 @@ Specializing on Pug, Stylus and TypeScript as source code languages; also works 
   <dd>Used to provide the import of HTML code as string to JavaScript bundle</dd>
 
   <dt>html-validator</dt>
-  <dd>Used to get the HTML validation data from W3C service. The formatted output to terminal has been implemented by YDA developer.</dd>
+  <dd>Used to get the HTML validation data from W3C service. The formatted output to terminal has been implemented by YDA development side.</dd>
 
   <dt>imagemin-pngquant</dt>
   <dd>Used to provides the optimization of PNG files</dd>
@@ -93,7 +100,7 @@ Specializing on Pug, Stylus and TypeScript as source code languages; also works 
   <dt>pug-html-loader</dt>
   <dd>
     Used in combination with <b>html-loader</b> to provide the importing of HTML code compiled from Pug language as string 
-    to JavaScript bundle.
+    to JavaScript bundle
   </dd>
 
   <dt>rev-hash</dt>
@@ -103,14 +110,14 @@ Specializing on Pug, Stylus and TypeScript as source code languages; also works 
   </dd>
 
   <dt>stlint</dt>  
-  <dd>Used for linting of styles written by Stylus. The formatted output to terminal has been implemented by YDA developer</dd>
+  <dd>Used for linting of styles written by Stylus. The formatted output to terminal has been implemented by YDA development side.</dd>
 
-  <dd>style-loader</dd>
-  <dt>Used to provide the dynamic injection of CSS functionality which has been imported to JavaScript bundle built by Webpack</dt>
+  <dt>style-loader</dt>
+  <dd>Used to provide the dynamic injection of CSS functionality which has been imported to JavaScript bundle built by Webpack</dd>
 
   <dt>stylus-loader</dt>
   <dd>
-    Used to provide the dynamic injection of CSS witten by Stylus pre-processor which has been imported to JavaScript
+    Used to provide the dynamic loading of CSS witten by Stylus pre-processor which has been imported to JavaScript
     bundle built by Webpack
   </dd>
 
@@ -118,37 +125,40 @@ Specializing on Pug, Stylus and TypeScript as source code languages; also works 
   <dd>Used to provide the integration of TypeScript and Webpack</dd>
 
   <dt>vue-style-loader</dt>
-  <dd>Used to provide the dynamical injection of CSS written in Vue Single File Components to HTML document</dd>
+  <dd>Used to provide the dynamical loading of CSS written in Vue Single File Components to HTML document</dd>
   
   <dt>webpack</dt>
-  <dd>Used as basic tool for the ECMAScript logic processing.</dd>
+  <dd>Used as basic tool for the ECMAScript logic processing</dd>
   
   <dt>webpack-node-externals</dt>
   <dd>
     Used to prevent the bundling of NodeJS modules by Webpack because this bundling brings a lot of warning and/or errors
-    while not required for console and server applications.
+    while not required for console and server applications
   </dd>  
-  
+
+  <dt>yamljs</dt>
+  <dd>Used for reading and parsing of configuration YAML files</dd>
+
   <dt>yaml-loader</dt>
-  <dd>Used to provide the import of content of YAML files converted to JavaScript native object.</dd> 
+  <dd>Used to provide the import of content of YAML files converted to JavaScript native object</dd> 
 
 </dl>
 
 
 ### For development needs only
 
-All **@types** are the TypeScript types definitions required for normal transpiling of the TypeScript.
+All **@types** are the TypeScript types definitions that required for normal transpiling of the TypeScript to JavaScript (Node.js).
 
 <dl>
 
   <dt>ts-node</dt>
-  <dd>Used to support the Webpack building written by TypeScript</dd>
+  <dd>Used to support the Webpack configuration written by TypeScript</dd>
 
   <dt>typescript</dt>
-  <dd>Used to provide the TypeScript as source code language.</dd>
+  <dd>Used to provide the TypeScript as source code language</dd>
 
   <dt>webpack-cli</dt>
-  <dd>Used for the project building.</dd>
+  <dd>Used for the project building</dd>
 
 </dl>
 
@@ -158,12 +168,6 @@ All **@types** are the TypeScript types definitions required for normal transpil
 <dl>
 
   <dt>glob</dt>
-  <dd>Used by <b>ImprovedGlob</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency.</dd>
-
-  <dt>json5</dt>
-  <dd>Used by <b>ConsoleCommandsParser</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency.</dd>
-
-  <dt>yamljs</dt>
-  <dd>Used for reading and parsing of YAML files. Will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency.</dd>
+  <dd>Used by <b>ImprovedGlob</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency</dd>
 
 </dl>

@@ -9,10 +9,10 @@ import {
   FileReadingFailedError,
   InvalidExternalDataError,
   RawObjectDataProcessor,
-  ArbitraryObject,
   isNotUndefined,
   isNull
 } from "@yamato-daiwa/es-extensions";
+import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
 import { isErrnoException } from "@yamato-daiwa/es-extensions-nodejs";
 import FileNotFoundError from "@UtilsIncubator/Logging/Errors/FileNotFoundError";
 import DesiredFileActuallyIsDirectoryError from "@UtilsIncubator/Logging/Errors/DesiredFileActuallyIsDirectoryError";
@@ -20,18 +20,18 @@ import DesiredFileActuallyIsDirectoryError from "@UtilsIncubator/Logging/Errors/
 class ObjectDataFilesProcessor {
 
   public static processFile<ValidData extends ArbitraryObject>(
-    parametersObject: {
+    namedParameters: {
       filePath: string;
       validDataSpecification: RawObjectDataProcessor.ObjectDataSpecification;
       schema?: ObjectDataFilesProcessor.SupportedSchemas;
     }
   ): ValidData {
 
-    const filePath: string = parametersObject.filePath;
+    const filePath: string = namedParameters.filePath;
     let dataSchema: ObjectDataFilesProcessor.SupportedSchemas;
 
-    if (isNotUndefined(parametersObject.schema)) {
-      dataSchema = parametersObject.schema;
+    if (isNotUndefined(namedParameters.schema)) {
+      dataSchema = namedParameters.schema;
     } else {
 
       const fileNameLastExtension: string | null = ImprovedPath.extractLastFilenameExtensionWithoutFirstDot(filePath);
@@ -39,14 +39,14 @@ class ObjectDataFilesProcessor {
       if (isNull(fileNameLastExtension)) {
         Logger.throwErrorAndLog({
           errorInstance: new InvalidParameterValueError({
-            parameterName: "parametersObject.filePath",
+            parameterName: "namedParameters.filePath",
             messageSpecificPart: "Unable to decide the data parsing algorithm because target file " +
-                `'${ parametersObject.filePath }' has no explicit filename extension. If it is intentional, ` +
-                "specify 'parametersObject.dataSchema' with desired element of 'ObjectDataFilesProcessor.SupportedSchemas'" +
+                `'${ namedParameters.filePath }' has no explicit filename extension. If it is intentional, ` +
+                "specify 'namedParameters.dataSchema' with desired element of 'ObjectDataFilesProcessor.SupportedSchemas'" +
                 "enumeration."
           }),
           title: InvalidParameterValueError.localization.defaultTitle,
-          occurrenceLocation: "ObjectDataFilesProcessor.processFile(parametersObject)"
+          occurrenceLocation: "ObjectDataFilesProcessor.processFile(namedParameters)"
         });
       }
 
@@ -68,14 +68,14 @@ class ObjectDataFilesProcessor {
 
           Logger.throwErrorAndLog({
             errorInstance: new InvalidParameterValueError({
-              parameterName: "parametersObject.filePath",
-              messageSpecificPart: `Target file '${parametersObject.filePath}' has unsupported filename extension ` +
-                  `'${fileNameLastExtension}'. If this file including the data of known for 'ObjectDataFilesProcessor' schema, ` +
-                  "specify 'parametersObject.dataSchema' with desired element of 'ObjectDataFilesProcessor.SupportedSchemas'" +
-                  "enumeration"
+              parameterName: "namedParameters.filePath",
+              messageSpecificPart: `Target file '${ namedParameters.filePath }' has unsupported filename extension ` +
+                  `'${ fileNameLastExtension }'. If this file including the data of known for 'ObjectDataFilesProcessor' ` +
+                  "schema, specify 'namedParameters.dataSchema' with desired element of " +
+                  "'ObjectDataFilesProcessor.SupportedSchemas' enumeration"
             }),
             title: InvalidParameterValueError.localization.defaultTitle,
-            occurrenceLocation: "ObjectDataFilesProcessor.processFile(parametersObject)"
+            occurrenceLocation: "ObjectDataFilesProcessor.processFile(namedParameters)"
           });
         }
       }
@@ -94,7 +94,7 @@ class ObjectDataFilesProcessor {
         Logger.throwErrorAndLog({
           errorInstance: new FileNotFoundError({ filePath }),
           title: FileNotFoundError.localization.defaultTitle,
-          occurrenceLocation: "ObjectDataFilesProcessor.processFile(parametersObject)",
+          occurrenceLocation: "ObjectDataFilesProcessor.processFile(namedParameters)",
           wrappableError: error
         });
       }
@@ -107,7 +107,7 @@ class ObjectDataFilesProcessor {
       Logger.throwErrorAndLog({
         errorInstance: new DesiredFileActuallyIsDirectoryError({ targetPath: filePath }),
         title: DesiredFileActuallyIsDirectoryError.localization.defaultTitle,
-        occurrenceLocation: "ObjectDataFilesProcessor.processFile(parametersObject)"
+        occurrenceLocation: "ObjectDataFilesProcessor.processFile(namedParameters)"
       });
     }
 
@@ -122,7 +122,7 @@ class ObjectDataFilesProcessor {
       Logger.throwErrorAndLog({
         errorInstance: new FileReadingFailedError({ filePath }),
         title: FileReadingFailedError.localization.defaultTitle,
-        occurrenceLocation: "ObjectDataFilesProcessor.processFile(parametersObject)"
+        occurrenceLocation: "ObjectDataFilesProcessor.processFile(namedParameters)"
       });
     }
 
@@ -148,23 +148,23 @@ class ObjectDataFilesProcessor {
       Logger.throwErrorAndLog({
         errorInstance: new InvalidExternalDataError({ mentionToExpectedData: filePath }),
         title: InvalidExternalDataError.localization.defaultTitle,
-        occurrenceLocation: "ObjectDataFilesProcessor.processFile(parametersObject)",
+        occurrenceLocation: "ObjectDataFilesProcessor.processFile(namedParameters)",
         wrappableError: error
       });
     }
 
 
     const processingResult: RawObjectDataProcessor.ProcessingResult<ValidData> =
-        RawObjectDataProcessor.process(parsedData, parametersObject.validDataSpecification);
+        RawObjectDataProcessor.process(parsedData, namedParameters.validDataSpecification);
 
     if (processingResult.rawDataIsInvalid) {
       Logger.throwErrorAndLog({
         errorInstance: new InvalidExternalDataError({
-          customMessage: `The contents of file '${filePath}' does not matching with valid data specification:\n` +
-              `${RawObjectDataProcessor.formatValidationErrorsList(processingResult.validationErrorsMessages)}`
+          customMessage: `The contents of file '${ filePath }' does not matching with valid data specification:\n` +
+              `${ RawObjectDataProcessor.formatValidationErrorsList(processingResult.validationErrorsMessages) }`
         }),
         title: InvalidExternalDataError.localization.defaultTitle,
-        occurrenceLocation: "ObjectDataFilesProcessor.processFile(parametersObject)"
+        occurrenceLocation: "ObjectDataFilesProcessor.processFile(namedParameters)"
       });
     }
 

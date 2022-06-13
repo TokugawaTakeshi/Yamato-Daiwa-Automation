@@ -13,6 +13,8 @@ export default class FontsProcessingSettingsRepresentative extends AssetsProcess
   FontsProcessingSettings__Normalized.Common, FontsProcessingSettings__Normalized.AssetsGroup
 > {
 
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Fonts";
+
   protected readonly assetsProcessingCommonSettings: FontsProcessingSettings__Normalized.Common;
   protected readonly actualAssetsGroupsSettings: Map<AssetsGroupID, FontsProcessingSettings__Normalized.AssetsGroup>;
 

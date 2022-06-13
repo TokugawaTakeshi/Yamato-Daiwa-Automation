@@ -27,6 +27,8 @@ export default abstract class AssetsProcessingSettingsRepresentative<
   SpecificAssetsGroupNormalizedSettings extends AssetsGroupSettingsGenericProperties
 > {
 
+  public abstract readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string;
+
   protected abstract assetsProcessingCommonSettings: SpecificAssetsProcessingCommonSettingsGenericProperties;
   protected abstract actualAssetsGroupsSettings: Map<
     ProjectBuildingConfig__Normalized.AssetsGroupID, SpecificAssetsGroupNormalizedSettings

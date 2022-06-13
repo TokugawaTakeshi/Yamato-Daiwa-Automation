@@ -13,6 +13,8 @@ export default class VideosProcessingSettingsRepresentative extends AssetsProces
   VideosProcessingSettings__Normalized.Common, VideosProcessingSettings__Normalized.AssetsGroup
 > {
 
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Videos";
+
   protected readonly assetsProcessingCommonSettings: VideosProcessingSettings__Normalized.Common;
   protected readonly actualAssetsGroupsSettings: Map<AssetsGroupID, VideosProcessingSettings__Normalized.AssetsGroup>;
 
