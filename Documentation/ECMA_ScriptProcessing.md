@@ -1,4 +1,4 @@
-# ECMAScript login processing
+# ECMAScript logic processing
 
 ## Schema
 
