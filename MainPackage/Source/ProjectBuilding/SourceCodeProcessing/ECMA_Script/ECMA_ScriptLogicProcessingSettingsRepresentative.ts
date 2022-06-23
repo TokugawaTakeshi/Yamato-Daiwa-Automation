@@ -18,7 +18,9 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
 > {
 
   public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string>;
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Script";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Scripts";
+  public readonly prefixOfAliasOfTopDirectoryOfEntryPointsGroup: string = "@";
 
   public readonly relevantEntryPointsGroupsSettings: Map<
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup

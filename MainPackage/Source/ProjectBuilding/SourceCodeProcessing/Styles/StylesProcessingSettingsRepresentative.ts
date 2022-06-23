@@ -25,7 +25,10 @@ class StylesProcessingSettingsRepresentative extends GulpStreamBasedSourceCodePr
 > {
 
   static #localization: StylesProcessingSettingsRepresentative.Localization = {
-    targetFilesKind__pluralForm: "stylesheets",
+    targetFilesType: {
+      singularForm: "stylesheet",
+      pluralForm: "stylesheets"
+    },
     errorsMessagesData: {
       unableToDecideMustFileBePrecessedByStylusPreProcessorBecauseFileNameExtensionIsMissing: {
         generateTechnicalDetails({ filePath }: { filePath: string; }): string {
@@ -53,9 +56,12 @@ class StylesProcessingSettingsRepresentative extends GulpStreamBasedSourceCodePr
   };
 
   public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string>;
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = StylesProcessingSettingsRepresentative.#localization.
+      targetFilesType.singularForm;
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = StylesProcessingSettingsRepresentative.#localization.
-      targetFilesKind__pluralForm;
+      targetFilesType.pluralForm;
   public readonly waitingForTheOtherFilesWillBeSavedPeriod__seconds: number;
+  public readonly prefixOfAliasOfTopDirectoryOfEntryPointsGroup: string = "@";
 
   public readonly sourceCodeLintingCommonSettings: StylesProcessingSettings__Normalized.Linting;
   public readonly sourceAndOutputFilesAbsolutePathsCorrespondenceMap: Map<string, string> = new Map<string, string>();
@@ -145,7 +151,10 @@ class StylesProcessingSettingsRepresentative extends GulpStreamBasedSourceCodePr
 namespace StylesProcessingSettingsRepresentative {
 
   export type Localization = {
-    targetFilesKind__pluralForm: string;
+    targetFilesType: {
+      singularForm: string;
+      pluralForm: string;
+    };
     errorsMessagesData: {
       unableToDecideMustFileBePrecessedByStylusPreProcessorBecauseFileNameExtensionIsMissing: {
         generateTechnicalDetails: (parametersObject: { filePath: string; }) => string;

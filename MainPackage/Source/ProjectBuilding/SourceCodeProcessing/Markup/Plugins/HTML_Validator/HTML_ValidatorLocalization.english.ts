@@ -47,7 +47,7 @@ const HTML_ValidatorLocalization__English: HTML_Validator.Localization = {
     grossViolation: "Gross violation",
     recommendationDisregard: "Recommendation disregard",
     other: "Other issue",
-    keyAndValueSeparator: ":"
+    keyAndValueSeparator: ": "
   },
 
   generateIssuesFoundErrorLog: (

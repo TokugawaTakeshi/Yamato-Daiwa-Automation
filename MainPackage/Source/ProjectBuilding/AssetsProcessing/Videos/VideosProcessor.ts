@@ -3,7 +3,7 @@ import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosP
 
 /* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import type VideosProcessingSettingsRepresentative from "@VideosProcessing/VideosProcessingSettingsRepresentative";
+import VideosProcessingSettingsRepresentative from "@VideosProcessing/VideosProcessingSettingsRepresentative";
 
 /* --- Tasks executor ----------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
@@ -105,11 +105,11 @@ class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
 
     /* [ Theory ] The value of 'path' could change during file processing. */
     fileInInitialState.sourceAbsolutePath = fileInInitialState.path;
-    fileInInitialState.outputDirectoryAbsolutePath = this.videosProcessingConfigRepresentative.
-    computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
-      targetSourceFileAbsolutePath: fileInInitialState.path,
-      respectiveAssetsGroupNormalizedSettings: normalizedVideosGroupSettingsActualForCurrentFile
-    });
+    fileInInitialState.outputDirectoryAbsolutePath = VideosProcessingSettingsRepresentative.
+        computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
+          targetSourceFileAbsolutePath: fileInInitialState.path,
+          respectiveAssetsGroupNormalizedSettings: normalizedVideosGroupSettingsActualForCurrentFile
+        });
 
     return fileInInitialState as VideosProcessor.VideoVinylFile;
   }

@@ -10,7 +10,7 @@ import type MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import AccessibilityCheckingService from "access-sniff";
 import NodeNotifier from "node-notifier";
-import extractStringifiedContentFromVinylFile from "@Utils/extractStringifiedContentFromVinylFile";
+import getExpectedToBeNonNullStringifiedContentOfVinylFile from "@Utils/getExpectedToBeNonNullStringifiedContentOfVinylFile";
 import isCompiledHTML_ContentEmpty from "@Utils/isCompiledHTML_ContentEmpty";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
@@ -35,7 +35,7 @@ class AccessibilityInspector {
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): void {
 
-    const extractedHTML_Code: string = extractStringifiedContentFromVinylFile(compiledHTML_File);
+    const extractedHTML_Code: string = getExpectedToBeNonNullStringifiedContentOfVinylFile(compiledHTML_File);
     const targetFileRelativePath: string = ImprovedPath.computeRelativePath({
       basePath: masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
       comparedPath: compiledHTML_File.path
@@ -56,7 +56,7 @@ class AccessibilityInspector {
      * 2. In `import AccessSniff, { reports } from 'access-sniff';`, the 'reports' are 'undefined',
      * 3. In 'then(function(report) {}}', the 'report' is an empty object. */
     AccessibilityCheckingService(
-      extractStringifiedContentFromVinylFile(compiledHTML_File),
+      getExpectedToBeNonNullStringifiedContentOfVinylFile(compiledHTML_File),
       {
         verbose: false,
         accessibilityLevel: compiledHTML_File.processingSettings.accessibilityInspection.standard

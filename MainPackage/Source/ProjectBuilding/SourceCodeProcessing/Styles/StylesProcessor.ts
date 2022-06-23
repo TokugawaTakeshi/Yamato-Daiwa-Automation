@@ -139,7 +139,7 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
 
     /* [ Theory ] The value of 'path' could change during file processing. */
     fileInInitialState.sourceAbsolutePath = ImprovedPath.replacePathSeparatorsToForwardSlashes(fileInInitialState.path);
-    fileInInitialState.outputDirectoryAbsolutePath = this.stylesProcessingConfigRepresentative.
+    fileInInitialState.outputDirectoryAbsolutePath = StylesProcessingSettingsRepresentative.
         computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
           fileInInitialState.path, normalizedStylesEntryPointsGroupSettingsActualForCurrentFile
         );

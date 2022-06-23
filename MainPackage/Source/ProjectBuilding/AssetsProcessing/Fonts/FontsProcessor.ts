@@ -3,7 +3,7 @@ import type FontsProcessingSettings__Normalized from "@FontsProcessing/FontsProc
 
 /* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import type FontsProcessingSettingsRepresentative from "@FontsProcessing/FontsProcessingSettingsRepresentative";
+import FontsProcessingSettingsRepresentative from "@FontsProcessing/FontsProcessingSettingsRepresentative";
 
 /* --- Tasks executor ----------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
@@ -103,7 +103,7 @@ class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
 
     /* [ Theory ] The value of 'path' could change during file processing. */
     fileInInitialState.sourceAbsolutePath = fileInInitialState.path;
-    fileInInitialState.outputDirectoryAbsolutePath = this.fontsProcessorConfigRepresentative.
+    fileInInitialState.outputDirectoryAbsolutePath = FontsProcessingSettingsRepresentative.
         computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
           targetSourceFileAbsolutePath: fileInInitialState.path,
           respectiveAssetsGroupNormalizedSettings: normalizedFontsGroupSettingsActualForCurrentFile

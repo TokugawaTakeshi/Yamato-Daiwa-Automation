@@ -13,6 +13,7 @@ export default class ImagesProcessingSettingsRepresentative extends AssetsProces
   ImagesProcessingSettings__Normalized.Common, ImagesProcessingSettings__Normalized.AssetsGroup
 > {
 
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Image";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Images";
 
   protected readonly assetsProcessingCommonSettings: ImagesProcessingSettings__Normalized.Common;

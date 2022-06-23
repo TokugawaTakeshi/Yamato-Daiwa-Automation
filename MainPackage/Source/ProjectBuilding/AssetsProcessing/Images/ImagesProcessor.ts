@@ -3,7 +3,7 @@ import type ImagesProcessingSettings__Normalized from "@ImagesProcessing/ImagesP
 
 /* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import type ImagesProcessingSettingsRepresentative from "@ImagesProcessing/ImagesProcessingSettingsRepresentative";
+import ImagesProcessingSettingsRepresentative from "@ImagesProcessing/ImagesProcessingSettingsRepresentative";
 
 /* --- Tasks executor ----------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
@@ -116,7 +116,7 @@ class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
 
     /* [ Theory ] The value of 'path' could change during file processing. */
     fileInInitialState.sourceAbsolutePath = fileInInitialState.path;
-    fileInInitialState.outputDirectoryAbsolutePath = this.imagesProcessorConfigRepresentative.
+    fileInInitialState.outputDirectoryAbsolutePath = ImagesProcessingSettingsRepresentative.
         computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
           targetSourceFileAbsolutePath: fileInInitialState.path,
           respectiveAssetsGroupNormalizedSettings: normalizedImagesGroupSettingsActualForCurrentFile

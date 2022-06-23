@@ -1,4 +1,4 @@
-# Yamato-Daiwa Automation 〔YDA〕
+# Yamato Daiwa Automation 〔YDA〕
 
 The project building tool with declarative YAML configuration based on Gulp and Webpack.
 Specializing on Pug, Stylus and TypeScript as source code languages; also works with images, fonts, videos and audios. 
@@ -124,6 +124,13 @@ npm i @yamato-daiwa/automation -D -E
   <dt>ts-loader</dt>
   <dd>Used to provide the integration of TypeScript and Webpack</dd>
 
+  <dt>vinyl</dt>
+  <dd>
+    Used to create new Gulp plugins. 
+    Although this package is being installed indirectly, the importing of this package without manual installing will cause 
+    "node/no-extraneous-import" ESLint issue and there is no reason to mute it.
+  </dd>
+
   <dt>vue-style-loader</dt>
   <dd>Used to provide the dynamical loading of CSS written in Vue Single File Components to HTML document</dd>
   
@@ -168,6 +175,9 @@ All **@types** are the TypeScript types definitions that required for normal tra
 <dl>
 
   <dt>glob</dt>
-  <dd>Used by <b>ImprovedGlob</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency</dd>
+  <dd>Used by <b>ImprovedGlob</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency </dd>
+
+  <dt>minimatch</dt>
+  <dd>used by <b>ImprovedGlob</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency </dd>
 
 </dl>

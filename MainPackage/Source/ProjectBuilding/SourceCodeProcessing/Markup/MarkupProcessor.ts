@@ -3,7 +3,7 @@ import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupP
 
 /* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import type MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
+import MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 
 /* --- Tasks executors ---------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedSourceCodeProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedSourceCodeProcessor";
@@ -17,8 +17,8 @@ import gulpIntercept from "gulp-intercept";
 import gulpHTML_Prettify from "gulp-html-prettify";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
-import AssetsPathsAliasesResolverForHTML from
-    "@MarkupProcessing/Plugins/AssetsPathsAliasesResolverForHTML/AssetsPathsAliasesResolverForHTML";
+import ResourceFilesPathsAliasesResolverForHTML from
+    "@MarkupProcessing/Plugins/AssetsPathsAliasesResolverForHTML/ResourceFilesPathsAliasesResolverForHTML";
 import HTML_Validator from
     "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
 import AccessibilityInspector from "./Plugins/AccessibilityInspector/AccessibilityInspector";
@@ -128,7 +128,7 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
 
     /* [ Theory ] The value of 'path' could change during file processing. */
     fileInInitialState.sourceAbsolutePath = ImprovedPath.replacePathSeparatorsToForwardSlashes(fileInInitialState.path);
-    fileInInitialState.outputDirectoryAbsolutePath = this.markupProcessingConfigRepresentative.
+    fileInInitialState.outputDirectoryAbsolutePath = MarkupProcessingSettingsRepresentative.
         computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
           fileInInitialState.path, markupEntryPointsGroupSettingsActualForCurrentFile
         );
@@ -142,7 +142,7 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
     const compiledHTML_File: MarkupProcessor.MarkupVinylFile = _compiledHTML_File as MarkupProcessor.MarkupVinylFile;
 
     compiledHTML_File.contents = Buffer.from(
-      AssetsPathsAliasesResolverForHTML.getHTML_CodeWithResolvedAliases(compiledHTML_File, this.masterConfigRepresentative)
+      ResourceFilesPathsAliasesResolverForHTML.resolvePathAliases(compiledHTML_File, this.masterConfigRepresentative)
     );
 
     return compiledHTML_File;

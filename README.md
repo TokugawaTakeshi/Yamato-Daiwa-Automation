@@ -1,4 +1,4 @@
-# Yamato-Daiwa Automation [ YDA ]
+# Yamato-Daiwa Automation 〔 YDA 〕
 
 The project building tool with declarative YAML configuration based on Gulp and Webpack.
 Specializing on Pug, Stylus and TypeScript as source code languages; also works with images, fonts, videos and audios.
@@ -84,6 +84,11 @@ npm i @yamato-daiwa/automation -D -E
     groups will be processed, but selective execution functionality allows to it selectively.
   </dd>
 </dl>
+
+
+## How-tos
+
+* [How to specify the paths of stylesheets, scripts, images, videos and audios from the markup?](Documentation/HowTos/ResourcesPathResolving.md)
 
 
 ## API

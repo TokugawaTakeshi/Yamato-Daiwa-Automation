@@ -7,7 +7,7 @@ import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/Pro
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import HTML_ValidationService from "html-validator";
 import type VinylFile from "vinyl";
-import extractStringifiedContentFromVinylFile from "@Utils/extractStringifiedContentFromVinylFile";
+import getExpectedToBeNonNullStringifiedContentOfVinylFile from "@Utils/getExpectedToBeNonNullStringifiedContentOfVinylFile";
 import isCompiledHTML_ContentEmpty from "@Utils/isCompiledHTML_ContentEmpty";
 import NodeNotifier from "node-notifier";
 
@@ -39,7 +39,7 @@ class HTML_Validator {
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): void {
 
-    const extractedHTML_Code: string = extractStringifiedContentFromVinylFile(compiledHTML_File);
+    const extractedHTML_Code: string = getExpectedToBeNonNullStringifiedContentOfVinylFile(compiledHTML_File);
     const targetFileRelativePath: string = ImprovedPath.computeRelativePath({
       basePath: masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
       comparedPath: compiledHTML_File.path

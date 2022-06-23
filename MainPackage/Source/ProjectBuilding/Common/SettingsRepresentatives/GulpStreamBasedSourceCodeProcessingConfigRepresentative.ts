@@ -36,6 +36,31 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
   public readonly onPartialFilesAndEntryPointsRelationsMapUpdatedEventSubscribers: Array<() => unknown> = [];
 
 
+  /* === Static helpers ============================================================================================= */
+  public static computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile<
+    EntryPointsGroupNormalizedSettings extends ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings
+  >(
+    targetSourceFileAbsolutePath: string,
+    respectiveEntryPointsGroupSettings: EntryPointsGroupNormalizedSettings
+  ): string {
+
+    if (respectiveEntryPointsGroupSettings.isSingeEntryPointGroup) {
+      return respectiveEntryPointsGroupSettings.outputFilesTopDirectoryAbsolutePath;
+    }
+
+
+    return ImprovedPath.buildAbsolutePath(
+      [
+        respectiveEntryPointsGroupSettings.outputFilesTopDirectoryAbsolutePath,
+        ImprovedPath.computeRelativePath({
+          basePath: respectiveEntryPointsGroupSettings.sourceFilesTopDirectoryAbsolutePath,
+          comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
+        })
+      ],
+      { forwardSlashOnlySeparators: true }
+    );
+  }
+
   public static setLocalization(newLocalization: GulpStreamBasedSourceCodeProcessingConfigRepresentative.Localization): void {
     this.#localization = newLocalization;
   }
@@ -103,31 +128,6 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
   }
 
 
-  /* eslint-disable-next-line class-methods-use-this --
-   * Intended to be inherited and used by inheritors. */
-  public computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
-    targetSourceFileAbsolutePath: string,
-    respectiveEntryPointsGroupSettings: EntryPointsGroupNormalizedSettings
-  ): string {
-
-    if (respectiveEntryPointsGroupSettings.isSingeEntryPointGroup) {
-      return respectiveEntryPointsGroupSettings.outputFilesTopDirectoryAbsolutePath;
-    }
-
-
-    return ImprovedPath.buildAbsolutePath(
-      [
-        respectiveEntryPointsGroupSettings.outputFilesTopDirectoryAbsolutePath,
-        ImprovedPath.computeRelativePath({
-          basePath: respectiveEntryPointsGroupSettings.sourceFilesTopDirectoryAbsolutePath,
-          comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
-        })
-      ],
-      { forwardSlashOnlySeparators: true }
-    );
-  }
-
-
   /* === Partial files and entry points relations map  =============================================================  */
   public initializeOrUpdatePartialFilesAndEntryPointsRelationsMap(): void {
 
@@ -152,7 +152,7 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
   }
 
 
-  /* === Localization  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=============================================================  */
+  /* === Localization =============================================================================================== */
   private static getDefaultLocalization(): GulpStreamBasedSourceCodeProcessingConfigRepresentative.Localization {
     return {
       generateEntryPointsGroupNormalizedSettingsNotFoundForSpecifiedFilePath: (

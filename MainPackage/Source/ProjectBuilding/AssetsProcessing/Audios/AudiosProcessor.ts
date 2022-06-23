@@ -3,7 +3,7 @@ import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosP
 
 /* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import type AudiosProcessingSettingsRepresentative from "@AudiosProcessing/AudiosProcessingSettingsRepresentative";
+import AudiosProcessingSettingsRepresentative from "@AudiosProcessing/AudiosProcessingSettingsRepresentative";
 
 /* --- Tasks executors ---------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
@@ -105,7 +105,7 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
     /* [ Theory ] The value of 'path' could change during file processing. */
     fileInInitialState.sourceAbsolutePath = fileInInitialState.path;
     fileInInitialState.outputDirectoryAbsolutePath =
-        this.audiosProcessingConfigRepresentative.computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
+        AudiosProcessingSettingsRepresentative.computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
           targetSourceFileAbsolutePath: fileInInitialState.path,
           respectiveAssetsGroupNormalizedSettings: normalizedAudiosGroupSettingsActualForCurrentFile
         });

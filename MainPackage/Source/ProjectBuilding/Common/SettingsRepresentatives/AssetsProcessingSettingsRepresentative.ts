@@ -35,9 +35,74 @@ export default abstract class AssetsProcessingSettingsRepresentative<
   >;
 
   public readonly sourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> = new Map<string, string>();
-  public readonly filePathAliasPrefix: string = "@";
+  public readonly prefixOfAliasOfTopDirectoryOfEntryPointsGroup: string = "@";
 
   protected masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+
+
+  public static computeActualOutputDirectoryAbsolutePathForTargetSourceFile(
+    {
+      targetSourceFileAbsolutePath,
+      respectiveAssetsGroupNormalizedSettings
+    }: {
+      targetSourceFileAbsolutePath: string;
+      respectiveAssetsGroupNormalizedSettings: AssetsGroupSettingsGenericProperties;
+    }
+  ): string {
+
+    let outputDirectoryAbsolutePathForCurrentSourceFile: string = ImprovedPath.buildAbsolutePath(
+      [
+        respectiveAssetsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
+        ImprovedPath.computeRelativePath(
+            {
+              basePath: respectiveAssetsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
+              comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
+            }
+        )
+      ],
+      { forwardSlashOnlySeparators: true }
+    );
+
+    if (isNonEmptyArray(respectiveAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichMustBeRemoved)) {
+      outputDirectoryAbsolutePathForCurrentSourceFile = ImprovedPath.removeSegmentsFromPath(
+        outputDirectoryAbsolutePathForCurrentSourceFile,
+        respectiveAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichMustBeRemoved
+      );
+    }
+
+
+    if (isNonEmptyArray(
+      respectiveAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved
+    )) {
+
+      const outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments: Array<string> =
+          ImprovedPath.splitPathToSegments(outputDirectoryAbsolutePathForCurrentSourceFile);
+
+      respectiveAssetsGroupNormalizedSettings.
+      outputPathTransformations.
+      segmentsWhichLastDuplicatesMustBeRemoved.
+      forEach((segmentWhichLastDuplicatesMustBeRemoved: string): void => {
+
+        const indexesOfDuplicates: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
+            outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
+            (outputDirectoryAbsolutePathSegment: string): boolean =>
+                outputDirectoryAbsolutePathSegment === segmentWhichLastDuplicatesMustBeRemoved
+        );
+
+        removeArrayElementsByIndexes({
+          targetArray: outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
+          indexes: indexesOfDuplicates[indexesOfDuplicates.length - 1],
+          mutably: true
+        });
+      });
+
+      outputDirectoryAbsolutePathForCurrentSourceFile = ImprovedPath.joinPathSegments(
+        ...outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments
+      );
+    }
+
+    return outputDirectoryAbsolutePathForCurrentSourceFile;
+  }
 
 
   public constructor(masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative) {
@@ -68,68 +133,6 @@ export default abstract class AssetsProcessingSettingsRepresentative<
     );
 
     return assetsSourceFilesAbsolutePaths;
-  }
-
-  public computeActualOutputDirectoryAbsolutePathForTargetSourceFile(
-    {
-      targetSourceFileAbsolutePath,
-      respectiveAssetsGroupNormalizedSettings
-    }: {
-      targetSourceFileAbsolutePath: string;
-      respectiveAssetsGroupNormalizedSettings: AssetsGroupSettingsGenericProperties;
-    }
-  ): string {
-
-    let outputDirectoryAbsolutePathForCurrentSourceFile: string = ImprovedPath.buildAbsolutePath(
-      [
-        respectiveAssetsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
-        ImprovedPath.computeRelativePath(
-          {
-            basePath: respectiveAssetsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
-            comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
-          }
-        )
-      ],
-      { forwardSlashOnlySeparators: true }
-    );
-
-    if (isNonEmptyArray(respectiveAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichMustBeRemoved)) {
-      outputDirectoryAbsolutePathForCurrentSourceFile = ImprovedPath.removeSegmentsFromPath(
-        outputDirectoryAbsolutePathForCurrentSourceFile,
-        respectiveAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichMustBeRemoved
-      );
-    }
-
-
-    if (isNonEmptyArray(
-      respectiveAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved
-    )) {
-
-      const outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments: Array<string> =
-          ImprovedPath.splitPathToSegments(outputDirectoryAbsolutePathForCurrentSourceFile);
-
-      respectiveAssetsGroupNormalizedSettings.
-          outputPathTransformations.
-          segmentsWhichLastDuplicatesMustBeRemoved.
-          forEach((segmentWhichLastDuplicatesMustBeRemoved: string): void => {
-            const indexesOfDuplicates: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
-                outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
-                (outputDirectoryAbsolutePathSegment: string): boolean =>
-                    outputDirectoryAbsolutePathSegment === segmentWhichLastDuplicatesMustBeRemoved
-            );
-            removeArrayElementsByIndexes({
-              targetArray: outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
-              indexes: indexesOfDuplicates[indexesOfDuplicates.length - 1],
-              mutably: true
-            });
-          });
-
-      outputDirectoryAbsolutePathForCurrentSourceFile = ImprovedPath.joinPathSegments(
-        ...outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments
-      );
-    }
-
-    return outputDirectoryAbsolutePathForCurrentSourceFile;
   }
 
   public getAssetsNormalizedSettingsActualForTargetSourceFile(
