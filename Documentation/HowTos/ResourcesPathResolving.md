@@ -4,15 +4,16 @@
 
 ### The problems of absolute path
 
-Consider below setup. The image files below **01-Source/Infrastructure/Elements/Client/SharedAssets/Images/Articles**
-will be copy below **02-DevelopmentBuild/StaticPreview** and **http://localhost:3000** will refer to this directory:  
+Consider below setup. According to it, the image files below **01-Source/Infrastructure/Elements/Client/SharedAssets/Images**
+will be copied below **02-DevelopmentBuild/StaticPreview/Images** and **http://localhost:3000** will refer to
+**02-DevelopmentBuild/StaticPreview** local directory:  
 
 ```yaml
 projectBuilding:
 
   entryPointsGroups:
 
-    Pages:
+    StaticPreview:
 
       entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath: 01-Source/Infrastructure/Elements/Client/StaticPreview
 
@@ -24,12 +25,12 @@ projectBuilding:
 
     assetsGroups:
 
-      Articles:
+      Shared:
 
-        sourceFilesTopDirectoryRelativePath: 01-Source/Infrastructure/Elements/Client/SharedAssets/Images/Articles
+        sourceFilesTopDirectoryRelativePath: 01-Source/Infrastructure/Elements/Client/SharedAssets/Images
         buildingModeDependent:
           DEVELOPMENT:
-            outputBaseDirectoryRelativePath: 02-DevelopmentBuild/StaticPreview
+            outputBaseDirectoryRelativePath: 02-DevelopmentBuild/StaticPreview/Images
             
   browserLiveReloading:
 
@@ -39,25 +40,84 @@ projectBuilding:
       customStartingFilenameWithExtension: StaticPreviewAnywherePage.html
 ```
 
-Now we can refer to the file **01-Source/Infrastructure/Elements/Client/SharedAssets/Images/Articles/Cats/Kitten.jpg**
-(will be output to **02-DevelopmentBuild/StaticPreview/Cats/Kitten.jpg**) as:
+Now we can refer to the file **01-Source/Infrastructure/Elements/Client/SharedAssets/Images/Cats/GrayKitten.jpg**
+(will be output to **02-DevelopmentBuild/StaticPreview/Images/Cats/Kitten.jpg**) by shortened absolute path:
 
 ```pug
-img(src="/Cats/Kitten.jpg")
+img(src="/Images/Cats/GrayKitter.jpg" alt="The gray kitten")
 ```
 
-What's wrong? First we need to compute in out head the destination of **Kitten.jpg**.
-But it will work while we are using the local development server.
-What if wee need to send the files for the check to customer or manager?
-If he opens file in **C:\Users/Takeshi Tokugawa/Downloads**, for example, the **Kitten.jpg** will not display,
-because **/Cats/Kitten.jpg** will be resolved as **C:/Cats/Kitten.jpg**.
+Basically everything is all right, but what's wrong? 
 
-Neither customers nor managers must to install the npm dependencies, start the project building etc. because they are
-not engineers. Open just 1 HTML file and can check everything - it is that what required, and shortened absolute paths
-does not fit to this approach.
+First we need to compute in our head the destination of **Kitten.jpg**.
+If the project building system is forces to do it, it is a bad project building system. 
+
+Second, the image will display as long as the HTML and image file are being hosted from some server - local development
+server or actual one - the **/Images/Cats/Kitten.jpg** will be resolved to **http://localhost:3000/Images/Cats/Kitten.jpg** .
+But what if wee need to send the files for the check to our customer or manager?
+
+If he opens file in **C:\Users\GretCustomer\Downloads** for example, the **Kitten.jpg** will not be displayed,
+because **/Cats/Kitten.jpg** will be resolved as **C:\Images\Cats\Kitten.jpg**. 
+And what you will say to made angry customer?
+"Oh, it is because you have not the local server! You need to install the Node.js in your local computer, then I'll
+send you the source code. Next, you need to install all dependencies and run the local server via console command!".
+
+Neither customers nor managers must understand in Node.js, source code management, dependencies management, 
+project building etc. All that they want is open - and everything works. Well, the shared development servers are
+one of the options, but the sharing of HTML/CSS files is completely valid option, but this method is not compatible
+with absolute paths to resources.
 
 
 ### The problems of relative path
+
+Assume that besides shared image we have the images associated with the components:  
+
+```yaml
+projectBuilding:
+
+  # ...
+
+  imagesProcessing:
+
+    assetsGroups:
+
+      Shared:
+
+        # ...
+            
+      Components:
+
+        sourceFilesTopDirectoryRelativePath: 01-Source/Infrastructure/Elements/Client/Components
+        buildingModeDependent:
+          DEVELOPMENT:
+            outputBaseDirectoryRelativePath: 02-DevelopmentBuild/StaticPreview/Images/Components
+          
+            
+  # ...
+```
+
+Now, for example, in the **Header** component, we can refer to 
+**01-Source/Infrastructure/Elements/Client/Components/SharedSingletons/Header/Logo.png** as:
+
+```pug
+header.Header
+  img(src="Images/Components/SharedSingletons/Header/Logo.png" alt="The logo of the service")
+```
+
+What is wrong in this time?
+
+First, the image will be displayed if and only if the HTML file including above header component is directly 
+below **02-DevelopmentBuild/StaticPreview** (for example, **02-DevelopmentBuild/StaticPreview/TopPage.html**).
+But what if it is deeper, for example, **02-DevelopmentBuild/StaticPreview/Services/Restoration.html**?
+The **Images/Components/SharedSingletons/Header/Logo.png** will be resolved to
+**02-DevelopmentBuild/StaticPreview/Services/Images/Components/SharedSingletons/Header/Logo.png** that is wrong path.
+
+The header as any other reusable component should be in the separate file 
+(**01-Source/Infrastructure/Elements/Client/Components/SharedSingletons/Header/Header.pug**, for example).
+Specifying the path **Images/Components/SharedSingletons/Header/Logo.png** we are assuming that **Images** folder
+must be in the same directory as output HTML files, including the compiled HTML code of the header component.
+We can't know it advance, according to components development concept, we don't know at advance where the component
+will be used.
 
 
 ## YDA solution

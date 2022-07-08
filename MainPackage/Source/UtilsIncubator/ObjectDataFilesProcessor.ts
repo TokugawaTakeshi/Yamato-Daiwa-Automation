@@ -17,6 +17,7 @@ import { isErrnoException } from "@yamato-daiwa/es-extensions-nodejs";
 import FileNotFoundError from "@UtilsIncubator/Logging/Errors/FileNotFoundError";
 import DesiredFileActuallyIsDirectoryError from "@UtilsIncubator/Logging/Errors/DesiredFileActuallyIsDirectoryError";
 
+
 class ObjectDataFilesProcessor {
 
   public static processFile<ValidData extends ArbitraryObject>(
