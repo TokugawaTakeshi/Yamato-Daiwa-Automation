@@ -122,8 +122,9 @@ will be used.
 
 ## YDA solution
 
-**YDA** works with named groups of resources. Each group has either it's top directory or consists from single file
-(stylesheets and scripts case only). In the below example, we have group **StaticPreview** represented by single stylesheet
+**YDA** works with **named groups of resources**. Each group has either it's top directory or consists from single file
+(possible for stylesheets and scripts case only). 
+In the below example, we have group **StaticPreview** represented by single stylesheet
 **01-Source/Infrastructure/Elements/Client/StaticPreview/AllStyles.styl** and group **Articles** of images:
 
 ```yaml
@@ -154,25 +155,42 @@ projectBuilding:
             outputBaseDirectoryRelativePath: 03-ProductionBuild/public
 ```
 
-For each group, the reference **@<Group name>** being generated. For the above example, references **@StaticPreview** and
-**@Articles** will be generated.
+For each group, the reference **@〈Group name〉** are being generated. 
+For the above example, references **@StaticPreview** and **@Articles** will be generated.
 
 **@StaticPreview** refers to the stylesheet **01-Source/Infrastructure/Elements/Client/StaticPreview/AllStyles.styl**
-because there are no other stylesheets in this group. So it could be accessed as
+because there are no other stylesheets in this group. So it could be accessed as:
 
 ```pug
-link(href="StaticPreview" rel="stylesheet")
+link(href="@StaticPreview" rel="stylesheet")
 ```
 
-**@Articles** refers to **01-Source/Infrastructure/Elements/Client/SharedAssets/Images/Articles**, it's 
-top directory. So, for example, the image **01-Source/Infrastructure/Elements/Client/SharedAssets/Images/Articles/Animals/Cat.jpg**
+**@Articles** refers to **01-Source/Infrastructure/Elements/Client/SharedAssets/Images/Articles**. 
+So, for example, the image **01-Source/Infrastructure/Elements/Client/SharedAssets/Images/Articles/Animals/Cat.jpg**
 could be accessed as:
 
 ```pug
 img(src="@Articles/Animals/Cat.jpg")
 ```
 
-When you are defining the assets group ID ("Pages" and "Components" in below example), the source group directory alias
-will be automatically defined ("@Pages" and "@Components" for the below example):
 
 ### Into what these aliased paths will be resolved?
+
+* In the development building mode - to relative paths, to be accessible during viewing of the HTML files without 
+  development servers.
+* It other building modes - to abbreviated absolute paths, herewith 
+  **commonSettings.publicDirectoriesRelativePaths.〈PROJECT_BUILDING_MODE〉** must be defined with path relative to project
+  root, for example:
+
+```yaml
+projectBuilding:
+
+  commonSettings:
+
+    publicDirectoriesRelativePaths:
+
+      PRODUCTION: 03-ProductionBuild/public
+```
+
+If no public path for current project building mode has been specified, relative paths will be computed instead herewith
+warning message has been output.
