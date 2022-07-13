@@ -104,11 +104,11 @@ export default class ECMA_ScriptLogicProcessor extends TaskExecutor {
           } else {
 
             addMultiplePairsToMap(
-                dataHoldingSelfInstance.ECMA_ScriptLogicProcessingConfigRepresentative.
-                    entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-                ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator.generate(
-                    dataHoldingSelfInstance.ECMA_ScriptLogicProcessingConfigRepresentative
-                )
+              dataHoldingSelfInstance.ECMA_ScriptLogicProcessingConfigRepresentative.
+                  entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+              ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator.generate(
+                  dataHoldingSelfInstance.ECMA_ScriptLogicProcessingConfigRepresentative
+              )
             );
 
             callback();

@@ -94,9 +94,14 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
       correspondingOutputFileAbsolutePath = targetOutputFileSearchResults[0];
 
     } else {
+
       correspondingOutputFileAbsolutePath = ImprovedPath.buildAbsolutePath(
         [
           entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
+          ImprovedPath.computeRelativePath({
+            comparedPath: ImprovedPath.extractDirectoryFromFilePath(sourceFileAbsolutePath),
+            basePath: entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
+          }),
           `${ ImprovedPath.extractFileNameWithoutExtensionFromPath(sourceFileAbsolutePath) }.js`
         ],
         { forwardSlashOnlySeparators: true }
