@@ -119,17 +119,12 @@ class PartialsFilesMapper {
           `${ mappingTimeMeasuringStopwatch.stop().seconds } seconds elapsed.`
     });
 
-    /* If (masterConfigRepresentative.mustDebugEntryPointsAndPartialFiles) {
-         PartialsFilesMapper.dumpIncludedFilesAndEntryPointsAccordanceMap(
-           partialFilesAndParentEntryPointsRelationsMap,
-           masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
-         );
-       } */
-
-    PartialsFilesMapper.dumpIncludedFilesAndEntryPointsAccordanceMap(
-      partialFilesAndParentEntryPointsRelationsMap,
-      masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
-    );
+    if (masterConfigRepresentative.mustDebugEntryPointsAndPartialFiles) {
+       PartialsFilesMapper.dumpIncludedFilesAndEntryPointsAccordanceMap(
+         partialFilesAndParentEntryPointsRelationsMap,
+         masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
+       );
+     }
 
     return partialFilesAndParentEntryPointsRelationsMap;
   }

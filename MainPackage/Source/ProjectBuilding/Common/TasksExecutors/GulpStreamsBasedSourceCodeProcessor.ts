@@ -64,12 +64,12 @@ export default abstract class GulpStreamsBasedSourceCodeProcessor<
         ...this.associatedSourceCodeProcessingSettingsRepresentative.
             relevantEntryPointsSourceDirectoriesAbsolutePaths.
             map(
-                (entryPointsSourceFilesDirectoryAbsolutePath: string): string =>
-                    ImprovedGlob.buildAllFilesInCurrentDirectoryButNotBelowGlobSelector({
-                      basicDirectoryPath: entryPointsSourceFilesDirectoryAbsolutePath,
-                      fileNamesExtensions: this.associatedSourceCodeProcessingSettingsRepresentative.
-                          supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots
-                    })
+              (entryPointsSourceFilesDirectoryAbsolutePath: string): string =>
+                  ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
+                    basicDirectoryPath: entryPointsSourceFilesDirectoryAbsolutePath,
+                    fileNamesExtensions: this.associatedSourceCodeProcessingSettingsRepresentative.
+                        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots
+                  })
             )
     );
   }
