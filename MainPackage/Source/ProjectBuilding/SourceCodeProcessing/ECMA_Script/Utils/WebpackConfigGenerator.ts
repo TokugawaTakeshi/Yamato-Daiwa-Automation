@@ -369,6 +369,7 @@ export default class WebpackConfigGenerator {
 
         new ES_LintWebpackPlugin({
           extensions: [ "js", "ts", "vue" ],
+          failOnError: this.masterConfigRepresentative.isProductionBuildingMode,
           failOnWarning: this.masterConfigRepresentative.isProductionBuildingMode
         })
       ],

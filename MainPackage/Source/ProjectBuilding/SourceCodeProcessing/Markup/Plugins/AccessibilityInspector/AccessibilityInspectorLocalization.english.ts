@@ -27,7 +27,7 @@ const AccessibilityInspectorLocalization__English: AccessibilityInspector.Locali
   generateInspectionFinishedWithNoIssuesFoundSuccessLog: (
     namedParameters: AccessibilityInspector.Localization.InspectionFinishedWithNoIssuesFoundSuccessLog.NamedParameters
   ): SuccessLog => ({
-    title: "HTML validation finished",
+    title: "Accessibility inspection finished",
     description: `File '${ namedParameters.targetFileRelativePath }' is has not the accessibility issues.\n` +
         `${ namedParameters.secondsElapsed } seconds elapsed.`
   }),
