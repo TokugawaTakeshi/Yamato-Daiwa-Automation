@@ -329,8 +329,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
                   ]: {
                     newName: "outputBaseDirectoryRelativePath",
                     type: String,
-                    required: true,
-                    minimalCharactersCount: 1
+                    required: true
                   },
 
                   [ECMA_ScriptProcessingLocalization.entryPointsGroups.buildingModeDependent.revisioning.KEY]: {

@@ -247,8 +247,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
                   [markupProcessingLocalization.entryPointsGroups.buildingModeDependent.outputBaseDirectoryRelativePath.KEY]: {
                     newName: "outputBaseDirectoryRelativePath",
                     type: String,
-                    required: true,
-                    minimalCharactersCount: 1
+                    required: true
                   }
                 }
               }

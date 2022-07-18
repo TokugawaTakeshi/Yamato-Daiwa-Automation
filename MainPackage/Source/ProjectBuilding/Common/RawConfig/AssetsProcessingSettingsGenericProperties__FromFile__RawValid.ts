@@ -127,8 +127,7 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
                   ]: {
                     newName: "outputBaseDirectoryRelativePath",
                     type: String,
-                    required: true,
-                    minimalCharactersCount: 1
+                    required: true
                   },
 
                   [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.buildingModeDependent.revisioning.KEY]: {

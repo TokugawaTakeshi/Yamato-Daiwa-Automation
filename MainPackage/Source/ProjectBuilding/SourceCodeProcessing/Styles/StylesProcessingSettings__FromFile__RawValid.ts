@@ -206,8 +206,7 @@ namespace StylesProcessingSettings__FromFile__RawValid {
                   [stylesProcessingLocalization.entryPointsGroups.buildingModeDependent.outputBaseDirectoryRelativePath.KEY]: {
                     newName: "outputBaseDirectoryRelativePath",
                     type: String,
-                    required: true,
-                    minimalCharactersCount: 1
+                    required: true
                   },
 
                   [stylesProcessingLocalization.entryPointsGroups.buildingModeDependent.revisioning.KEY]: {
