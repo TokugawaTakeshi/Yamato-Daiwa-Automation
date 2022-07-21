@@ -22,7 +22,7 @@ export default abstract class EntryPoint {
 
   public static interpretAndExecuteConsoleCommand(rawConsoleCommand: Array<string>): void {
 
-    const parsedCommand: ConsoleCommandsParser.
+    const parsedConsoleCommand: ConsoleCommandsParser.
         ParsedCommand<ApplicationConsoleLineInterface.SupportedCommandsAndParametersCombinations> =
             ConsoleCommandsParser.parse(rawConsoleCommand, ApplicationConsoleLineInterface.specification);
 
@@ -31,7 +31,7 @@ export default abstract class EntryPoint {
     }
 
 
-    switch (parsedCommand.phrase) {
+    switch (parsedConsoleCommand.phrase) {
 
       case ApplicationConsoleLineInterface.CommandPhrases.buildProject: {
 
@@ -61,8 +61,8 @@ export default abstract class EntryPoint {
         ProjectBuilder.buildProject({
           consumingProjectRootDirectoryAbsolutePath,
           projectBuildingConfig__fromConsole: {
-            projectBuildingMode: parsedCommand.projectBuildingMode,
-            selectiveExecutionID: parsedCommand.selectiveExecutionID
+            projectBuildingMode: parsedConsoleCommand.projectBuildingMode,
+            selectiveExecutionID: parsedConsoleCommand.selectiveExecutionID
           },
           rawConfigFromFile
         });

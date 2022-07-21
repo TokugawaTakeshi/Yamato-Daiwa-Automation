@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",
@@ -99,5 +99,14 @@
     "Incremental development build": "webpack --mode development",
     "Production build": "webpack --mode production",
     "Lint": "eslint Source"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation"
+  },
+  "bugs": {
+    "url": "https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/issues",
+    "email": "tokugawa.takesi@gmail.com"
   }
 }

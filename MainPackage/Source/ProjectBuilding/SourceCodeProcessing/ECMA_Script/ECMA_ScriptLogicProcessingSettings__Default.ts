@@ -35,5 +35,15 @@ export default {
   linting: {
     mustExecute: false,
     isDisabledForEntryPointGroups: false
+  },
+
+  distributing: {
+    exposingOfExportsFromEntryPoints: {
+      mustExpose: false
+    },
+    typeScriptTypesDeclarations: {
+      mustGenerate: false,
+      fileNameWithoutExtension: "index.d.ts"
+    }
   }
 };

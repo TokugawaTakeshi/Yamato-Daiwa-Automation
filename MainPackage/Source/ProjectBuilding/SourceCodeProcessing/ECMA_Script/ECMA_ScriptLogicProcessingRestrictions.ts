@@ -6,7 +6,8 @@ namespace ECMA_ScriptLogicProcessingRestrictions {
   export enum SupportedECMA_ScriptRuntimesTypes {
     browser = "BROWSER",
     webWorker = "WEB_WORKER",
-    nodeJS = "NODEJS"
+    nodeJS = "NODEJS",
+    pug = "PUG"
   }
 }
 

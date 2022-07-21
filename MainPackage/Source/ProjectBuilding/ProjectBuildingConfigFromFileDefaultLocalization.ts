@@ -177,6 +177,20 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
           disable: { KEY: "disable" }
         },
 
+        distributing: {
+          KEY: "distributing",
+          exposingOfExportsFromEntryPoints: {
+            KEY: "exposingOfExportsFromEntryPoints",
+            mustExpose: { KEY: "mustExpose" },
+            namespace: { KEY: "namespace" }
+          },
+          typeScriptTypesDeclarations: {
+            KEY: "typeScriptTypesDeclarations",
+            mustGenerate: { KEY: "mustGenerate" },
+            fileNameWithoutExtension: { KEY: "outputRelativePath" }
+          }
+        },
+
         buildingModeDependent: {
           KEY: "buildingModeDependent",
           outputBaseDirectoryRelativePath: { KEY: "outputBaseDirectoryRelativePath" },

@@ -117,6 +117,9 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
     entryPointsGroupSettings__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup
   ): ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup {
 
+    const distributingSettings__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup
+        .Distributing | undefined = entryPointsGroupSettings__rawValid.distributing;
+
     return {
 
       ...entryPointsGroupGenericSettings__normalized,
@@ -146,6 +149,12 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
                   minor: entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.minor
                 } : null
               }
+            };
+          }
+
+          case SupportedECMA_ScriptRuntimesTypes.pug: {
+            return {
+              type: SupportedECMA_ScriptRuntimesTypes.pug
             };
           }
         }
@@ -192,7 +201,23 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
             entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
                 revisioning?.contentHashPostfixSeparator ??
             ECMA_ScriptLogicProcessingSettings__Default.revisioning.contentHashPostfixSeparator
-      }
+      },
+
+      ...isNotUndefined(distributingSettings__rawValid) ? {
+        distributing: {
+          exposingOfExportsFromEntryPoints: {
+            mustExpose: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.mustExpose ??
+                ECMA_ScriptLogicProcessingSettings__Default.distributing.exposingOfExportsFromEntryPoints.mustExpose,
+            namespace: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.namespace
+          },
+          typeScriptTypesDeclarations: {
+            mustGenerate: distributingSettings__rawValid.typeScriptTypesDeclarations?.mustGenerate ??
+                ECMA_ScriptLogicProcessingSettings__Default.distributing.typeScriptTypesDeclarations.mustGenerate,
+            fileNameWithoutExtension: distributingSettings__rawValid.typeScriptTypesDeclarations?.fileNameWithoutExtension ??
+                ECMA_ScriptLogicProcessingSettings__Default.distributing.typeScriptTypesDeclarations.fileNameWithoutExtension
+          }
+        }
+      } : null
     };
   }
 }

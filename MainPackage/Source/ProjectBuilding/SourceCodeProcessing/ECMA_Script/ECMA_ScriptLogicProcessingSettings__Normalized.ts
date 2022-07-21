@@ -40,11 +40,12 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
         readonly associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer?: string;
         readonly typeScriptConfigurationFileAbsolutePath?: string;
         readonly revisioning: ProjectBuildingConfig__Normalized.Revisioning;
+        readonly distributing?: EntryPointsGroup.Distributing;
       };
 
   export namespace EntryPointsGroup {
 
-    export type Runtime = Runtime.Browser | Runtime.WebWorker | Runtime.NodeJS;
+    export type Runtime = Runtime.Browser | Runtime.WebWorker | Runtime.NodeJS | Runtime.Pug;
 
     export namespace Runtime {
 
@@ -62,6 +63,28 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
           readonly major: number;
           readonly minor?: number;
         };
+      };
+
+      export type Pug = {
+        readonly type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.pug;
+      };
+    }
+
+    export type Distributing = {
+      readonly exposingOfExportsFromEntryPoints: Distributing.ExposingOfExportsFromEntryPoints;
+      readonly typeScriptTypesDeclarations: Distributing.TypeScriptTypesDeclarations;
+    };
+
+    export namespace Distributing {
+
+      export type ExposingOfExportsFromEntryPoints = {
+        readonly mustExpose: boolean;
+        readonly namespace?: string;
+      };
+
+      export type TypeScriptTypesDeclarations = {
+        readonly mustGenerate: boolean;
+        readonly fileNameWithoutExtension: string;
       };
     }
   }

@@ -2,7 +2,7 @@
 import ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRestrictions";
 import SupportedECMA_ScriptRuntimesTypes = ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes;
 
-/* --- Default settings ----------------------------------------------------------------------------------------------- */
+/* --- Default settings --------------------------------------------------------------------------------------------- */
 import ConsumingProjectPreDefinedBuildingModes from
     "@ProjectBuilding/Common/Defaults/ConsumingProjectPreDefinedBuildingModes";
 import type ConsumingProjectPreDefinedBuildingModes__Localized from
@@ -52,6 +52,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
         readonly associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer?: string;
         readonly typeScriptConfigurationFileRelativePath?: string;
         readonly linting?: EntryPointsGroup.Linting;
+        readonly distributing?: EntryPointsGroup.Distributing;
         readonly buildingModeDependent: {
           [projectBuildingMode: string]: EntryPointsGroup.EntryPointsGroupBuildingModeDependentSettings;
         };
@@ -59,15 +60,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
   export namespace EntryPointsGroup {
 
-    /* eslint-disable-next-line @typescript-eslint/no-shadow --
-     * The declaring of type/interface inside namespace with same name as defined in upper scope
-     * is completely valid TypeScript and not desired to be warned by @typescript-eslint. */
-    export type Linting = {
-      readonly disable?: boolean;
-    };
-
-
-    export type Runtime = Runtime.Browser | Runtime.WebWorker | Runtime.NodeJS;
+    export type Runtime = Runtime.Browser | Runtime.WebWorker | Runtime.NodeJS | Runtime.Pug;
 
     export namespace Runtime {
 
@@ -85,6 +78,36 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
           readonly major: number;
           readonly minor?: number;
         };
+      };
+
+      export type Pug = {
+        readonly type: SupportedECMA_ScriptRuntimesTypes.pug;
+      };
+    }
+
+    /* eslint-disable-next-line @typescript-eslint/no-shadow --
+     * The declaring of type/interface inside namespace with same name as defined in upper scope
+     * is completely valid TypeScript and not desired to be warned by @typescript-eslint. */
+    export type Linting = {
+      readonly disable?: boolean;
+    };
+
+
+    export type Distributing = {
+      readonly exposingOfExportsFromEntryPoints?: Distributing.ExposingOfExportsFromEntryPoints;
+      readonly typeScriptTypesDeclarations?: Distributing.TypeScriptTypesDeclarations;
+    };
+
+    export namespace Distributing {
+
+      export type ExposingOfExportsFromEntryPoints = {
+        readonly mustExpose: boolean;
+        readonly namespace?: string;
+      };
+
+      export type TypeScriptTypesDeclarations = {
+        readonly mustGenerate?: boolean;
+        readonly fileNameWithoutExtension?: string;
       };
     }
 
@@ -133,6 +156,20 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
       readonly linting: {
         readonly KEY: string;
         readonly disable: { KEY: string; };
+      };
+
+      readonly distributing: {
+        readonly KEY: string;
+        readonly exposingOfExportsFromEntryPoints: {
+          readonly KEY: string;
+          readonly mustExpose: { readonly KEY: string; };
+          readonly namespace: { readonly KEY: string; };
+        };
+        readonly typeScriptTypesDeclarations: {
+          readonly KEY: string;
+          readonly mustGenerate: { readonly KEY: string; };
+          readonly fileNameWithoutExtension: { readonly KEY: string; };
+        };
       };
 
       readonly buildingModeDependent: {
@@ -296,6 +333,59 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
               }
             },
 
+            [ECMA_ScriptProcessingLocalization.entryPointsGroups.distributing.KEY]: {
+              newName: "distributing",
+              type: Object,
+              required: false,
+              properties: {
+                [ECMA_ScriptProcessingLocalization.entryPointsGroups.distributing.exposingOfExportsFromEntryPoints.KEY]: {
+                  newName: "exposingOfExportsFromEntryPoints",
+                  type: Object,
+                  required: false,
+                  properties: {
+                    [
+                      ECMA_ScriptProcessingLocalization.entryPointsGroups.distributing.
+                          exposingOfExportsFromEntryPoints.mustExpose.KEY
+                    ]: {
+                      newName: "mustExpose",
+                      type: Boolean,
+                      required: true
+                    },
+                    [
+                      ECMA_ScriptProcessingLocalization.entryPointsGroups.distributing.
+                          exposingOfExportsFromEntryPoints.namespace.KEY
+                    ]: {
+                      newName: "namespace",
+                      type: String,
+                      required: false
+                    }
+                  }
+                },
+                [ECMA_ScriptProcessingLocalization.entryPointsGroups.distributing.typeScriptTypesDeclarations.KEY]: {
+                  newName: "typeScriptTypesDeclarations",
+                  type: Object,
+                  required: false,
+                  properties: {
+                    [
+                      ECMA_ScriptProcessingLocalization.entryPointsGroups.distributing.
+                          typeScriptTypesDeclarations.mustGenerate.KEY
+                    ]: {
+                      newName: "mustGenerate",
+                      type: Boolean,
+                      required: false
+                    },
+                    [
+                      ECMA_ScriptProcessingLocalization.entryPointsGroups.distributing.
+                          typeScriptTypesDeclarations.fileNameWithoutExtension.KEY
+                    ]: {
+                      newName: "fileNameWithoutExtension",
+                      type: String,
+                      required: false
+                    }
+                  }
+                }
+              }
+            },
 
             [ECMA_ScriptProcessingLocalization.entryPointsGroups.buildingModeDependent.KEY]: {
 

@@ -91,7 +91,7 @@ export default class WebpackConfigGenerator {
     const sourceFilesTopDirectoryAbsolutePath: string = entryPointsGroupSettings.sourceFilesTopDirectoryAbsolutePath;
 
     /** @see https://webpack.js.org/configuration/entry-context/#entry */
-    const webpackEntryPointsDefinition: Webpack.Entry | null =
+    const webpackEntryPointsDefinition: Webpack.EntryObject | null =
         WebpackConfigGenerator.getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
           {
             webpackContext: sourceFilesTopDirectoryAbsolutePath,
@@ -111,6 +111,18 @@ export default class WebpackConfigGenerator {
 
     const webpackPublicPath: string | undefined = this.computePublicPathIfPossible(entryPointsGroupSettings);
 
+    const willBrowserJS_LibraryBeBuilt: boolean =
+        entryPointsGroupSettings.distributing?.exposingOfExportsFromEntryPoints.mustExpose === true &&
+        entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.browser;
+
+    const willNodeJS_LibraryBeBuilt: boolean =
+        entryPointsGroupSettings.distributing?.exposingOfExportsFromEntryPoints.mustExpose === true &&
+        entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS;
+
+    const willPugLibraryBeBuilt: boolean =
+        entryPointsGroupSettings.distributing?.exposingOfExportsFromEntryPoints.mustExpose === true &&
+        entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.pug;
+
 
     return {
 
@@ -125,7 +137,8 @@ export default class WebpackConfigGenerator {
 
         switch (entryPointsGroupSettings.targetRuntime.type) {
 
-          case SupportedECMA_ScriptRuntimesTypes.browser: {
+          case SupportedECMA_ScriptRuntimesTypes.browser:
+          case SupportedECMA_ScriptRuntimesTypes.pug: {
             return "web";
           }
 
@@ -161,14 +174,33 @@ export default class WebpackConfigGenerator {
 
         chunkFilename: entryPointsGroupSettings.revisioning.mustExecute ?
             `[id]${ entryPointsGroupSettings.revisioning.contentHashPostfixSeparator }[contenthash].js` :
-            "[id][contenthash].js"
+            "[id][contenthash].js",
 
-        /* [ Reference ] https://webpack.js.org/guides/author-libraries/ */
-        /* ...isNotUndefined(entryPointsGroupSettings.entryPointsImportsSharing) ? {
-             name: entryPointsGroupSettings.entryPointsImportsSharing.namespace,
-             ...entryPointsGroupSettings.entryPointsImportsSharing.crossEnvironmental ? { type: "umd" } : null
-           } : {} */
+        ...entryPointsGroupSettings.distributing?.exposingOfExportsFromEntryPoints.mustExpose === true ? {
+          library: {
+
+            type: ((): string => {
+
+              switch (entryPointsGroupSettings.targetRuntime.type) {
+
+                case SupportedECMA_ScriptRuntimesTypes.browser: return "module";
+                case SupportedECMA_ScriptRuntimesTypes.webWorker: return "module";
+                case SupportedECMA_ScriptRuntimesTypes.nodeJS: return "commonjs";
+                case SupportedECMA_ScriptRuntimesTypes.pug: return "umd";
+
+              }
+            })(),
+
+            ...willNodeJS_LibraryBeBuilt || willPugLibraryBeBuilt ? {
+              name: entryPointsGroupSettings.distributing.exposingOfExportsFromEntryPoints.namespace
+            } : null
+          }
+        } : null,
+
+        ...willPugLibraryBeBuilt ? { globalObject: "globalThis" } : null
       },
+
+      ...willBrowserJS_LibraryBeBuilt ? { experiments: { outputModule: true } } : null,
 
       mode: this.masterConfigRepresentative.isDevelopmentBuildingMode ? "development" : "production",
       watch: this.masterConfigRepresentative.isDevelopmentBuildingMode,
@@ -409,10 +441,10 @@ export default class WebpackConfigGenerator {
       return "/";
     }
 
+
     return ECMA_ScriptLogicEntryPointsGroupSettings__normalized.ID.replace(
       ECMA_ScriptLogicEntryPointsGroupSettings__normalized.ID, "/"
     );
-    // Return "/";
   }
 
   private static getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
@@ -423,10 +455,10 @@ export default class WebpackConfigGenerator {
       ECMA_ScriptLogicEntryPointsGroupSettings__normalized: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup;
       webpackContext: string;
     }
-  ): Webpack.Entry | null {
+  ): Webpack.EntryObject | null {
 
     /* [ Reference ] https://webpack.js.org/configuration/entry-context/#entry */
-    const webpackEntryPoints__objectSyntax: Webpack.Entry = {};
+    const webpackEntryPoints__objectSyntax: Webpack.EntryObject = {};
     const targetEntryPointsSourceFilesAbsolutePaths: Array<string> = ImprovedGlob.getFilesAbsolutePathsSynchronously(
       ECMA_ScriptLogicEntryPointsGroupSettings__normalized.sourceFilesGlobSelectors
     );
