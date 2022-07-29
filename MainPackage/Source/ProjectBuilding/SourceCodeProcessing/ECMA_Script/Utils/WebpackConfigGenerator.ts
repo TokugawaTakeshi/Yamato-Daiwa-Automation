@@ -184,9 +184,22 @@ export default class WebpackConfigGenerator {
               switch (entryPointsGroupSettings.targetRuntime.type) {
 
                 case SupportedECMA_ScriptRuntimesTypes.browser: return "module";
-                case SupportedECMA_ScriptRuntimesTypes.webWorker: return "module";
                 case SupportedECMA_ScriptRuntimesTypes.nodeJS: return "commonjs";
                 case SupportedECMA_ScriptRuntimesTypes.pug: return "umd";
+
+                default: {
+
+                  Logger.throwErrorAndLog({
+                    errorInstance: new UnexpectedEventError(
+                      "The web worker could not be the library, while the computing of 'output.library.type' has been " +
+                      "requested"
+                    ),
+                    title: UnexpectedEventError.localization.defaultTitle,
+                    occurrenceLocation: "webpackConfigGenerator." +
+                        "generateSingleWebpackConfigurationIfAtLeastOneTargetEntryPointFileExists(entryPointsGroupSettings)"
+                  });
+
+                }
 
               }
             })(),

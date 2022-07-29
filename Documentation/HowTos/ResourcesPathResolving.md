@@ -44,7 +44,7 @@ Now we can refer to the file **01-Source/Infrastructure/Elements/Client/SharedAs
 (will be output to **02-DevelopmentBuild/StaticPreview/Images/Cats/Kitten.jpg**) by shortened absolute path:
 
 ```pug
-img(src="/Images/Cats/GrayKitter.jpg" alt="The gray kitten")
+img(src="/Images/Cats/GrayKitten.jpg" alt="The gray kitten")
 ```
 
 Basically everything is all right, but what's wrong? 
