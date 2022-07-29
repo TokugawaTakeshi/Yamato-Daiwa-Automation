@@ -1,4 +1,4 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* --- Normalized config -------------------------------------------------------------------------------------------- */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 
 /* --- Settings representatives ------------------------------------------------------------------------------------- */
@@ -23,7 +23,7 @@ import HTML_Validator from
     "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
 import AccessibilityInspector from "./Plugins/AccessibilityInspector/AccessibilityInspector";
 import removeExtraSpacesFromJapaneseText from "@MarkupProcessing/Plugins/removeExtraSpacesFromJapaneseText";
-import { PassThrough } from "stream";
+import { PassThrough as DummyStream } from "stream";
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
 import { isUndefined } from "@yamato-daiwa/es-extensions";
@@ -49,7 +49,7 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
         masterConfigRepresentative.markupProcessingSettingsRepresentative;
 
     if (isUndefined(markupProcessingSettingsRepresentative)) {
-      return (): NodeJS.ReadWriteStream => new PassThrough().end();
+      return (): NodeJS.ReadWriteStream => new DummyStream().end();
     }
 
 
@@ -84,7 +84,7 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
      *    However, the empty array is usual scenario (for example when user declared the configuration but has not added
      *    files of specific entry points group yet).  */
     if (entryPointsSourceFilesAbsolutePaths.length === 0) {
-      return (): NodeJS.ReadWriteStream => new PassThrough().end();
+      return (): NodeJS.ReadWriteStream => new DummyStream().end();
     }
 
 

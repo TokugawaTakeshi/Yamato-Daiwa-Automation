@@ -8,7 +8,7 @@ import MarkupProcessingSettings__Default from "@MarkupProcessing/MarkupProcessin
 import type MarkupProcessingSettings__FromFile__RawValid from
     "@MarkupProcessing/MarkupProcessingSettings__FromFile__RawValid";
 
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* --- Normalized config -------------------------------------------------------------------------------------------- */
 import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
@@ -35,14 +35,15 @@ export default class MarkupProcessingRawSettingsNormalizer extends SourceCodePro
 
   private readonly lintingCommonSettings: MarkupProcessingSettings__Normalized.Linting;
 
+
   public static normalize(
     {
       markupProcessingSettings__fromFile__rawValid,
       commonSettings__normalized
-    }: {
+    }: Readonly<{
       markupProcessingSettings__fromFile__rawValid: MarkupProcessingSettings__FromFile__RawValid;
       commonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
-    }
+    }>
   ): MarkupProcessingSettings__Normalized {
 
     const lintingCommonSettings: MarkupProcessingSettings__Normalized.Linting =
@@ -51,8 +52,10 @@ export default class MarkupProcessingRawSettingsNormalizer extends SourceCodePro
               isCompletelyDisabled: !MarkupProcessingSettings__Default.linting.mustExecute
             } :
             {
+
               isCompletelyDisabled: markupProcessingSettings__fromFile__rawValid.linting.disableCompletely === true ?
                   true : !MarkupProcessingSettings__Default.linting.mustExecute,
+
               ...isNotUndefined(markupProcessingSettings__fromFile__rawValid.linting.presetFileRelativePath) ? {
                 presetFileAbsolutePath: ImprovedPath.buildAbsolutePath(
                   [
@@ -103,10 +106,10 @@ export default class MarkupProcessingRawSettingsNormalizer extends SourceCodePro
   private constructor(
     namedParameters:
         SourceCodeProcessingRawSettingsNormalizer.ConstructorParameters &
-        {
+        Readonly<{
           markupProcessingSettings__fromFile__rawValid: MarkupProcessingSettings__FromFile__RawValid;
           lintingCommonSettings: MarkupProcessingSettings__Normalized.Linting;
-        }
+        }>
   ) {
 
     super(namedParameters);
@@ -120,14 +123,15 @@ export default class MarkupProcessingRawSettingsNormalizer extends SourceCodePro
     entryPointsGroupSettings__rawValid: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup
   ): MarkupProcessingSettings__Normalized.EntryPointsGroup {
 
-    const entryPointsGroupSettings__buildingModeDependent__rawValid:
+    const entryPointsGroupSettingsRelevantForCurrentProjectBuildingMode__rawValid:
         MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup.BuildingModeDependent | undefined =
         entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode];
 
-    if (isUndefined(entryPointsGroupSettings__buildingModeDependent__rawValid)) {
+    // TODO 局地化
+    if (isUndefined(entryPointsGroupSettingsRelevantForCurrentProjectBuildingMode__rawValid)) {
       Logger.throwErrorAndLog({
         errorInstance: new AlgorithmMismatchError(
-            `プロジェクト構成モード：「${ this.consumingProjectBuildingMode }」に該当する生入点設定が発見されず。`
+          `プロジェクト構成モード：「${ this.consumingProjectBuildingMode }」に該当する生入点設定が発見されず。`
         ),
         occurrenceLocation: "MarkupProcessingRawSettingsNormalizer" +
             "completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilMarkupEntryPointsGroupNormalizedSettings",
@@ -137,11 +141,14 @@ export default class MarkupProcessingRawSettingsNormalizer extends SourceCodePro
 
 
     return {
+
       ...entryPointsGroupGenericSettings__normalized,
+
       HTML_Validation: {
         mustExecute: entryPointsGroupSettings__rawValid.HTML_Validation?.disable === true ? false :
             MarkupProcessingSettings__Default.HTML_Validation.mustExecute
       },
+
       linting: {
         mustExecute: ((): boolean => {
 
@@ -163,6 +170,7 @@ export default class MarkupProcessingRawSettingsNormalizer extends SourceCodePro
           return MarkupProcessingSettings__Default.linting.mustExecute;
         })()
       },
+
       accessibilityInspection: {
         mustExecute: entryPointsGroupSettings__rawValid.accessibilityInspection?.disable === true ? false :
             MarkupProcessingSettings__Default.accessibilityInspection.mustExecute,

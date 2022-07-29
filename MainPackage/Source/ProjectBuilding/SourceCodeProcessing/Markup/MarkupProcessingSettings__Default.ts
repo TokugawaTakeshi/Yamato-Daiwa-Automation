@@ -1,7 +1,25 @@
 import MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRestrictions";
 
 
-export default {
+const MarkupProcessingSettings__Default: Readonly<{
+
+  waitingForOtherFilesWillBeSavedPeriod__seconds: number;
+
+  linting: Readonly<{
+    mustExecute: boolean;
+    isDisabledForEntryPointGroups: boolean;
+  }>;
+
+  HTML_Validation: Readonly<{
+    mustExecute: boolean;
+  }>;
+
+  accessibilityInspection: Readonly<{
+    mustExecute: boolean;
+    standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
+  }>;
+
+}> = {
 
   waitingForOtherFilesWillBeSavedPeriod__seconds: 1,
 
@@ -18,4 +36,8 @@ export default {
     mustExecute: true,
     standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards.WCAG2AAA
   }
+
 };
+
+
+export default MarkupProcessingSettings__Default;
