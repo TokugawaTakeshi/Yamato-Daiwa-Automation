@@ -88,13 +88,13 @@ class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
         pipe(gulpIntercept(this.addActualSourceCodeProcessingSettingsToVinylFile.bind(this))).
 
         pipe(gulpIf(
-            this.masterConfigRepresentative.isProductionBuildingMode,
-            gulpImagemin([
-              gulpImagemin.mozjpeg({ progressive: true }),
-              gulpImagemin.gifsicle({ interlaced: true }),
-              gulpImagemin.svgo({}),
-              pngQuant()
-            ])
+          this.masterConfigRepresentative.isStagingBuildingMode || this.masterConfigRepresentative.isProductionBuildingMode,
+          gulpImagemin([
+            gulpImagemin.mozjpeg({ progressive: true }),
+            gulpImagemin.gifsicle({ interlaced: true }),
+            gulpImagemin.svgo({}),
+            pngQuant()
+          ])
         )).
 
         pipe(gulpIntercept(this.postProcess.bind(this))).

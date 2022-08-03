@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Incremental development build" type="js.build_tools.npm" nameIsGenerated="true">
+  <configuration default="false" name="Tree diagram of source files generating" type="js.build_tools.npm" nameIsGenerated="true">
     <package-json value="$PROJECT_DIR$/package.json" />
     <command value="run" />
     <scripts>
-      <script value="Incremental development build" />
+      <script value="Tree diagram of source files generating" />
     </scripts>
     <node-interpreter value="project" />
     <envs />

@@ -8,7 +8,7 @@ import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuil
 type MarkupProcessingSettings__Normalized = Readonly<{
   common: MarkupProcessingSettings__Normalized.Common;
   linting: MarkupProcessingSettings__Normalized.Linting;
-  entryPointsGroupsActualForCurrentProjectBuildingMode: Map<
+  relevantEntryPointsGroups: Map<
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, MarkupProcessingSettings__Normalized.EntryPointsGroup
   >;
 }>;

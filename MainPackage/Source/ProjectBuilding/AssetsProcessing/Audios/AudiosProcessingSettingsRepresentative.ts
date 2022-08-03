@@ -15,6 +15,7 @@ export default class AudiosProcessingSettingsRepresentative extends AssetsProces
 
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Audio";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Audios";
+  public readonly relevantSourceFilesGlobSelectors: Array<string>;
 
   protected readonly assetsProcessingCommonSettings: AudiosProcessingSettings__Normalized.Common;
   protected readonly actualAssetsGroupsSettings: Map<AssetsGroupID, AudiosProcessingSettings__Normalized.AssetsGroup>;
@@ -29,5 +30,10 @@ export default class AudiosProcessingSettingsRepresentative extends AssetsProces
 
     this.assetsProcessingCommonSettings = audiosManagementSettings.common;
     this.actualAssetsGroupsSettings = audiosManagementSettings.assetsGroups;
+
+    this.relevantSourceFilesGlobSelectors = Array.from(this.actualAssetsGroupsSettings.values()).map(
+        (imagesGroupSettings: AudiosProcessingSettings__Normalized.AssetsGroup): string =>
+            imagesGroupSettings.sourceFilesGlobSelector
+    );
   }
 }

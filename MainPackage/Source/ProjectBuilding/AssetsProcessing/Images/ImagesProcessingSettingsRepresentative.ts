@@ -15,6 +15,7 @@ export default class ImagesProcessingSettingsRepresentative extends AssetsProces
 
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Image";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Images";
+  public readonly relevantSourceFilesGlobSelectors: Array<string>;
 
   protected readonly assetsProcessingCommonSettings: ImagesProcessingSettings__Normalized.Common;
   protected readonly actualAssetsGroupsSettings: Map<AssetsGroupID, ImagesProcessingSettings__Normalized.AssetsGroup>;
@@ -29,5 +30,10 @@ export default class ImagesProcessingSettingsRepresentative extends AssetsProces
 
     this.assetsProcessingCommonSettings = imagesManagementSettings.common;
     this.actualAssetsGroupsSettings = imagesManagementSettings.assetsGroups;
+
+    this.relevantSourceFilesGlobSelectors = Array.from(this.actualAssetsGroupsSettings.values()).map(
+      (imagesGroupSettings: ImagesProcessingSettings__Normalized.AssetsGroup): string =>
+          imagesGroupSettings.sourceFilesGlobSelector
+    );
   }
 }

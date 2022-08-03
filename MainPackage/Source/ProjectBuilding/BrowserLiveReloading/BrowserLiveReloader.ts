@@ -40,6 +40,7 @@ export default class BrowserLiveReloader {
           baseDir: browserLiveReloadingConfigRepresentative.targetFilesRootDirectoryAbsolutePath,
           index: browserLiveReloadingConfigRepresentative.startingFilenameWithExtension
         },
+        browser: "chrome",
         ...isNotNull(browserLiveReloadingConfigRepresentative.customMainPort) ? {
           port: browserLiveReloadingConfigRepresentative.customMainPort
         } : {},

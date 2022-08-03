@@ -53,7 +53,7 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
       ProjectBuildingConfig__Normalized.EntryPointsGroupID, EntryPointsGroupSettings__Normalized
     > = new Map<ProjectBuildingConfig__Normalized.EntryPointsGroupID, EntryPointsGroupSettings__Normalized>();
 
-    /* [ Approach ] This case could be both valid (e. g. if inside the project styles are being declared only inside
+    /* [ Approach ] This case could be both valid (e.g. if inside the project markup is being declared only inside
         Vue components) or invalid. */
     if (isUndefined(entryPointsGroupsSettings__rawValid)) {
       return entryPointsGroupsSettings__normalized;

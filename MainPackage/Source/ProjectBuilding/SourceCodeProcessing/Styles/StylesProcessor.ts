@@ -56,7 +56,7 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
       masterConfigRepresentative, stylesProcessingSettingsRepresentative
     );
 
-    if (masterConfigRepresentative.isDevelopmentBuildingMode) {
+    if (masterConfigRepresentative.isStaticPreviewBuildingMode || masterConfigRepresentative.isDevelopmentBuildingMode) {
       dataHoldingSelfInstance.initializeSourceFilesDirectoriesWhichAlwaysWillBeBeingWatchedGlobSelectors();
       dataHoldingSelfInstance.initializeOrUpdateWatchedSourceFilesGlobSelectors();
       dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcher();
@@ -94,7 +94,11 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
 
         pipe(gulpIntercept(this.addActualSourceCodeProcessingSettingsToVinylFile.bind(this))).
 
-        pipe(gulpIf(this.masterConfigRepresentative.isDevelopmentBuildingMode, gulpSourcemaps.init())).
+        pipe(gulpIf(
+          this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
+                this.masterConfigRepresentative.isDevelopmentBuildingMode,
+            gulpSourcemaps.init()
+        )).
         pipe(gulpIf(
           (file: VinylFile): boolean => (file as StylesProcessor.StylesVinylFile).mustBeProcessedByStylus,
           gulpStylus({
@@ -110,15 +114,21 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
               preset: [
                 "default",
                 {
-                  normalizeWhitespace: !this.masterConfigRepresentative.isDevelopmentBuildingMode,
-                  discardComments: !this.masterConfigRepresentative.isDevelopmentBuildingMode
+                  normalizeWhitespace: !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
+                      !this.masterConfigRepresentative.isDevelopmentBuildingMode,
+                  discardComments: !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
+                      !this.masterConfigRepresentative.isDevelopmentBuildingMode
                 }
               ]
             })
           ]
         }))).
 
-        pipe(gulpIf(this.masterConfigRepresentative.isDevelopmentBuildingMode, gulpSourcemaps.write())).
+        pipe(gulpIf(
+          this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
+                this.masterConfigRepresentative.isDevelopmentBuildingMode,
+            gulpSourcemaps.write()
+        )).
 
         pipe(gulpIntercept(this.onPostProcessedCode.bind(this))).
 

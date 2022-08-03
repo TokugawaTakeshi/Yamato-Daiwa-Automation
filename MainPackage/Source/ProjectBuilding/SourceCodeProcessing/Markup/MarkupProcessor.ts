@@ -17,8 +17,8 @@ import gulpIntercept from "gulp-intercept";
 import gulpHTML_Prettify from "gulp-html-prettify";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
-import ResourceFilesPathsAliasesResolverForHTML from
-    "@MarkupProcessing/Plugins/AssetsPathsAliasesResolverForHTML/ResourceFilesPathsAliasesResolverForHTML";
+import ResourcesReferencesResolverForHTML from
+    "@MarkupProcessing/Plugins/ResourcesReferencesResolverForHTML/ResourcesReferencesResolverForHTML";
 import HTML_Validator from
     "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
 import AccessibilityInspector from "./Plugins/AccessibilityInspector/AccessibilityInspector";
@@ -57,7 +57,10 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
       masterConfigRepresentative, markupProcessingSettingsRepresentative
     );
 
-    if (masterConfigRepresentative.isDevelopmentBuildingMode) {
+    if (
+      masterConfigRepresentative.isStaticPreviewBuildingMode ||
+      masterConfigRepresentative.isDevelopmentBuildingMode
+    ) {
       dataHoldingSelfInstance.initializeSourceFilesDirectoriesWhichAlwaysWillBeBeingWatchedGlobSelectors();
       dataHoldingSelfInstance.initializeOrUpdateWatchedSourceFilesGlobSelectors();
       dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcher();
@@ -97,6 +100,7 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
 
         pipe(gulpPug({
           locals: {
+            __IS_STATIC_PREVIEW_BUILDING_MODE__: this.masterConfigRepresentative.isStaticPreviewBuildingMode,
             __IS_DEVELOPMENT_BUILDING_MODE__: this.masterConfigRepresentative.isDevelopmentBuildingMode,
             __IS_TESTING_BUILDING_MODE__: this.masterConfigRepresentative.isTestingBuildingMode,
             __IS_STAGING_BUILDING_MODE__: this.masterConfigRepresentative.isStagingBuildingMode,
@@ -142,7 +146,7 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
     const compiledHTML_File: MarkupProcessor.MarkupVinylFile = _compiledHTML_File as MarkupProcessor.MarkupVinylFile;
 
     compiledHTML_File.contents = Buffer.from(
-      ResourceFilesPathsAliasesResolverForHTML.resolvePathAliases(compiledHTML_File, this.masterConfigRepresentative)
+      ResourcesReferencesResolverForHTML.resolve(compiledHTML_File, this.masterConfigRepresentative)
     );
 
     return compiledHTML_File;
@@ -151,6 +155,13 @@ export class MarkupProcessor extends GulpStreamsBasedSourceCodeProcessor<
   private onPostProcessedCode(_compiledHTML_File: VinylFile): VinylFile {
 
     const compiledHTML_File: MarkupProcessor.MarkupVinylFile = _compiledHTML_File as MarkupProcessor.MarkupVinylFile;
+
+    this.markupProcessingConfigRepresentative.
+        sourceAndOutputFilesAbsolutePathsCorrespondenceMap.
+        set(
+          ImprovedPath.replacePathSeparatorsToForwardSlashes(compiledHTML_File.sourceAbsolutePath),
+          ImprovedPath.joinPathSegments(compiledHTML_File.outputDirectoryAbsolutePath, compiledHTML_File.basename)
+        );
 
     if (compiledHTML_File.processingSettings.HTML_Validation.mustExecute) {
       HTML_Validator.validateHTML(compiledHTML_File, this.masterConfigRepresentative);

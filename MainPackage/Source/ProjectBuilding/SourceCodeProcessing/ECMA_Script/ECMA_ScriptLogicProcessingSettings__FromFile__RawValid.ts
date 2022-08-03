@@ -392,13 +392,11 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
               newName: "buildingModeDependent",
               type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
               required: true,
-
-              oneOfKeysIsRequired: [
-                consumingProjectLocalizedPreDefinedBuildingModes.development,
-                consumingProjectLocalizedPreDefinedBuildingModes.production
-              ],
+              minimalEntriesCount: 1,
 
               keysRenamings: {
+                [consumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
+                    ConsumingProjectPreDefinedBuildingModes.staticPreview,
                 [consumingProjectLocalizedPreDefinedBuildingModes.development]:
                     ConsumingProjectPreDefinedBuildingModes.development,
                 [consumingProjectLocalizedPreDefinedBuildingModes.testing]:

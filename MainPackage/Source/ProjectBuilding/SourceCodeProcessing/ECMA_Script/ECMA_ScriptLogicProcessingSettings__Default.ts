@@ -22,7 +22,8 @@ export default {
         namedParameters.targetRuntimeType === SupportedECMA_ScriptRuntimesTypes.browser ||
         namedParameters.targetRuntimeType === SupportedECMA_ScriptRuntimesTypes.webWorker
       ) {
-        return namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.development;
+        return namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.staticPreview &&
+            namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.development;
       }
 
 

@@ -63,6 +63,7 @@ abstract class ProjectBuilder {
       });
     }
 
+
     const projectBuildingConfig__fromFile__rawValid: ProjectBuildingConfig__FromFile__RawValid =
         rawDataProcessingResult.processedData.projectBuilding;
 

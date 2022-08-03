@@ -1,4 +1,5 @@
 /* --- Normalized settings ------------------------------------------------------------------------------------------ */
+import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 import type StylesProcessingSettings__Normalized from "@StylesProcessing/StylesProcessingSettings__Normalized";
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Normalized";
@@ -8,6 +9,7 @@ import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosP
 
 /* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
+import type MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 import type StylesProcessingSettingsRepresentative from "@StylesProcessing/StylesProcessingSettingsRepresentative";
 import type ECMA_ScriptLogicProcessingSettingsRepresentative from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettingsRepresentative";
@@ -20,7 +22,7 @@ import type MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
 
 /* --- Assets ------------------------------------------------------------------------------------------------------- */
 import AssetsPathsAliasesResolverForHTML_Localization__English from
-    "@MarkupProcessing/Plugins/AssetsPathsAliasesResolverForHTML/AssetsPathsAliasesResolverForHTML_Localization.english";
+    "@MarkupProcessing/Plugins/ResourcesReferencesResolverForHTML/ResourcesReferencesResolverForHTML.english";
 
 /* --- Applied auxiliaries ------------------------------------------------------------------------------------------ */
 import cheerio from "cheerio";
@@ -41,23 +43,25 @@ import type { WarningLog } from "@yamato-daiwa/es-extensions";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
 
-class ResourceFilesPathsAliasesResolverForHTML {
+class ResourcesReferencesResolverForHTML {
 
-  public static localization: ResourceFilesPathsAliasesResolverForHTML.Localization =
+  public static localization: ResourcesReferencesResolverForHTML.Localization =
       AssetsPathsAliasesResolverForHTML_Localization__English;
 
   private readonly compiledHTML_File: MarkupProcessor.MarkupVinylFile;
   private readonly HTML_FileContentCheerioCapturing: cheerio.Root;
+
   private readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
 
 
-  public static resolvePathAliases(
+  public static resolve(
     compiledHTML_File: MarkupProcessor.MarkupVinylFile,
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): string {
 
-      return new ResourceFilesPathsAliasesResolverForHTML(compiledHTML_File, masterConfigRepresentative).
+      return new ResourcesReferencesResolverForHTML(compiledHTML_File, masterConfigRepresentative).
 
+          resolveInternalLinks().
           resolveStylesheetsPathsAliases().
           resoleScriptsPathsAliases().
           resolveImagesPathsAliases().
@@ -65,7 +69,7 @@ class ResourceFilesPathsAliasesResolverForHTML {
           resolveAudiosPathsAliases().
 
           /* [ Theory ] Without '{ decodeEntities: false }' all ideographic characters will be converted to entities
-           * like '&#x6587;' what could cause some troubles during HTML code post-processing. */
+           * like '&#x6587;' what could cause some troubles during post-processing of HTML code. */
           HTML_FileContentCheerioCapturing.
           html({ decodeEntities: false });
   }
@@ -83,6 +87,66 @@ class ResourceFilesPathsAliasesResolverForHTML {
   }
 
 
+  private resolveInternalLinks(): this {
+
+    if (isUndefined(this.masterConfigRepresentative.markupProcessingSettingsRepresentative)) {
+      return this;
+    }
+
+
+    const markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative =
+        this.masterConfigRepresentative.markupProcessingSettingsRepresentative;
+
+    for (const anchorElement of Array.from(this.HTML_FileContentCheerioCapturing("a"))) {
+
+      const anchorCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(anchorElement);
+      const hrefAttributeValue: string | undefined = anchorCheerioElement.attr("href");
+
+      if (!isNonEmptyString(hrefAttributeValue)) {
+        continue;
+      }
+
+
+      const resolvedURI: string | null = this.resolveOutputResourceFileAbsolutePathIfPossible({
+        pickedPathOfTargetResourceFile: hrefAttributeValue,
+        prefixOfAliasOfTopDirectoryOfResourcesGroup: markupProcessingSettingsRepresentative.prefixOfEntryPointsGroupReference,
+
+        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
+            markupProcessingSettingsRepresentative.entryPointsGroupsNormalizedSettingsMappedByReferences,
+            (
+              pathAlias: string, markupEntryPointsGroupNormalizedSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup
+            ): [ string, string ] => [
+              pathAlias,
+              markupEntryPointsGroupNormalizedSettings.isSingeEntryPointGroup ?
+                  markupEntryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
+                  markupEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
+            ]
+        ),
+        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: markupProcessingSettingsRepresentative.
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+            markupProcessingSettingsRepresentative.sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
+        fileTypeForLogging__singularForm: markupProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
+        fileTypeForLogging__pluralForm: markupProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+      });
+
+      if (isNull(resolvedURI)) {
+        continue;
+      }
+
+
+      anchorCheerioElement.attr(
+        "href",
+        this.buildResourceFileFinalPath({
+          resolvedOutputAbsolutePathOfResourceFile: resolvedURI,
+          resourceFileType__singularForm: markupProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM
+        })
+      );
+    }
+
+    return this;
+  }
+
   private resolveStylesheetsPathsAliases(): this {
 
     if (isUndefined(this.masterConfigRepresentative.stylesProcessingSettingsRepresentative)) {
@@ -95,8 +159,8 @@ class ResourceFilesPathsAliasesResolverForHTML {
 
     for (const linkElement of Array.from(this.HTML_FileContentCheerioCapturing("link[rel='stylesheet']"))) {
 
-      const $linkElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(linkElement);
-      const hrefAttributeValue: string | undefined = $linkElement.attr("href");
+      const linkCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(linkElement);
+      const hrefAttributeValue: string | undefined = linkCheerioElement.attr("href");
 
       if (!isNonEmptyString(hrefAttributeValue)) {
         continue;
@@ -131,7 +195,7 @@ class ResourceFilesPathsAliasesResolverForHTML {
       }
 
 
-      $linkElement.attr(
+      linkCheerioElement.attr(
         "href",
         this.buildResourceFileFinalPath({
           resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfStylesheet,
@@ -156,8 +220,8 @@ class ResourceFilesPathsAliasesResolverForHTML {
 
     for (const scriptElement of Array.from(this.HTML_FileContentCheerioCapturing("script"))) {
 
-      const $scriptElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(scriptElement);
-      const srcAttributeValue: string | undefined = $scriptElement.attr("src");
+      const scriptCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(scriptElement);
+      const srcAttributeValue: string | undefined = scriptCheerioElement.attr("src");
 
       if (!isNonEmptyString(srcAttributeValue)) {
         continue;
@@ -195,7 +259,7 @@ class ResourceFilesPathsAliasesResolverForHTML {
       }
 
 
-      $scriptElement.attr(
+      scriptCheerioElement.attr(
         "src",
         this.buildResourceFileFinalPath({
           resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfScript,
@@ -221,8 +285,8 @@ class ResourceFilesPathsAliasesResolverForHTML {
 
     for (const imageElement of Array.from(this.HTML_FileContentCheerioCapturing("img"))) {
 
-      const $imageElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(imageElement);
-      const srcAttributeValue: string | undefined = $imageElement.attr("src");
+      const imageCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(imageElement);
+      const srcAttributeValue: string | undefined = imageCheerioElement.attr("src");
 
       if (!isNonEmptyString(srcAttributeValue)) {
         continue;
@@ -252,7 +316,7 @@ class ResourceFilesPathsAliasesResolverForHTML {
       }
 
 
-      $imageElement.attr(
+      imageCheerioElement.attr(
         "src",
         this.buildResourceFileFinalPath({
           resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfImage,
@@ -263,8 +327,8 @@ class ResourceFilesPathsAliasesResolverForHTML {
 
     for (const linkElement of Array.from(this.HTML_FileContentCheerioCapturing("link[type='image/x-icon']"))) {
 
-      const $linkElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(linkElement);
-      const hrefAttributeValue: string | undefined = $linkElement.attr("href");
+      const linkCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(linkElement);
+      const hrefAttributeValue: string | undefined = linkCheerioElement.attr("href");
 
       if (isUndefined(hrefAttributeValue)) {
         continue;
@@ -296,7 +360,7 @@ class ResourceFilesPathsAliasesResolverForHTML {
       }
 
 
-      $linkElement.attr(
+      linkCheerioElement.attr(
         "href",
         this.buildResourceFileFinalPath({
           resolvedOutputAbsolutePathOfResourceFile: imageResolvedOutputAbsolutePath,
@@ -321,8 +385,8 @@ class ResourceFilesPathsAliasesResolverForHTML {
 
     for (const sourceElement of Array.from(this.HTML_FileContentCheerioCapturing("video > source"))) {
 
-      const $sourceElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(sourceElement);
-      const srcAttributeValue: string | undefined = $sourceElement.attr("src");
+      const sourceCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(sourceElement);
+      const srcAttributeValue: string | undefined = sourceCheerioElement.attr("src");
 
       if (!isNonEmptyString(srcAttributeValue)) {
         continue;
@@ -352,7 +416,7 @@ class ResourceFilesPathsAliasesResolverForHTML {
       }
 
 
-      $sourceElement.attr(
+      sourceCheerioElement.attr(
         "src",
         this.buildResourceFileFinalPath({
           resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfVideo,
@@ -376,8 +440,8 @@ class ResourceFilesPathsAliasesResolverForHTML {
 
     for (const sourceElement of Array.from(this.HTML_FileContentCheerioCapturing("audio > source"))) {
 
-      const $sourceElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(sourceElement);
-      const srcAttributeValue: string | undefined = $sourceElement.attr("src");
+      const sourceCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(sourceElement);
+      const srcAttributeValue: string | undefined = sourceCheerioElement.attr("src");
 
       if (isUndefined(srcAttributeValue)) {
         continue;
@@ -407,7 +471,7 @@ class ResourceFilesPathsAliasesResolverForHTML {
       }
 
 
-      $sourceElement.attr(
+      sourceCheerioElement.attr(
         "src",
         this.buildResourceFileFinalPath({
           resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfVideo,
@@ -458,8 +522,8 @@ class ResourceFilesPathsAliasesResolverForHTML {
 
     if (isUndefined(sourceFilesTopDirectoryAbsolutePathOfCurrentAlias)) {
       Logger.logWarning(
-        ResourceFilesPathsAliasesResolverForHTML.localization.generateUnknownSourceFileTopDirectoryAliasWarning({
-          fileType__singularForm: fileTypeForLogging__pluralForm,
+        ResourcesReferencesResolverForHTML.localization.generateUnknownResourceGroupReferenceWarningLog({
+          fileType__pluralForm: fileTypeForLogging__pluralForm,
           firstPathSegment: firstSegmentOfPickedPath,
           pickedPathOfTargetResourceFile,
           formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: stringifyAndFormatArbitraryValue(
@@ -497,8 +561,8 @@ class ResourceFilesPathsAliasesResolverForHTML {
       if (searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.size === 0) {
 
         Logger.logWarning(
-          ResourceFilesPathsAliasesResolverForHTML.localization.
-              generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarning({
+          ResourcesReferencesResolverForHTML.localization.
+              generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog({
                 pickedPathOfTargetResourceFile,
                 fileType__singularForm: fileTypeForLogging__pluralForm,
                 checkedAbsolutePaths__formatted: stringifyAndFormatArbitraryValue(possibleAbsolutePathsOfTargetSourceFile)
@@ -518,7 +582,7 @@ class ResourceFilesPathsAliasesResolverForHTML {
     if (isUndefined(resolvedFileOutputAbsolutePath)) {
 
       Logger.logWarning(
-        ResourceFilesPathsAliasesResolverForHTML.localization.generateNoOutputFileExistingForSpecifiedSourceFilePath({
+        ResourcesReferencesResolverForHTML.localization.generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog({
           pickedPathOfTargetResourceFile,
           fileType__singularForm: fileTypeForLogging__pluralForm
         })
@@ -543,17 +607,18 @@ class ResourceFilesPathsAliasesResolverForHTML {
   ): string {
 
     if (
-      this.masterConfigRepresentative.isDevelopmentBuildingMode ||
+      this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
       isUndefined(this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath)
     ) {
 
       if (
-        !this.masterConfigRepresentative.isDevelopmentBuildingMode &&
+        !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
         isUndefined(this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath)
       ) {
         Logger.logWarning(
-          ResourceFilesPathsAliasesResolverForHTML.localization.generateUnableToResolveShortenedAbsolutePathWarning({
+          ResourcesReferencesResolverForHTML.localization.generateUnableToResolveShortenedAbsolutePathWarningLog({
             projectBuildingMode: this.masterConfigRepresentative.consumingProjectBuildingMode,
+            targetFileAbsolutePath: resolvedOutputAbsolutePathOfResourceFile,
             filesType__singularForm: resourceFileType__singularForm
           })
         );
@@ -574,46 +639,56 @@ class ResourceFilesPathsAliasesResolverForHTML {
 }
 
 
-namespace ResourceFilesPathsAliasesResolverForHTML {
+namespace ResourcesReferencesResolverForHTML {
 
   export type Localization = Readonly<{
 
-    generateUnableToResolveShortenedAbsolutePathWarning: (
-      namedParameters: Localization.UnableToResolveShortenedAbsolutePathWarning.TemplateNamedParameters
-    ) => Pick<WarningLog, "title" | "description">;
+    generateUnableToResolveShortenedAbsolutePathWarningLog: (
+      namedParameters: Localization.UnableToResolveShortenedAbsolutePathWarningLog.TemplateNamedParameters
+    ) => Localization.UnableToResolveShortenedAbsolutePathWarningLog;
 
-    generateUnknownSourceFileTopDirectoryAliasWarning: (
-      namedParameters: Localization.UnknownSourceFileTopDirectoryAliasWarning.TemplateNamedParameters
-    ) => Pick<WarningLog, "title" | "description">;
+    generateUnknownResourceGroupReferenceWarningLog: (
+      namedParameters: Localization.UnknownResourceGroupReferenceWarningLog.TemplateNamedParameters
+    ) => Localization.UnknownResourceGroupReferenceWarningLog;
 
-    generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarning: (
-      namedParameters: Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarning.TemplateNamedParameters
-    ) => Pick<WarningLog, "title" | "description">;
+    generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog: (
+      namedParameters: Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog.TemplateNamedParameters
+    ) => Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog;
 
-    generateNoOutputFileExistingForSpecifiedSourceFilePath: (
-      namedParameters: Localization.NoOutputFileExistingForSpecifiedSourceFilePath.TemplateNamedParameters
-    ) => Pick<WarningLog, "title" | "description">;
+    generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog: (
+      namedParameters: Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog.TemplateNamedParameters
+    ) => Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog;
   }>;
 
   export namespace Localization {
 
-    export namespace UnableToResolveShortenedAbsolutePathWarning {
+    export type UnableToResolveShortenedAbsolutePathWarningLog = Readonly<Pick<WarningLog, "title" | "description">>;
+
+    export namespace UnableToResolveShortenedAbsolutePathWarningLog {
       export type TemplateNamedParameters = Readonly<{
         filesType__singularForm: string;
+        targetFileAbsolutePath: string;
         projectBuildingMode: string;
       }>;
     }
 
-    export namespace UnknownSourceFileTopDirectoryAliasWarning {
+
+    export type UnknownResourceGroupReferenceWarningLog = Readonly<Pick<WarningLog, "title" | "description">>;
+
+    export namespace UnknownResourceGroupReferenceWarningLog {
       export type TemplateNamedParameters = Readonly<{
-        fileType__singularForm: string;
+        fileType__pluralForm: string;
         pickedPathOfTargetResourceFile: string;
         firstPathSegment: string;
         formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: string;
       }>;
     }
 
-    export namespace NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarning {
+
+    export type NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog =
+        Readonly<Pick<WarningLog, "title" | "description">>;
+
+    export namespace NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog {
       export type TemplateNamedParameters = Readonly<{
         fileType__singularForm: string;
         pickedPathOfTargetResourceFile: string;
@@ -621,7 +696,10 @@ namespace ResourceFilesPathsAliasesResolverForHTML {
       }>;
     }
 
-    export namespace NoOutputFileExistingForSpecifiedSourceFilePath {
+
+    export type NoOutputFileExistingForSpecifiedSourceFilePathWarningLog = Readonly<Pick<WarningLog, "title" | "description">>;
+
+    export namespace NoOutputFileExistingForSpecifiedSourceFilePathWarningLog {
       export type TemplateNamedParameters = Readonly<{
         fileType__singularForm: string;
         pickedPathOfTargetResourceFile: string;
@@ -631,4 +709,4 @@ namespace ResourceFilesPathsAliasesResolverForHTML {
 }
 
 
-export default ResourceFilesPathsAliasesResolverForHTML;
+export default ResourcesReferencesResolverForHTML;

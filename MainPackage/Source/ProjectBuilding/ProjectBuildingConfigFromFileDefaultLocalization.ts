@@ -19,6 +19,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
     },
 
     consumingProjectPreDefinedBuildingModes: {
+      staticPreview: "STATIC_PREVIEW",
       development: "DEVELOPMENT",
       testing: "TESTING",
       staging: "STAGING",

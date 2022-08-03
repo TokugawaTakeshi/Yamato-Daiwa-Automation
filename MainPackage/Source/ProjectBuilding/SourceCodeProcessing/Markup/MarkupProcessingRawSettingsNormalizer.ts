@@ -19,8 +19,6 @@ import SourceCodeProcessingRawSettingsNormalizer from
 
 /* --- Utils -------------------------------------------------------------------------------------------------------- */
 import {
-  Logger,
-  AlgorithmMismatchError,
   isUndefined,
   isNotUndefined,
   isBoolean
@@ -48,9 +46,7 @@ export default class MarkupProcessingRawSettingsNormalizer extends SourceCodePro
 
     const lintingCommonSettings: MarkupProcessingSettings__Normalized.Linting =
         isUndefined(markupProcessingSettings__fromFile__rawValid.linting) ?
-            {
-              isCompletelyDisabled: !MarkupProcessingSettings__Default.linting.mustExecute
-            } :
+            { isCompletelyDisabled: !MarkupProcessingSettings__Default.linting.mustExecute } :
             {
 
               isCompletelyDisabled: markupProcessingSettings__fromFile__rawValid.linting.disableCompletely === true ?
@@ -92,7 +88,7 @@ export default class MarkupProcessingRawSettingsNormalizer extends SourceCodePro
 
       linting: lintingCommonSettings,
 
-      entryPointsGroupsActualForCurrentProjectBuildingMode:
+      relevantEntryPointsGroups:
           dataHoldingSelfInstance.createNormalizedEntryPointsGroupsSettings(
               markupProcessingSettings__fromFile__rawValid.entryPointsGroups,
               dataHoldingSelfInstance.
@@ -122,23 +118,6 @@ export default class MarkupProcessingRawSettingsNormalizer extends SourceCodePro
     entryPointsGroupGenericSettings__normalized: ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings,
     entryPointsGroupSettings__rawValid: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup
   ): MarkupProcessingSettings__Normalized.EntryPointsGroup {
-
-    const entryPointsGroupSettingsRelevantForCurrentProjectBuildingMode__rawValid:
-        MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup.BuildingModeDependent | undefined =
-        entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode];
-
-    // TODO 局地化
-    if (isUndefined(entryPointsGroupSettingsRelevantForCurrentProjectBuildingMode__rawValid)) {
-      Logger.throwErrorAndLog({
-        errorInstance: new AlgorithmMismatchError(
-          `プロジェクト構成モード：「${ this.consumingProjectBuildingMode }」に該当する生入点設定が発見されず。`
-        ),
-        occurrenceLocation: "MarkupProcessingRawSettingsNormalizer" +
-            "completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilMarkupEntryPointsGroupNormalizedSettings",
-        title: AlgorithmMismatchError.localization.defaultTitle
-      });
-    }
-
 
     return {
 

@@ -1,33 +1,26 @@
-import type HTML_Validator from "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
-
-import type {
-  WarningLog,
-  InfoLog,
-  SuccessLog,
-  Log
-} from "@yamato-daiwa/es-extensions";
+import { HTML_Validator } from "@yamato-daiwa/automation/LocalizationRequirements";
 
 
-const HTML_ValidatorLocalization__Japanese: HTML_Validator.Localization = {
+const HTML_ValidatorLocalization__japanese: HTML_Validator.Localization = {
 
   generateFileIsEmptyWarningLog: (
     namedParameters: HTML_Validator.Localization.FileIsEmptyWarningLog.NamedParameters
-  ): WarningLog =>
+  ): HTML_Validator.Localization.FileIsEmptyWarningLog =>
       ({
-        title: "HTML妥当性検問中断",
-        description: `ファイル「${ namedParameters.targetFileRelativePath }」は空なので、HTML妥当性を検問する事は出来ません。`
+        title: "HTMLコード妥当性検問中断",
+        description: `ファイル「${ namedParameters.targetFileRelativePath }」は空なので、確認対象のHTMはありません。`
       }),
 
   generateValidationStartedInfoLog: (
     namedParameters: HTML_Validator.Localization.ValidationStartedInfoLog.NamedParameters
-  ): InfoLog => ({
+  ): HTML_Validator.Localization.ValidationStartedInfoLog => ({
     title: "HTML妥当性確認開始",
-    description: `これよりファイル「${ namedParameters.targetFileRelativePath }」のHTML妥当性確認を開始します・・・`
+    description: `これよりファイル「${ namedParameters.targetFileRelativePath }」にあるHTMLコードの妥当性検問を開始します・・・`
   }),
 
   generateValidationFinishedWithNoIssuesFoundSuccessLog: (
     namedParameters: HTML_Validator.Localization.ValidationFinishedWithNoIssuesFoundSuccessLog.NamedParameters
-  ): SuccessLog => ({
+  ): HTML_Validator.Localization.ValidationFinishedWithNoIssuesFoundSuccessLog => ({
     title: "HTML妥当性確認完了",
     description: `ファイル「${ namedParameters.targetFileRelativePath }」はW3Cの全規則・推薦を遵守。\n` +
         `秒間経過：${ namedParameters.secondsElapsed }`
@@ -52,11 +45,11 @@ const HTML_ValidatorLocalization__Japanese: HTML_Validator.Localization = {
 
   generateIssuesFoundErrorLog: (
     namedParameters: HTML_Validator.Localization.IssuesFoundErrorLog.NamedParameters
-  ): Log => ({
+  ): HTML_Validator.Localization.IssuesFoundErrorLog => ({
     customBadgeText: "HTML妥当性確認不合格",
     title: "HTML規格違反・W3C推薦無視が発見",
     description: `ファイル「${ namedParameters.targetFileRelativePath }」は下記の問題を含めています\n\n` +
-        `${ namedParameters.formattedErrors }\n\n`
+        `${ namedParameters.formattedErrorsAndWarnings }\n\n`
   }),
 
   validationFailedErrorLog: {
@@ -66,4 +59,4 @@ const HTML_ValidatorLocalization__Japanese: HTML_Validator.Localization = {
 };
 
 
-export default HTML_ValidatorLocalization__Japanese;
+export default HTML_ValidatorLocalization__japanese;

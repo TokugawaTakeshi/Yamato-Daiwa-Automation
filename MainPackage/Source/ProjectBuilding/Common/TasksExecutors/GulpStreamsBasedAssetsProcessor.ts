@@ -38,7 +38,6 @@ export default abstract class GulpStreamsBasedAssetsProcessor<
   protected readonly abstract SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string;
 
   protected associatedAssetsProcessingConfigRepresentative: CertainAssetsManagerConfigRepresentative;
-  protected readonly sourceFilesThoseAlwaysWillBeWatchedGlobSelectors: Array<string> = [];
 
   private readonly filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing: Set<string> = new Set();
   private waitingForOtherFilesWillBeSavedDuration: Timeout | null = null;
@@ -58,7 +57,7 @@ export default abstract class GulpStreamsBasedAssetsProcessor<
 
   protected initializeOrUpdateSourceFilesWatcher(): void {
 
-    Gulp.watch(this.sourceFilesThoseAlwaysWillBeWatchedGlobSelectors).
+    Gulp.watch(this.associatedAssetsProcessingConfigRepresentative.relevantSourceFilesGlobSelectors).
         on("all", (eventName: string, fileOrDirectoryPath: string): void => {
 
           Logger.logInfo({
@@ -91,7 +90,7 @@ export default abstract class GulpStreamsBasedAssetsProcessor<
           this.waitingForOtherFilesWillBeSavedDuration = setTimeout((): void => {
 
             if (this.filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing.size > 0) {
-              this.processAssets(Array.from(this.filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing));
+              this.processAssets(Array.from(this.filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing))();
             }
 
             this.filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing.clear();

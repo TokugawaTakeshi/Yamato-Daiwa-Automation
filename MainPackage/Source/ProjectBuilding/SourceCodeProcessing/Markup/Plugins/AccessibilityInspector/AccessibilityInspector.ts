@@ -1,5 +1,5 @@
 /* --- Assets ------------------------------------------------------------------------------------------------------- */
-import AccessibilityInspectorLocalization__English from "./AccessibilityInspectorLocalization.english";
+import accessibilityInspectorLocalization__english from "./AccessibilityInspectorLocalization.english";
 
 /* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
@@ -14,20 +14,20 @@ import getExpectedToBeNonNullStringifiedContentOfVinylFile from "@Utils/getExpec
 import isCompiledHTML_ContentEmpty from "@Utils/isCompiledHTML_ContentEmpty";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
-import { Logger } from "@yamato-daiwa/es-extensions";
 import type {
-  Log,
+  SuccessLog,
   InfoLog,
   WarningLog,
-  SuccessLog
+  ErrorLog
 } from "@yamato-daiwa/es-extensions";
+import { Logger } from "@yamato-daiwa/es-extensions";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 import Stopwatch from "@UtilsIncubator/Stopwatch";
 
 
 class AccessibilityInspector {
 
-  public static localization: AccessibilityInspector.Localization = AccessibilityInspectorLocalization__English;
+  public static localization: AccessibilityInspector.Localization = accessibilityInspectorLocalization__english;
 
 
   public static inspectAccessibility(
@@ -102,7 +102,7 @@ class AccessibilityInspector {
 
         Logger.logErrorLikeMessage(AccessibilityInspector.localization.generateIssuesFoundErrorLog({
           targetFileRelativePath,
-          formattedErrors: formattedErrors.join("\n\n")
+          formattedErrorsAndWarnings: formattedErrors.join("\n\n")
         }));
       });
   }
@@ -113,39 +113,46 @@ namespace AccessibilityInspector {
 
   export type Localization = Readonly<{
 
-    generateFileIsEmptyWarningLog: (namedParameters: Localization.FileIsEmptyWarningLog.NamedParameters) => WarningLog;
+    generateFileIsEmptyWarningLog: (namedParameters: Localization.FileIsEmptyWarningLog.NamedParameters) =>
+        Localization.FileIsEmptyWarningLog;
 
-    generateInspectionStartedInfoLog: (namedParameters: Localization.InspectionStartedInfoLog.NamedParameters) => InfoLog;
+    generateInspectionStartedInfoLog: (namedParameters: Localization.InspectionStartedInfoLog.NamedParameters) =>
+        Localization.InspectionStartedInfoLog;
 
     generateInspectionFinishedWithNoIssuesFoundSuccessLog: (
       namedParameters: Localization.InspectionFinishedWithNoIssuesFoundSuccessLog.NamedParameters
-    ) => SuccessLog;
+    ) => Localization.InspectionFinishedWithNoIssuesFoundSuccessLog;
 
-
-    issuesFoundNotification: Readonly<{ title: string; message: string; }>;
+    issuesFoundNotification: Localization.IssuesFoundNotification;
 
     generateIssueOccurrenceLocationIndication: (
       namedParameters: Localization.IssueOccurrenceLocationIndication.NamedParameters
     ) => string;
 
-    generateIssuesFoundErrorLog: (namedParameters: Localization.IssuesFoundErrorLog.NamedParameters) => Log;
+    generateIssuesFoundErrorLog: (namedParameters: Localization.IssuesFoundErrorLog.NamedParameters) =>
+        Localization.IssuesFoundErrorLog;
 
+    formattedError: Localization.FormattedError;
 
-    formattedError: Readonly<{
-      violatedGuidelineItem: string;
-      keyAndValueSeparator: string;
-    }>;
   }>;
 
   export namespace Localization {
+
+    export type FileIsEmptyWarningLog = Readonly<Pick<WarningLog, "title" | "description">>;
 
     export namespace FileIsEmptyWarningLog {
       export type NamedParameters = Readonly<{ targetFileRelativePath: string; }>;
     }
 
+
+    export type InspectionStartedInfoLog = Readonly<Pick<InfoLog, "title" | "description">>;
+
     export namespace InspectionStartedInfoLog {
       export type NamedParameters = Readonly<{ targetFileRelativePath: string; }>;
     }
+
+
+    export type InspectionFinishedWithNoIssuesFoundSuccessLog = Readonly<Pick<SuccessLog, "title" | "description">>;
 
     export namespace InspectionFinishedWithNoIssuesFoundSuccessLog {
       export type NamedParameters = Readonly<{
@@ -154,6 +161,10 @@ namespace AccessibilityInspector {
       }>;
     }
 
+
+    export type IssuesFoundNotification = Readonly<{ title: string; message: string; }>;
+
+
     export namespace IssueOccurrenceLocationIndication {
       export type NamedParameters = Readonly<{
         lineNumber: number;
@@ -161,12 +172,21 @@ namespace AccessibilityInspector {
       }>;
     }
 
+
+    export type IssuesFoundErrorLog = Readonly<Required<Pick<ErrorLog, "customBadgeText" | "title" | "description">>>;
+
     export namespace IssuesFoundErrorLog {
       export type NamedParameters = Readonly<{
         targetFileRelativePath: string;
-        formattedErrors: string;
+        formattedErrorsAndWarnings: string;
       }>;
     }
+
+
+    export type FormattedError = Readonly<{
+      violatedGuidelineItem: string;
+      keyAndValueSeparator: string;
+    }>;
   }
 }
 

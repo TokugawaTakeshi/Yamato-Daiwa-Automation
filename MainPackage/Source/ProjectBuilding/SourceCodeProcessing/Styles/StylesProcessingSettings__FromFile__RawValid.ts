@@ -182,13 +182,11 @@ namespace StylesProcessingSettings__FromFile__RawValid {
               preValidationModifications: nullToUndefined,
               type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
               required: true,
-
-              oneOfKeysIsRequired: [
-                consumingProjectLocalizedPreDefinedBuildingModes.development,
-                consumingProjectLocalizedPreDefinedBuildingModes.production
-              ],
+              minimalEntriesCount: 1,
 
               keysRenamings: {
+                [consumingProjectLocalizedPreDefinedBuildingModes.development]:
+                    ConsumingProjectPreDefinedBuildingModes.staticPreview,
                 [consumingProjectLocalizedPreDefinedBuildingModes.development]:
                     ConsumingProjectPreDefinedBuildingModes.development,
                 [consumingProjectLocalizedPreDefinedBuildingModes.testing]:

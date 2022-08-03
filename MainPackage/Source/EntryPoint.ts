@@ -20,6 +20,11 @@ import YAML from "yamljs";
 
 export default abstract class EntryPoint {
 
+  static {
+    Logger.setImplementation(ConsoleApplicationLogger);
+  }
+
+
   public static interpretAndExecuteConsoleCommand(rawConsoleCommand: Array<string>): void {
 
     const parsedConsoleCommand: ConsoleCommandsParser.
@@ -78,9 +83,5 @@ export default abstract class EntryPoint {
         });
       }
     }
-  }
-
-  static {
-    Logger.setImplementation(ConsoleApplicationLogger);
   }
 }
