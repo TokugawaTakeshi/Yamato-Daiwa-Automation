@@ -13,7 +13,9 @@ export default class FontsProcessingSettingsRepresentative extends AssetsProcess
   FontsProcessingSettings__Normalized.Common, FontsProcessingSettings__Normalized.AssetsGroup
 > {
 
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Font";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Fonts";
+  public readonly relevantSourceFilesGlobSelectors: Array<string>;
 
   protected readonly assetsProcessingCommonSettings: FontsProcessingSettings__Normalized.Common;
   protected readonly actualAssetsGroupsSettings: Map<AssetsGroupID, FontsProcessingSettings__Normalized.AssetsGroup>;
@@ -28,5 +30,10 @@ export default class FontsProcessingSettingsRepresentative extends AssetsProcess
 
     this.assetsProcessingCommonSettings = imagesManagementSettings.common;
     this.actualAssetsGroupsSettings = imagesManagementSettings.assetsGroups;
+
+    this.relevantSourceFilesGlobSelectors = Array.from(this.actualAssetsGroupsSettings.values()).map(
+        (imagesGroupSettings: FontsProcessingSettings__Normalized.AssetsGroup): string =>
+            imagesGroupSettings.sourceFilesGlobSelector
+    );
   }
 }

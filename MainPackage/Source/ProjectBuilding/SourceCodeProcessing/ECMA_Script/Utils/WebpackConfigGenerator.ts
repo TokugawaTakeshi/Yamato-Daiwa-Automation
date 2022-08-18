@@ -215,10 +215,16 @@ export default class WebpackConfigGenerator {
 
       ...willBrowserJS_LibraryBeBuilt ? { experiments: { outputModule: true } } : null,
 
-      mode: this.masterConfigRepresentative.isDevelopmentBuildingMode ? "development" : "production",
-      watch: this.masterConfigRepresentative.isDevelopmentBuildingMode,
+      mode: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
+          this.masterConfigRepresentative.isDevelopmentBuildingMode ?
+              "development" : "production",
 
-      devtool: this.masterConfigRepresentative.isDevelopmentBuildingMode ? "eval" : false,
+      watch: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
+          this.masterConfigRepresentative.isDevelopmentBuildingMode,
+
+      devtool: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
+          this.masterConfigRepresentative.isDevelopmentBuildingMode ?
+              "eval" : false,
 
       ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS ? {
         node: {
@@ -414,15 +420,19 @@ export default class WebpackConfigGenerator {
 
         new ES_LintWebpackPlugin({
           extensions: [ "js", "ts", "vue" ],
-          failOnError: this.masterConfigRepresentative.isProductionBuildingMode,
-          failOnWarning: this.masterConfigRepresentative.isProductionBuildingMode
+          failOnError: this.masterConfigRepresentative.isStagingBuildingMode ||
+              this.masterConfigRepresentative.isProductionBuildingMode,
+          failOnWarning: this.masterConfigRepresentative.isStagingBuildingMode ||
+              this.masterConfigRepresentative.isProductionBuildingMode
         })
       ],
 
 
       optimization: {
-        minimize: this.masterConfigRepresentative.isProductionBuildingMode,
-        emitOnErrors: this.masterConfigRepresentative.isDevelopmentBuildingMode
+        minimize: this.masterConfigRepresentative.isStagingBuildingMode ||
+            this.masterConfigRepresentative.isProductionBuildingMode,
+        emitOnErrors: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
+            this.masterConfigRepresentative.isDevelopmentBuildingMode
       }
     };
   }
@@ -450,7 +460,10 @@ export default class WebpackConfigGenerator {
     ECMA_ScriptLogicEntryPointsGroupSettings__normalized: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
   ): string {
 
-    if (!this.masterConfigRepresentative.isDevelopmentBuildingMode) {
+    if (
+      !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
+      !this.masterConfigRepresentative.isDevelopmentBuildingMode
+    ) {
       return "/";
     }
 

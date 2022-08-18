@@ -1,4 +1,5 @@
 enum ConsumingProjectPreDefinedBuildingModes {
+  staticPreview = "STATIC_PREVIEW",
   development = "DEVELOPMENT",
   testing = "TESTING",
   staging = "STAGING",

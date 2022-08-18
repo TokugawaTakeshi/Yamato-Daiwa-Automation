@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",
@@ -19,19 +19,19 @@
     "EntryPoint.js"
   ],
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "5.30.5",
-    "@typescript-eslint/parser": "5.30.5",
+    "@typescript-eslint/eslint-plugin": "5.33.0",
+    "@typescript-eslint/parser": "5.33.0",
     "@vue/compiler-sfc": "3.2.37",
-    "@yamato-daiwa/es-extensions": "1.5.2",
+    "@yamato-daiwa/es-extensions": "1.5.3",
     "@yamato-daiwa/es-extensions-nodejs": "1.5.1",
-    "@yamato-daiwa/style_guides": "0.0.17",
+    "@yamato-daiwa/style_guides": "0.0.19",
     "access-sniff": "3.2.0",
     "autoprefixer": "10.4.7",
     "browser-sync": "2.27.10",
     "cheerio": "1.0.0-rc.1",
     "css-loader": "6.7.1",
     "cssnano": "5.1.12",
-    "eslint": "8.19.0",
+    "eslint": "8.21.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-webpack-plugin": "3.1.1",
@@ -96,9 +96,10 @@
     "webpack-cli": "4.10.0"
   },
   "scripts": {
-    "Incremental development build": "webpack --mode development",
-    "Production build": "webpack --mode production",
-    "Lint": "eslint Source"
+    "Incremental development building": "webpack --mode development",
+    "Production building": "webpack --mode production",
+    "Linting": "eslint Source",
+    "Tree diagram of source files generating": "tree Source /f"
   },
   "license": "MIT",
   "repository": {

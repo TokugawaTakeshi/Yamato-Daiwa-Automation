@@ -1,5 +1,5 @@
 /* --- Assets ------------------------------------------------------------------------------------------------------- */
-import HTML_ValidatorLocalization__English from "./HTML_ValidatorLocalization.english";
+import HTML_ValidatorLocalization__english from "./HTML_ValidatorLocalization.english";
 
 /* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
@@ -31,7 +31,7 @@ import Stopwatch from "@UtilsIncubator/Stopwatch";
 
 class HTML_Validator {
 
-  public static localization: HTML_Validator.Localization = HTML_ValidatorLocalization__English;
+  public static localization: HTML_Validator.Localization = HTML_ValidatorLocalization__english;
 
 
   public static validateHTML(
@@ -139,7 +139,7 @@ class HTML_Validator {
           Logger.logErrorLikeMessage(
             HTML_Validator.localization.generateIssuesFoundErrorLog({
               targetFileRelativePath,
-              formattedErrors: formattedErrors.join("\n\n")
+              formattedErrorsAndWarnings: formattedErrors.join("\n\n")
             })
           );
         }).
@@ -181,41 +181,47 @@ namespace HTML_Validator {
 
   export type Localization = Readonly<{
 
-    generateFileIsEmptyWarningLog: (namedParameters: Localization.FileIsEmptyWarningLog.NamedParameters) => WarningLog;
+    generateFileIsEmptyWarningLog: (namedParameters: Localization.FileIsEmptyWarningLog.NamedParameters) =>
+        Localization.FileIsEmptyWarningLog;
 
-    generateValidationStartedInfoLog: (namedParameters: Localization.ValidationStartedInfoLog.NamedParameters) => InfoLog;
+    generateValidationStartedInfoLog: (namedParameters: Localization.ValidationStartedInfoLog.NamedParameters) =>
+        Localization.ValidationStartedInfoLog;
 
     generateValidationFinishedWithNoIssuesFoundSuccessLog: (
       namedParameters: Localization.ValidationFinishedWithNoIssuesFoundSuccessLog.NamedParameters
-    ) => SuccessLog;
+    ) => Localization.ValidationFinishedWithNoIssuesFoundSuccessLog;
 
-    issuesFoundNotification: Readonly<{ title: string; message: string; }>;
+    issuesFoundNotification: Localization.IssuesFoundNotification;
 
     generateIssueOccurrenceLocationIndication: (
       namedParameters: Localization.IssueOccurrenceLocationIndication.NamedParameters
     ) => string;
 
-    issuesTypesTitles: Readonly<{
-      grossViolation: string;
-      recommendationDisregard: string;
-      other: string;
-      keyAndValueSeparator: string;
-    }>;
+    issuesTypesTitles: Localization.IssuesTypesTitles;
 
-    generateIssuesFoundErrorLog: (namedParameters: Localization.IssuesFoundErrorLog.NamedParameters) => Log;
+    generateIssuesFoundErrorLog: (namedParameters: Localization.IssuesFoundErrorLog.NamedParameters) =>
+        Localization.IssuesFoundErrorLog;
 
-    validationFailedErrorLog: Log;
+    validationFailedErrorLog: Localization.ValidationFailedErrorLog;
   }>;
 
   export namespace Localization {
+
+    export type FileIsEmptyWarningLog = Readonly<Pick<WarningLog, "title" | "description">>;
 
     export namespace FileIsEmptyWarningLog {
       export type NamedParameters = Readonly<{ targetFileRelativePath: string; }>;
     }
 
+
+    export type ValidationStartedInfoLog = Readonly<Pick<InfoLog, "title" | "description">>;
+
     export namespace ValidationStartedInfoLog {
       export type NamedParameters = Readonly<{ targetFileRelativePath: string; }>;
     }
+
+
+    export type ValidationFinishedWithNoIssuesFoundSuccessLog = Readonly<Pick<SuccessLog, "title" | "description">>;
 
     export namespace ValidationFinishedWithNoIssuesFoundSuccessLog {
       export type NamedParameters = Readonly<{
@@ -223,6 +229,10 @@ namespace HTML_Validator {
         secondsElapsed: number;
       }>;
     }
+
+
+    export type IssuesFoundNotification = Readonly<{ title: string; message: string; }>;
+
 
     export namespace IssueOccurrenceLocationIndication {
       export type NamedParameters = Readonly<{
@@ -232,12 +242,26 @@ namespace HTML_Validator {
       }>;
     }
 
+
+    export type IssuesTypesTitles = Readonly<{
+      grossViolation: string;
+      recommendationDisregard: string;
+      other: string;
+      keyAndValueSeparator: string;
+    }>;
+
+
+    export type IssuesFoundErrorLog = Readonly<Required<Pick<Log, "customBadgeText" | "title" | "description">>>;
+
     export namespace IssuesFoundErrorLog {
       export type NamedParameters = Readonly<{
         targetFileRelativePath: string;
-        formattedErrors: string;
+        formattedErrorsAndWarnings: string;
       }>;
     }
+
+
+    export type ValidationFailedErrorLog = Readonly<Pick<Log, "title" | "description">>;
   }
 }
 

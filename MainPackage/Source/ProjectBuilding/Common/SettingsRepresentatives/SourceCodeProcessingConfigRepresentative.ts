@@ -14,6 +14,7 @@ export default abstract class SourceCodeProcessingConfigRepresentative<
 > {
 
   public abstract readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string>;
+  public abstract readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string;
   public abstract readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string;
 
   public abstract readonly relevantEntryPointsGroupsSettings: Map<

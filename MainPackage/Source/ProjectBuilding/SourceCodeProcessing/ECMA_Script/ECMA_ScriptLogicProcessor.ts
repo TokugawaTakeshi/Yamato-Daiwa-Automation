@@ -88,7 +88,10 @@ export default class ECMA_ScriptLogicProcessor extends TaskExecutor {
 
           /** 〔 納品版のみ理由 〕　開発版で同じ事をすれば、gulpが落ちる */
           if (
-            dataHoldingSelfInstance.masterConfigRepresentative.isProductionBuildingMode &&
+            (
+              dataHoldingSelfInstance.masterConfigRepresentative.isStagingBuildingMode ||
+              dataHoldingSelfInstance.masterConfigRepresentative.isProductionBuildingMode
+            ) &&
             isNotUndefined(finalErrorMessageDynamicPart)
           ) {
 

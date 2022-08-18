@@ -1,40 +1,33 @@
 import type AccessibilityInspector from "@MarkupProcessing/Plugins/AccessibilityInspector/AccessibilityInspector";
 
-import type {
-  WarningLog,
-  InfoLog,
-  SuccessLog,
-  Log
-} from "@yamato-daiwa/es-extensions";
 
-
-const AccessibilityInspectorLocalization__English: AccessibilityInspector.Localization = {
+const accessibilityInspectorLocalization__english: AccessibilityInspector.Localization = {
 
   generateFileIsEmptyWarningLog: (
     namedParameters: AccessibilityInspector.Localization.FileIsEmptyWarningLog.NamedParameters
-  ): WarningLog => ({
-    title: "Accessibility inspection terminated",
-    description: `File '${ namedParameters.targetFileRelativePath }' is empty, no HTML to inspect.`
+  ): AccessibilityInspector.Localization.FileIsEmptyWarningLog => ({
+    title: "HTML code accessibility inspection terminated",
+    description: `File '${ namedParameters.targetFileRelativePath }' is empty, nothing to inspect.`
   }),
 
   generateInspectionStartedInfoLog: (
     namedParameters: AccessibilityInspector.Localization.InspectionStartedInfoLog.NamedParameters
-  ): InfoLog => ({
-    title: "Accessibility inspection started",
-    description: `Begin the inspection of file '${ namedParameters.targetFileRelativePath }' ...`
+  ): AccessibilityInspector.Localization.InspectionStartedInfoLog => ({
+    title: "HTML code accessibility inspection started",
+    description: `Begin the accessibility inspection of HTML code in the file '${ namedParameters.targetFileRelativePath }' ...`
   }),
 
   generateInspectionFinishedWithNoIssuesFoundSuccessLog: (
     namedParameters: AccessibilityInspector.Localization.InspectionFinishedWithNoIssuesFoundSuccessLog.NamedParameters
-  ): SuccessLog => ({
-    title: "Accessibility inspection finished",
-    description: `File '${ namedParameters.targetFileRelativePath }' is has not the accessibility issues.\n` +
+  ): AccessibilityInspector.Localization.InspectionFinishedWithNoIssuesFoundSuccessLog => ({
+    title: "HTML code accessibility inspection finished",
+    description: `The HTML code in file '${ namedParameters.targetFileRelativePath }' has not the accessibility issues.\n` +
         `${ namedParameters.secondsElapsed } seconds elapsed.`
   }),
 
   issuesFoundNotification: {
-    title: "Accessibility validation, issue(s) found",
-    message: "Accessibility issues detected. Check the console for the details."
+    title: "HTML code accessibility inspection, issue(s) found",
+    message: "Accessibility issues detected in one or more HTML files. Please check the console for the details."
   },
 
   generateIssueOccurrenceLocationIndication: (
@@ -43,11 +36,11 @@ const AccessibilityInspectorLocalization__English: AccessibilityInspector.Locali
 
   generateIssuesFoundErrorLog: (
     namedParameters: AccessibilityInspector.Localization.IssuesFoundErrorLog.NamedParameters
-  ): Log => ({
-    customBadgeText: "Accessibility inspection not passed",
-    title: "Accessibility inspections, issue(s) found",
-    description: `File '${ namedParameters.targetFileRelativePath }' is including the following accessibility issue:\n\n` +
-        `${ namedParameters.formattedErrors }\n\n`
+  ): AccessibilityInspector.Localization.IssuesFoundErrorLog => ({
+    customBadgeText: "HTML code accessibility inspection not passed",
+    title: "HTML code accessibility inspection, issue(s) found",
+    description: `HTML file '${ namedParameters.targetFileRelativePath }' is including the following accessibility issues:\n\n` +
+        `${ namedParameters.formattedErrorsAndWarnings }\n\n`
   }),
 
   formattedError: {
@@ -57,4 +50,4 @@ const AccessibilityInspectorLocalization__English: AccessibilityInspector.Locali
 };
 
 
-export default AccessibilityInspectorLocalization__English;
+export default accessibilityInspectorLocalization__english;

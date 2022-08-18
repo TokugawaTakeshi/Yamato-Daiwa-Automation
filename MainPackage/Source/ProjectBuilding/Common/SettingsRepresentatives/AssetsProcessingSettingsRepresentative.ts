@@ -27,6 +27,8 @@ export default abstract class AssetsProcessingSettingsRepresentative<
   SpecificAssetsGroupNormalizedSettings extends AssetsGroupSettingsGenericProperties
 > {
 
+  public abstract readonly relevantSourceFilesGlobSelectors: Array<string>;
+  public abstract readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string;
   public abstract readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string;
 
   protected abstract assetsProcessingCommonSettings: SpecificAssetsProcessingCommonSettingsGenericProperties;
@@ -105,7 +107,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
   }
 
 
-  public constructor(masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative) {
+  protected constructor(masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative) {
     this.masterConfigRepresentative = masterConfigRepresentative;
   }
 

@@ -15,11 +15,11 @@ import type ConsumingProjectPreDefinedBuildingModes__Localized from
 import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
 
 
-type MarkupProcessingSettings__FromFile__RawValid = {
-  readonly common?: MarkupProcessingSettings__FromFile__RawValid.Common;
-  readonly linting?: MarkupProcessingSettings__FromFile__RawValid.Linting;
-  readonly entryPointsGroups: { [groupID: string]: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup; };
-};
+type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
+  common?: MarkupProcessingSettings__FromFile__RawValid.Common;
+  linting?: MarkupProcessingSettings__FromFile__RawValid.Linting;
+  entryPointsGroups: { [groupID: string]: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup; };
+}>;
 
 
 /* eslint-disable-next-line @typescript-eslint/no-redeclare --
@@ -29,86 +29,77 @@ type MarkupProcessingSettings__FromFile__RawValid = {
 namespace MarkupProcessingSettings__FromFile__RawValid {
 
   /* === Types ====================================================================================================== */
-  export type Common = {
-    readonly waitingForSubsequentFilesWillBeSavedPeriod__seconds?: number;
-  };
+  export type Common = Readonly<{ waitingForSubsequentFilesWillBeSavedPeriod__seconds?: number; }>;
 
-  export type Linting = {
-    readonly presetFileRelativePath?: string;
-    readonly disableCompletely?: boolean;
-  };
+  export type Linting = Readonly<{
+    presetFileRelativePath?: string;
+    disableCompletely?: boolean;
+  }>;
 
   export type EntryPointsGroup =
       SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
-      {
-        readonly linting?: EntryPointsGroup.Linting;
-        readonly HTML_Validation?: EntryPointsGroup.HTML_Validation;
-        readonly accessibilityInspection?: EntryPointsGroup.AccessibilityInspection;
-        readonly buildingModeDependent: {
-          [projectBuildingMode: string]: EntryPointsGroup.BuildingModeDependent;
-        };
-      };
+      Readonly<{
+        linting?: EntryPointsGroup.Linting;
+        HTML_Validation?: EntryPointsGroup.HTML_Validation;
+        accessibilityInspection?: EntryPointsGroup.AccessibilityInspection;
+        buildingModeDependent: { [projectBuildingMode: string]: EntryPointsGroup.BuildingModeDependent; };
+      }>;
 
   export namespace EntryPointsGroup {
 
     /* eslint-disable-next-line @typescript-eslint/no-shadow --
      * The declaring of type/interface inside namespace with same name as defined in upper scope
      * is completely valid TypeScript and not desired to be warned by @typescript-eslint. */
-    export type Linting = {
-      readonly disable?: boolean;
-    };
+    export type Linting = Readonly<{ disable?: boolean; }>;
 
     export type BuildingModeDependent = SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.
         EntryPointsGroup.BuildingModeDependent;
 
-    export type HTML_Validation = {
-      readonly disable?: boolean;
-    };
+    export type HTML_Validation = Readonly<{ disable?: boolean; }>;
 
-    export type AccessibilityInspection = {
-      readonly disable?: boolean;
-      readonly standard?: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
-    };
+    export type AccessibilityInspection = Readonly<{
+      disable?: boolean;
+      standard?: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
+    }>;
   }
 
   /* === Localization =============================================================================================== */
-  export type Localization = {
+  export type Localization = Readonly<{
 
-    readonly common: {
-      readonly KEY: string;
-      readonly waitingForSubsequentFilesWillBeSavedPeriod__seconds: { KEY: string; };
-    };
+    common: Readonly<{
+      KEY: string;
+      waitingForSubsequentFilesWillBeSavedPeriod__seconds: Readonly<{ KEY: string; }>;
+    }>;
 
-    readonly linting: {
-      readonly KEY: string;
-    };
+    linting: Readonly<{ KEY: string; }>;
 
-    readonly entryPointsGroups: {
+    entryPointsGroups: Readonly<{
 
-      readonly KEY: string;
+      KEY: string;
 
-      readonly linting: {
-        readonly KEY: string;
-        readonly disable: { KEY: string; };
-      };
+      linting: Readonly<{
+        KEY: string;
+        disable: Readonly<{ KEY: string; }>;
+      }>;
 
-      readonly HTML_Validation: {
-        readonly KEY: string;
-        readonly disable: { KEY: string; };
-      };
+      HTML_Validation: Readonly<{
+        KEY: string;
+        disable: Readonly<{ KEY: string; }>;
+      }>;
 
-      readonly accessibilityInspection: {
-        readonly KEY: string;
-        readonly standard: { KEY: string; };
-        readonly disable: { KEY: string; };
-      };
+      accessibilityInspection: Readonly<{
+        KEY: string;
+        standard: Readonly<{ KEY: string; }>;
+        disable: Readonly<{ KEY: string; }>;
+      }>;
 
-      readonly buildingModeDependent: {
-        readonly KEY: string;
-        readonly outputBaseDirectoryRelativePath: { KEY: string; };
-      };
-    };
-  };
+      buildingModeDependent: Readonly<{
+        KEY: string;
+        outputBaseDirectoryRelativePath: Readonly<{ KEY: string; }>;
+      }>;
+    }>;
+  }>;
+
 
   export function getLocalizedPropertiesSpecification(
     {
@@ -116,13 +107,12 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
       sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
       consumingProjectLocalizedPreDefinedBuildingModes,
       lintingCommonSettingsLocalizedPropertiesSpecification
-    }: {
-      readonly markupProcessingLocalization: Localization;
-      readonly sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification:
-          RawObjectDataProcessor.PropertiesSpecification;
-      readonly consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-      readonly lintingCommonSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.PropertiesSpecification;
-    }
+    }: Readonly<{
+      markupProcessingLocalization: Localization;
+      sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
+      consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
+      lintingCommonSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.PropertiesSpecification;
+    }>
   ): RawObjectDataProcessor.PropertiesSpecification {
 
     return {
@@ -157,6 +147,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
         newName: "entryPointsGroups",
         type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
         required: true,
+        minimalEntriesCount: 1,
 
         value: {
 
@@ -224,13 +215,11 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
               newName: "buildingModeDependent",
               type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
               required: true,
-
-              oneOfKeysIsRequired: [
-                consumingProjectLocalizedPreDefinedBuildingModes.development,
-                consumingProjectLocalizedPreDefinedBuildingModes.production
-              ],
+              minimalEntriesCount: 1,
 
               keysRenamings: {
+                [consumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
+                    ConsumingProjectPreDefinedBuildingModes.staticPreview,
                 [consumingProjectLocalizedPreDefinedBuildingModes.development]:
                     ConsumingProjectPreDefinedBuildingModes.development,
                 [consumingProjectLocalizedPreDefinedBuildingModes.testing]:

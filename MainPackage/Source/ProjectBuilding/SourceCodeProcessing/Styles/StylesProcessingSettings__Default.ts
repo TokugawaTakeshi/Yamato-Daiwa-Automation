@@ -7,6 +7,7 @@ export default {
   filePathAliasNotation: "@",
   revisioning: {
     mustExecute: (projectBuildingMode__possiblyCustom: string): boolean =>
+        projectBuildingMode__possiblyCustom !== ConsumingProjectPreDefinedBuildingModes.staticPreview &&
         projectBuildingMode__possiblyCustom !== ConsumingProjectPreDefinedBuildingModes.development,
     contentHashPostfixSeparator: "--"
   },

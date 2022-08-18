@@ -148,6 +148,10 @@ export default class ProjectBuildingMasterConfigRepresentative {
   /* --- Project building mode -------------------------------------------------------------------------------------- */
   public get consumingProjectBuildingMode(): string { return this.commonSettings.projectBuildingMode; }
 
+  public get isStaticPreviewBuildingMode(): boolean {
+    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.staticPreview;
+  }
+
   public get isDevelopmentBuildingMode(): boolean {
     return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.development;
   }
@@ -201,7 +205,8 @@ export default class ProjectBuildingMasterConfigRepresentative {
   }
 
   public get mustProvideBrowserLiveReloading(): boolean {
-    return isNotUndefined(this.browserLiveReloadingSettingsRepresentative) && this.isDevelopmentBuildingMode;
+    return isNotUndefined(this.browserLiveReloadingSettingsRepresentative) &&
+        (this.isStaticPreviewBuildingMode || this.isDevelopmentBuildingMode);
   }
 
 

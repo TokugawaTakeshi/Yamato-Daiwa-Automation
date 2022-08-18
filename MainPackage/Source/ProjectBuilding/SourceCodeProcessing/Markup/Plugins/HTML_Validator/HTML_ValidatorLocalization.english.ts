@@ -1,33 +1,26 @@
 import type HTML_Validator from "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
 
-import type {
-  WarningLog,
-  InfoLog,
-  SuccessLog,
-  Log
-} from "@yamato-daiwa/es-extensions";
 
-
-const HTML_ValidatorLocalization__English: HTML_Validator.Localization = {
+const HTML_ValidatorLocalization__english: HTML_Validator.Localization = {
 
   generateFileIsEmptyWarningLog: (
     namedParameters: HTML_Validator.Localization.FileIsEmptyWarningLog.NamedParameters
-  ): WarningLog =>
+  ): HTML_Validator.Localization.FileIsEmptyWarningLog =>
       ({
-        title: "HTML validation terminated",
-        description: `File '${ namedParameters.targetFileRelativePath }' is empty, no HTML to inspect.`
+        title: "HTML code validation terminated",
+        description: `File '${ namedParameters.targetFileRelativePath }' is empty, no HTML to validate.`
       }),
 
   generateValidationStartedInfoLog: (
     namedParameters: HTML_Validator.Localization.ValidationStartedInfoLog.NamedParameters
-  ): InfoLog => ({
-    title: "HTML validation started",
-    description: `Begin the inspection of file '${ namedParameters.targetFileRelativePath }' ...`
+  ): HTML_Validator.Localization.ValidationStartedInfoLog => ({
+    title: "HTML code validation started",
+    description: `Begin the validation of HTML code in the file '${ namedParameters.targetFileRelativePath }' ...`
   }),
 
   generateValidationFinishedWithNoIssuesFoundSuccessLog: (
     namedParameters: HTML_Validator.Localization.ValidationFinishedWithNoIssuesFoundSuccessLog.NamedParameters
-  ): SuccessLog => ({
+  ): HTML_Validator.Localization.ValidationFinishedWithNoIssuesFoundSuccessLog => ({
     title: "HTML validation finished",
     description: `File '${ namedParameters.targetFileRelativePath }' is fully obeying to W3C rules and recommendations.\n` +
         `${ namedParameters.secondsElapsed } seconds elapsed.`
@@ -52,11 +45,11 @@ const HTML_ValidatorLocalization__English: HTML_Validator.Localization = {
 
   generateIssuesFoundErrorLog: (
     namedParameters: HTML_Validator.Localization.IssuesFoundErrorLog.NamedParameters
-  ): Log => ({
+  ): HTML_Validator.Localization.IssuesFoundErrorLog => ({
     customBadgeText: "HTML validation not passed",
     title: "HTML validation, issue(s) found",
-    description: `File '${ namedParameters.targetFileRelativePath }' is including following HTML validity issues:\n\n` +
-        `${ namedParameters.formattedErrors }\n\n`
+    description: `File '${ namedParameters.targetFileRelativePath }' is including the following HTML validity issues:\n\n` +
+        `${ namedParameters.formattedErrorsAndWarnings }\n\n`
   }),
 
   validationFailedErrorLog: {
@@ -66,4 +59,4 @@ const HTML_ValidatorLocalization__English: HTML_Validator.Localization = {
 };
 
 
-export default HTML_ValidatorLocalization__English;
+export default HTML_ValidatorLocalization__english;
