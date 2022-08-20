@@ -52,6 +52,9 @@ npm i @yamato-daiwa/automation -D -E
   <dt>gulp</dt>
   <dd>Used as main task manager, the tool for providing of arranging of the tasks to sequences and series and running them</dd>
 
+  <dt>gulp-data</dt>
+  <dd>Used to provide the global variables defined by user in appropriate configuration inside the Pug templates</dd>
+
   <dt>gulp-debug</dt>
   <dd>Used to outputs the processed files names and quantity to the terminal</dd>
 
@@ -141,10 +144,20 @@ npm i @yamato-daiwa/automation -D -E
   <dd>
     Used to prevent the bundling of NodeJS modules by Webpack because this bundling brings a lot of warning and/or errors
     while not required for console and server applications
-  </dd>  
+  </dd>
 
-  <dt>yamljs</dt>
-  <dd>Used for reading and parsing of configuration YAML files</dd>
+  <dt>webpack-stream</dt>
+  <dd>
+    Used only for the generating of Pug files with integrated JavaScript compiled from TypeScript.
+    For this subtask, <b>webpack-stream</b> is perfect, but it has many limitations so it is not being used for the 
+    main processing of ECMAScript logic.
+  </dd>
+
+  <dt>webpack-node-externals</dt>
+  <dd>
+    Used to prevent the bundling of NodeJS modules by Webpack because this bundling brings a lot of warning and/or errors
+    while not required for console and server applications
+  </dd>
 
   <dt>yaml-loader</dt>
   <dd>Used to provide the import of content of YAML files converted to JavaScript native object</dd> 

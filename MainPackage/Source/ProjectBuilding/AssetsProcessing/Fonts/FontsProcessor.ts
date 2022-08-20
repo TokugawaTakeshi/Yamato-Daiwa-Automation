@@ -7,7 +7,8 @@ import FontsProcessingSettingsRepresentative from "@FontsProcessing/FontsProcess
 
 /* --- Tasks executor ----------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-import type GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedTaskExecutor";
+import type GulpStreamsBasedTaskExecutor from
+    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import Gulp from "gulp";
@@ -49,7 +50,7 @@ class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
       masterConfigRepresentative, fontsProcessorSettingsRepresentative
     );
 
-    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcher();
+    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcherIfMust();
 
     const assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode: Array<string> =
         fontsProcessorSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths;
@@ -88,6 +89,8 @@ class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
 
         pipe(
           Gulp.dest((targetFileInFinalState: VinylFile): string =>
+              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+               * No known simple solution; will be fixed at 2nd generation of FontsProcessor.  */
               (targetFileInFinalState as FontsProcessor.FontVinylFile).outputDirectoryAbsolutePath)
         );
   }
@@ -109,11 +112,15 @@ class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
           respectiveAssetsGroupNormalizedSettings: normalizedFontsGroupSettingsActualForCurrentFile
         });
 
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of FontsProcessor.  */
     return fileInInitialState as FontsProcessor.FontVinylFile;
   }
 
   private postProcess(_processedFontFile: VinylFile): VinylFile {
 
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of FontsProcessor.  */
     const processedFontFile: FontsProcessor.FontVinylFile = _processedFontFile as FontsProcessor.FontVinylFile;
 
     if (processedFontFile.processingSettings.revisioning.mustExecute) {
@@ -127,7 +134,10 @@ class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
         sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.
         set(
           ImprovedPath.replacePathSeparatorsToForwardSlashes(processedFontFile.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(processedFontFile.outputDirectoryAbsolutePath, processedFontFile.basename)
+          ImprovedPath.joinPathSegments(
+            [ processedFontFile.outputDirectoryAbsolutePath, processedFontFile.basename ],
+            { forwardSlashOnlySeparators: true }
+          )
         );
 
     return processedFontFile;

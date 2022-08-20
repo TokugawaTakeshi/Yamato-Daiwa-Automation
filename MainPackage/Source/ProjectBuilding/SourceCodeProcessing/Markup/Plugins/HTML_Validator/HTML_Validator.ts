@@ -7,7 +7,7 @@ import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/Pro
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import HTML_ValidationService from "html-validator";
 import type VinylFile from "vinyl";
-import getExpectedToBeNonNullStringifiedContentOfVinylFile from "@Utils/getExpectedToBeNonNullStringifiedContentOfVinylFile";
+import extractStringifiedContentFromVinylFile from "@Utils/extractStringifiedContentFromVinylFile";
 import isCompiledHTML_ContentEmpty from "@Utils/isCompiledHTML_ContentEmpty";
 import NodeNotifier from "node-notifier";
 
@@ -39,7 +39,7 @@ class HTML_Validator {
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): void {
 
-    const extractedHTML_Code: string = getExpectedToBeNonNullStringifiedContentOfVinylFile(compiledHTML_File);
+    const extractedHTML_Code: string = extractStringifiedContentFromVinylFile(compiledHTML_File);
     const targetFileRelativePath: string = ImprovedPath.computeRelativePath({
       basePath: masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
       comparedPath: compiledHTML_File.path
@@ -267,3 +267,8 @@ namespace HTML_Validator {
 
 
 export default HTML_Validator;
+
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars --
+* It is the only way to extract the child namespace (no need to expose whole HTML_Validator for the localization packages).
+* https://stackoverflow.com/a/73400523/4818123 */
+export import HTML_ValidatorLocalization = HTML_Validator.Localization;

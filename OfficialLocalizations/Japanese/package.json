@@ -2,6 +2,6 @@
   "name": "@yamato-daiwa/automation-localization-japanese",
   "private": true,
   "devDependencies": {
-    "@yamato-daiwa/automation": "0.1.0"
+    "@yamato-daiwa/automation": "0.2.0-alpha.0"
   }
 }

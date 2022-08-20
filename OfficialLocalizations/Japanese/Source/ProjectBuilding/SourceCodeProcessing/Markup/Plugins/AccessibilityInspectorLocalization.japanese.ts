@@ -1,25 +1,25 @@
-import { AccessibilityInspector } from "@yamato-daiwa/automation/LocalizationRequirements";
+import { AccessibilityInspectorLocalization } from "@yamato-daiwa/automation/LocalizationRequirements";
 
 
-const accessibilityInspectorLocalization__japanese: AccessibilityInspector.Localization = {
+const accessibilityInspectorLocalization__japanese: AccessibilityInspectorLocalization = {
 
   generateFileIsEmptyWarningLog: (
-    namedParameters: AccessibilityInspector.Localization.FileIsEmptyWarningLog.NamedParameters
-  ): AccessibilityInspector.Localization.FileIsEmptyWarningLog => ({
+    namedParameters: AccessibilityInspectorLocalization.FileIsEmptyWarningLog.NamedParameters
+  ): AccessibilityInspectorLocalization.FileIsEmptyWarningLog => ({
     title: "HTMLコードのアクセサビリチ検問中断",
     description: `ファイル「${ namedParameters.targetFileRelativePath }」は空なので、今回はアクセサビリチの検問は実行されません。`
   }),
 
   generateInspectionStartedInfoLog: (
-    namedParameters: AccessibilityInspector.Localization.InspectionStartedInfoLog.NamedParameters
-  ): AccessibilityInspector.Localization.InspectionStartedInfoLog => ({
+    namedParameters: AccessibilityInspectorLocalization.InspectionStartedInfoLog.NamedParameters
+  ): AccessibilityInspectorLocalization.InspectionStartedInfoLog => ({
     title: "HTMLコードのアクセサビリチ検問開始",
     description: `これよりファイル「${ namedParameters.targetFileRelativePath }」にあるHTMLコードのアクセサビリチ検問を開始します・・・`
   }),
 
   generateInspectionFinishedWithNoIssuesFoundSuccessLog: (
-    namedParameters: AccessibilityInspector.Localization.InspectionFinishedWithNoIssuesFoundSuccessLog.NamedParameters
-  ): AccessibilityInspector.Localization.InspectionFinishedWithNoIssuesFoundSuccessLog => ({
+    namedParameters: AccessibilityInspectorLocalization.InspectionFinishedWithNoIssuesFoundSuccessLog.NamedParameters
+  ): AccessibilityInspectorLocalization.InspectionFinishedWithNoIssuesFoundSuccessLog => ({
     title: "アクセサビリチ検問完了",
     description: `ファイル「${ namedParameters.targetFileRelativePath }」にあるHTMLコードはアクセサビリチの問題が有りません。\n` +
         `秒間経過：${ namedParameters.secondsElapsed }`
@@ -32,12 +32,12 @@ const accessibilityInspectorLocalization__japanese: AccessibilityInspector.Local
 
 
   generateIssueOccurrenceLocationIndication: (
-    namedParameters: AccessibilityInspector.Localization.IssueOccurrenceLocationIndication.NamedParameters
+    namedParameters: AccessibilityInspectorLocalization.IssueOccurrenceLocationIndication.NamedParameters
   ): string => `${ namedParameters.lineNumber }行目　${ namedParameters.columnNumber }列目`,
 
   generateIssuesFoundErrorLog: (
-    namedParameters: AccessibilityInspector.Localization.IssuesFoundErrorLog.NamedParameters
-  ): AccessibilityInspector.Localization.IssuesFoundErrorLog => ({
+    namedParameters: AccessibilityInspectorLocalization.IssuesFoundErrorLog.NamedParameters
+  ): AccessibilityInspectorLocalization.IssuesFoundErrorLog => ({
     customBadgeText: "HTMLコードアクセサビリチ検問不合格",
     title: "HTMLコードアクセサビリチ検問、問題発見",
     description: `HTMLファイル「${ namedParameters.targetFileRelativePath }」は下記のアクセサビリチ問題を含めています\n\n` +

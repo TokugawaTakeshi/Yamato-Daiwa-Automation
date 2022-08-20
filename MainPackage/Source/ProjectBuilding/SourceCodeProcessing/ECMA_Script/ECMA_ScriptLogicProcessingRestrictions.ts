@@ -1,7 +1,7 @@
 namespace ECMA_ScriptLogicProcessingRestrictions {
 
-  export const supportedSourceFileNameExtensionsWithoutLeadingDots: Array<string> = [ "mjs", "js", "ts" ];
-  export const supportedOutputFileNameExtensionsWithoutLeadingDots: Array<string> = [ "js" ];
+  export const supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string> = [ "js", "mjs", "jsx", "ts", "tsx" ];
+  export const supportedOutputFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string> = [ "js" ];
 
   export enum SupportedECMA_ScriptRuntimesTypes {
     browser = "BROWSER",
@@ -9,6 +9,7 @@ namespace ECMA_ScriptLogicProcessingRestrictions {
     nodeJS = "NODEJS",
     pug = "PUG"
   }
+
 }
 
 

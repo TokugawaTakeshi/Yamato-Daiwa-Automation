@@ -5,13 +5,13 @@ import type ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/
 import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
 
 
-type ECMA_ScriptLogicProcessingSettings__Normalized = {
-  readonly common: ECMA_ScriptLogicProcessingSettings__Normalized.Common;
-  readonly linting: ECMA_ScriptLogicProcessingSettings__Normalized.Linting;
-  readonly entryPointsGroups: Map<
+type ECMA_ScriptLogicProcessingSettings__Normalized = Readonly<{
+  common: ECMA_ScriptLogicProcessingSettings__Normalized.Common;
+  linting: ECMA_ScriptLogicProcessingSettings__Normalized.Linting;
+  relevantEntryPointsGroups: ReadonlyMap<
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
   >;
-};
+}>;
 
 
 /* eslint-disable-next-line @typescript-eslint/no-redeclare --
@@ -22,26 +22,28 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
 
   export type Common =
       ProjectBuildingConfig__Normalized.SourceCodeProcessingCommonSettingsGenericProperties &
-      {
-        readonly directoriesAliasesAbsolutePaths?: { [directoryAlias: string]: string | undefined; };
-        readonly directoriesAliasesRelativePaths?: { [directoryAlias: string]: string | undefined; };
-      };
+      Readonly<{
+        directoriesAliasesAbsolutePaths?: Readonly<{ [directoryAlias: string]: string | undefined; }>;
+        directoriesAliasesRelativePaths?: Readonly<{ [directoryAlias: string]: string | undefined; }>;
+      }>;
 
-  export type Linting = {
-    readonly presetFileAbsolutePath?: string;
-    readonly isCompletelyDisabled: boolean;
-  };
+
+  export type Linting = Readonly<{
+    presetFileAbsolutePath?: string;
+    mustExecute: boolean;
+  }>;
+
 
   export type EntryPointsGroup =
       ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings &
-      {
-        readonly targetRuntime: EntryPointsGroup.Runtime;
-        readonly entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML: string;
-        readonly associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer?: string;
-        readonly typeScriptConfigurationFileAbsolutePath?: string;
-        readonly revisioning: ProjectBuildingConfig__Normalized.Revisioning;
-        readonly distributing?: EntryPointsGroup.Distributing;
-      };
+      Readonly<{
+        targetRuntime: EntryPointsGroup.Runtime;
+        entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML: string;
+        associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer?: string;
+        typeScriptConfigurationFileAbsolutePath: string;
+        revisioning: ProjectBuildingConfig__Normalized.Revisioning;
+        distributing?: EntryPointsGroup.Distributing;
+      }>;
 
   export namespace EntryPointsGroup {
 
@@ -49,43 +51,41 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
 
     export namespace Runtime {
 
-      export type Browser = {
-        readonly type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.browser;
-      };
+      export type Browser = Readonly<{
+        type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.browser;
+      }>;
 
-      export type WebWorker = {
-        readonly type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.webWorker;
-      };
+      export type WebWorker = Readonly<{
+        type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.webWorker;
+      }>;
 
-      export type NodeJS = {
-        readonly type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.nodeJS;
-        readonly minimalVersion: {
-          readonly major: number;
-          readonly minor?: number;
-        };
-      };
+      export type NodeJS = Readonly<{
+        type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.nodeJS;
+        minimalVersion: Readonly<{
+          major: number;
+          minor?: number;
+        }>;
+      }>;
 
-      export type Pug = {
-        readonly type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.pug;
-      };
+      export type Pug = Readonly<{ type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.pug; }>;
     }
 
-    export type Distributing = {
-      readonly exposingOfExportsFromEntryPoints: Distributing.ExposingOfExportsFromEntryPoints;
-      readonly typeScriptTypesDeclarations: Distributing.TypeScriptTypesDeclarations;
-    };
+    export type Distributing = Readonly<{
+      exposingOfExportsFromEntryPoints: Distributing.ExposingOfExportsFromEntryPoints;
+      typeScriptTypesDeclarations: Distributing.TypeScriptTypesDeclarations;
+    }>;
 
     export namespace Distributing {
 
-      export type ExposingOfExportsFromEntryPoints = {
-        readonly mustExpose: boolean;
-        readonly namespace?: string;
-      };
+      export type ExposingOfExportsFromEntryPoints = Readonly<{
+        mustExpose: boolean;
+        namespace?: string;
+      }>;
 
-      export type TypeScriptTypesDeclarations = {
-        readonly mustGenerate: boolean;
-        readonly fileNameWithoutExtension: string;
-      };
+      export type TypeScriptTypesDeclarations = Readonly<{
+        mustGenerate: boolean;
+        fileNameWithoutExtension: string;
+      }>;
     }
   }
 }

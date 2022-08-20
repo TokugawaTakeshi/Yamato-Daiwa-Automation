@@ -7,14 +7,19 @@ import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/Pro
 import GulpStreamBasedSourceCodeProcessingConfigRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/GulpStreamBasedSourceCodeProcessingConfigRepresentative";
 
+/* --- Utils -------------------------------------------------------------------------------------------------------- */
+import { getArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne } from "@yamato-daiwa/es-extensions";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+
 
 export default class MarkupProcessingSettingsRepresentative extends GulpStreamBasedSourceCodeProcessingConfigRepresentative<
   MarkupProcessingSettings__Normalized.Common, MarkupProcessingSettings__Normalized.EntryPointsGroup
 > {
 
-  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string>;
+  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Markup";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Markup";
+  public readonly TASK_NAME_FOR_LOGGING: string = "Markup processing";
   public readonly prefixOfEntryPointsGroupReference: string = "@";
 
   public readonly waitingForTheOtherFilesWillBeSavedPeriod__seconds: number;
@@ -23,9 +28,10 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
   >;
 
   public readonly sourceCodeLintingCommonSettings: MarkupProcessingSettings__Normalized.Linting;
-  public readonly sourceAndOutputFilesAbsolutePathsCorrespondenceMap: Map<string, string> = new Map<string, string>();
+  public readonly staticPreviewSettings: MarkupProcessingSettings__Normalized.StaticPreview;
+  public readonly sourceAndOutputFilesAbsolutePathsCorrespondenceMap: Map<string, string> = new Map();
 
-  public readonly relevantEntryPointsGroupsSettings: Map<
+  public readonly relevantEntryPointsGroupsSettings: ReadonlyMap<
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, MarkupProcessingSettings__Normalized.EntryPointsGroup
   >;
 
@@ -37,16 +43,21 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
 
-    super(projectBuildingMasterConfigRepresentative);
+    super({
+      masterConfigRepresentative: projectBuildingMasterConfigRepresentative,
+      mustLogPartialFilesAndEntryPointsRelationsMap: normalizedMarkupProcessingSettings.logging.
+          partialFilesAndParentEntryPointsCorrespondence
+    });
 
     this.sourceCodeProcessingCommonSettings = normalizedMarkupProcessingSettings.common;
     this.sourceCodeLintingCommonSettings = normalizedMarkupProcessingSettings.linting;
+    this.staticPreviewSettings = normalizedMarkupProcessingSettings.staticPreview;
     this.relevantEntryPointsGroupsSettings = normalizedMarkupProcessingSettings.relevantEntryPointsGroups;
 
     this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = normalizedMarkupProcessingSettings.common.
         supportedSourceFileNameExtensionsWithoutLeadingDots;
     this.waitingForTheOtherFilesWillBeSavedPeriod__seconds = normalizedMarkupProcessingSettings.common.
-        waitingForSubsequentFilesWillBeSavedPeriod__seconds;
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds;
 
     this.entryPointsGroupsNormalizedSettingsMappedByReferences = new Map<
       string, MarkupProcessingSettings__Normalized.EntryPointsGroup
@@ -63,4 +74,46 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
 
     super.initializeOrUpdatePartialFilesAndEntryPointsRelationsMap();
   }
+
+
+  /* === Static preview ============================================================================================= */
+  public getEntryPointStateDependentVariations(
+    targetFileAbsolutePath: string
+  ): MarkupProcessingSettings__Normalized.StaticPreview.PagesStateDependentVariationsSpecification.Page | null {
+    return this.staticPreviewSettings.stateDependentPagesVariationsSpecification[targetFileAbsolutePath] ?? null;
+  }
+
+  public get staticDataForStaticPreview(): MarkupProcessingSettings__Normalized.StaticPreview.ImportsFromStaticDataFiles {
+    return this.staticPreviewSettings.importsFromStaticDataFiles;
+  }
+
+  /* --- Imports from the TypeScript -------------------------------------------------------------------------------- */
+  public get compiledTypeScriptImportingSettings(): MarkupProcessingSettings__Normalized.StaticPreview.
+      ImportsFromCompiledTypeScript | undefined {
+    return this.staticPreviewSettings.compiledTypeScriptImporting;
+  }
+
+  public get importedTypeScriptSourceFilesAbsolutePaths(): Array<string> {
+    return (this.compiledTypeScriptImportingSettings?.files ?? []).map(
+      (
+        importFromCompiledTypeScript: MarkupProcessingSettings__Normalized.StaticPreview.
+            ImportsFromCompiledTypeScript.FileMetadata
+      ): string => importFromCompiledTypeScript.sourceFileAbsolutePath
+    );
+  }
+
+  public getTypeScriptImportingSettingsExpectedToExistForSpecificOutputJavaScriptFile(
+    targetOutputJavaScriptFilePath: string
+  ): MarkupProcessingSettings__Normalized.StaticPreview.ImportsFromCompiledTypeScript.FileMetadata {
+    return getArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne(
+      this.staticPreviewSettings.compiledTypeScriptImporting?.files ?? [],
+      (arrayElement: MarkupProcessingSettings__Normalized.StaticPreview.ImportsFromCompiledTypeScript.FileMetadata): boolean =>
+          ImprovedPath.joinPathSegments([
+            arrayElement.outputDirectoryAbsolutePath,
+            `${ arrayElement.outputFileNameWithoutExtension }.js`
+          ], { alwaysForwardSlashSeparators: true }) === targetOutputJavaScriptFilePath,
+      { mustThrowErrorIfElementNotFoundOrMoreThan1: true }
+    );
+  }
+
 }

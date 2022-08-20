@@ -1,3 +1,5 @@
+import ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 import { ConsoleCommandsParser } from "@yamato-daiwa/es-extensions-nodejs";
 
 
@@ -16,7 +18,8 @@ namespace ApplicationConsoleLineInterface {
           newName: "projectBuildingMode",
           type: ConsoleCommandsParser.ParametersTypes.string,
           required: true,
-          shortcut: "m"
+          shortcut: "m",
+          allowedAlternatives: Object.values(ConsumingProjectPreDefinedBuildingModes)
         },
         configurationFile: {
           newName: "customConfigurationFileName__possiblyWithoutExtension",
@@ -36,7 +39,7 @@ namespace ApplicationConsoleLineInterface {
 
   export type BuildProjectConsoleCommand = {
     phrase: CommandPhrases.buildProject;
-    projectBuildingMode: string;
+    projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
     customConfigurationFileName__possiblyWithoutExtension?: string;
     selectiveExecutionID?: string;
   };

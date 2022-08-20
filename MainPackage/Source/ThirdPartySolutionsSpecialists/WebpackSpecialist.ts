@@ -1,3 +1,65 @@
+import type Webpack from "webpack";
+import type TypeScript from "typescript";
+
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+
+
+abstract class WebpackSpecialist {
+
+  public static convertPathsAliasesFromTypeScriptFormatToWebpackFormat(
+    {
+      typeScriptBasicAbsolutePath,
+      typeScriptPathsSettings
+    }: Readonly<{
+      typeScriptBasicAbsolutePath: string;
+      typeScriptPathsSettings: TypeScript.CompilerOptions["paths"];
+    }>
+  ): { [ alias: string ]: string | Array<string>; } {
+
+    const webpackAliasesConfiguration: { [ alias: string ]: string | Array<string>; } = {};
+
+    for (const [ alias, paths ] of Object.entries(typeScriptPathsSettings ?? {})) {
+
+      const normalizedAlias: string = alias.endsWith("/*") ? alias.slice(0, -"/*".length) : alias;
+
+      webpackAliasesConfiguration[normalizedAlias] = paths.map(
+        (path: string): string => ImprovedPath.joinPathSegments(
+          [
+            typeScriptBasicAbsolutePath,
+            ...path.endsWith("/*") ? [ path.slice(0, -"/*".length) ] : [ path ]
+          ],
+          { alwaysForwardSlashSeparators: true }
+        )
+      );
+
+    }
+
+    return webpackAliasesConfiguration;
+
+  }
+
+  public static generateLoadersResolvingSettings(
+    consumingProjectRootDirectoryAbsolutePath: string
+  ): Webpack.Configuration["resolveLoader"] {
+    return {
+      modules: [
+
+        /* [ Theory ] Actual for normal usage via "npm install" */
+        ImprovedPath.joinPathSegments(
+          [ consumingProjectRootDirectoryAbsolutePath, "node_modules" ],
+          { alwaysForwardSlashSeparators: true }
+        ),
+
+        /* [ Theory ] Actual for usage via "npm-link". */
+        ImprovedPath.joinPathSegments([ __dirname, "node_modules" ], { alwaysForwardSlashSeparators: true })
+
+      ]
+    };
+  }
+
+}
+
+
 namespace WebpackSpecialist {
 
   /* [ Reference ] https://webpack.js.org/configuration/mode/#usage */

@@ -1,6 +1,8 @@
 /* --- Business rules ----------------------------------------------------------------------------------------------- */
 import { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
+import type ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 
 /* --- Raw valid config ---------------------------------------------------------------------------------------------- */
 import type ProjectBuildingCommonSettings__FromFile__RawValid from
@@ -26,7 +28,7 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
     }: {
       commonSettings__fromFile__rawValid: ProjectBuildingCommonSettings__FromFile__RawValid;
       consumingProjectRootDirectoryAbsolutePath: string;
-      projectBuildingMode: string;
+      projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
       actualSelectiveExecution?: ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution;
     }
   ): ProjectBuildingCommonSettings__Normalized {
@@ -40,7 +42,7 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
     let actualPublicDirectoryAbsolutePath: string | undefined;
 
     if (isNotUndefined(actualPublicDirectoryRelativePath)) {
-      actualPublicDirectoryAbsolutePath = ImprovedPath.buildAbsolutePath(
+      actualPublicDirectoryAbsolutePath = ImprovedPath.joinPathSegments(
         [ consumingProjectRootDirectoryAbsolutePath__forwardSlashes, actualPublicDirectoryRelativePath ],
         { forwardSlashOnlySeparators: true }
       );

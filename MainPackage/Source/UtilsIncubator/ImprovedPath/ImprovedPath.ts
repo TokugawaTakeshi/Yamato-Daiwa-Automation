@@ -7,21 +7,13 @@ import {
   undefinedToEmptyString,
   replaceDoubleBackslashesWithForwardSlashes,
   removeArrayElementsByPredicates,
+  removeSpecificCharacterFromCertainPosition,
   Logger,
   UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
 
 
 abstract class ImprovedPath {
-
-  public static buildAbsolutePath(
-    pathSegments: Array<string>,
-    options?: { forwardSlashOnlySeparators?: boolean; }
-  ): string {
-    return options?.forwardSlashOnlySeparators === true ?
-        replaceDoubleBackslashesWithForwardSlashes(Path.resolve(...pathSegments)) :
-        Path.resolve(...pathSegments);
-  }
 
   public static parsePath(targetPath: string, options?: { forwardSlashOnlySeparators?: boolean; }): ImprovedPath.ParsedPath {
 
@@ -211,8 +203,13 @@ abstract class ImprovedPath {
     return replaceDoubleBackslashesWithForwardSlashes(Path.relative(parametersObject.basePath, parametersObject.comparedPath));
   }
 
-  public static joinPathSegments(...pathSegments: Array<string>): string {
-    return replaceDoubleBackslashesWithForwardSlashes(Path.join(...pathSegments));
+  public static joinPathSegments(
+    pathSegments: ReadonlyArray<string>,
+    options?: Readonly<{ forwardSlashOnlySeparators: boolean; }>
+  ): string {
+    return options?.forwardSlashOnlySeparators === true ?
+        replaceDoubleBackslashesWithForwardSlashes(Path.join(...pathSegments)) :
+        Path.join(...pathSegments);
   }
 
   public static splitPathToSegments(targetPath: string): Array<string> {
@@ -281,7 +278,7 @@ abstract class ImprovedPath {
       mutably: true
     });
 
-    return ImprovedPath.joinPathSegments(...targetPath__splitToSegments);
+    return ImprovedPath.joinPathSegments(targetPath__splitToSegments, { forwardSlashOnlySeparators: true });
   }
 
   public static isFilenameExtensionIs(targetFilePath: string, _filenameExtensions: string | Array<string>): boolean {
@@ -312,6 +309,26 @@ abstract class ImprovedPath {
 
   public static getCurrentWorkDirectory(): string {
     return replaceDoubleBackslashesWithForwardSlashes(process.cwd());
+  }
+
+  public static addFileNameExtensionIfNotPresent(
+    {
+      targetFilePath,
+      fileNameExtension
+    }: Readonly<{
+      targetFilePath: string;
+      fileNameExtension: string;
+    }>
+  ): string {
+    return ImprovedPath.hasFilenameExtension(targetFilePath) ?
+        targetFilePath :
+        `${ targetFilePath }.${ 
+          removeSpecificCharacterFromCertainPosition({
+            targetString: fileNameExtension,
+            fromFirstPosition: true,
+            targetCharacter: "."
+          })
+        }`;
   }
 }
 

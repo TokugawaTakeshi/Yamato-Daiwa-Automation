@@ -7,7 +7,8 @@ import ImagesProcessingSettingsRepresentative from "@ImagesProcessing/ImagesProc
 
 /* --- Tasks executor ----------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-import type GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedTaskExecutor";
+import type GulpStreamsBasedTaskExecutor from
+    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import Gulp from "gulp";
@@ -52,7 +53,7 @@ class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
       masterConfigRepresentative, imagesProcessorSettingsRepresentative
     );
 
-    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcher();
+    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcherIfMust();
 
     const assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode: Array<string> =
         imagesProcessorSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths;
@@ -101,6 +102,8 @@ class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
 
         pipe(
           Gulp.dest((targetFileInFinalState: VinylFile): string =>
+              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+               * No known simple solution; will be fixed at 2nd generation of ImagesProcessor.  */
               (targetFileInFinalState as ImagesProcessor.ImageVinylFile).outputDirectoryAbsolutePath)
         );
   }
@@ -122,11 +125,15 @@ class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
           respectiveAssetsGroupNormalizedSettings: normalizedImagesGroupSettingsActualForCurrentFile
         });
 
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of ImagesProcessor.  */
     return fileInInitialState as ImagesProcessor.ImageVinylFile;
   }
 
   private postProcess(_processedImageFile: VinylFile): VinylFile {
 
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of ImagesProcessor.  */
     const processedImageFile: ImagesProcessor.ImageVinylFile = _processedImageFile as ImagesProcessor.ImageVinylFile;
 
     if (processedImageFile.processingSettings.revisioning.mustExecute) {
@@ -141,7 +148,10 @@ class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
         sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.
         set(
           ImprovedPath.replacePathSeparatorsToForwardSlashes(processedImageFile.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(processedImageFile.outputDirectoryAbsolutePath, processedImageFile.basename)
+          ImprovedPath.joinPathSegments(
+            [ processedImageFile.outputDirectoryAbsolutePath, processedImageFile.basename ],
+            { forwardSlashOnlySeparators: true }
+          )
         );
 
     return processedImageFile;

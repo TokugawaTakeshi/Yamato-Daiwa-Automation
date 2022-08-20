@@ -1,3 +1,7 @@
+/* --- Restrictions---- --------------------------------------------------------------------------------------------- */
+import type ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+
 /* --- Raw valid config --------------------------------------------------------------------------------------------- */
 import { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
@@ -28,9 +32,8 @@ import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 import ProjectBuildingCommonSettingsNormalizer from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettingsNormalizer";
-import ProjectBuildingDebuggingSettingsNormalizer from "./Debugging/ProjectBuildingDebuggingSettingsNormalizer";
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
-import MarkupProcessingRawSettingsNormalizer from "@MarkupProcessing/MarkupProcessingRawSettingsNormalizer";
+import MarkupProcessingRawSettingsNormalizer from "@MarkupProcessing/RawSettingsNormalizer/MarkupProcessingRawSettingsNormalizer";
 import type StylesProcessingSettings__Normalized from "@StylesProcessing/StylesProcessingSettings__Normalized";
 import StylesProcessingRawSettingsNormalizer from "@StylesProcessing/StylesProcessingRawSettingsNormalizer";
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
@@ -46,8 +49,9 @@ import VideosProcessingRawSettingsNormalizer from "@VideosProcessing/VideosProce
 import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosProcessingSettings__Normalized";
 import AudiosProcessingRawSettingsNormalizer from "@AudiosProcessing/AudiosProcessingRawSettingsNormalizer";
 import type BrowserLiveReloadingSettings__Normalized from
-    "./BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
-import BrowserLiveReloadingSettingsNormalizer from "@BrowserLiveReloading/BrowserLiveReloadingSettingsNormalizer";
+    "@BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
+import BrowserLiveReloadingSettingsNormalizer from
+    "@BrowserLiveReloading/RawSettingsNormalizer/BrowserLiveReloadingSettingsNormalizer";
 
 /* --- Auxiliaries -------------------------------------------------------------------------------------------------- */
 import {
@@ -56,7 +60,7 @@ import {
   isNotUndefined,
   isUndefined
 } from "@yamato-daiwa/es-extensions";
-import InvalidConsoleCommandError from "@UtilsIncubator/Logging/Errors/InvalidConsoleCommandError";
+import { InvalidConsoleCommandError } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 abstract class ProjectBuilderRawConfigNormalizer {
@@ -75,7 +79,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
       projectBuildingConfig__fromFile__rawValid: ProjectBuildingConfig__FromFile__RawValid;
       projectBuildingConfig__fromConsole: {
         selectiveExecutionID?: string;
-        projectBuildingMode: string;
+        projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
       };
     }
   ): ProjectBuildingConfig__Normalized {
@@ -101,8 +105,6 @@ abstract class ProjectBuilderRawConfigNormalizer {
     return {
 
       commonSettings: commonSettings__normalized,
-
-      debugging: ProjectBuildingDebuggingSettingsNormalizer.normalize(projectBuildingConfig__fromFile__rawValid.debugging),
 
       ...((): { markupProcessing?: MarkupProcessingSettings__Normalized; } => {
 
@@ -319,7 +321,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
         const selectedBrowserLiveReloadingSetupID: string | undefined = actualSelectiveExecution?.browserLiveReloadingSetupID;
 
         return {
-          browserLiveReloading: BrowserLiveReloadingSettingsNormalizer.getNormalizedSettings({
+          browserLiveReloading: BrowserLiveReloadingSettingsNormalizer.normalize({
             browserLiveReloadingSettings__fromFile__rawValid,
             projectBuilderCommonSettings__normalized: commonSettings__normalized,
             hasSelectiveExecutionBeenDeclared: isNotUndefined(actualSelectiveExecution),

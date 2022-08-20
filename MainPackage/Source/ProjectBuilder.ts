@@ -1,3 +1,7 @@
+/* --- Restrictions ------------------------------------------------------------------------------------------------- */
+import type ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+
 /* --- Raw valid config ---------------------------------------------------------------------------------------------- */
 import ProjectBuildingConfig__FromFile__RawValid from
     "./ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid";
@@ -11,6 +15,8 @@ import ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectB
 
 /* --- Actuators ---------------------------------------------------------------------------------------------------- */
 import MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
+import MarkupSourceCodeLinter from "@MarkupProcessing/Subtasks/MarkupSourceCodeLinter/MarkupSourceCodeLinter";
+import CompiledInlineTypeScriptImporterForPug from "@MarkupProcessing/Subtasks/CompiledTypeScriptImporterForPug";
 import StylesProcessor from "@StylesProcessing/StylesProcessor";
 import ECMA_ScriptLogicProcessor from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessor";
 import ImagesProcessor from "@ImagesProcessing/ImagesProcessor";
@@ -81,6 +87,9 @@ abstract class ProjectBuilder {
 
     Gulp.task(GULP_TASK_NAME, Gulp.parallel([
 
+      MarkupSourceCodeLinter.provideMarkupLintingIfMust(masterConfigRepresentative),
+      CompiledInlineTypeScriptImporterForPug.provideTypeScriptImportsForMarkupIfMust(masterConfigRepresentative),
+
       Gulp.series([
 
         Gulp.parallel([
@@ -97,15 +106,16 @@ abstract class ProjectBuilder {
         MarkupProcessor.provideMarkupProcessingIfMust(masterConfigRepresentative),
 
         ...masterConfigRepresentative.mustProvideBrowserLiveReloading ? [
-          BrowserLiveReloader.provideBrowserLiveReloading(masterConfigRepresentative)
+          BrowserLiveReloader.provideBrowserLiveReloadingIfMust(masterConfigRepresentative)
         ] : []
       ])
+
     ]));
 
     /* eslint-disable-next-line @typescript-eslint/no-floating-promises --
     *  This issue is not false positive because gulp chain could collapse on some errors, but working solution has
     *  not been found yet. https://stackoverflow.com/q/66169978/4818123 */
-    Gulp.task(GULP_TASK_NAME)(
+    Gulp.task(GULP_TASK_NAME)?.(
       (error?: Error | null): void => {
         if (isNeitherUndefinedNorNull(error)) {
           Logger.logError({
@@ -131,12 +141,12 @@ namespace ProjectBuilder {
   };
 
   export type ProjectBuildingConfig__FromConsole = {
-    readonly projectBuildingMode: string;
+    readonly projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
     readonly selectiveExecutionID?: string;
   };
 
   export type ContainerizedProjectBuildingValidConfigFromFile = {
-    readonly projectBuilding: ProjectBuildingConfig__FromFile__RawValid;
+    projectBuilding: ProjectBuildingConfig__FromFile__RawValid;
   };
 }
 

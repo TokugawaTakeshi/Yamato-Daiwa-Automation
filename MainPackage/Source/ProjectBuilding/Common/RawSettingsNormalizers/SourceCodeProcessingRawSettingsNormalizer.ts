@@ -1,4 +1,8 @@
-/* -- Raw valid config ------------------------------------------------------------------------------------------------ */
+/* -- Restrictions -------------------------------------------------------------------------------------------------- */
+import type ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+
+/* -- Raw valid config ---------------------------------------------------------------------------------------------- */
 import type SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid";
 
@@ -18,10 +22,10 @@ import {
 
 abstract class SourceCodeProcessingRawSettingsNormalizer {
 
-  protected readonly abstract supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string>;
+  protected readonly abstract supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
 
   protected readonly consumingProjectRootDirectoryAbsolutePath: string;
-  protected readonly consumingProjectBuildingMode: string;
+  protected readonly consumingProjectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
 
   private readonly entryPointsGroupsIDsSelection?: Array<string>;
 
@@ -78,16 +82,16 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
       let entryPointsGroupSourceFilesTopDirectoryAbsolutePath: string;
       const currentEntryPointsGroupSourceFilesGlobSelectors: Array<string> = [];
-      const isSingeEntryPointGroup: boolean = ImprovedPath.hasFilenameExtension(
-        entryPointsGroupSettings__rawValid.entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath
-      );
+      let isSingeEntryPointGroup: boolean;
 
-      if (isSingeEntryPointGroup) {
+      if ("singleEntryPointRelativePath" in entryPointsGroupSettings__rawValid) {
 
-        const absolutePathOfSingleEntryPointOfGroup: string = ImprovedPath.buildAbsolutePath(
+        isSingeEntryPointGroup = true;
+
+        const absolutePathOfSingleEntryPointOfGroup: string = ImprovedPath.joinPathSegments(
           [
             this.consumingProjectRootDirectoryAbsolutePath,
-            entryPointsGroupSettings__rawValid.entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath
+            entryPointsGroupSettings__rawValid.singleEntryPointRelativePath
           ],
           { forwardSlashOnlySeparators: true }
         );
@@ -99,11 +103,13 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
       } else {
 
+        isSingeEntryPointGroup = false;
+
         entryPointsGroupSourceFilesTopDirectoryAbsolutePath = ImprovedPath.extractDirectoryFromFilePath(
-          ImprovedPath.buildAbsolutePath(
+          ImprovedPath.joinPathSegments(
             [
               this.consumingProjectRootDirectoryAbsolutePath,
-              entryPointsGroupSettings__rawValid.entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath
+              entryPointsGroupSettings__rawValid.topDirectoryRelativePath
             ],
             { forwardSlashOnlySeparators: true }
           )
@@ -111,18 +117,18 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
         currentEntryPointsGroupSourceFilesGlobSelectors.push(
           ...this.getSourceFilesGlobSelectorsForMultipleEntryPointsGroup({
-            entryPointsGroupSettings__rawValid,
-            entryPointsSourceFilesDirectoryAbsolutePath: entryPointsGroupSourceFilesTopDirectoryAbsolutePath
+            entryPointsSourceFilesDirectoryAbsolutePath: entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
+            partialsRecognition: entryPointsGroupSettings__rawValid.partialsRecognition
           })
         );
       }
 
 
       const entryPointsOutputFilesActualBaseDirectoryAbsolutePath: string =
-          ImprovedPath.buildAbsolutePath(
+          ImprovedPath.joinPathSegments(
             [
               this.consumingProjectRootDirectoryAbsolutePath,
-              entryPointsGroupSettings__buildingModeDependent__rawValid.outputBaseDirectoryRelativePath
+              entryPointsGroupSettings__buildingModeDependent__rawValid.outputTopDirectoryRelativePath
             ],
             { forwardSlashOnlySeparators: true }
           );
@@ -153,15 +159,14 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
    *  Generating of single glob with arbitrary conditions set is very difficult and it's not a fact that it's even possible.
    *  More rational approach is generate the array of globs consisting on main exclusive glob and exclusions.
    * */
-  private getSourceFilesGlobSelectorsForMultipleEntryPointsGroup<
-    EntryPointsGroupRawSettings extends SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup
-  >(
+  private getSourceFilesGlobSelectorsForMultipleEntryPointsGroup(
     {
-      entryPointsGroupSettings__rawValid,
-      entryPointsSourceFilesDirectoryAbsolutePath
+      entryPointsSourceFilesDirectoryAbsolutePath,
+      partialsRecognition
     }: {
-      entryPointsGroupSettings__rawValid: EntryPointsGroupRawSettings;
       entryPointsSourceFilesDirectoryAbsolutePath: string;
+      partialsRecognition?: SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup.
+          EntryPointsRecognitionSettings;
     }
   ): Array<string> {
 
@@ -171,7 +176,7 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
     /* [ Specification ] If 'partialsRecognition' has not been specified, all files with filename extensions
      *  'this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots' below 'entryPointsSourceFilesDirectoryAbsolutePath'
      *  are being considered as entry points. */
-    if (isUndefined(entryPointsGroupSettings__rawValid.partialsRecognition)) {
+    if (isUndefined(partialsRecognition)) {
 
       sourceFilesGlobSelectorsForMultipleEntryPointsGroup.push(
         ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
@@ -180,7 +185,7 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
         })
       );
 
-    } else if (entryPointsGroupSettings__rawValid.partialsRecognition.excludeAllSubdirectories === true) {
+    } else if (partialsRecognition.excludeAllSubdirectories === true) {
 
       sourceFilesGlobSelectorsForMultipleEntryPointsGroup.push(
         ImprovedGlob.buildAllFilesInCurrentDirectoryButNotBelowGlobSelector({
@@ -200,10 +205,10 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
       let prefixesOfFilesWhichMustBeExcluded: Array<string> | undefined;
 
-      if (Array.isArray(entryPointsGroupSettings__rawValid.partialsRecognition.excludeFilesWithPrefixes)) {
-        prefixesOfFilesWhichMustBeExcluded = entryPointsGroupSettings__rawValid.partialsRecognition.excludeFilesWithPrefixes;
-      } else if (isString(entryPointsGroupSettings__rawValid.partialsRecognition.excludeFilesWithPrefixes)) {
-        prefixesOfFilesWhichMustBeExcluded = [ entryPointsGroupSettings__rawValid.partialsRecognition.excludeFilesWithPrefixes ];
+      if (Array.isArray(partialsRecognition.excludeFilesWithPrefixes)) {
+        prefixesOfFilesWhichMustBeExcluded = partialsRecognition.excludeFilesWithPrefixes;
+      } else if (isString(partialsRecognition.excludeFilesWithPrefixes)) {
+        prefixesOfFilesWhichMustBeExcluded = [ partialsRecognition.excludeFilesWithPrefixes ];
       }
 
       if (isNotUndefined(prefixesOfFilesWhichMustBeExcluded)) {
@@ -219,13 +224,10 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
       let prefixesOfSubdirectoriesInWhichFilesMustBeExcluded: Array<string> | undefined;
 
-      if (Array.isArray(entryPointsGroupSettings__rawValid.partialsRecognition.excludeSubdirectoriesWithPrefixes)) {
-        prefixesOfSubdirectoriesInWhichFilesMustBeExcluded = entryPointsGroupSettings__rawValid.
-            partialsRecognition.excludeSubdirectoriesWithPrefixes;
-      } else if (isString(entryPointsGroupSettings__rawValid.partialsRecognition.excludeSubdirectoriesWithPrefixes)) {
-        prefixesOfSubdirectoriesInWhichFilesMustBeExcluded = [
-          entryPointsGroupSettings__rawValid.partialsRecognition.excludeSubdirectoriesWithPrefixes
-        ];
+      if (Array.isArray(partialsRecognition.excludeSubdirectoriesWithPrefixes)) {
+        prefixesOfSubdirectoriesInWhichFilesMustBeExcluded = partialsRecognition.excludeSubdirectoriesWithPrefixes;
+      } else if (isString(partialsRecognition.excludeSubdirectoriesWithPrefixes)) {
+        prefixesOfSubdirectoriesInWhichFilesMustBeExcluded = [ partialsRecognition.excludeSubdirectoriesWithPrefixes ];
       }
 
       if (isNotUndefined(prefixesOfSubdirectoriesInWhichFilesMustBeExcluded)) {
@@ -240,13 +242,10 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
       let namesOfSubdirectoriesInWhichFilesMustBeExcluded: Array<string> | undefined;
 
-      if (Array.isArray(entryPointsGroupSettings__rawValid.partialsRecognition.excludeSubdirectoriesWithNames)) {
-        namesOfSubdirectoriesInWhichFilesMustBeExcluded = entryPointsGroupSettings__rawValid.
-            partialsRecognition.excludeSubdirectoriesWithNames;
-      } else if (isString(entryPointsGroupSettings__rawValid.partialsRecognition.excludeSubdirectoriesWithNames)) {
-        namesOfSubdirectoriesInWhichFilesMustBeExcluded = [
-          entryPointsGroupSettings__rawValid.partialsRecognition.excludeSubdirectoriesWithNames
-        ];
+      if (Array.isArray(partialsRecognition.excludeSubdirectoriesWithNames)) {
+        namesOfSubdirectoriesInWhichFilesMustBeExcluded = partialsRecognition.excludeSubdirectoriesWithNames;
+      } else if (isString(partialsRecognition.excludeSubdirectoriesWithNames)) {
+        namesOfSubdirectoriesInWhichFilesMustBeExcluded = [ partialsRecognition.excludeSubdirectoriesWithNames ];
       }
 
       if (isNotUndefined(namesOfSubdirectoriesInWhichFilesMustBeExcluded)) {
@@ -266,11 +265,11 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
 
 namespace SourceCodeProcessingRawSettingsNormalizer {
-  export type ConstructorParameters = {
-    readonly consumingProjectRootDirectoryAbsolutePath: string;
-    readonly consumingProjectBuildingMode: string;
-    readonly entryPointsGroupsIDsSelection?: Array<string>;
-  };
+  export type ConstructorParameters = Readonly<{
+    consumingProjectRootDirectoryAbsolutePath: string;
+    consumingProjectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+    entryPointsGroupsIDsSelection?: Array<string>;
+  }>;
 }
 
 

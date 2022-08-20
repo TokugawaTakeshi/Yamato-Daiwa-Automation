@@ -1,4 +1,8 @@
-/* --- Raw valid config ---------------------------------------------------------------------------------------------- */
+/* --- Defaults ----------------------------------------------------------------------------------------------------- */
+import ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+
+/* --- Raw valid config --------------------------------------------------------------------------------------------- */
 import type { ProjectBuildingTasksIDsForConfigFile__Localized } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 import { ProjectBuildingTasksIDsForConfigFile } from
@@ -107,6 +111,17 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
               required: false
             }
           }
+        }
+      },
+
+      [projectBuildingCommonSettingsLocalization.publicDirectoriesRelativePaths.KEY]: {
+        newName: "publicDirectoriesRelativePaths",
+        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+        required: false,
+        allowedKeys: Object.values(ConsumingProjectPreDefinedBuildingModes),
+        value: {
+          type: String,
+          minimalCharactersCount: 1
         }
       }
     };

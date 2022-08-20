@@ -52,14 +52,14 @@ export default abstract class AssetsProcessingSettingsRepresentative<
     }
   ): string {
 
-    let outputDirectoryAbsolutePathForCurrentSourceFile: string = ImprovedPath.buildAbsolutePath(
+    let outputDirectoryAbsolutePathForCurrentSourceFile: string = ImprovedPath.joinPathSegments(
       [
         respectiveAssetsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
         ImprovedPath.computeRelativePath(
-            {
-              basePath: respectiveAssetsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
-              comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
-            }
+          {
+            basePath: respectiveAssetsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
+            comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
+          }
         )
       ],
       { forwardSlashOnlySeparators: true }
@@ -99,7 +99,8 @@ export default abstract class AssetsProcessingSettingsRepresentative<
       });
 
       outputDirectoryAbsolutePathForCurrentSourceFile = ImprovedPath.joinPathSegments(
-        ...outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments
+        outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
+        { forwardSlashOnlySeparators: true }
       );
     }
 
@@ -112,7 +113,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
   }
 
 
-  public get supportedSourceFilesNamesExtensionsWithoutLeadingDots(): Array<string> {
+  public get supportedSourceFilesNamesExtensionsWithoutLeadingDots(): ReadonlyArray<string> {
     return this.assetsProcessingCommonSettings.supportedSourceFilesNamesExtensionsWithoutLeadingDots;
   }
 

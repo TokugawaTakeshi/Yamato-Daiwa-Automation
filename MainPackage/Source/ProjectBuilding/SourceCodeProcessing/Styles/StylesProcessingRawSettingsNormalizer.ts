@@ -28,8 +28,8 @@ import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
 export default class StylesProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSettingsNormalizer {
 
-  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string> = StylesProcessingRestrictions.
-      supportedSourceFileNameExtensionsWithoutLeadingDots;
+  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string> = StylesProcessingRestrictions.
+      supportedSourceFilesNamesExtensionsWithoutLeadingDots;
 
   private readonly lintingCommonSettings: StylesProcessingSettings__Normalized.Linting;
 
@@ -50,10 +50,10 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
               isCompletelyDisabled: !StylesProcessingSettings__Default.linting.mustExecute
             } :
             {
-              isCompletelyDisabled: stylesProcessingSettings__fromFile__rawValid.linting.disableCompletely === true ?
+              isCompletelyDisabled: stylesProcessingSettings__fromFile__rawValid.linting.enable === true ?
                   true : !StylesProcessingSettings__Default.linting.mustExecute,
               ...isNotUndefined(stylesProcessingSettings__fromFile__rawValid.linting.presetFileRelativePath) ? {
-                presetFileAbsolutePath: ImprovedPath.buildAbsolutePath(
+                presetFileAbsolutePath: ImprovedPath.joinPathSegments(
                   [
                     commonSettings__normalized.projectRootDirectoryAbsolutePath,
                     StlintLinterSpecialist.DEFAULT_CONFIG_FILE_NAME_WITH_EXTENSION
@@ -76,12 +76,12 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
     return {
       common: {
         supportedSourceFileNameExtensionsWithoutLeadingDots:
-            StylesProcessingRestrictions.supportedSourceFileNameExtensionsWithoutLeadingDots,
+            StylesProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
         supportedOutputFileNameExtensionsWithoutLeadingDots:
-            StylesProcessingRestrictions.supportedOutputFileNameExtensionsWithoutLeadingDots,
+            StylesProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots,
         waitingForSubsequentFilesWillBeSavedPeriod__seconds:
-          stylesProcessingSettings__fromFile__rawValid.common?.waitingForSubsequentFilesWillBeSavedPeriod__seconds ??
-          StylesProcessingSettings__Default.waitingForSubsequentFilesWillBeSavedPeriod__seconds
+          stylesProcessingSettings__fromFile__rawValid.common?.periodBetweenFileUpdatingAndRebuildingStarting__seconds ??
+          StylesProcessingSettings__Default.periodBetweenFileUpdatingAndRebuildingStarting__seconds
       },
       linting: lintingCommonSettings,
       entryPointsGroupsActualForCurrentProjectBuildingMode:
@@ -119,7 +119,7 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
       ...entryPointsGroupGenericSettings__normalized,
 
       entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML:
-          `${ StylesProcessingSettings__Default.filePathAliasNotation }` +
+          `${ StylesProcessingSettings__Default.entryPointsGroupReferencePrefix }` +
           `${
             entryPointsGroupSettings__rawValid.
                 entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML ??
@@ -131,7 +131,9 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
         mustExecute:
             entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
                 revisioning?.disable === true ?
-                    false : StylesProcessingSettings__Default.revisioning.mustExecute(this.consumingProjectBuildingMode),
+                    false : StylesProcessingSettings__Default.revisioning.mustExecute({
+                      consumingProjectBuildingMode: this.consumingProjectBuildingMode
+                    }),
         contentHashPostfixSeparator:
             entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
                 revisioning?.contentHashPostfixSeparator ??

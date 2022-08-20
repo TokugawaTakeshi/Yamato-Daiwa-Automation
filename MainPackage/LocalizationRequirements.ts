@@ -2,16 +2,46 @@ import type ProjectBuildingConfig__FromFile__RawValid from
     "./Source/ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid";
 
 import type ProjectBuilderRawConfigNormalizer from "./Source/ProjectBuilding/ProjectBuilderRawConfigNormalizer";
-import type PoliteErrorsMessagesBuilder from "./Source/Utils/PoliteErrorsMessagesBuilder";
-
-export { default as AccessibilityInspector } from "@MarkupProcessing/Plugins/AccessibilityInspector/AccessibilityInspector";
-export { default as HTML_Validator } from "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
-export { default as ResourcesReferencesResolverForHTML } from
-    "@MarkupProcessing/Plugins/ResourcesReferencesResolverForHTML/ResourcesReferencesResolverForHTML";
 
 
+/* === Markup ======================================================================================================= */
+/* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
+ * The namespace, not just type must me re-exported.  */
+export { MarkupProcessingRawSettingsNormalizerLocalization } from
+    "@MarkupProcessing/RawSettingsNormalizer/MarkupProcessingRawSettingsNormalizer";
+
+/* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
+ * The namespace, not just type must me re-exported.  */
+export { AccessibilityInspectorLocalization } from "@MarkupProcessing/Plugins/AccessibilityInspector/AccessibilityInspector";
+
+/* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
+ * The namespace, not just type must me re-exported.  */
+export { HTML_ValidatorLocalization } from "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
+
+/* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
+ * The namespace, not just type must me re-exported.  */
+export { ResourcesReferencesResolverForHTML_Localization } from
+  "@MarkupProcessing/Plugins/ResourcesReferencesResolverForHTML/ResourcesReferencesResolverForHTML";
+
+/* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
+ * The namespace, not just type must me re-exported.  */
+export { MarkupSourceCodeLinterLocalization } from "@MarkupProcessing/Subtasks/MarkupSourceCodeLinter/MarkupSourceCodeLinter";
+
+
+/* === Browser live reloading ======================================================================================= */
+/* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
+ * The namespace, not just type must me re-exported.  */
+export {
+  BrowserLiveReloadingSettingsNormalizerLocalization
+} from "@BrowserLiveReloading/RawSettingsNormalizer/BrowserLiveReloadingSettingsNormalizer";
+
+/* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
+ * The namespace, not just type must me re-exported.  */
+export { BrowserLiveReloaderLocalization } from "@BrowserLiveReloading/BrowserLiveReloader";
+
+/* === Other ======================================================================================================== */
 export type ProjectBuildingConfigFromFileLocalization = ProjectBuildingConfig__FromFile__RawValid.Localization;
 
 export type ProjectBuilderRawConfigNormalizerLocalization = ProjectBuilderRawConfigNormalizer.Localization;
 
-export type FriendlyErrorsMessagesBuilderLocalization = PoliteErrorsMessagesBuilder.Localization;
+export type { ChokidarSpecialistLocalization } from "@ThirdPartySolutionsSpecialists/Chokidar/ChokidarSpecialist";

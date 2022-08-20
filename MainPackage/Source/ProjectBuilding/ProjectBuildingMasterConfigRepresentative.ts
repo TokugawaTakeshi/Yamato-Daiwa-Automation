@@ -1,13 +1,11 @@
 /* --- Business rules ----------------------------------------------------------------------------------------------- */
 import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Defaults/ConsumingProjectPreDefinedBuildingModes";
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 
 /* --- Normalized settings ------------------------------------------------------------------------------------------ */
 import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
-import type ProjectBuildingDebuggingSettings__Normalized from
-    "@ProjectBuilding/Debugging/ProjectBuildingDebuggingSettings__Normalized";
 
 /* --- Settings representatives --------------------------------------------------------------------------------------- */
 import MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
@@ -54,7 +52,6 @@ export default class ProjectBuildingMasterConfigRepresentative {
 
 
   private readonly commonSettings: ProjectBuildingCommonSettings__Normalized;
-  private readonly debuggingSettings: ProjectBuildingDebuggingSettings__Normalized;
 
 
   public static initializeAndGetInstance(
@@ -84,7 +81,6 @@ export default class ProjectBuildingMasterConfigRepresentative {
   public constructor(projectBuilderNormalizedConfig: ProjectBuildingConfig__Normalized) {
 
     this.commonSettings = projectBuilderNormalizedConfig.commonSettings;
-    this.debuggingSettings = projectBuilderNormalizedConfig.debugging;
 
     if (isNotUndefined(projectBuilderNormalizedConfig.markupProcessing)) {
       this.markupProcessingSettingsRepresentative = new MarkupProcessingSettingsRepresentative(
@@ -152,8 +148,8 @@ export default class ProjectBuildingMasterConfigRepresentative {
     return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.staticPreview;
   }
 
-  public get isDevelopmentBuildingMode(): boolean {
-    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.development;
+  public get isLocalDevelopmentBuildingMode(): boolean {
+    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.localDevelopment;
   }
 
   public get isTestingBuildingMode(): boolean {
@@ -206,13 +202,7 @@ export default class ProjectBuildingMasterConfigRepresentative {
 
   public get mustProvideBrowserLiveReloading(): boolean {
     return isNotUndefined(this.browserLiveReloadingSettingsRepresentative) &&
-        (this.isStaticPreviewBuildingMode || this.isDevelopmentBuildingMode);
-  }
-
-
-  /* --- Debugging -------------------------------------------------------------------------------------------------- */
-  public get mustDebugEntryPointsAndPartialFiles(): boolean {
-    return this.debuggingSettings.enabled && this.debuggingSettings.partials.partialFilesAndParentEntryPointCorrespondence;
+        (this.isStaticPreviewBuildingMode || this.isLocalDevelopmentBuildingMode);
   }
 
 

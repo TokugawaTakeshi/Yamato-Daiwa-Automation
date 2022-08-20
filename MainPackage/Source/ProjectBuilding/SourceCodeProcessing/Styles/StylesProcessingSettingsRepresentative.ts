@@ -12,12 +12,12 @@ import StylusPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/Stylus
 
 /* --- Auxiliaries -------------------------------------------------------------------------------------------------- */
 import {
+  PoliteErrorsMessagesBuilder,
   Logger,
   UnexpectedEventError,
   isNull
 } from "@yamato-daiwa/es-extensions";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
-import PoliteErrorsMessagesBuilder from "@Utils/PoliteErrorsMessagesBuilder";
 
 
 class StylesProcessingSettingsRepresentative extends GulpStreamBasedSourceCodeProcessingConfigRepresentative<
@@ -55,7 +55,7 @@ class StylesProcessingSettingsRepresentative extends GulpStreamBasedSourceCodePr
     }
   };
 
-  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string>;
+  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = StylesProcessingSettingsRepresentative.#localization.
       targetFilesType.singularForm;
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = StylesProcessingSettingsRepresentative.#localization.
@@ -66,7 +66,7 @@ class StylesProcessingSettingsRepresentative extends GulpStreamBasedSourceCodePr
   public readonly sourceCodeLintingCommonSettings: StylesProcessingSettings__Normalized.Linting;
   public readonly sourceAndOutputFilesAbsolutePathsCorrespondenceMap: Map<string, string> = new Map<string, string>();
 
-  public readonly relevantEntryPointsGroupsSettings: Map<
+  public readonly relevantEntryPointsGroupsSettings: ReadonlyMap<
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, StylesProcessingSettings__Normalized.EntryPointsGroup
   >;
 
@@ -103,7 +103,10 @@ class StylesProcessingSettingsRepresentative extends GulpStreamBasedSourceCodePr
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
 
-    super(projectBuildingMasterConfigRepresentative);
+    super({
+      masterConfigRepresentative: projectBuildingMasterConfigRepresentative,
+      mustLogPartialFilesAndEntryPointsRelationsMap: false
+    });
 
     this.sourceCodeProcessingCommonSettings = normalizedStylesProcessingSettings.common;
     this.sourceCodeLintingCommonSettings = normalizedStylesProcessingSettings.linting;

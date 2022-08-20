@@ -37,11 +37,10 @@ class Stopwatch {
 }
 
 namespace Stopwatch {
-
-  export type ElapsedTimeData = {
-    readonly seconds: number;
-    readonly milliseconds: number;
-  };
+  export type ElapsedTimeData = Readonly<{
+    seconds: number;
+    milliseconds: number;
+  }>;
 }
 
 

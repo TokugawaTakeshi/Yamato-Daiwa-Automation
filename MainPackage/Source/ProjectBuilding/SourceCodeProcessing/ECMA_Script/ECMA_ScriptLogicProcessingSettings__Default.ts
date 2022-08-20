@@ -1,12 +1,45 @@
 import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding:Common/Defaults/ConsumingProjectPreDefinedBuildingModes";
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 import ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRestrictions";
 import SupportedECMA_ScriptRuntimesTypes = ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes;
 
 
-export default {
+const ECMA_ScriptLogicProcessingSettings__Default: Readonly<{
 
-  filePathAliasNotation: "@",
+  entryPointsGroupReferencePrefix: string;
+
+  typeScriptConfigurationFileRelativePath: string;
+
+  entryPointsGroupDependent: Readonly<{
+    areExportsFromEntryPointsAccessible: boolean;
+  }>;
+
+  revisioning: Readonly<{
+    mustExecute: (
+      namedParameters: Readonly<{ consumingProjectBuildingMode: string; targetRuntimeType: SupportedECMA_ScriptRuntimesTypes; }>
+    ) => boolean;
+    contentHashPostfixSeparator: string;
+  }>;
+
+  linting: Readonly<{
+    mustExecute: boolean;
+  }>;
+
+  distributing: Readonly<{
+    exposingOfExportsFromEntryPoints: Readonly<{
+      mustExpose: boolean;
+    }>;
+    typeScriptTypesDeclarations: Readonly<{
+      mustGenerate: boolean;
+      fileNameWithoutExtension: string;
+    }>;
+  }>;
+
+}> = {
+
+  entryPointsGroupReferencePrefix: "@",
+
+  typeScriptConfigurationFileRelativePath: "tsconfig.json",
 
   entryPointsGroupDependent: {
     areExportsFromEntryPointsAccessible: false
@@ -15,7 +48,7 @@ export default {
   revisioning: {
 
     mustExecute(
-      namedParameters: { consumingProjectBuildingMode: string; targetRuntimeType: SupportedECMA_ScriptRuntimesTypes; }
+      namedParameters: Readonly<{ consumingProjectBuildingMode: string; targetRuntimeType: SupportedECMA_ScriptRuntimesTypes; }>
     ): boolean {
 
       if (
@@ -23,7 +56,7 @@ export default {
         namedParameters.targetRuntimeType === SupportedECMA_ScriptRuntimesTypes.webWorker
       ) {
         return namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.staticPreview &&
-            namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.development;
+            namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.localDevelopment;
       }
 
 
@@ -34,8 +67,7 @@ export default {
   },
 
   linting: {
-    mustExecute: false,
-    isDisabledForEntryPointGroups: false
+    mustExecute: true
   },
 
   distributing: {
@@ -48,3 +80,6 @@ export default {
     }
   }
 };
+
+
+export default ECMA_ScriptLogicProcessingSettings__Default;

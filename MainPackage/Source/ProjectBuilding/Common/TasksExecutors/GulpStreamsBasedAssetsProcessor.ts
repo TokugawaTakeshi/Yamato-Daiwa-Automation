@@ -10,11 +10,11 @@ import type AssetsProcessingSettingsRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/AssetsProcessingSettingsRepresentative";
 
 /* --- Task executors ----------------------------------------------------------------------------------------------- */
-import GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedTaskExecutor";
+import GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import Gulp from "gulp";
-import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/ChokidarSpecialist";
+import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/Chokidar/ChokidarSpecialist";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
 import Timeout = NodeJS.Timeout;
@@ -55,7 +55,15 @@ export default abstract class GulpStreamsBasedAssetsProcessor<
   protected abstract processAssets(sourceFilesAbsolutePathsOrGlobs: Array<string>): () => NodeJS.ReadWriteStream;
 
 
-  protected initializeOrUpdateSourceFilesWatcher(): void {
+  protected initializeOrUpdateSourceFilesWatcherIfMust(): void {
+
+    if (
+      !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
+      !this.masterConfigRepresentative.isLocalDevelopmentBuildingMode
+    ) {
+      return;
+    }
+
 
     Gulp.watch(this.associatedAssetsProcessingConfigRepresentative.relevantSourceFilesGlobSelectors).
         on("all", (eventName: string, fileOrDirectoryPath: string): void => {

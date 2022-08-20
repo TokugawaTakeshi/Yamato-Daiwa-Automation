@@ -4,7 +4,7 @@ import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuil
 type StylesProcessingSettings__Normalized = {
   readonly common: StylesProcessingSettings__Normalized.Common;
   readonly linting: StylesProcessingSettings__Normalized.Linting;
-  readonly entryPointsGroupsActualForCurrentProjectBuildingMode: Map<
+  readonly entryPointsGroupsActualForCurrentProjectBuildingMode: ReadonlyMap<
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, StylesProcessingSettings__Normalized.EntryPointsGroup
   >;
 };

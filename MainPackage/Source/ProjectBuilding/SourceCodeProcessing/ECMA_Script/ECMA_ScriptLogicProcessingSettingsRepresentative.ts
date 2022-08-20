@@ -17,12 +17,12 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
   ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
 > {
 
-  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string>;
+  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Script";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Scripts";
   public readonly prefixOfAliasOfTopDirectoryOfEntryPointsGroup: string = "@";
 
-  public readonly relevantEntryPointsGroupsSettings: Map<
+  public readonly relevantEntryPointsGroupsSettings: ReadonlyMap<
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
   >;
   public readonly entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> =
@@ -39,7 +39,7 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
     super(projectBuildingMasterConfigRepresentative);
 
     this.sourceCodeProcessingCommonSettings = ECMA_ScriptLogicProcessingSettings__normalized.common;
-    this.relevantEntryPointsGroupsSettings = ECMA_ScriptLogicProcessingSettings__normalized.entryPointsGroups;
+    this.relevantEntryPointsGroupsSettings = ECMA_ScriptLogicProcessingSettings__normalized.relevantEntryPointsGroups;
 
     if (this.relevantEntryPointsGroupsSettings.size === 0) {
       Logger.logWarning({

@@ -9,9 +9,6 @@ import type ConsumingProjectPreDefinedBuildingModes__Localized from
 
 import ProjectBuildingCommonSettings__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/ProjectBuildingCommonSettings__FromFile__RawValid";
-import ProjectBuildingDebuggingSettings__FromFile__RawValid from
-    "@ProjectBuilding/Debugging/ProjectBuildingDebuggingSettings__FromFile__RawValid";
-
 import SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid";
 import RevisioningSettings__FromFile__RawValid from
@@ -42,7 +39,6 @@ import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extens
 type ProjectBuildingConfig__FromFile__RawValid = {
 
   commonSettings?: ProjectBuildingCommonSettings__FromFile__RawValid;
-  debugging?: ProjectBuildingDebuggingSettings__FromFile__RawValid;
 
   [ProjectBuildingTasksIDsForConfigFile.markupProcessing]?: MarkupProcessingSettings__FromFile__RawValid;
   [ProjectBuildingTasksIDsForConfigFile.stylesProcessing]?: StylesProcessingSettings__FromFile__RawValid;
@@ -93,11 +89,6 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
       readonly videosProcessing: VideosProcessingSettings__FromFile__RawValid.Localization;
       readonly audiosProcessing: AudiosProcessingSettings__FromFile__RawValid.Localization;
       readonly browserLiveReloading: BrowserLiveReloadingSettings__FromFile__RawValid.Localization;
-    };
-
-    readonly debugging: {
-      readonly KEY: string;
-      readonly properties: ProjectBuildingDebuggingSettings__FromFile__RawValid.Localization;
     };
   };
 
@@ -181,8 +172,6 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               required: false,
               properties: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
                 ECMA_ScriptProcessingLocalization: localization.tasks.ECMA_ScriptLogicProcessing,
-                sourceCodeProcessingSettingsGenericPropertiesLocalization:
-                    localization.reusables.sourceCodeProcessingGenericProperties,
                 sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
                 consumingProjectLocalizedPreDefinedBuildingModes,
                 revisioningPropertiesLocalizedSpecification,
@@ -240,26 +229,11 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
 
             [localization.enumerations.tasksIDs.browserLiveReloading]: {
               newName: "browserLiveReloading",
-              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-              required: false,
-              preValidationModifications: nullToUndefined,
-              minimalEntriesCount: 1,
-
-              value: {
-                type: Object,
-                properties: BrowserLiveReloadingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification(
-                  localization.tasks.browserLiveReloading
-                )
-              }
-            },
-
-            [localization.debugging.KEY]: {
-              newName: "debugging",
-              preValidationModifications: nullToUndefined,
               type: Object,
               required: false,
-              properties: ProjectBuildingDebuggingSettings__FromFile__RawValid.
-                  getLocalizedPropertiesSpecification(localization.debugging.properties)
+              preValidationModifications: nullToUndefined,
+              properties: BrowserLiveReloadingSettings__FromFile__RawValid.
+                  getLocalizedPropertiesSpecification(localization.tasks.browserLiveReloading)
             }
           }
         }

@@ -1,5 +1,6 @@
 /* --- Enumerations ----------------------------------------------------------------------------------------------- */
-import ConsumingProjectPreDefinedBuildingModes from "@ProjectBuilding/Common/Defaults/ConsumingProjectPreDefinedBuildingModes";
+import ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 
 /* --- Raw valid config --------------------------------------------------------------------------------------------- */
 import type ConsumingProjectPreDefinedBuildingModes__Localized from
@@ -24,7 +25,7 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
 
   export namespace AssetsGroup {
     export type BuildingModeDependent = {
-      readonly outputBaseDirectoryRelativePath: string;
+      readonly outputTopDirectoryRelativePath: string;
       readonly revisioning?: RevisioningSettings__FromFile__RawValid;
       readonly outputPathTransformations?: {
         readonly segmentsWhichMustBeRemoved?: Array<string>;
@@ -42,7 +43,7 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
       readonly sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: string; };
       readonly buildingModeDependent: {
         readonly KEY: string;
-        readonly outputBaseDirectoryRelativePath: { KEY: string; };
+        readonly outputTopDirectoryRelativePath: { KEY: string; };
         readonly revisioning: { KEY: string; };
         readonly outputPathTransformations: {
           readonly KEY: string;
@@ -106,10 +107,12 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
               keysRenamings: {
                 [consumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
                     ConsumingProjectPreDefinedBuildingModes.staticPreview,
-                [consumingProjectLocalizedPreDefinedBuildingModes.development]:
-                    ConsumingProjectPreDefinedBuildingModes.development,
+                [consumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
+                    ConsumingProjectPreDefinedBuildingModes.localDevelopment,
                 [consumingProjectLocalizedPreDefinedBuildingModes.testing]:
                     ConsumingProjectPreDefinedBuildingModes.testing,
+                [consumingProjectLocalizedPreDefinedBuildingModes.staging]:
+                    ConsumingProjectPreDefinedBuildingModes.staging,
                 [consumingProjectLocalizedPreDefinedBuildingModes.production]:
                     ConsumingProjectPreDefinedBuildingModes.production
               },
@@ -121,9 +124,9 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
 
                   [
                     assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.
-                        buildingModeDependent.outputBaseDirectoryRelativePath.KEY
+                        buildingModeDependent.outputTopDirectoryRelativePath.KEY
                   ]: {
-                    newName: "outputBaseDirectoryRelativePath",
+                    newName: "outputTopDirectoryRelativePath",
                     type: String,
                     required: true
                   },

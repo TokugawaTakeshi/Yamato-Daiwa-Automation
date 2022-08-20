@@ -4,7 +4,6 @@ import type ECMA_ScriptLogicProcessingSettingsRepresentative from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettingsRepresentative";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------- */
-import TaskExecutor from "@ProjectBuilding/Common/TasksExecutors/TaskExecutor";
 import WebpackConfigGenerator from "@ECMA_ScriptProcessing/Utils/WebpackConfigGenerator";
 import ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator from
     "@ECMA_ScriptProcessing/Utils/ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator";
@@ -24,10 +23,11 @@ import {
 } from "@yamato-daiwa/es-extensions";
 
 
-export default class ECMA_ScriptLogicProcessor extends TaskExecutor {
+export default class ECMA_ScriptLogicProcessor {
 
   protected readonly TASK_NAME_FOR_LOGGING: string = "ECMAScript logic processing";
 
+  private readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
   private readonly ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
 
 
@@ -44,8 +44,11 @@ export default class ECMA_ScriptLogicProcessor extends TaskExecutor {
       masterConfigRepresentative, masterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative
     );
 
-    const webpackConfigurationSets: Array<WebpackConfiguration> = WebpackConfigGenerator.
-        generateWebpackConfigurationForEachEntryPointsGroup(masterConfigRepresentative);
+    const webpackConfigurationSets: ReadonlyArray<WebpackConfiguration> = WebpackConfigGenerator.
+        generateWebpackConfigurationForEachEntryPointsGroup(
+          masterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative,
+          masterConfigRepresentative
+        );
 
     return (callback: (error?: Error) => void): void => {
 
@@ -81,7 +84,7 @@ export default class ECMA_ScriptLogicProcessor extends TaskExecutor {
             });
 
             NodeNotifier.notify({
-              title: dataHoldingSelfInstance.TASK_NAME_FOR_LOGGING,
+              title: "ECMAScript logic processing",
               message: "Error has occurred. Please check the console."
             });
           }
@@ -137,7 +140,7 @@ export default class ECMA_ScriptLogicProcessor extends TaskExecutor {
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
     ecmaScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative
   ) {
-    super(masterConfigRepresentative);
+    this.masterConfigRepresentative = masterConfigRepresentative;
     this.ECMA_ScriptLogicProcessingConfigRepresentative = ecmaScriptLogicProcessingConfigRepresentative;
   }
 }

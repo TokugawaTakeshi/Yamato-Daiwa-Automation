@@ -22,7 +22,7 @@ type ProjectBuildingCommonSettings__FromFile__RawValid = {
         videosProcessing?: Array<string>;
       };
       browserLiveReloadingSetupID?: string;
-    } | undefined; 
+    } | undefined;
   };
   publicDirectoriesRelativePaths?: { [projectBuildingMode__possiblyCustom: string ]: string | undefined; };
 };

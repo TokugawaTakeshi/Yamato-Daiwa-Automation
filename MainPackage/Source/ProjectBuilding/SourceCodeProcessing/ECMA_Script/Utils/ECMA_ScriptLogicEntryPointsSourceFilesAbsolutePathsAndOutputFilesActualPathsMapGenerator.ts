@@ -57,9 +57,13 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
 
     if (entryPointsGroupNormalizedSettings.revisioning.mustExecute) {
 
-      const targetOutputFileGlobSelector: string = ImprovedPath.buildAbsolutePath(
+      const targetOutputFileGlobSelector: string = ImprovedPath.joinPathSegments(
         [
-          entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
+            entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
+            ImprovedPath.computeRelativePath({
+              basePath: entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
+              comparedPath: ImprovedPath.extractDirectoryFromFilePath(sourceFileAbsolutePath)
+            }),
           `${ ImprovedPath.extractFileNameWithoutExtensionFromPath(sourceFileAbsolutePath) }**.js`
         ],
         { forwardSlashOnlySeparators: true }
@@ -95,7 +99,7 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
 
     } else {
 
-      correspondingOutputFileAbsolutePath = ImprovedPath.buildAbsolutePath(
+      correspondingOutputFileAbsolutePath = ImprovedPath.joinPathSegments(
         [
           entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
           ImprovedPath.computeRelativePath({

@@ -18,10 +18,11 @@ npm i @yamato-daiwa/automation -D -E
 
 Please familiarize with the YDF terminology because it has being used in configuration.
 
-[📖 Terminology](Documentation/Terminology/Terminology.md)
+[📖 Terminology](Documentation/Terminology/Terminology.english.md)
 
 
 ## How-tos
+### Markup
 
 * [How to specify the paths of stylesheets, scripts, images, videos and audios from the markup?](Documentation/HowTos/ResourcesPathResolving.md)
 
@@ -30,7 +31,8 @@ Please familiarize with the YDF terminology because it has being used in configu
 
 ### Configuration file
 
-As default, **yda.config.yaml** file will be searched in project root directory. 
+**YDA** required the configuration filed.
+As default, **yda.config.yaml** file will be searched in the project root directory. 
 
 * [Common settings](Documentation/CommonSettings.md)
 * [Markup processing settings](Documentation/MarkupProcessing.md)
@@ -63,7 +65,8 @@ yda build
   <dt>Allowed alternatives</dt>
   <dd>
     <ul>
-      <li>DEVELOPMENT</li>
+      <li>STATIC_PREVIEW</li>
+      <li>LOCAL_DEVELOPMENT</li>
       <li>TESTING</li>
       <li>STAGING</li>
       <li>PRODUCTION</li>
@@ -76,7 +79,7 @@ The project building mode; affecting on, for example, output directory or code m
 See **buildingModeDependent** configuration of each task.
 
 ```bash
-yda build --mode DEVELOPMENT
+yda build --mode LOCAL_DEVELOPMENT
 ```
 
 ### configurationFile
@@ -111,12 +114,6 @@ The ID of selective execution which must be defined in configuration file if to 
 ```bash
 yda build --selectiveExecution StaticPreview --mode DEVELOPMENT
 ```
-
-
-### Configuration file
-
-As default, **yda.config.yaml** will be searched in the directory where command has been executed.
-
 
 ### Vulnerabilities
 

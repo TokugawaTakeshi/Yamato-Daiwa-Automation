@@ -1,9 +1,11 @@
 import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+import type ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 
 
 type ProjectBuildingCommonSettings__Normalized = {
   readonly projectRootDirectoryAbsolutePath: string;
-  readonly projectBuildingMode: string;
+  readonly projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
   readonly tasksAndSourceFilesSelection?: ProjectBuildingCommonSettings__Normalized.TasksAndSourceFilesSelection;
   readonly browserLiveReloadingSetupID?: string;
   readonly actualPublicDirectoryAbsolutePath?: string;

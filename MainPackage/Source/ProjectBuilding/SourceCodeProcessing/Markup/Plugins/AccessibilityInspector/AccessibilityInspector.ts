@@ -10,7 +10,7 @@ import type MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import AccessibilityCheckingService from "access-sniff";
 import NodeNotifier from "node-notifier";
-import getExpectedToBeNonNullStringifiedContentOfVinylFile from "@Utils/getExpectedToBeNonNullStringifiedContentOfVinylFile";
+import extractStringifiedContentFromVinylFile from "@Utils/extractStringifiedContentFromVinylFile";
 import isCompiledHTML_ContentEmpty from "@Utils/isCompiledHTML_ContentEmpty";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
@@ -35,7 +35,7 @@ class AccessibilityInspector {
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): void {
 
-    const extractedHTML_Code: string = getExpectedToBeNonNullStringifiedContentOfVinylFile(compiledHTML_File);
+    const extractedHTML_Code: string = extractStringifiedContentFromVinylFile(compiledHTML_File);
     const targetFileRelativePath: string = ImprovedPath.computeRelativePath({
       basePath: masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
       comparedPath: compiledHTML_File.path
@@ -56,7 +56,7 @@ class AccessibilityInspector {
      * 2. In `import AccessSniff, { reports } from 'access-sniff';`, the 'reports' are 'undefined',
      * 3. In 'then(function(report) {}}', the 'report' is an empty object. */
     AccessibilityCheckingService(
-      getExpectedToBeNonNullStringifiedContentOfVinylFile(compiledHTML_File),
+      extractStringifiedContentFromVinylFile(compiledHTML_File),
       {
         verbose: false,
         accessibilityLevel: compiledHTML_File.processingSettings.accessibilityInspection.standard
@@ -71,6 +71,7 @@ class AccessibilityInspector {
             targetFileRelativePath,
             secondsElapsed: inspectionPeriod__seconds
           }));
+
         }).
 
         catch((erroredResult: AccessibilityCheckingService.ErroredResult): void => {
@@ -192,3 +193,9 @@ namespace AccessibilityInspector {
 
 
 export default AccessibilityInspector;
+
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars --
+ * It is the only way to extract the child namespace (no need to expose whole AccessibilityInspector for the localization
+ * packages).
+ * https://stackoverflow.com/a/73400523/4818123 */
+export import AccessibilityInspectorLocalization = AccessibilityInspector.Localization;

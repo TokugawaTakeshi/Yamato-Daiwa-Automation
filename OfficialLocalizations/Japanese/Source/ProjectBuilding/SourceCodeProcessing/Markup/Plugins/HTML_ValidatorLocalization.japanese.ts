@@ -1,26 +1,26 @@
-import { HTML_Validator } from "@yamato-daiwa/automation/LocalizationRequirements";
+import { HTML_ValidatorLocalization } from "@yamato-daiwa/automation/LocalizationRequirements";
 
 
-const HTML_ValidatorLocalization__japanese: HTML_Validator.Localization = {
+const HTML_ValidatorLocalization__japanese: HTML_ValidatorLocalization = {
 
   generateFileIsEmptyWarningLog: (
-    namedParameters: HTML_Validator.Localization.FileIsEmptyWarningLog.NamedParameters
-  ): HTML_Validator.Localization.FileIsEmptyWarningLog =>
+    namedParameters: HTML_ValidatorLocalization.FileIsEmptyWarningLog.NamedParameters
+  ): HTML_ValidatorLocalization.FileIsEmptyWarningLog =>
       ({
         title: "HTMLコード妥当性検問中断",
         description: `ファイル「${ namedParameters.targetFileRelativePath }」は空なので、確認対象のHTMはありません。`
       }),
 
   generateValidationStartedInfoLog: (
-    namedParameters: HTML_Validator.Localization.ValidationStartedInfoLog.NamedParameters
-  ): HTML_Validator.Localization.ValidationStartedInfoLog => ({
+    namedParameters: HTML_ValidatorLocalization.ValidationStartedInfoLog.NamedParameters
+  ): HTML_ValidatorLocalization.ValidationStartedInfoLog => ({
     title: "HTML妥当性確認開始",
     description: `これよりファイル「${ namedParameters.targetFileRelativePath }」にあるHTMLコードの妥当性検問を開始します・・・`
   }),
 
   generateValidationFinishedWithNoIssuesFoundSuccessLog: (
-    namedParameters: HTML_Validator.Localization.ValidationFinishedWithNoIssuesFoundSuccessLog.NamedParameters
-  ): HTML_Validator.Localization.ValidationFinishedWithNoIssuesFoundSuccessLog => ({
+    namedParameters: HTML_ValidatorLocalization.ValidationFinishedWithNoIssuesFoundSuccessLog.NamedParameters
+  ): HTML_ValidatorLocalization.ValidationFinishedWithNoIssuesFoundSuccessLog => ({
     title: "HTML妥当性確認完了",
     description: `ファイル「${ namedParameters.targetFileRelativePath }」はW3Cの全規則・推薦を遵守。\n` +
         `秒間経過：${ namedParameters.secondsElapsed }`
@@ -32,7 +32,7 @@ const HTML_ValidatorLocalization__japanese: HTML_Validator.Localization = {
   },
 
   generateIssueOccurrenceLocationIndication: (
-    namedParameters: HTML_Validator.Localization.IssueOccurrenceLocationIndication.NamedParameters
+    namedParameters: HTML_ValidatorLocalization.IssueOccurrenceLocationIndication.NamedParameters
   ): string => `${ namedParameters.lineNumber }行目　` +
       `${ namedParameters.startingColumnNumber }～${ namedParameters.lastColumnNumber }列目`,
 
@@ -44,8 +44,8 @@ const HTML_ValidatorLocalization__japanese: HTML_Validator.Localization = {
   },
 
   generateIssuesFoundErrorLog: (
-    namedParameters: HTML_Validator.Localization.IssuesFoundErrorLog.NamedParameters
-  ): HTML_Validator.Localization.IssuesFoundErrorLog => ({
+    namedParameters: HTML_ValidatorLocalization.IssuesFoundErrorLog.NamedParameters
+  ): HTML_ValidatorLocalization.IssuesFoundErrorLog => ({
     customBadgeText: "HTML妥当性確認不合格",
     title: "HTML規格違反・W3C推薦無視が発見",
     description: `ファイル「${ namedParameters.targetFileRelativePath }」は下記の問題を含めています\n\n` +

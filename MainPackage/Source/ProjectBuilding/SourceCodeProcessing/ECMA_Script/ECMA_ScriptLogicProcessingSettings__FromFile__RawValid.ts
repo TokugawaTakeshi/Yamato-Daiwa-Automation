@@ -1,10 +1,8 @@
 /* --- Restrictions ------------------------------------------------------------------------------------------------- */
 import ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRestrictions";
 import SupportedECMA_ScriptRuntimesTypes = ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes;
-
-/* --- Default settings --------------------------------------------------------------------------------------------- */
 import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Defaults/ConsumingProjectPreDefinedBuildingModes";
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 import type ConsumingProjectPreDefinedBuildingModes__Localized from
     "@ProjectBuilding/Common/RawConfig/Enumerations/ConsumingProjectPreDefinedBuildingModes__Localized";
 
@@ -14,18 +12,16 @@ import type SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid fr
 import type RevisioningSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/RevisioningSettings__FromFile__RawValid";
 
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+/* --- General utils ------------------------------------------------------------------------------------------------ */
 import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
 import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
 
 
-type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid = {
-  readonly common?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Common;
-  readonly linting?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Linting;
-  readonly entryPointsGroups: {
-    readonly [groupID: string]: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup;
-  };
-};
+type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid = Readonly<{
+  common?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Common;
+  linting?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Linting;
+  entryPointsGroups: Readonly<{ [groupID: string]: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
+}>;
 
 
 /* eslint-disable-next-line @typescript-eslint/no-redeclare --
@@ -35,28 +31,26 @@ type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid = {
 namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
   /* === Types ====================================================================================================== */
-  export type Common = {
-    readonly directoriesRelativePathsAliases?: { [directoryAlias: string]: string; };
-  };
+  export type Common = Readonly<{ directoriesRelativePathsAliases?: Readonly<{ [directoryAlias: string]: string; }>; }>;
 
-  export type Linting = {
-    readonly presetFileRelativePath?: string;
-    readonly disableCompletely?: boolean;
-  };
+  export type Linting = Readonly<{
+    presetFileRelativePath?: string;
+    enable?: boolean;
+  }>;
 
   export type EntryPointsGroup =
-      Omit<SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup, "partialsRecognition"> &
-      {
-        readonly targetRuntime: EntryPointsGroup.Runtime;
-        readonly entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML?: string;
-        readonly associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer?: string;
-        readonly typeScriptConfigurationFileRelativePath?: string;
-        readonly linting?: EntryPointsGroup.Linting;
-        readonly distributing?: EntryPointsGroup.Distributing;
-        readonly buildingModeDependent: {
-          [projectBuildingMode: string]: EntryPointsGroup.EntryPointsGroupBuildingModeDependentSettings;
-        };
-      };
+      SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
+      Readonly<{
+        targetRuntime: EntryPointsGroup.Runtime;
+        entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML?: string;
+        associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer?: string;
+        typeScriptConfigurationFileRelativePath?: string;
+        distributing?: EntryPointsGroup.Distributing;
+        buildingModeDependent: Readonly<{
+          [projectBuildingMode in ConsumingProjectPreDefinedBuildingModes]:
+              EntryPointsGroup.EntryPointsGroupBuildingModeDependentSettings;
+        }>;
+      }>;
 
   export namespace EntryPointsGroup {
 
@@ -64,142 +58,118 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
     export namespace Runtime {
 
-      export type Browser = {
-        readonly type: SupportedECMA_ScriptRuntimesTypes.browser;
-      };
+      export type Browser = Readonly<{ type: SupportedECMA_ScriptRuntimesTypes.browser; }>;
 
-      export type WebWorker = {
-        readonly type: SupportedECMA_ScriptRuntimesTypes.webWorker;
-      };
+      export type WebWorker = Readonly<{ type: SupportedECMA_ScriptRuntimesTypes.webWorker; }>;
 
-      export type NodeJS = {
-        readonly type: SupportedECMA_ScriptRuntimesTypes.nodeJS;
-        readonly minimalVersion: {
-          readonly major: number;
-          readonly minor?: number;
-        };
-      };
+      export type NodeJS = Readonly<{
+        type: SupportedECMA_ScriptRuntimesTypes.nodeJS;
+        minimalVersion: Readonly<{
+          major: number;
+          minor?: number;
+        }>;
+      }>;
 
-      export type Pug = {
-        readonly type: SupportedECMA_ScriptRuntimesTypes.pug;
-      };
+      export type Pug = Readonly<{ type: SupportedECMA_ScriptRuntimesTypes.pug; }>;
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-shadow --
-     * The declaring of type/interface inside namespace with same name as defined in upper scope
-     * is completely valid TypeScript and not desired to be warned by @typescript-eslint. */
-    export type Linting = {
-      readonly disable?: boolean;
-    };
-
-
-    export type Distributing = {
-      readonly exposingOfExportsFromEntryPoints?: Distributing.ExposingOfExportsFromEntryPoints;
-      readonly typeScriptTypesDeclarations?: Distributing.TypeScriptTypesDeclarations;
-    };
+    export type Distributing = Readonly<{
+      exposingOfExportsFromEntryPoints?: Distributing.ExposingOfExportsFromEntryPoints;
+      typeScriptTypesDeclarations?: Distributing.TypeScriptTypesDeclarations;
+    }>;
 
     export namespace Distributing {
 
-      export type ExposingOfExportsFromEntryPoints = {
-        readonly mustExpose: boolean;
-        readonly namespace?: string;
-      };
+      export type ExposingOfExportsFromEntryPoints = Readonly<{
+        mustExpose: boolean;
+        namespace?: string;
+      }>;
 
-      export type TypeScriptTypesDeclarations = {
-        readonly mustGenerate?: boolean;
-        readonly fileNameWithoutExtension?: string;
-      };
+      export type TypeScriptTypesDeclarations = Readonly<{
+        mustGenerate?: boolean;
+        fileNameWithoutExtension?: string;
+      }>;
     }
 
 
     export type EntryPointsGroupBuildingModeDependentSettings =
         SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup.BuildingModeDependent &
-        {
-          readonly revisioning?: RevisioningSettings__FromFile__RawValid;
-          readonly dynamicallyLoadedFilesSubdirectory?: string;
-          readonly dynamicallyLoadedFilesNamesTemplate?: string;
-        };
+        Readonly<{
+          revisioning?: RevisioningSettings__FromFile__RawValid;
+          dynamicallyLoadedFilesSubdirectory?: string;
+          dynamicallyLoadedFilesNamesTemplate?: string;
+        }>;
   }
 
 
   /* === Localization =============================================================================================== */
   export type Localization = {
 
-    readonly common: {
-      readonly KEY: string;
-      readonly directoriesRelativePathsAliases: { KEY: string; };
-    };
+    common: Readonly<{
+      KEY: string;
+      directoriesRelativePathsAliases: Readonly<{ KEY: string; }>;
+    }>;
 
-    readonly linting: {
-      readonly KEY: string;
-    };
+    linting: Readonly<{ KEY: string; }>;
 
-    readonly entryPointsGroups: {
+    entryPointsGroups: Readonly<{
 
-      readonly KEY: string;
+      KEY: string;
 
-      readonly targetRuntime: {
-        readonly KEY: string;
-        readonly type: { KEY: string; };
-        readonly minimalVersion: {
-          readonly KEY: string;
-          readonly REQUIREMENT_CONDITION_DESCRIPTION: string;
-          readonly major: { KEY: string; };
-          readonly minor: { KEY: string; };
+      targetRuntime: Readonly<{
+        KEY: string;
+        type: Readonly<{ KEY: string; }>;
+        minimalVersion: Readonly<{
+          KEY: string;
+          REQUIREMENT_CONDITION_DESCRIPTION: string;
+          major: Readonly<{ KEY: string; }>;
+          minor: Readonly<{ KEY: string; }>;
+        }>;
+      }>;
+
+      entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML: Readonly<{ KEY: string; }>;
+      associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer: Readonly<{ KEY: string; }>;
+      typeScriptConfigurationFileRelativePath: Readonly<{ KEY: string; }>;
+
+      distributing: Readonly<{
+        KEY: string;
+        exposingOfExportsFromEntryPoints: {
+          KEY: string;
+          mustExpose: Readonly<{ readonly KEY: string; }>;
+          namespace: Readonly<{ readonly KEY: string; }>;
         };
-      };
+        typeScriptTypesDeclarations: Readonly<{
+          KEY: string;
+          mustGenerate: Readonly<{ KEY: string; }>;
+          fileNameWithoutExtension: Readonly<{ KEY: string; }>;
+        }>;
+      }>;
 
-      readonly entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML: { KEY: string; };
-      readonly associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer: { KEY: string; };
-      readonly typeScriptConfigurationFileRelativePath: { KEY: string; };
-
-      readonly linting: {
-        readonly KEY: string;
-        readonly disable: { KEY: string; };
-      };
-
-      readonly distributing: {
-        readonly KEY: string;
-        readonly exposingOfExportsFromEntryPoints: {
-          readonly KEY: string;
-          readonly mustExpose: { readonly KEY: string; };
-          readonly namespace: { readonly KEY: string; };
-        };
-        readonly typeScriptTypesDeclarations: {
-          readonly KEY: string;
-          readonly mustGenerate: { readonly KEY: string; };
-          readonly fileNameWithoutExtension: { readonly KEY: string; };
-        };
-      };
-
-      readonly buildingModeDependent: {
-        readonly KEY: string;
-        readonly outputBaseDirectoryRelativePath: { KEY: string; };
-        readonly revisioning: { KEY: string; };
-        readonly dynamicallyLoadedFilesSubdirectory: { KEY: string; };
-        readonly dynamicallyLoadedFilesNamesTemplate: { KEY: string; };
-      };
-    };
+      readonly buildingModeDependent: Readonly<{
+        KEY: string;
+        outputTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
+        revisioning: Readonly<{ KEY: string; }>;
+        dynamicallyLoadedFilesSubdirectory: Readonly<{ KEY: string; }>;
+        dynamicallyLoadedFilesNamesTemplate: Readonly<{ KEY: string; }>;
+      }>;
+    }>;
   };
 
   export function getLocalizedPropertiesSpecification(
     {
       ECMA_ScriptProcessingLocalization,
-      sourceCodeProcessingSettingsGenericPropertiesLocalization,
       sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
       consumingProjectLocalizedPreDefinedBuildingModes,
       revisioningPropertiesLocalizedSpecification,
       lintingCommonSettingsLocalizedPropertiesSpecification
-    }: {
-      readonly ECMA_ScriptProcessingLocalization: Localization;
-      readonly sourceCodeProcessingSettingsGenericPropertiesLocalization:
-          SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.Localization;
-      readonly sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification:
+    }: Readonly<{
+      ECMA_ScriptProcessingLocalization: Localization;
+      sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification:
           RawObjectDataProcessor.PropertiesSpecification;
-      readonly consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-      readonly revisioningPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
-      readonly lintingCommonSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.PropertiesSpecification;
-    }
+      consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
+      revisioningPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
+      lintingCommonSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.PropertiesSpecification;
+    }>
   ): RawObjectDataProcessor.PropertiesSpecification {
 
     return {
@@ -247,14 +217,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
           properties: {
 
-            [
-              sourceCodeProcessingSettingsGenericPropertiesLocalization.
-                  entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath.KEY
-            ]:
-                sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification[
-                  sourceCodeProcessingSettingsGenericPropertiesLocalization.
-                      entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath.KEY
-                ],
+            ...sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
 
             [ECMA_ScriptProcessingLocalization.entryPointsGroups.targetRuntime.KEY]: {
               newName: "targetRuntime",
@@ -319,20 +282,6 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
               minimalCharactersCount: 1
             },
 
-            [ECMA_ScriptProcessingLocalization.entryPointsGroups.linting.KEY]: {
-              newName: "linting",
-              preValidationModifications: nullToUndefined,
-              type: Object,
-              required: false,
-              properties: {
-                [ECMA_ScriptProcessingLocalization.entryPointsGroups.linting.disable.KEY]: {
-                  newName: "disable",
-                  type: Boolean,
-                  required: false
-                }
-              }
-            },
-
             [ECMA_ScriptProcessingLocalization.entryPointsGroups.distributing.KEY]: {
               newName: "distributing",
               type: Object,
@@ -392,15 +341,18 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
               newName: "buildingModeDependent",
               type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
               required: true,
+              allowedKeys: Object.values(ConsumingProjectPreDefinedBuildingModes),
               minimalEntriesCount: 1,
 
               keysRenamings: {
                 [consumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
                     ConsumingProjectPreDefinedBuildingModes.staticPreview,
-                [consumingProjectLocalizedPreDefinedBuildingModes.development]:
-                    ConsumingProjectPreDefinedBuildingModes.development,
+                [consumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
+                    ConsumingProjectPreDefinedBuildingModes.localDevelopment,
                 [consumingProjectLocalizedPreDefinedBuildingModes.testing]:
                     ConsumingProjectPreDefinedBuildingModes.testing,
+                [consumingProjectLocalizedPreDefinedBuildingModes.staging]:
+                    ConsumingProjectPreDefinedBuildingModes.staging,
                 [consumingProjectLocalizedPreDefinedBuildingModes.production]:
                     ConsumingProjectPreDefinedBuildingModes.production
               },
@@ -413,9 +365,9 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
                   [
                     ECMA_ScriptProcessingLocalization.entryPointsGroups.
-                        buildingModeDependent.outputBaseDirectoryRelativePath.KEY
+                        buildingModeDependent.outputTopDirectoryRelativePath.KEY
                   ]: {
-                    newName: "outputBaseDirectoryRelativePath",
+                    newName: "outputTopDirectoryRelativePath",
                     type: String,
                     required: true
                   },

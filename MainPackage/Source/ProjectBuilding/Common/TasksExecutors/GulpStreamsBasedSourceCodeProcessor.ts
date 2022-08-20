@@ -10,11 +10,11 @@ import type GulpStreamBasedSourceCodeProcessingConfigRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/GulpStreamBasedSourceCodeProcessingConfigRepresentative";
 
 /* --- Task executors ----------------------------------------------------------------------------------------------- */
-import GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedTaskExecutor";
+import GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import type { FSWatcher } from "fs";
-import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/ChokidarSpecialist";
+import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/Chokidar/ChokidarSpecialist";
 import Gulp from "gulp";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
@@ -33,7 +33,7 @@ export default abstract class GulpStreamsBasedSourceCodeProcessor<
   SourceCodeProcessorsCommonSettings__Normalized extends SourceCodeProcessingCommonSettingsGenericProperties,
   EntryPointsGroupSettings__Normalized extends EntryPointsGroupGenericSettings,
   AssociatedSourceCodeProcessingConfigRepresentative extends GulpStreamBasedSourceCodeProcessingConfigRepresentative<
-      SourceCodeProcessorsCommonSettings__Normalized, EntryPointsGroupSettings__Normalized
+    SourceCodeProcessorsCommonSettings__Normalized, EntryPointsGroupSettings__Normalized
   >
 > extends GulpStreamsBasedTaskExecutor {
 
