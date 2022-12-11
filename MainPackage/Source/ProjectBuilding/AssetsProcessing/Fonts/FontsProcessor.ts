@@ -93,6 +93,7 @@ class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
                * No known simple solution; will be fixed at 2nd generation of FontsProcessor.  */
               (targetFileInFinalState as FontsProcessor.FontVinylFile).outputDirectoryAbsolutePath)
         );
+
   }
 
 
@@ -148,9 +149,9 @@ class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
 namespace FontsProcessor {
   export type FontVinylFile =
       GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      {
-        readonly processingSettings: FontsProcessingSettings__Normalized.AssetsGroup;
-      };
+      Readonly<{
+        processingSettings: FontsProcessingSettings__Normalized.AssetsGroup;
+      }>;
 }
 
 

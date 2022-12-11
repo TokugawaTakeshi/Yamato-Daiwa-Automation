@@ -198,10 +198,10 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
 export namespace StylesProcessor {
   export type StylesVinylFile =
       GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      {
-        readonly processingSettings: StylesProcessingSettings__Normalized.EntryPointsGroup;
-        readonly mustBeProcessedByStylus: boolean;
-      };
+      Readonly<{
+        processingSettings: StylesProcessingSettings__Normalized.EntryPointsGroup;
+        mustBeProcessedByStylus: boolean;
+      }>;
 }
 
 

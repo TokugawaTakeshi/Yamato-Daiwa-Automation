@@ -249,6 +249,7 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
 
 
     this.TASK_NAME_FOR_LOGGING = markupProcessingSettingsRepresentative.TASK_NAME_FOR_LOGGING;
+
   }
 
 
@@ -457,6 +458,7 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
     );
 
     return partialListing.join("\n");
+
   }
 }
 

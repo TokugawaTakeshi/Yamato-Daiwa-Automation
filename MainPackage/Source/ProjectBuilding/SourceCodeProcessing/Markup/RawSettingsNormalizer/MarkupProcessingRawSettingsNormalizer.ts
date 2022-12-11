@@ -111,6 +111,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
       logging: dataHoldingSelfInstance.normalizeLoggingSettings()
 
     };
+
   }
 
 

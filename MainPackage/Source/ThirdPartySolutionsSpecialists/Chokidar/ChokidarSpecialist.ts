@@ -32,8 +32,8 @@ class ChokidarSpecialist {
       case ChokidarSpecialist.EventsNames.initialScanComplete:
         return ChokidarSpecialist.localization.eventsNamesInterpretations.initialScanComplete;
 
-      default:
-        return eventName;
+      default: return eventName;
+
     }
   }
 
@@ -52,9 +52,9 @@ namespace ChokidarSpecialist {
     initialScanComplete = "ready"
   }
 
-  export type Localization = {
+  export type Localization = Readonly<{
     eventsNamesInterpretations: InheritEnumerationKeys<typeof EventsNames, string>;
-  };
+  }>;
 
 }
 

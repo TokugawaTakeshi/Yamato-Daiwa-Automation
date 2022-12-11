@@ -106,6 +106,7 @@ class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
                * No known simple solution; will be fixed at 2nd generation of ImagesProcessor.  */
               (targetFileInFinalState as ImagesProcessor.ImageVinylFile).outputDirectoryAbsolutePath)
         );
+
   }
 
 
@@ -162,9 +163,9 @@ class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
 namespace ImagesProcessor {
   export type ImageVinylFile =
       GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      {
-        readonly processingSettings: ImagesProcessingSettings__Normalized.AssetsGroup;
-      };
+      Readonly<{
+        processingSettings: ImagesProcessingSettings__Normalized.AssetsGroup;
+      }>;
 }
 
 

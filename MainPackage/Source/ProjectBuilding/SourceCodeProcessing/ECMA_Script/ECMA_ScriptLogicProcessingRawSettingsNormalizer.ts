@@ -36,10 +36,10 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
     {
       ECMA_ScriptLogicProcessingSettings__fromFile__rawValid,
       commonSettings__normalized
-    }: {
+    }: Readonly<{
       ECMA_ScriptLogicProcessingSettings__fromFile__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid;
       commonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
-    }
+    }>
   ): ECMA_ScriptLogicProcessingSettings__Normalized {
 
     const dataHoldingSelfInstance: ECMA_ScriptLogicProcessingRawSettingsNormalizer =
@@ -113,6 +113,7 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
                 bind(dataHoldingSelfInstance)
           )
     };
+
   }
 
 
@@ -226,5 +227,7 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
       } : null
     };
+
   }
+
 }

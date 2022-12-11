@@ -171,11 +171,11 @@ namespace GulpStreamBasedSourceCodeProcessingConfigRepresentative {
     mustLogPartialFilesAndEntryPointsRelationsMap: boolean;
   }>;
 
-  export type Localization = {
+  export type Localization = Readonly<{
     generateEntryPointsGroupNormalizedSettingsNotFoundForSpecifiedFilePath: (
       parametersObject: { targetSourceFileAbsolutePath: string; }
     ) => string;
-  };
+  }>;
 
 }
 

@@ -64,16 +64,17 @@ abstract class GulpStreamsBasedTaskExecutor {
       }
     });
   }
+
 }
 
 
 namespace GulpStreamsBasedTaskExecutor {
   export type VinylFileWithCachedNormalizedSettings =
       VinylFile &
-      {
-        readonly sourceAbsolutePath: string;
-        readonly outputDirectoryAbsolutePath: string;
-      };
+      Readonly<{
+        sourceAbsolutePath: string;
+        outputDirectoryAbsolutePath: string;
+      }>;
 }
 
 

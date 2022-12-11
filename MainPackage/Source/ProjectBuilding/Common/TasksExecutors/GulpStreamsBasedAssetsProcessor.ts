@@ -104,6 +104,9 @@ export default abstract class GulpStreamsBasedAssetsProcessor<
             this.filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing.clear();
 
           }, secondsToMilliseconds(GulpStreamsBasedAssetsProcessor.WAITING_FOR_OTHER_FILES_WILL_BE_SAVED_PERIOD__SECONDS));
+
         });
+
   }
+
 }

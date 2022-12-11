@@ -28,8 +28,8 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
   AudiosProcessingSettingsRepresentative
 > {
 
-  protected readonly TASK_NAME_FOR_LOGGING: string = "録音管理";
-  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "録音";
+  protected readonly TASK_NAME_FOR_LOGGING: string = "Audios processing";
+  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "Audio";
 
   private readonly audiosProcessingConfigRepresentative: AudiosProcessingSettingsRepresentative;
 
@@ -149,9 +149,9 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
 namespace AudiosProcessor {
   export type AudioVinylFile =
       GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      {
-        readonly processingSettings: AudiosProcessingSettings__Normalized.AssetsGroup;
-      };
+      Readonly<{
+        processingSettings: AudiosProcessingSettings__Normalized.AssetsGroup;
+      }>;
 }
 
 

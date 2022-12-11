@@ -75,11 +75,11 @@ export default class WebpackConfigGenerator {
       sourceFilesGlobSelectors,
       entryPointsGroupID,
       webpackContext
-    }: {
+    }: Readonly<{
       entryPointsGroupID: string;
       sourceFilesGlobSelectors: ReadonlyArray<string>;
       webpackContext: string;
-    }
+    }>
   ): Webpack.EntryObject | null {
 
     /* [ Reference ] https://webpack.js.org/configuration/entry-context/#entry */
@@ -105,10 +105,10 @@ export default class WebpackConfigGenerator {
     for (const entryPointSourceFileAbsolutePath of targetEntryPointsSourceFilesAbsolutePaths) {
 
       const targetSourceFilePathRelativeToSourceEntryPointsTopDirectory: string = ImprovedPath.
-      computeRelativePath({
-        comparedPath: entryPointSourceFileAbsolutePath,
-        basePath: webpackContext
-      });
+          computeRelativePath({
+            comparedPath: entryPointSourceFileAbsolutePath,
+            basePath: webpackContext
+          });
 
       const outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory: string = ImprovedPath.
           removeFilenameExtensionFromPath(targetSourceFilePathRelativeToSourceEntryPointsTopDirectory);
@@ -426,6 +426,11 @@ export default class WebpackConfigGenerator {
       plugins: [
 
         new Webpack.DefinePlugin({
+
+          __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__: this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
+          __IS_TESTING_BUILDING_MODE__: this.masterConfigRepresentative.isTestingBuildingMode,
+          __IS_STAGING_BUILDING_MODE__: this.masterConfigRepresentative.isStagingBuildingMode,
+          __IS_PRODUCTION_BUILDING_MODE__: this.masterConfigRepresentative.isProductionBuildingMode,
 
           /* [ Theory ] Settings for the Vue 3 which must be defined explicitly. */
           __VUE_OPTIONS_API__: true,

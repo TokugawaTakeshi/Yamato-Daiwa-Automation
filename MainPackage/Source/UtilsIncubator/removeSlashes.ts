@@ -3,10 +3,10 @@ import { removeNthCharacter, removeSpecificCharacterFromCertainPosition } from "
 
 export default function removeSlashes(
   targetString: string,
-  options: {
+  options: Readonly<{
     leading: boolean;
     trailing: boolean;
-  }
+  }>
 ): string {
 
   let transformingWorkpiece: string = targetString;
@@ -27,4 +27,5 @@ export default function removeSlashes(
   }
 
   return transformingWorkpiece;
+
 }

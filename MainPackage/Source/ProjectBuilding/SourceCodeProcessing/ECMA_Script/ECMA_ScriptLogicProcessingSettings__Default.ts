@@ -79,6 +79,7 @@ const ECMA_ScriptLogicProcessingSettings__Default: Readonly<{
       fileNameWithoutExtension: "index.d.ts"
     }
   }
+
 };
 
 

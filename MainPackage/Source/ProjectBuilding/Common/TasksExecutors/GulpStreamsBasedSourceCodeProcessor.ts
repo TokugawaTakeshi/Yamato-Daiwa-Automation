@@ -153,6 +153,7 @@ export default abstract class GulpStreamsBasedSourceCodeProcessor<
             )
           );
         });
+
   }
 
 
@@ -195,5 +196,7 @@ export default abstract class GulpStreamsBasedSourceCodeProcessor<
 
     outdatedMarkupFilesWatcher?.close();
     outdatedMarkupFilesWatcher = null;
+
   }
+
 }

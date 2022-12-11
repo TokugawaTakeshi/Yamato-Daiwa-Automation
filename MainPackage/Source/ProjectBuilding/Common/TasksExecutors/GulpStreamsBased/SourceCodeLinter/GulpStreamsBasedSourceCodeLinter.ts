@@ -10,10 +10,7 @@ import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/Chokidar/Chokida
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
 import Timeout = NodeJS.Timeout;
-import {
-  Logger,
-  secondsToMilliseconds
-} from "@yamato-daiwa/es-extensions";
+import { Logger, secondsToMilliseconds } from "@yamato-daiwa/es-extensions";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
 
@@ -87,6 +84,7 @@ export default abstract class GulpStreamsBasedSourceCodeLinter extends GulpStrea
               GulpStreamsBasedSourceCodeLinter.WAITING_FOR_THE_FILES_OF_SAME_TYPE_WILL_BE_SAVED_PERIOD__SECONDS
             )
           );
+
         });
 
   }

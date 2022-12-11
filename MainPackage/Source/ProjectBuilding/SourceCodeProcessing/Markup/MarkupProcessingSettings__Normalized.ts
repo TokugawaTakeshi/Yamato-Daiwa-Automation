@@ -98,6 +98,7 @@ namespace MarkupProcessingSettings__Normalized {
     filesCount: boolean;
     partialFilesAndParentEntryPointsCorrespondence: boolean;
   }>;
+
 }
 
 

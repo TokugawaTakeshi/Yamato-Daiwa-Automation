@@ -74,6 +74,7 @@ namespace ProjectBuildingConfig__Normalized {
     mustExecute: boolean;
     contentHashPostfixSeparator: string;
   }>;
+
 }
 
 

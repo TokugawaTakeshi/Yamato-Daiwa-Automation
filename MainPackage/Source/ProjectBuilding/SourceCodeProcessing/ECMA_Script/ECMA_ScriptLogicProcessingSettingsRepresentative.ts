@@ -43,15 +43,16 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
 
     if (this.relevantEntryPointsGroupsSettings.size === 0) {
       Logger.logWarning({
-        title: "挙動制御記法処理は実行されません",
-        description: `プロジェクト構成モード：${ projectBuildingMasterConfigRepresentative.consumingProjectBuildingMode } ` +
-            "に該当する入点群は定義されていない。",
+        title: "The ECMAScript logic processing will not be executed",
+        description: "No files has been found for project building mode " +
+            `"${ projectBuildingMasterConfigRepresentative.consumingProjectBuildingMode }" `,
         occurrenceLocation: "ECMA_ScriptLogicProcessingSettingsRepresentative.constructor(...parameters)"
       });
     }
 
     this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = ECMA_ScriptLogicProcessingSettings__normalized.common.
         supportedSourceFileNameExtensionsWithoutLeadingDots;
+
   }
 
 
@@ -73,4 +74,5 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
         )
     );
   }
+
 }

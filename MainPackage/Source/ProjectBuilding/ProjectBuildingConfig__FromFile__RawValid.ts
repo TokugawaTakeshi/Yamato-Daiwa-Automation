@@ -50,6 +50,7 @@ type ProjectBuildingConfig__FromFile__RawValid = {
   [ProjectBuildingTasksIDsForConfigFile.audiosProcessing]?: AudiosProcessingSettings__FromFile__RawValid;
 
   [ProjectBuildingTasksIDsForConfigFile.browserLiveReloading]?: BrowserLiveReloadingSettings__FromFile__RawValid;
+
 };
 
 
@@ -59,38 +60,39 @@ type ProjectBuildingConfig__FromFile__RawValid = {
  * https://github.com/eslint/eslint/issues/15504 */
 namespace ProjectBuildingConfig__FromFile__RawValid {
 
-  export type Localization = {
+  export type Localization = Readonly<{
 
-    readonly KEY: string;
+    KEY: string;
 
-    readonly enumerations: {
-      readonly tasksIDs: ProjectBuildingTasksIDsForConfigFile__Localized;
-      readonly consumingProjectPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-    };
+    enumerations: Readonly<{
+      tasksIDs: ProjectBuildingTasksIDsForConfigFile__Localized;
+      consumingProjectPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
+    }>;
 
-    readonly reusables: {
-      readonly sourceCodeProcessingGenericProperties:
+    reusables: Readonly<{
+      sourceCodeProcessingGenericProperties:
           SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.Localization;
-      readonly revisioning: RevisioningSettings__FromFile__RawValid.Localization;
-      readonly lintingCommonSettings: LintingCommonSettings__FromFile__RawValid.Localization;
-    };
+      revisioning: RevisioningSettings__FromFile__RawValid.Localization;
+      lintingCommonSettings: LintingCommonSettings__FromFile__RawValid.Localization;
+    }>;
 
-    readonly commonSettings: {
-      readonly KEY: string;
-      readonly properties: ProjectBuildingCommonSettings__FromFile__RawValid.Localization;
-    };
+    commonSettings: Readonly<{
+      KEY: string;
+      properties: ProjectBuildingCommonSettings__FromFile__RawValid.Localization;
+    }>;
 
-    readonly tasks: {
-      readonly markupProcessing: MarkupProcessingSettings__FromFile__RawValid.Localization;
-      readonly stylesProcessing: StylesProcessingSettings__FromFile__RawValid.Localization;
-      readonly ECMA_ScriptLogicProcessing: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Localization;
-      readonly imagesProcessing: ImagesProcessingSettings__FromFile__RawValid.Localization;
-      readonly fontsProcessing: FontsProcessingSettings__FromFile__RawValid.Localization;
-      readonly videosProcessing: VideosProcessingSettings__FromFile__RawValid.Localization;
-      readonly audiosProcessing: AudiosProcessingSettings__FromFile__RawValid.Localization;
-      readonly browserLiveReloading: BrowserLiveReloadingSettings__FromFile__RawValid.Localization;
-    };
-  };
+    tasks: Readonly<{
+      markupProcessing: MarkupProcessingSettings__FromFile__RawValid.Localization;
+      stylesProcessing: StylesProcessingSettings__FromFile__RawValid.Localization;
+      ECMA_ScriptLogicProcessing: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Localization;
+      imagesProcessing: ImagesProcessingSettings__FromFile__RawValid.Localization;
+      fontsProcessing: FontsProcessingSettings__FromFile__RawValid.Localization;
+      videosProcessing: VideosProcessingSettings__FromFile__RawValid.Localization;
+      audiosProcessing: AudiosProcessingSettings__FromFile__RawValid.Localization;
+      browserLiveReloading: BrowserLiveReloadingSettings__FromFile__RawValid.Localization;
+    }>;
+
+  }>;
 
 
   /* [ Theory ] "yamljs" will convert empty properties' values to 'null'; 'nullToUndefined' is required to recognize

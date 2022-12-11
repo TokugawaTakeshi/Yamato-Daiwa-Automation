@@ -7,7 +7,7 @@ import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuil
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 
-/* --- Settings representatives --------------------------------------------------------------------------------------- */
+/* --- Settings representatives ------------------------------------------------------------------------------------- */
 import MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 import StylesProcessingSettingsRepresentative from "@StylesProcessing/StylesProcessingSettingsRepresentative";
 import ECMA_ScriptLogicProcessingSettingsRepresentative from
@@ -218,4 +218,5 @@ export default class ProjectBuildingMasterConfigRepresentative {
       ...this.videosProcessingSettingsRepresentative?.actualOutputFilesGlobSelectors ?? []
     ];
   }
+
 }

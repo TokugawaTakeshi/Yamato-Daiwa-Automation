@@ -73,6 +73,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
     );
 
     super.initializeOrUpdatePartialFilesAndEntryPointsRelationsMap();
+
   }
 
 
@@ -86,6 +87,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
   public get staticDataForStaticPreview(): MarkupProcessingSettings__Normalized.StaticPreview.ImportsFromStaticDataFiles {
     return this.staticPreviewSettings.importsFromStaticDataFiles;
   }
+
 
   /* --- Imports from the TypeScript -------------------------------------------------------------------------------- */
   public get compiledTypeScriptImportingSettings(): MarkupProcessingSettings__Normalized.StaticPreview.

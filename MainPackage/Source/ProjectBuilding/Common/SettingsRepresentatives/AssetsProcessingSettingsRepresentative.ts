@@ -46,10 +46,10 @@ export default abstract class AssetsProcessingSettingsRepresentative<
     {
       targetSourceFileAbsolutePath,
       respectiveAssetsGroupNormalizedSettings
-    }: {
+    }: Readonly<{
       targetSourceFileAbsolutePath: string;
       respectiveAssetsGroupNormalizedSettings: AssetsGroupSettingsGenericProperties;
-    }
+    }>
   ): string {
 
     let outputDirectoryAbsolutePathForCurrentSourceFile: string = ImprovedPath.joinPathSegments(
@@ -81,22 +81,22 @@ export default abstract class AssetsProcessingSettingsRepresentative<
           ImprovedPath.splitPathToSegments(outputDirectoryAbsolutePathForCurrentSourceFile);
 
       respectiveAssetsGroupNormalizedSettings.
-      outputPathTransformations.
-      segmentsWhichLastDuplicatesMustBeRemoved.
-      forEach((segmentWhichLastDuplicatesMustBeRemoved: string): void => {
+          outputPathTransformations.
+          segmentsWhichLastDuplicatesMustBeRemoved.
+          forEach((segmentWhichLastDuplicatesMustBeRemoved: string): void => {
 
-        const indexesOfDuplicates: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
-            outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
-            (outputDirectoryAbsolutePathSegment: string): boolean =>
-                outputDirectoryAbsolutePathSegment === segmentWhichLastDuplicatesMustBeRemoved
-        );
+            const indexesOfDuplicates: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
+                outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
+                (outputDirectoryAbsolutePathSegment: string): boolean =>
+                    outputDirectoryAbsolutePathSegment === segmentWhichLastDuplicatesMustBeRemoved
+            );
 
-        removeArrayElementsByIndexes({
-          targetArray: outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
-          indexes: indexesOfDuplicates[indexesOfDuplicates.length - 1],
-          mutably: true
-        });
-      });
+            removeArrayElementsByIndexes({
+              targetArray: outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
+              indexes: indexesOfDuplicates[indexesOfDuplicates.length - 1],
+              mutably: true
+            });
+          });
 
       outputDirectoryAbsolutePathForCurrentSourceFile = ImprovedPath.joinPathSegments(
         outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
@@ -136,6 +136,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
     );
 
     return assetsSourceFilesAbsolutePaths;
+
   }
 
   public getAssetsNormalizedSettingsActualForTargetSourceFile(
@@ -170,6 +171,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
 
 
     return assetsNormalizedSettingsActualForTargetSourceFile;
+
   }
 
   public get actualOutputFilesGlobSelectors(): Array<string> {
@@ -196,5 +198,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
         });
 
     return assetsGroupsNormalizedSettingsMappedByAssetAliases;
+
   }
+
 }

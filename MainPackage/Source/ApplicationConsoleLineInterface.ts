@@ -47,6 +47,7 @@ namespace ApplicationConsoleLineInterface {
   export type DeployProjectConsoleCommand = {
     phrase: CommandPhrases.deployProject;
   };
+
 }
 
 

@@ -2,7 +2,7 @@
 import type ConsumingProjectPreDefinedBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 
-/* --- Raw valid config ---------------------------------------------------------------------------------------------- */
+/* --- Raw valid config --------------------------------------------------------------------------------------------- */
 import ProjectBuildingConfig__FromFile__RawValid from
     "./ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid";
 import ProjectBuildingConfigDefaultLocalization__FromFile__RawValid from
@@ -44,7 +44,7 @@ abstract class ProjectBuilder {
       consumingProjectRootDirectoryAbsolutePath,
       projectBuildingConfig__fromConsole,
       rawConfigFromFile
-    }: ProjectBuilder.ParametersObject
+    }: ProjectBuilder.NamedParameters
   ): void {
 
     const rawDataProcessingResult: RawObjectDataProcessor.
@@ -128,26 +128,29 @@ abstract class ProjectBuilder {
         }
       }
     );
+
   }
+
 }
 
 
 namespace ProjectBuilder {
 
-  export type ParametersObject = {
-    readonly consumingProjectRootDirectoryAbsolutePath: string;
-    readonly projectBuildingConfig__fromConsole: ProjectBuildingConfig__FromConsole;
-    readonly rawConfigFromFile: unknown;
-  };
+  export type NamedParameters = Readonly<{
+    consumingProjectRootDirectoryAbsolutePath: string;
+    projectBuildingConfig__fromConsole: ProjectBuildingConfig__FromConsole;
+    rawConfigFromFile: unknown;
+  }>;
 
-  export type ProjectBuildingConfig__FromConsole = {
-    readonly projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
-    readonly selectiveExecutionID?: string;
-  };
+  export type ProjectBuildingConfig__FromConsole = Readonly<{
+    projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+    selectiveExecutionID?: string;
+  }>;
 
-  export type ContainerizedProjectBuildingValidConfigFromFile = {
+  export type ContainerizedProjectBuildingValidConfigFromFile = Readonly<{
     projectBuilding: ProjectBuildingConfig__FromFile__RawValid;
-  };
+  }>;
+
 }
 
 

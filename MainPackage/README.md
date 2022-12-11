@@ -96,6 +96,9 @@ npm i @yamato-daiwa/automation -D -E
 
   <dt>node-notifier</dt>
   <dd>Used for accessing to native toast message functionality</dd>
+  
+  <dt>pug-lint</dt>
+  <dd>Used to providing linting of Pug source code</dd>
 
   <dt>pug-plain-loader</dt>
   <dd>Used to providing of the Pug source code language for Vue templates in Single File Components</dd>
@@ -114,6 +117,9 @@ npm i @yamato-daiwa/automation -D -E
 
   <dt>stlint</dt>  
   <dd>Used for linting of styles written by Stylus. The formatted output to terminal has been implemented by YDA development side.</dd>
+
+  <dt>stream-combiner2</dt>
+  <dd>Used for creating of Gulp tasks with complicated conditionals and parallels.</dd>
 
   <dt>style-loader</dt>
   <dd>Used to provide the dynamic injection of CSS functionality which has been imported to JavaScript bundle built by Webpack</dd>

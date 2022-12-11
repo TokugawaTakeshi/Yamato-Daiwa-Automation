@@ -1,10 +1,9 @@
 /* eslint-disable max-classes-per-file -- This limitation should not be applied to the type definitions. */
 
-/* eslint-disable-next-line no-underscore-dangle -- This global variable must stand out somehow. */
+/* eslint-disable no-underscore-dangle -- This global variable must stand out somehow. */
 declare const __IS_DEVELOPMENT_BUILDING_MODE__: boolean;
-
-/* eslint-disable-next-line no-underscore-dangle -- This global variable must stand out somehow. */
 declare const __IS_PRODUCTION_BUILDING_MODE__: boolean;
+/* eslint-enable no-underscore-dangle */
 
 
 declare module "access-sniff" {
@@ -140,6 +139,7 @@ declare module "pug-lint/lib/config-file" {
   }
 
 }
+
 
 declare module "gulp-data" {
 

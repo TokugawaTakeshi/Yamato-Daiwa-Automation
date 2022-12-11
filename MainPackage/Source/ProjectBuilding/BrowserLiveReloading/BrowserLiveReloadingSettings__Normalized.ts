@@ -37,11 +37,11 @@ namespace BrowserLiveReloadingSettings__Normalized {
   }
 
 
-  export type Logging = {
+  export type Logging = Readonly<{
     outputFileChangeDetection: boolean;
     browserTabWillBeReloadedSoon: boolean;
     browsersyncConnection: boolean;
-  };
+  }>;
 
 }
 

@@ -15,43 +15,43 @@ import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extens
 namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
 
   /* === Types ====================================================================================================== */
-  export type AssetsGroup = {
-    readonly sourceFilesTopDirectoryRelativePath: string;
-    readonly sourceFilesTopDirectoryPathAliasForReferencingFromHTML?: string;
-    readonly buildingModeDependent: {
-      readonly [projectBuildingMode: string]: AssetsGroup.BuildingModeDependent | undefined;
-    };
-  };
+  export type AssetsGroup = Readonly<{
+    sourceFilesTopDirectoryRelativePath: string;
+    sourceFilesTopDirectoryPathAliasForReferencingFromHTML?: string;
+    buildingModeDependent: Readonly<{
+      [projectBuildingMode: string]: AssetsGroup.BuildingModeDependent | undefined;
+    }>;
+  }>;
 
   export namespace AssetsGroup {
-    export type BuildingModeDependent = {
-      readonly outputTopDirectoryRelativePath: string;
-      readonly revisioning?: RevisioningSettings__FromFile__RawValid;
-      readonly outputPathTransformations?: {
-        readonly segmentsWhichMustBeRemoved?: Array<string>;
-        readonly segmentsWhichLastDuplicatesMustBeRemoved?: Array<string>;
-      };
-    };
+    export type BuildingModeDependent = Readonly<{
+      outputTopDirectoryRelativePath: string;
+      revisioning?: RevisioningSettings__FromFile__RawValid;
+      outputPathTransformations?: Readonly<{
+        segmentsWhichMustBeRemoved?: Array<string>;
+        segmentsWhichLastDuplicatesMustBeRemoved?: Array<string>;
+      }>;
+    }>;
   }
 
 
   /* === Localization =============================================================================================== */
   export type Localization = {
-    readonly assetsGroups: {
-      readonly KEY: string;
-      readonly sourceFilesTopDirectoryRelativePath: { KEY: string; };
-      readonly sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: string; };
-      readonly buildingModeDependent: {
-        readonly KEY: string;
-        readonly outputTopDirectoryRelativePath: { KEY: string; };
-        readonly revisioning: { KEY: string; };
-        readonly outputPathTransformations: {
-          readonly KEY: string;
-          readonly segmentsWhichMustBeRemoved: { KEY: string; };
-          readonly segmentsWhichLastDuplicatesMustBeRemoved: { KEY: string; };
-        };
-      };
-    };
+    assetsGroups: Readonly<{
+      KEY: string;
+      sourceFilesTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
+      sourceFilesTopDirectoryPathAliasForReferencingFromHTML: Readonly<{ KEY: string; }>;
+      buildingModeDependent: Readonly<{
+        KEY: string;
+        outputTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
+        revisioning: Readonly<{ KEY: string; }>;
+        outputPathTransformations: Readonly<{
+          KEY: string;
+          segmentsWhichMustBeRemoved: Readonly<{ KEY: string; }>;
+          segmentsWhichLastDuplicatesMustBeRemoved: Readonly<{ KEY: string; }>;
+        }>;
+      }>;
+    }>;
   };
 
   export function getLocalizedSpecification(
@@ -59,11 +59,11 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
       assetsProcessingSettingsGenericPropertiesLocalization,
       revisioningPropertiesLocalizedSpecification,
       consumingProjectLocalizedPreDefinedBuildingModes
-    }: {
+    }: Readonly<{
       assetsProcessingSettingsGenericPropertiesLocalization: Localization;
       revisioningPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
       consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-    }
+    }>
   ): RawObjectDataProcessor.PropertiesSpecification {
 
     return {

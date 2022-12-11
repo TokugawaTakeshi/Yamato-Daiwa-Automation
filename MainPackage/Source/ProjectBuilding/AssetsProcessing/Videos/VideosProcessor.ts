@@ -150,9 +150,9 @@ class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
 namespace VideosProcessor {
   export type VideoVinylFile =
       GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      {
-        readonly processingSettings: VideosProcessingSettings__Normalized.AssetsGroup;
-      };
+      Readonly<{
+        processingSettings: VideosProcessingSettings__Normalized.AssetsGroup;
+      }>;
 }
 
 

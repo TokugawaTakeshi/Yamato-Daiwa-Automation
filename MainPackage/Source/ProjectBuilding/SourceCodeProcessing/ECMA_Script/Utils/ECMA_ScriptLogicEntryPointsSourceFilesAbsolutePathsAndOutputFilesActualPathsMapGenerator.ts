@@ -24,7 +24,6 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
 
     const entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> = new Map<string, string>();
 
-
     for (
       const entryPointsGroupNormalizedSettings
       of ecmaScriptLogicProcessingConfigRepresentative.relevantEntryPointsGroupsSettings.values()
@@ -45,6 +44,7 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
     }
 
     return entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap;
+
   }
 
 
@@ -115,4 +115,5 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
 
     return correspondingOutputFileAbsolutePath;
   }
+
 }

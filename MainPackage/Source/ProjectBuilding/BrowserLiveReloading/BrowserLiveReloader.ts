@@ -52,6 +52,7 @@ class BrowserLiveReloader {
       dataHoldingSelfInstance.initializeBrowsersync();
       dataHoldingSelfInstance.initializeOutputFilesWatcher();
     };
+
   }
 
 
@@ -156,6 +157,7 @@ class BrowserLiveReloader {
           );
         });
   }
+
 }
 
 
@@ -192,6 +194,7 @@ namespace BrowserLiveReloader {
 
 
 export default BrowserLiveReloader;
+
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars --
  * It is the only way to extract the child namespace (no need to expose whole MarkupProcessingRawSettingsNormalizer

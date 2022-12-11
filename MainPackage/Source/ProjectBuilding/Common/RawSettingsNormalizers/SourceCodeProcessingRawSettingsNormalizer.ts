@@ -7,7 +7,7 @@ import type SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid fr
     "@ProjectBuilding:Common/RawConfig/SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid";
 
 /* -- Normalized config --------------------------------------------------------------------------------------------- */
-import type ProjectBuildingConfig__Normalized from "../../ProjectBuildingConfig__Normalized";
+import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
 
 /* --- Auxiliaries -------------------------------------------------------------------------------------------------- */
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";

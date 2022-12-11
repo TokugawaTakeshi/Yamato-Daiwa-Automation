@@ -1,5 +1,5 @@
 import VinylFile from "vinyl";
-import { Logger, UnexpectedEventError } from "@yamato-daiwa/es-extensions";
+import { Logger, InvalidParameterValueError } from "@yamato-daiwa/es-extensions";
 
 
 /* eslint-disable-next-line @typescript-eslint/ban-ts-comment --
@@ -17,8 +17,13 @@ export default abstract class VinylFileClass extends VinylFile {
 
     if (!(targetVinylFile instanceof VinylFileClass)) {
       Logger.throwErrorAndLog({
-        errorInstance: new UnexpectedEventError("UYE2"),
-        title: UnexpectedEventError.localization.defaultTitle,
+        errorInstance: new InvalidParameterValueError({
+          parameterName: "targetVinylFile",
+          parameterNumber: 1,
+          messageSpecificPart: "The target file is not the instance of \"VinylFileClass\" that is why can not access " +
+              "the field storing the output directory absolute path."
+        }),
+        title: InvalidParameterValueError.localization.defaultTitle,
         occurrenceLocation: "VinylFileClass.getOutputDirectoryAbsolutePathOfExpectedToBeSelfInstance(targetVinylFile"
       });
     }

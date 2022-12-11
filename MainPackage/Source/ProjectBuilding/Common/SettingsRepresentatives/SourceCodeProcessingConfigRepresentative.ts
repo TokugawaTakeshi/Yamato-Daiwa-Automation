@@ -47,4 +47,5 @@ export default abstract class SourceCodeProcessingConfigRepresentative<
       })
     );
   }
+
 }

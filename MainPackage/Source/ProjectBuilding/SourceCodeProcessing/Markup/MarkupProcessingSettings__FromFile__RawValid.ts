@@ -87,8 +87,8 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
     export type HTML_Validation = Readonly<{ disable?: boolean; }>;
 
     export type AccessibilityInspection = Readonly<{
-      disable?: boolean;
       standard?: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
+      disable?: boolean;
     }>;
   }
 

@@ -14,7 +14,7 @@ import type ProjectBuildingCommonSettings__Normalized from
 
 /* --- Utils -------------------------------------------------------------------------------------------------------- */
 import { isNotUndefined } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default abstract class ProjectBuildingCommonSettingsNormalizer {
@@ -25,12 +25,12 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
       consumingProjectRootDirectoryAbsolutePath,
       projectBuildingMode,
       actualSelectiveExecution
-    }: {
+    }: Readonly<{
       commonSettings__fromFile__rawValid: ProjectBuildingCommonSettings__FromFile__RawValid;
       consumingProjectRootDirectoryAbsolutePath: string;
       projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
       actualSelectiveExecution?: ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution;
-    }
+    }>
   ): ProjectBuildingCommonSettings__Normalized {
 
     const consumingProjectRootDirectoryAbsolutePath__forwardSlashes: string = ImprovedPath.
@@ -44,7 +44,7 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
     if (isNotUndefined(actualPublicDirectoryRelativePath)) {
       actualPublicDirectoryAbsolutePath = ImprovedPath.joinPathSegments(
         [ consumingProjectRootDirectoryAbsolutePath__forwardSlashes, actualPublicDirectoryRelativePath ],
-        { forwardSlashOnlySeparators: true }
+        { alwaysForwardSlashSeparators: true }
       );
     }
 
@@ -86,5 +86,7 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
 
       actualPublicDirectoryAbsolutePath
     };
+
   }
+
 }

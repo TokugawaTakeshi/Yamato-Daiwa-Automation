@@ -34,6 +34,7 @@ class Stopwatch {
     this.activationUnixTimestamp__milliseconds = 0;
     this.deactivationUnixTimestamp__milliseconds = 0;
   }
+
 }
 
 namespace Stopwatch {
