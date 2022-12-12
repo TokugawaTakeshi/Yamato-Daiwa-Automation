@@ -8,6 +8,7 @@ import {
   replaceDoubleBackslashesWithForwardSlashes,
   removeArrayElementsByPredicates,
   removeSpecificCharacterFromCertainPosition,
+  getURI_PartWithoutFragment,
   Logger,
   UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
@@ -253,7 +254,9 @@ abstract class ImprovedPath {
       return null;
     }
 
-    return lastFilenameExtensionBeginsFromDot__couldBeEmpty.substring(1);
+
+    return getURI_PartWithoutFragment(lastFilenameExtensionBeginsFromDot__couldBeEmpty.substring(1));
+
   }
 
   public static removeFilenameExtensionFromPath(targetPath: string): string {
@@ -330,6 +333,7 @@ abstract class ImprovedPath {
           })
         }`;
   }
+
 }
 
 

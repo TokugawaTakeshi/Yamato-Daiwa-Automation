@@ -22,7 +22,7 @@ import SourceCodeProcessingRawSettingsNormalizer from
     "@ProjectBuilding:Common/RawSettingsNormalizers/SourceCodeProcessingRawSettingsNormalizer";
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
-import { isUndefined, isBoolean, isNotUndefined } from "@yamato-daiwa/es-extensions";
+import { isUndefined, isNotUndefined } from "@yamato-daiwa/es-extensions";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
 
@@ -30,8 +30,6 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
 
   protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string> = StylesProcessingRestrictions.
       supportedSourceFilesNamesExtensionsWithoutLeadingDots;
-
-  private readonly lintingCommonSettings: StylesProcessingSettings__Normalized.Linting;
 
 
   public static normalize(
@@ -102,10 +100,7 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
           lintingCommonSettings: StylesProcessingSettings__Normalized.Linting;
         }
   ) {
-
     super(namedParameters);
-
-    this.lintingCommonSettings = namedParameters.lintingCommonSettings;
   }
 
 
@@ -138,29 +133,8 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
             entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
                 revisioning?.contentHashPostfixSeparator ??
             StylesProcessingSettings__Default.revisioning.contentHashPostfixSeparator
-      },
-
-      linting: {
-        mustExecute: ((): boolean => {
-
-          if (this.lintingCommonSettings.isCompletelyDisabled) {
-            return false;
-          }
-
-
-          if (isUndefined(entryPointsGroupSettings__rawValid.linting)) {
-            return StylesProcessingSettings__Default.linting.mustExecute;
-          }
-
-
-          if (isBoolean(entryPointsGroupSettings__rawValid.linting.disable)) {
-            return !entryPointsGroupSettings__rawValid.linting.disable;
-          }
-
-
-          return StylesProcessingSettings__Default.linting.mustExecute;
-        })()
       }
     };
+
   }
 }

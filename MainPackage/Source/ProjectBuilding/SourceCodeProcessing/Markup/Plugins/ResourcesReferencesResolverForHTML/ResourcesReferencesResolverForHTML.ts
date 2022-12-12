@@ -34,6 +34,10 @@ import {
   stringifyAndFormatArbitraryValue,
   createMapBasedOnOtherMap,
   filterMap,
+  appendLastFileNameExtension,
+  getURI_PartWithoutFragment,
+  getURI_Fragment,
+  appendFragmentToURI,
   isNonEmptyString,
   isUndefined,
   isNull
@@ -519,7 +523,7 @@ class ResourcesReferencesResolverForHTML {
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
       fileTypeForLogging__pluralForm
-    }: {
+    }: Readonly<{
       pickedPathOfTargetResourceFile: string;
       prefixOfAliasOfTopDirectoryOfResourcesGroup: string;
       sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: Map<string, string>;
@@ -527,7 +531,7 @@ class ResourcesReferencesResolverForHTML {
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap: Map<string, string>;
       fileTypeForLogging__singularForm: string;
       fileTypeForLogging__pluralForm: string;
-    }
+    }>
   ): string | null {
 
     const segmentsOfPickedPath: Array<string> = ImprovedPath.splitPathToSegments(pickedPathOfTargetResourceFile);
@@ -565,22 +569,31 @@ class ResourcesReferencesResolverForHTML {
       { forwardSlashOnlySeparators: true }
     );
 
-    const explicitlySpecifiedSourceFilenameExtension: string | null = ImprovedPath.
+    const explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile: string | null = ImprovedPath.
         extractLastFilenameExtensionWithoutFirstDot(sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension);
 
+    if (
+      isNull(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile) ||
+      !supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.
+          includes(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile)
+    ) {
 
-    if (isNull(explicitlySpecifiedSourceFilenameExtension)) {
-
-      const possibleAbsolutePathsOfTargetSourceFile: Array<string> =
+      const possibleAbsolutePathsOfTargetSourceFileWithoutFragment: Array<string> =
           supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.map(
             (supportedStylesheetFileNameExtensionWithoutLeadingDot: string): string =>
-                `${ sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension }.` +
-                `${ supportedStylesheetFileNameExtensionWithoutLeadingDot }`
+                getURI_PartWithoutFragment(
+                  appendLastFileNameExtension({
+                    targetPath: sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension,
+                    targetFileNameExtensionWithOrWithoutLeadingDot: supportedStylesheetFileNameExtensionWithoutLeadingDot,
+                    mustAppendDuplicateEvenIfTargetLastFileNameExtensionAlreadyPresentsAtSpecifiedPath: false
+                  })
+                )
           );
 
       const searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> = filterMap(
         sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
-        (sourceFileAbsolutePath: string): boolean => possibleAbsolutePathsOfTargetSourceFile.includes(sourceFileAbsolutePath)
+        (sourceFileAbsolutePath: string): boolean =>
+            possibleAbsolutePathsOfTargetSourceFileWithoutFragment.includes(sourceFileAbsolutePath)
       );
 
       if (searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.size === 0) {
@@ -590,14 +603,26 @@ class ResourcesReferencesResolverForHTML {
               generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog({
                 pickedPathOfTargetResourceFile,
                 fileType__singularForm: fileTypeForLogging__pluralForm,
-                checkedAbsolutePaths__formatted: stringifyAndFormatArbitraryValue(possibleAbsolutePathsOfTargetSourceFile)
+                checkedAbsolutePaths__formatted: stringifyAndFormatArbitraryValue(
+                  possibleAbsolutePathsOfTargetSourceFileWithoutFragment
+                )
               })
         );
+
         return null;
+
       }
 
 
-      return Array.from(searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.values())[0];
+      return appendFragmentToURI({
+        targetURI: Array.from(searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.values())[0],
+        targetFragmentWithOrWithoutLeadingHash: getURI_Fragment({
+          targetURI: sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension,
+          withLeadingHash: false
+        }),
+        mustReplaceFragmentIfThereIsOneAlready: false
+      });
+
     }
 
 

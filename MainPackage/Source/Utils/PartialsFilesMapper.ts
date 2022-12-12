@@ -155,7 +155,7 @@ class PartialsFilesMapper {
       Logger.logError({
         errorType: AlgorithmMismatchError.NAME,
         title: AlgorithmMismatchError.localization.defaultTitle,
-        description: `The file '${ targetEntryPointOrPartialFileAbsolutePath }' is missing the filename extensions.` +
+        description: `The file '${ targetEntryPointOrPartialFileAbsolutePath }' is missing the filename extensions. ` +
             "The partials of this file will not be detected.",
         occurrenceLocation: CURRENT_METHOD_INVOCATION_EXPRESSION
       });

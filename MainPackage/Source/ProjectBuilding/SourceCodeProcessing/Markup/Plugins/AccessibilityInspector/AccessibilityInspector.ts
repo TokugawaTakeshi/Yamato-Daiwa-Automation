@@ -51,17 +51,19 @@ class AccessibilityInspector {
 
     Logger.logInfo(AccessibilityInspector.localization.generateInspectionStartedInfoLog({ targetFileRelativePath }));
 
-    /* [ Theory ]
-     * 1. With '{ verbose: true }' (default) it will be a lot of recommendations which never disappear. The output pollution.
-     * 2. In `import AccessSniff, { reports } from 'access-sniff';`, the 'reports' are 'undefined',
-     * 3. In 'then(function(report) {}}', the 'report' is an empty object. */
-    AccessibilityCheckingService(
-      extractStringifiedContentFromVinylFile(compiledHTML_File),
-      {
-        verbose: false,
-        accessibilityLevel: compiledHTML_File.processingSettings.accessibilityInspection.standard
-      }
-    ).
+    try {
+
+      /* [ Theory ]
+       * 1. With '{ verbose: true }' (default) it will be a lot of recommendations which never disappear. The output pollution.
+       * 2. In `import AccessSniff, { reports } from 'access-sniff';`, the 'reports' are 'undefined',
+       * 3. In 'then(function(report) {}}', the 'report' is an empty object. */
+      AccessibilityCheckingService(
+        extractStringifiedContentFromVinylFile(compiledHTML_File),
+        {
+          verbose: false,
+          accessibilityLevel: compiledHTML_File.processingSettings.accessibilityInspection.standard
+        }
+      ).
 
         then((): void => {
 
@@ -101,11 +103,30 @@ class AccessibilityInspector {
             }
           }
 
-        Logger.logErrorLikeMessage(AccessibilityInspector.localization.generateIssuesFoundErrorLog({
-          targetFileRelativePath,
-          formattedErrorsAndWarnings: formattedErrors.join("\n\n")
-        }));
-      });
+          Logger.logErrorLikeMessage(AccessibilityInspector.localization.generateIssuesFoundErrorLog({
+            targetFileRelativePath,
+            formattedErrorsAndWarnings: formattedErrors.join("\n\n")
+          }));
+
+        });
+
+    } catch (error: unknown) {
+
+      if (error instanceof Error && error.message === "pattern is too long") {
+
+        // https://squizlabs.github.io/HTML_CodeSniffer/
+        Logger.logWarning(
+          AccessibilityInspector.localization.generateAccessSniffBugWarning({ targetFileRelativePath })
+        );
+
+        return;
+
+      }
+
+      throw error;
+
+    }
+
   }
 }
 
@@ -134,6 +155,9 @@ namespace AccessibilityInspector {
         Localization.IssuesFoundErrorLog;
 
     formattedError: Localization.FormattedError;
+
+    generateAccessSniffBugWarning: (namedParameters: Localization.AccessSniffBugWarningLog.NamedParameters) =>
+        Localization.AccessSniffBugWarningLog;
 
   }>;
 
@@ -188,6 +212,14 @@ namespace AccessibilityInspector {
       violatedGuidelineItem: string;
       keyAndValueSeparator: string;
     }>;
+
+
+    export type AccessSniffBugWarningLog = Readonly<Pick<InfoLog, "title" | "description">>;
+
+    export namespace AccessSniffBugWarningLog {
+      export type NamedParameters = Readonly<{ targetFileRelativePath: string; }>;
+    }
+
   }
 }
 

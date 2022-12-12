@@ -511,7 +511,7 @@ namespace MarkupProcessingRawSettingsNormalizer {
 
 
     export type StaticPreviewStateDependentPagesVariationsSpecificationIsInvalidLog = Pick<
-      PoliteErrorsMessagesBuilder.NamedParameters, "technicalDetails" | "politeExplanation"
+      PoliteErrorsMessagesBuilder.SourceData, "technicalDetails" | "politeExplanation"
     >;
 
     export namespace StaticPreviewStateDependentPagesVariationsSpecificationIsInvalidLog {

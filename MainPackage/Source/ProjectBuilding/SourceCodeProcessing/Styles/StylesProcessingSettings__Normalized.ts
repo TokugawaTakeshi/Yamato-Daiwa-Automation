@@ -32,7 +32,6 @@ namespace StylesProcessingSettings__Normalized {
       Readonly<{
         entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML: string;
         revisioning: ProjectBuildingConfig__Normalized.Revisioning;
-        linting: EntryPointsGroup.Linting;
       }>;
 
   export namespace EntryPointsGroup {

@@ -18,13 +18,12 @@ npm i @yamato-daiwa/automation -D -E
 
 Please familiarize with the YDF terminology because it has being used in configuration.
 
-[📖 Terminology](Documentation/Terminology/Terminology.english.md)
+[📖 Terminology reference](Documentation/Terminology/Terminology.english.md)
 
 
-## How-tos
-### Markup
+## Conceptions
 
-* [How to specify the paths of stylesheets, scripts, images, videos and audios from the markup?](Documentation/HowTos/ResourcesPathResolving.md)
+* [📖 Resolving of path to resources](Documentation/Functionality/Shared/ResourcesPathsResolving/ResourcesPathsResolving.english.md)
 
 
 ## API
@@ -34,12 +33,14 @@ Please familiarize with the YDF terminology because it has being used in configu
 **YDA** required the configuration filed.
 As default, **yda.config.yaml** file will be searched in the project root directory. 
 
-* [Common settings](Documentation/CommonSettings.md)
-* [Markup processing settings](Documentation/MarkupProcessing.md)
-* [Styles processing settings](Documentation/StylesProcessing.md)
+* [Common settings](Documentation/API/ConfigurationFile/CommonSettings/CommonSettings.english.md)
+* [Markup processing settings](Documentation/API/ConfigurationFile/Markup/MarkupProcessing.english.md)
+* [Styles processing settings](Documentation/API/ConfigurationFile/Styles/StylesProcessing.md)
+
+// TODO 
 * [ECMAScript logic processing settings](Documentation/ECMA_ScriptProcessing.md)
 * [Assets processing settings](Documentation/AssetsProcessing.md)
-* [Browser live reloading settings](Documentation/BrowserLiveReloading.md)
+* [Browser live reloading settings](Documentation/API/ConfigurationFile/BrowserLiveReloading/BrowserLiveReloading.english.md)
 
 
 ### Console

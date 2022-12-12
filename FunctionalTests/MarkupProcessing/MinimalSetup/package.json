@@ -5,9 +5,9 @@
     "Production building": "yda build --mode PRODUCTION"
   },
   "dependencies": {
-    "@yamato-daiwa/automation": "0.2.0-alpha.3"
+    "@yamato-daiwa/automation": "0.2.0"
   },
   "devDependencies": {
-    "@yamato-daiwa/style_guides": "0.0.26"
+    "@yamato-daiwa/style_guides": "0.0.32"
   }
 }

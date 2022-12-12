@@ -78,8 +78,9 @@ projectBuilding:
   <dd>No</dd>
 </dl>
 
-The definition of **selective executions** via associative array.
+The definition of [selective executions](../../../Terminology/Terminology.english.md#selective-execution) via associative array.
 The key is the selective execution name; the value has object type with below properties.
+
 
 ```yaml
 projectBuilding:
@@ -112,7 +113,7 @@ The objects where keys are tasks names:
 * audiosProcessing
 * videosProcessing
 
-The values are arrays with **entry points groups IDs** or **assets groups IDs**:
+The values are the arrays with **entry points groups IDs** or **assets groups IDs**:
 
 ```yaml
 projectBuilding:
@@ -146,15 +147,17 @@ yda build --selectiveExecution SelectiveExecution1 --mode DEVELOPMENT
   <dd>No</dd>
 </dl>
 
-The ID of browser live reloading setup which must be defined in [browser live reloading task configuration](Documentation/BrowserLiveReloading.md).
+The ID of browser live reloading setup which must be defined in 
+[browser live reloading task configuration](../BrowserLiveReloading/BrowserLiveReloading.english.md).
 
 
 
-### Typical presets
+### Example
 
-Below preset is for the full-stack application with 
+Below common settings are for the full-stack application with 
 [static preview](https://github.com/TokugawaTakeshi/Yamato-Daiwa-Frontend/blob/master/CoreLibrary/Package/Documentation/PagesTemplates/StaticPreviewAnywherePage/StaticPreviewAnywherePage.md#the-concept-of-static-preview) 
 and interactive implementation.
+Note that to get it work it also required to setup each task. 
 
 ```yaml
 projectBuilding:
@@ -184,7 +187,7 @@ projectBuilding:
         browserLiveReloadingSetupID: Application
 ```
 
-For the static preview stage, the essentials are markup processing, styles processing and browser live reloading.
+For the **static preview** stage, the essentials are markup processing, styles processing and browser live reloading.
 In advanced example, it could be also the images processing, fonts processing etc.
 
 * The markup processing is including the processing of markup file for each page.

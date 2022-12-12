@@ -1,0 +1,33 @@
+projectBuilding:
+
+  markupProcessing:
+
+    entryPointsGroups:
+
+      StaticPreview:
+
+        topDirectoryRelativePath: 01-Source/Pages
+
+        buildingModeDependent:
+          STATIC_PREVIEW:
+            outputTopDirectoryRelativePath: 02-StaticPreviewBuild
+
+  imagesProcessing:
+
+    assetsGroups:
+
+      Shared:
+
+        sourceFilesTopDirectoryRelativePath: 01-Source/SharedAssets/Images
+        buildingModeDependent:
+          STATIC_PREVIEW:
+            outputTopDirectoryRelativePath: 02-StaticPreviewBuild/images
+
+  browserLiveReloading:
+
+    setups:
+
+      StaticPreview:
+
+        localServer:
+          rootDirectoryRelativePath: 02-StaticPreviewBuild

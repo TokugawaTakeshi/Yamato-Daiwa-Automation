@@ -71,6 +71,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
       }>;
 
       export type Pug = Readonly<{ type: SupportedECMA_ScriptRuntimesTypes.pug; }>;
+
     }
 
     export type Distributing = Readonly<{

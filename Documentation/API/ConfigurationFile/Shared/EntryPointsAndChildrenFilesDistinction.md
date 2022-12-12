@@ -3,8 +3,8 @@
 > :bulb: **Tip:** This concept is actual for **markup** and **styles** pre-processing
 
 As default, all files of supported filename extensions below specified `topDirectoryRelativePath` are being considered
-as **entry points** thus will be compiled to separate files. To change this behaviour, use `partialsRecognition` option,
-the object with below properties.
+  as **entry points** thus will be compiled to separate files. 
+To change this behaviour the properties of `partialsRecognition` must be changed.  
 
 <dl>
 
@@ -112,7 +112,7 @@ which names begin from `_`):
 ## Use case
 
 Assume that the entry point **TopPage.pug** including files **MainVisual.pug**, **NewsFeed.pug**, **Service.pug**,
-thus only **TopPage.pug** must be compiled to separate **TopPage.html** file.
+  thus only **TopPage.pug** must be compiled to separate **TopPage.html** file.
 
 ```
 📂 Pages
@@ -124,8 +124,16 @@ thus only **TopPage.pug** must be compiled to separate **TopPage.html** file.
      ┗ 📜 Service.pug
 ```
 
-First, we can ignore `Pages/Top/Partials` directory by `excludeSubdirectoriesWithNames: [ "Partials" ]`, but
-there could be multiple pages like `Top`.
+First, we can ignore `Pages/Top/Partials` directory by `excludeSubdirectoriesWithNames: [ "Partials" ]`.
+It also will be applied to other subdirectories with names `Partials` below `topDirectoryRelativePath`.
 
-Other option is the convention "All directories begins from underscore containing the partials". 
-In this case `excludeSubdirectoriesWithPrefixes: [ "_" ]` will be the solution.
+Other option is the convention "All directories which names begins from underscore containing the partials". 
+In this case `excludeSubdirectoriesWithPrefixes: [ "_" ]` will be the solution if to rename the 
+  `Partial` to `Partials`.
+
+Finally, we can apply the similar convention to files ("All files which names begins from underscore are the partials").
+In this case we need to set `excludeFilesWithPrefixes: [ "_" ]` and append the `_` to all names of files below
+  `Partials`.
+
+The firs solution is most simple and clear because from the viewpoint of logic there must not be any entry points
+  below directory with name `Partials`. 

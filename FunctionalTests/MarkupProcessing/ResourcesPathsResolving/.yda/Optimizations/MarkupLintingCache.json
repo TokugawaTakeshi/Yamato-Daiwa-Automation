@@ -1,0 +1,334 @@
+{
+  "01-Source/Pages/Services/index.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-06T06:52:00.069Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.315Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Functionality.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.917Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/PugExtensions.generated.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.388Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/PagesTemplates/RegularWebPage.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.425Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/PagesTemplates/StaticPreviewAnywherePage.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.464Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components/AttentionBox/AttentionBox.class.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:04.694Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components/AttentionBox/AttentionBox.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:04.796Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/Dummies.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.627Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components/OverflowSafeSingleLineLabel/OverflowSafeSingleLineLabel.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.205Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/BuildInPlugins/PrismJS_Integration.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.362Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/BuildInPlugins/YamatoDaiwaInformationDesign.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.511Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/PagesTemplates/StaticPreviewAnywherePage/StaticPreviewAnywherePageLocalization.English.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.468Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components/Images/SingleImageViewer/SingleImageViewer.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.443Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/SVG_Icons.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.476Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components/Typography/ImprovedList/ImprovedList.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.038Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components/Prototyping/DummyLogoLink/DummyLogoLink.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.670Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components/Controls/Buttons/HamburgerMenu/HamburgerMenuButton.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.976Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components/Controls/Buttons/Plain/Button.class.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.001Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Components/Controls/Buttons/Plain/Button.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.034Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Brackets/CurlyBracketIcon__Closing.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.536Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Brackets/CurlyBracketIcon__Opening.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.577Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Brackets/RoundBracketIcon__Closing.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.429Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Brackets/RoundBracketIcon__Opening.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.436Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Brackets/SquareBracketIcon__Closing.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.448Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Brackets/SquareBracketIcon__Opening.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.454Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/ExclamationMark/ExclamationMarkIcon__Circled__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.715Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/ExclamationMark/ExclamationMarkIcon__Circled__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.739Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/ExclamationMark/ExclamationMarkIcon__Octagoned__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.760Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/ExclamationMark/ExclamationMarkIcon__Octagoned__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.781Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/ExclamationMark/ExclamationMarkIcon__Rectangled__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.793Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/ExclamationMark/ExclamationMarkIcon__Rectangled__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.812Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/ExclamationMark/ExclamationMarkIcon__Triangled__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.833Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/ExclamationMark/ExclamationMarkIcon__Triangled__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.848Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Bell/BellIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:04.902Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Checkmark/CheckboxIcon__Checked.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.127Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Checkmark/CheckboxIcon__Unchecked.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.166Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Checkmark/CheckmarkIcon__Circled__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.211Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Checkmark/CheckmarkIcon__Circled__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.257Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Filtering/FilteringIcon__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:05.899Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/HamburgerMenu/HamburgerMenuIcon.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.007Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MagnifyingGlass/MagnifyingGlassIcon.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.071Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MagnifyingGlass/ZoomingInIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.520Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MagnifyingGlass/ZoomingInIcon__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.523Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MagnifyingGlass/ZoomingOutIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.531Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MagnifyingGlass/ZoomingOutIcon__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.537Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/InfoSign/InfoSignIcon__Circled__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.049Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/InfoSign/InfoSignIcon__Circled__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.056Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Menu/MenuIcon__ThreeDots__Horizontal.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.119Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Menu/MenuIcon__ThreeDots__Horizontal__Circled__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.104Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Menu/MenuIcon__ThreeDots__Horizontal__Circled__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.112Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Menu/MenuIcon__ThreeDots__Vertical.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.148Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Menu/MenuIcon__ThreeDots__Vertical__Circled__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.126Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Menu/MenuIcon__ThreeDots__Vertical__Circled__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.132Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MultiplicationSign/MultiplicationSignIcon.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.198Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MultiplicationSign/MultiplicationSignIcon__Bold.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.164Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MultiplicationSign/MultiplicationSignIcon__Boxed__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.171Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MultiplicationSign/MultiplicationSignIcon__Boxed__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.181Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MultiplicationSign/MultiplicationSignIcon__Octagoned__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.187Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/MultiplicationSign/MultiplicationSignIcon__Octagoned__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.191Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Mail/MailIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.082Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Mail/MailIcon__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.092Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Phone/PhoneIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.345Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Phone/PhoneIcon__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.350Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Phone/TelephoneIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.484Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilIcon__Boxed__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.218Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilIcon__Boxed__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.224Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilIcon__Circled__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.232Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilIcon__Circled__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.239Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.244Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilIcon__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.304Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilWithLockIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.311Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilWithLockIcon__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.316Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilWithPlusSignIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.323Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/Pencil/PencilWithPlusSignIcon__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.331Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/QuestionMark/QuestionMarkIcon__Circled__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.404Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/QuestionMark/QuestionMarkIcon__Circled__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.409Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/TrashCan/TrashCanIcon__Filled.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.491Z"
+  },
+  "node_modules/@yamato-daiwa/frontend/Markup/Assets/SVG_Icons/TrashCan/TrashCanIcon__Outlined.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-05T06:49:06.503Z"
+  },
+  "01-Source/Pages/index.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-12T02:44:54.544Z"
+  },
+  "01-Source/Components/SharedSingletons/Header.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-12T02:38:45.190Z"
+  },
+  "01-Source/Pages/Animals/Cats.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-11T02:18:04.562Z"
+  },
+  "01-Source/Pages/Animals/Dogs.pug": {
+    "issues": [],
+    "modificationDatetime__ISO_8601": "2023-01-11T02:18:04.556Z"
+  }
+}

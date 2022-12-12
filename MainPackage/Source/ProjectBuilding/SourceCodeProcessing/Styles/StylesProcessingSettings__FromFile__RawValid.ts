@@ -39,7 +39,6 @@ namespace StylesProcessingSettings__FromFile__RawValid {
       SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
       Readonly<{
         entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML?: string;
-        linting?: EntryPointsGroup.Linting;
         buildingModeDependent: Readonly<{
           [projectBuildingMode in ConsumingProjectPreDefinedBuildingModes]: EntryPointsGroup.BuildingModeDependent;
         }>;
@@ -47,14 +46,10 @@ namespace StylesProcessingSettings__FromFile__RawValid {
 
   export namespace EntryPointsGroup {
 
-    /* eslint-disable-next-line @typescript-eslint/no-shadow --
-    * The declaring of type/interface inside namespace with same name as defined in upper scope
-    * is completely valid TypeScript and not desired to be warned by @typescript-eslint. */
-    export type Linting = Readonly<{ disable?: boolean; }>;
-
     export type BuildingModeDependent =
         SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup.BuildingModeDependent &
         Readonly<{ revisioning?: RevisioningSettings__FromFile__RawValid; }>;
+
   }
 
 

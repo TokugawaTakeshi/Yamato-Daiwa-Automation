@@ -46,7 +46,17 @@ const accessibilityInspectorLocalization__english: AccessibilityInspector.Locali
   formattedError: {
     violatedGuidelineItem: "Violated rule",
     keyAndValueSeparator: ":"
-  }
+  },
+
+  generateAccessSniffBugWarning: (
+    namedParameters: AccessibilityInspector.Localization.AccessSniffBugWarningLog.NamedParameters
+  ): AccessibilityInspector.Localization.AccessSniffBugWarningLog => ({
+    title: "Accessibility inspection, the dependency bug occurred",
+    description: "We are sorry, but because of \"access-sniff\" bug the accessibility inspection has not been executed " +
+        `for the file "${ namedParameters.targetFileRelativePath }". Would you mind to check the content of this file ` +
+        "manually at https://squizlabs.github.io/HTML_CodeSniffer/ ?"
+  })
+
 };
 
 

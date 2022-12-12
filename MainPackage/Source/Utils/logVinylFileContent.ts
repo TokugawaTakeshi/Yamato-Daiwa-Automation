@@ -15,10 +15,12 @@ export default function logVinylFileContent(condition?: (file: VinylFile) => boo
 
 
       if (file.contents instanceof Buffer) {
+
         Logger.logInfo({
           title: "Logging of Vinyl file content",
           description: `The content of "${ file.path }" file:\n ${ file.contents.toString() }`
         });
+
       }
 
       return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);

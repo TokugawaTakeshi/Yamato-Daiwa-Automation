@@ -30,8 +30,8 @@ const resourcesReferencesResolverForHTML_Localization__english: ResourcesReferen
     namedParameters: Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog.TemplateNamedParameters
   ): Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog => ({
     title: `Unknown path to ${ namedParameters.fileType__singularForm } file`,
-    description: `The aliased path '${ namedParameters.pickedPathOfTargetResourceFile }' without filename extension ` +
-        "refers to unknown file. Tried to search at path with all supported filename extensions: " +
+    description: `The aliased path '${ namedParameters.pickedPathOfTargetResourceFile }' refers to unknown file. ` +
+        "Tried to search at path with all supported filename extensions: " +
         `${ namedParameters.checkedAbsolutePaths__formatted }.`
   }),
 

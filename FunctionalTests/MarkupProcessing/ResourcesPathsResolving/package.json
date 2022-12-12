@@ -1,0 +1,14 @@
+{
+  "name": "@yamato-daiwa/automation-functional_testing-resources_paths_resolving",
+  "private": true,
+  "scripts": {
+    "Static preview building": "yda build --mode STATIC_PREVIEW"
+  },
+  "dependencies": {
+    "@yamato-daiwa/automation": "0.2.0",
+    "@yamato-daiwa/frontend": "1.2.0"
+  },
+  "devDependencies": {
+    "@yamato-daiwa/style_guides": "0.0.32"
+  }
+}
