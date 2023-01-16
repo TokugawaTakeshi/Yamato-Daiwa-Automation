@@ -29,7 +29,16 @@ type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
 namespace MarkupProcessingSettings__FromFile__RawValid {
 
   /* === Types ====================================================================================================== */
-  export type Common = Readonly<{ periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number; }>;
+  export type Common = Readonly<{
+    periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number;
+    buildingModeDependent?: Readonly<{ [projectBuildingMode: string]: Common.BuildingModeDependent | undefined; }>;
+  }>;
+
+  export namespace Common {
+    export type BuildingModeDependent = Readonly<{
+      mustResolveResourceReferencesToRelativePaths?: boolean;
+    }>;
+  }
 
 
   export type Linting = Readonly<{
@@ -106,6 +115,10 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
     common: Readonly<{
       KEY: string;
       periodBetweenFileUpdatingAndRebuildingStarting__seconds: Readonly<{ KEY: string; }>;
+      buildingModeDependent: Readonly<{
+        KEY: string;
+        mustResolveResourceReferencesToRelativePaths: Readonly<{ KEY: string; }>;
+      }>;
     }>;
 
     staticPreview: Readonly<{
@@ -186,13 +199,49 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
         required: false,
 
         properties: {
+
           [markupProcessingLocalization.common.periodBetweenFileUpdatingAndRebuildingStarting__seconds.KEY]: {
             newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
             type: Number,
             required: false,
             numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+          },
+
+          [markupProcessingLocalization.common.buildingModeDependent.KEY]: {
+
+            newName: "buildingModeDependent",
+            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+            required: false,
+            allowedKeys: Object.values(ConsumingProjectPreDefinedBuildingModes),
+            minimalEntriesCount: 1,
+
+            keysRenamings: {
+              [consumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
+                  ConsumingProjectPreDefinedBuildingModes.staticPreview,
+              [consumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
+                  ConsumingProjectPreDefinedBuildingModes.localDevelopment,
+              [consumingProjectLocalizedPreDefinedBuildingModes.testing]:
+                  ConsumingProjectPreDefinedBuildingModes.testing,
+              [consumingProjectLocalizedPreDefinedBuildingModes.staging]:
+                  ConsumingProjectPreDefinedBuildingModes.staging,
+              [consumingProjectLocalizedPreDefinedBuildingModes.production]:
+                  ConsumingProjectPreDefinedBuildingModes.production
+            },
+
+            value: {
+              type: Object,
+              properties: {
+                [markupProcessingLocalization.common.buildingModeDependent.mustResolveResourceReferencesToRelativePaths.KEY]: {
+                  newName: "mustResolveResourceReferencesToRelativePaths",
+                  type: Boolean,
+                  required: false
+                }
+              }
+            }
           }
+
         }
+
       },
 
       [markupProcessingLocalization.staticPreview.KEY]: {
@@ -284,6 +333,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
               }
             }
           }
+
         }
       },
 
@@ -371,7 +421,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
                 [consumingProjectLocalizedPreDefinedBuildingModes.testing]:
                     ConsumingProjectPreDefinedBuildingModes.testing,
                 [consumingProjectLocalizedPreDefinedBuildingModes.staging]:
-                ConsumingProjectPreDefinedBuildingModes.staging,
+                    ConsumingProjectPreDefinedBuildingModes.staging,
                 [consumingProjectLocalizedPreDefinedBuildingModes.production]:
                     ConsumingProjectPreDefinedBuildingModes.production
               },

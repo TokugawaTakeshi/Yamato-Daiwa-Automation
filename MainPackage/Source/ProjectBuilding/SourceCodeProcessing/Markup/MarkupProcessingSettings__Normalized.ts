@@ -27,7 +27,10 @@ namespace MarkupProcessingSettings__Normalized {
 
   export type Common =
       ProjectBuildingConfig__Normalized.SourceCodeProcessingCommonSettingsGenericProperties &
-      Readonly<{ periodBetweenFileUpdatingAndRebuildingStarting__seconds: number; }>;
+      Readonly<{
+        mustResolveResourcesReferencesToAbsolutePath: boolean;
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
+      }>;
 
 
   export type Linting = Readonly<{

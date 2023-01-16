@@ -13,10 +13,12 @@ import type ECMA_ScriptLogicProcessingSettingsRepresentative from
 
 /* --- Third-party solutions specialises ---------------------------------------------------------------------------- */
 import WebpackSpecialist from "@ThirdPartySolutionsSpecialists/WebpackSpecialist";
+import TypeScriptSpecialist from "@ThirdPartySolutionsSpecialists/TypeScriptSpecialist";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import Webpack from "webpack";
 import type { Configuration as WebpackConfiguration } from "webpack";
+import type TypeScript from "typescript";
 import { VueLoaderPlugin as VueLoaderWebpackPlugin } from "vue-loader";
 import ForkTS_CheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import ES_LintWebpackPlugin from "eslint-webpack-plugin";
@@ -27,6 +29,7 @@ import Path from "path";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
 import {
+  isUndefined,
   isNotUndefined,
   isNull,
   isNotNull,
@@ -41,6 +44,13 @@ export default class WebpackConfigGenerator {
   private readonly ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
   private readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
 
+  private readonly typeScriptConfigurations: {
+    [typeScriptConfigurationFileAbsolutePath: string]: TypeScript.CompilerOptions | undefined;
+  } = {};
+
+  private hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided: boolean = false;
+  private hasSourceCodeLintingFunctionalityAlreadyBeenProvided: boolean = false;
+
 
   public static generateWebpackConfigurationForEachEntryPointsGroup(
     ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative,
@@ -50,6 +60,7 @@ export default class WebpackConfigGenerator {
     const dataHoldingSelfInstance: WebpackConfigGenerator = new WebpackConfigGenerator(
       ECMA_ScriptLogicProcessingConfigRepresentative, masterConfigRepresentative
     );
+
     const webpackConfigurationForEachEntryPointsGroup: Array<WebpackConfiguration> = [];
 
     for (
@@ -61,7 +72,12 @@ export default class WebpackConfigGenerator {
           generateSingleWebpackConfigurationIfAtLeastOneTargetEntryPointFileExists(ECMA_ScriptLogicEntryPointsGroupSettings);
 
       if (isNotNull(webpackConfiguration)) {
+
         webpackConfigurationForEachEntryPointsGroup.push(webpackConfiguration);
+
+        dataHoldingSelfInstance.hasSourceCodeLintingFunctionalityAlreadyBeenProvided = true;
+        dataHoldingSelfInstance.hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided = true;
+
       }
 
     }
@@ -139,6 +155,7 @@ export default class WebpackConfigGenerator {
     this.masterConfigRepresentative = masterConfigRepresentative;
   }
 
+
   private generateSingleWebpackConfigurationIfAtLeastOneTargetEntryPointFileExists(
     entryPointsGroupSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
   ): WebpackConfiguration | null {
@@ -163,6 +180,25 @@ export default class WebpackConfigGenerator {
             "entry points. Please restart the build once new files will be added."
       });
       return null;
+    }
+
+
+    let typeScriptCompilerOptions: TypeScript.CompilerOptions;
+    const cachedTypeScriptCompilerOptions: TypeScript.CompilerOptions | undefined = this.
+        typeScriptConfigurations[entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath];
+
+    if (isUndefined(cachedTypeScriptCompilerOptions)) {
+
+      typeScriptCompilerOptions = TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions(
+        entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath
+      );
+      this.typeScriptConfigurations[entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath] =
+          typeScriptCompilerOptions;
+
+    } else {
+
+      typeScriptCompilerOptions = cachedTypeScriptCompilerOptions;
+
     }
 
 
@@ -299,13 +335,12 @@ export default class WebpackConfigGenerator {
             loader: "ts-loader",
             options: {
 
-              ...isNotUndefined(entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath) ? {
-                configFile: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath
-              } : {},
+              configFile: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
 
               /* [ Theory ] This option allows TypeScript to process the code extracted from a single file component.
                * [ Reference ] https://github.com/Microsoft/TypeScript-Vue-Starter#single-file-components */
               appendTsSuffixTo: [ /\.vue$/u ]
+
             }
           },
 
@@ -411,7 +446,13 @@ export default class WebpackConfigGenerator {
             map((fileNameExtensionWithoutDot: string): string => `.${ fileNameExtensionWithoutDot }`),
 
         alias: {
-          ...this.ECMA_ScriptLogicProcessingConfigRepresentative.absolutePathsOfAliasesOfDirectories,
+          ...WebpackSpecialist.
+            convertPathsAliasesFromTypeScriptFormatToWebpackFormat({
+              typeScriptPathsSettings: typeScriptCompilerOptions.paths,
+              typeScriptBasicAbsolutePath:
+                typeScriptCompilerOptions.baseUrl ??
+                ImprovedPath.extractDirectoryFromFilePath(entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath)
+          }),
           vue: "vue/dist/vue.esm-bundler.js"
         }
       },
@@ -438,45 +479,38 @@ export default class WebpackConfigGenerator {
 
         }),
 
-        new ForkTS_CheckerWebpackPlugin({
-          typescript: {
+        ...this.hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided ?
+            [] :
+            [
+              new ForkTS_CheckerWebpackPlugin({
+                typescript: {
 
-            /* [ Theory ] Webpack's "context" is default, but generally "tsconfig.json" could be not in same directory */
-            configFile: ((): string => {
+                  /* [ Theory ] Webpack's "context" is default, but generally "tsconfig.json" could be not in same directory */
+                  configFile: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
 
-              if (isNotUndefined(entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath)) {
-                return entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath;
-              }
-
-
-              return ImprovedPath.joinPathSegments(
-                [
-                  this.masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-                  "tsconfig.json"
-                ],
-                { forwardSlashOnlySeparators: true }
-              );
-
-            })(),
-
-            extensions: {
-              vue: {
-                enabled: true,
-                compiler: "@vue/compiler-sfc"
-              }
-            }
-          }
-        }),
+                  extensions: {
+                    vue: {
+                      enabled: true,
+                      compiler: "@vue/compiler-sfc"
+                    }
+                  }
+                }
+              })
+            ],
 
         new VueLoaderWebpackPlugin(),
 
-        new ES_LintWebpackPlugin({
-          extensions: [ "js", "ts", "jsx", "tsx", "vue" ],
-          failOnError: this.masterConfigRepresentative.isStagingBuildingMode ||
-              this.masterConfigRepresentative.isProductionBuildingMode,
-          failOnWarning: this.masterConfigRepresentative.isStagingBuildingMode ||
-              this.masterConfigRepresentative.isProductionBuildingMode
-        })
+        ...this.hasSourceCodeLintingFunctionalityAlreadyBeenProvided ?
+            [] :
+            [
+              new ES_LintWebpackPlugin({
+                extensions: [ "js", "ts", "jsx", "tsx", "vue" ],
+                failOnError: this.masterConfigRepresentative.isStagingBuildingMode ||
+                    this.masterConfigRepresentative.isProductionBuildingMode,
+                failOnWarning: this.masterConfigRepresentative.isStagingBuildingMode ||
+                    this.masterConfigRepresentative.isProductionBuildingMode
+              })
+            ]
       ],
 
 
@@ -487,6 +521,7 @@ export default class WebpackConfigGenerator {
             this.masterConfigRepresentative.isLocalDevelopmentBuildingMode
       }
     };
+
   }
 
 

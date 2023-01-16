@@ -27,13 +27,13 @@ abstract class AssetsProcessingRawSettingsNormalizer {
   protected consumingProjectRootDirectoryAbsolutePath: string;
   protected consumingProjectBuildingMode: string;
 
-  protected readonly assetsGroupsIDsSelection: Array<string>;
+  protected readonly assetsGroupsIDsSelection: ReadonlyArray<string>;
 
 
   protected constructor(namedParameters: AssetsProcessingRawSettingsNormalizer.ConstructorParameters) {
     this.consumingProjectRootDirectoryAbsolutePath = namedParameters.consumingProjectRootDirectoryAbsolutePath;
     this.consumingProjectBuildingMode = namedParameters.consumingProjectBuildingMode;
-    this.assetsGroupsIDsSelection = undefinedToEmptyArray(namedParameters.assetsGroupsIDsSelection);
+    this.assetsGroupsIDsSelection = namedParameters.assetsGroupsIDsSelection ?? [];
   }
 
 
@@ -148,7 +148,7 @@ namespace AssetsProcessingRawSettingsNormalizer {
   export type ConstructorParameters = {
     readonly consumingProjectRootDirectoryAbsolutePath: string;
     readonly consumingProjectBuildingMode: string;
-    readonly assetsGroupsIDsSelection?: Array<string>;
+    readonly assetsGroupsIDsSelection?: ReadonlyArray<string>;
   };
 }
 

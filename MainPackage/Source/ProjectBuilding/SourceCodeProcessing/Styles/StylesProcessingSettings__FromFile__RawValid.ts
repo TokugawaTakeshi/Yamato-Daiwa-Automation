@@ -38,7 +38,7 @@ namespace StylesProcessingSettings__FromFile__RawValid {
   export type EntryPointsGroup =
       SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
       Readonly<{
-        entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML?: string;
+        customReferenceName?: string;
         buildingModeDependent: Readonly<{
           [projectBuildingMode in ConsumingProjectPreDefinedBuildingModes]: EntryPointsGroup.BuildingModeDependent;
         }>;
@@ -67,7 +67,7 @@ namespace StylesProcessingSettings__FromFile__RawValid {
 
       KEY: string;
 
-      entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML: Readonly<{ KEY: string; }>;
+      customReferenceName: Readonly<{ KEY: string; }>;
 
       buildingModeDependent: Readonly<{
         KEY: string;
@@ -135,11 +135,8 @@ namespace StylesProcessingSettings__FromFile__RawValid {
 
             ...sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
 
-            [
-              stylesProcessingLocalization.entryPointsGroups.
-                  entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML.KEY
-            ]: {
-              newName: "entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML",
+            [stylesProcessingLocalization.entryPointsGroups.customReferenceName.KEY]: {
+              newName: "customReferenceName",
               type: String,
               required: false,
               minimalCharactersCount: 1

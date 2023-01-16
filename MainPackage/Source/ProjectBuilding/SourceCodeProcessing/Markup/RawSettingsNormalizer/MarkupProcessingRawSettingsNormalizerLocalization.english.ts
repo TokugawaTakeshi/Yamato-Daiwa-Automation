@@ -4,6 +4,30 @@ import type MarkupProcessingRawSettingsNormalizer from
 
 const MarkupProcessingRawSettingsNormalizerLocalization__English: MarkupProcessingRawSettingsNormalizer.Localization = {
 
+  noNeedToSetResourcesReferencesResolvingToRelativePathsOnStaticPreviewModeLog: {
+    title: "Redundant configuration detected",
+    description: "For the static preview mode, the resources references could be resolved only to relative paths. " +
+        "You can safely remove \"projectBuilding.markupProcessing.common.buildingModeDependent." +
+        "STATIC_PREVIEW.mustResolveResourceReferencesToRelativePaths\" specifying from the configuration."
+  },
+
+  generateUnableToResolveResourcesReferencesToAbsolutePathLog:
+      (
+        {
+          consumingProjectBuildingMode
+        }: MarkupProcessingRawSettingsNormalizer.Localization.UnableToResolveResourcesReferencesToAbsolutePathLog.NamedParameters
+      ): MarkupProcessingRawSettingsNormalizer.Localization.UnableToResolveResourcesReferencesToAbsolutePathLog =>
+          ({
+            title: "Unable to resolve the resources references to absolute paths",
+            description: "The public directory (\"projectBuilding.commonSettings.publicDirectoriesRelativePaths." +
+                "[PROJECT_BUILDING_MODE]\") that requires for resolving of resources references to absolute " +
+                `paths has not been specified for the "${ consumingProjectBuildingMode }" building mode. ` +
+                "The resources references will be resolved to relative paths instead. " +
+                "If you wish these references be resolved to relative path, set \"projectBuilding.markupProcessing.common." +
+                "buildingModeDependent.[PROJECT_BUILDING_MODE].mustResolveResourceReferencesToRelativePaths\" " +
+                `to true for the "${ consumingProjectBuildingMode }" building mode.`
+          }),
+
   generateStaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedMessage:
       (
         namedParameters: MarkupProcessingRawSettingsNormalizer.Localization.
@@ -67,6 +91,7 @@ const MarkupProcessingRawSettingsNormalizerLocalization__English: MarkupProcessi
           "Invalid page state variable has been specified for the markup file " +
           `'${ namedParameters.targetMarkupFileRelativePath }'. It must be the object while actually has type ` +
           `'${ namedParameters.actualType }' and value: ${ namedParameters.actualStringifiedValue }`
+
 };
 
 

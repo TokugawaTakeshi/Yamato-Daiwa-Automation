@@ -35,6 +35,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, MarkupProcessingSettings__Normalized.EntryPointsGroup
   >;
 
+  protected readonly mustResolveResourcesReferencesToAbsolutePath: boolean;
   protected readonly sourceCodeProcessingCommonSettings: MarkupProcessingSettings__Normalized.Common;
 
 
@@ -72,8 +73,19 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
       )
     );
 
+    this.mustResolveResourcesReferencesToAbsolutePath = normalizedMarkupProcessingSettings.common.
+        mustResolveResourcesReferencesToAbsolutePath;
+
     super.initializeOrUpdatePartialFilesAndEntryPointsRelationsMap();
 
+  }
+
+
+  /* === Common ===================================================================================================== */
+  public getAbsolutePublicPathIfMustToResolveReferencesToAbsolutePath(): string | null {
+    return this.mustResolveResourcesReferencesToAbsolutePath ?
+        this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath ?? null :
+        null;
   }
 
 

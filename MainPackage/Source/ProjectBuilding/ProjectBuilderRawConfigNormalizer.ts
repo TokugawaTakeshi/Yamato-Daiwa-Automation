@@ -23,6 +23,8 @@ import type VideosProcessingSettings__FromFile__RawValid from
     "@VideosProcessing/VideosProcessingSettings__FromFile__RawValid";
 import type AudiosProcessingSettings__FromFile__RawValid from
     "@AudiosProcessing/AudiosProcessingSettings__FromFile__RawValid";
+import type PlainCopyingSettings__FromFile__RawValid from
+    "@ProjectBuilding/PlainCopying/PlainCopyingSettings__FromFile__RawValid";
 import type BrowserLiveReloadingSettings__FromFile__RawValid from
     "./BrowserLiveReloading/BrowserLiveReloadingSettings__FromFile__RawValid";
 
@@ -48,6 +50,8 @@ import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosP
 import VideosProcessingRawSettingsNormalizer from "@VideosProcessing/VideosProcessingRawSettingsNormalizer";
 import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosProcessingSettings__Normalized";
 import AudiosProcessingRawSettingsNormalizer from "@AudiosProcessing/AudiosProcessingRawSettingsNormalizer";
+import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
+import PlainCopyingRawSettingsNormalizer from "@ProjectBuilding/PlainCopying/PlainCopyingRawSettingsNormalizer";
 import type BrowserLiveReloadingSettings__Normalized from
     "@BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
 import BrowserLiveReloadingSettingsNormalizer from
@@ -74,14 +78,14 @@ abstract class ProjectBuilderRawConfigNormalizer {
       consumingProjectRootDirectoryAbsolutePath,
       projectBuildingConfig__fromFile__rawValid,
       projectBuildingConfig__fromConsole
-    }: {
+    }: Readonly<{
       consumingProjectRootDirectoryAbsolutePath: string;
       projectBuildingConfig__fromFile__rawValid: ProjectBuildingConfig__FromFile__RawValid;
       projectBuildingConfig__fromConsole: {
         selectiveExecutionID?: string;
         projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
       };
-    }
+    }>
   ): ProjectBuildingConfig__Normalized {
 
     const commonSettings__fromFile__rawValid: ProjectBuildingCommonSettings__FromFile__RawValid =
@@ -116,7 +120,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
         }
 
 
-        /* 〔 Theory 〕 Be careful:
+        /* 〔 Theory 〕 ※ Be careful:
          * isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection?.markupProcessing)
          * is not the equivalent to below condition. */
         if (
@@ -132,6 +136,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
             markupProcessingSettings__fromFile__rawValid, commonSettings__normalized
           })
         };
+
       })(),
 
       ...((): { stylesProcessing?: StylesProcessingSettings__Normalized; } => {
@@ -144,9 +149,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
         }
 
 
-        /* 〔 Theory 〕 Be careful:
-         * isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection?.stylesProcessing)
-         * is not the equivalent to below condition. */
+        /* 〔 Theory 〕 See ※. */
         if (
           isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) &&
           isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection.stylesProcessing)
@@ -160,6 +163,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
             stylesProcessingSettings__fromFile__rawValid, commonSettings__normalized
           })
         };
+
       })(),
 
       ...((): { ECMA_ScriptLogicProcessing?: ECMA_ScriptLogicProcessingSettings__Normalized; } => {
@@ -173,9 +177,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
         }
 
 
-        /* 〔 Theory 〕 Be careful:
-         * isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection?.ECMA_ScriptLogicProcessing)
-         * is not the equivalent to below condition. */
+        /* 〔 Theory 〕 See ※. */
         if (
           isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) &&
           isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection.ECMA_ScriptLogicProcessing)
@@ -189,6 +191,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
             ECMA_ScriptLogicProcessingSettings__fromFile__rawValid, commonSettings__normalized
           })
         };
+
       })(),
 
       ...((): { imagesProcessing?: ImagesProcessingSettings__Normalized; } => {
@@ -201,9 +204,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
         }
 
 
-        /* 〔 Theory 〕 Be careful:
-         * isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection?.imagesProcessing)
-         * is not the equivalent to below condition. */
+        /* 〔 Theory 〕 See ※. */
         if (
           isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) &&
           isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection.imagesProcessing)
@@ -218,6 +219,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
             commonSettings__normalized
           })
         };
+
       })(),
 
       ...((): { fontsProcessing?: FontsProcessingSettings__Normalized; } => {
@@ -230,9 +232,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
         }
 
 
-        /* 〔 Theory 〕 Be careful:
-         * isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection?.fontsProcessing)
-         * is not the equivalent to below condition. */
+        /* 〔 Theory 〕 See ※. */
         if (
           isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) &&
           isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection.fontsProcessing)
@@ -247,6 +247,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
             commonSettings__normalized
           })
         };
+
       })(),
 
 
@@ -268,15 +269,14 @@ abstract class ProjectBuilderRawConfigNormalizer {
         }
 
 
-        /* 〔 Theory 〕 Be careful:
-         * isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection?.fontsProcessing)
-         * is not the equivalent to below condition. */
+        /* 〔 Theory 〕 See ※. */
         return {
           videosProcessing: VideosProcessingRawSettingsNormalizer.normalize({
             videosProcessingSettings__fromFile__rawValid,
             commonSettings__normalized
           })
         };
+
       })(),
 
       ...((): { audiosProcessing?: AudiosProcessingSettings__Normalized; } => {
@@ -297,15 +297,14 @@ abstract class ProjectBuilderRawConfigNormalizer {
         }
 
 
-        /* 〔 Theory 〕 Be careful:
-         * isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection?.fontsProcessing)
-         * is not the equivalent to below condition. */
+        /* 〔 Theory 〕 See ※. */
         return {
           audiosProcessing: AudiosProcessingRawSettingsNormalizer.normalize({
             audiosProcessingSettings__fromFile__rawValid,
             commonSettings__normalized
           })
         };
+
       })(),
 
       ...((): { browserLiveReloading?: BrowserLiveReloadingSettings__Normalized; } => {
@@ -328,7 +327,36 @@ abstract class ProjectBuilderRawConfigNormalizer {
             ...isNotUndefined(selectedBrowserLiveReloadingSetupID) ? { selectedBrowserLiveReloadingSetupID } : {}
           })
         };
+      })(),
+
+      ...((): { plainCopying?: PlainCopyingSettings__Normalized; } => {
+
+        const plainCopyingSettings__rawValid__fromFile: PlainCopyingSettings__FromFile__RawValid | undefined =
+            projectBuildingConfig__fromFile__rawValid[ProjectBuildingTasksIDsForConfigFile.plainCopying];
+
+        if (isUndefined(plainCopyingSettings__rawValid__fromFile)) {
+          return {};
+        }
+
+
+        if (
+          isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) &&
+          isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection.plainCopying)
+        ) {
+          return {};
+        }
+
+
+        /* 〔 Theory 〕 See ※. */
+        return {
+          plainCopying: PlainCopyingRawSettingsNormalizer.normalize({
+            plainCopyingSettings__fromFile__rawValid: plainCopyingSettings__rawValid__fromFile,
+            commonSettings__normalized
+          })
+        };
+
       })()
+
     };
   }
 

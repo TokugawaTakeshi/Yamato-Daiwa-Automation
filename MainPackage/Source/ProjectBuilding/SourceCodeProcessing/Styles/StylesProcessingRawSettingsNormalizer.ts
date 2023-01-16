@@ -63,8 +63,7 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
 
     const dataHoldingSelfInstance: StylesProcessingRawSettingsNormalizer =
         new StylesProcessingRawSettingsNormalizer({
-          consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
-          consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+          projectBuildingCommonSettings__normalized: commonSettings__normalized,
           ...isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) ? {
             entryPointsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.stylesProcessing
           } : {},
@@ -115,11 +114,7 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
 
       entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML:
           `${ StylesProcessingSettings__Default.entryPointsGroupReferencePrefix }` +
-          `${
-            entryPointsGroupSettings__rawValid.
-                entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML ??
-            entryPointsGroupGenericSettings__normalized.ID
-          }`,
+          `${ entryPointsGroupSettings__rawValid.customReferenceName ?? entryPointsGroupGenericSettings__normalized.ID }`,
 
       revisioning: {
 

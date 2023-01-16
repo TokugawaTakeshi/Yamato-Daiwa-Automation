@@ -29,6 +29,8 @@ import VideosProcessingSettings__FromFile__RawValid from
     "@VideosProcessing/VideosProcessingSettings__FromFile__RawValid";
 import AudiosProcessingSettings__FromFile__RawValid from
     "@AudiosProcessing/AudiosProcessingSettings__FromFile__RawValid";
+import PlainCopyingSettings__FromFile__RawValid from
+    "@ProjectBuilding/PlainCopying/PlainCopyingSettings__FromFile__RawValid";
 import BrowserLiveReloadingSettings__FromFile__RawValid from
     "@BrowserLiveReloading/BrowserLiveReloadingSettings__FromFile__RawValid";
 
@@ -48,6 +50,8 @@ type ProjectBuildingConfig__FromFile__RawValid = {
   [ProjectBuildingTasksIDsForConfigFile.fontsProcessing]?: FontsProcessingSettings__FromFile__RawValid;
   [ProjectBuildingTasksIDsForConfigFile.videosProcessing]?: VideosProcessingSettings__FromFile__RawValid;
   [ProjectBuildingTasksIDsForConfigFile.audiosProcessing]?: AudiosProcessingSettings__FromFile__RawValid;
+
+  [ProjectBuildingTasksIDsForConfigFile.plainCopying]?: PlainCopyingSettings__FromFile__RawValid;
 
   [ProjectBuildingTasksIDsForConfigFile.browserLiveReloading]?: BrowserLiveReloadingSettings__FromFile__RawValid;
 
@@ -89,6 +93,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
       fontsProcessing: FontsProcessingSettings__FromFile__RawValid.Localization;
       videosProcessing: VideosProcessingSettings__FromFile__RawValid.Localization;
       audiosProcessing: AudiosProcessingSettings__FromFile__RawValid.Localization;
+      plainCopying: PlainCopyingSettings__FromFile__RawValid.Localization;
       browserLiveReloading: BrowserLiveReloadingSettings__FromFile__RawValid.Localization;
     }>;
 
@@ -222,11 +227,25 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               type: Object,
               required: false,
               preValidationModifications: nullToUndefined,
-              properties: AudiosProcessingSettings__FromFile__RawValid.normalize({
+              properties: AudiosProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
                 audiosProcessingLocalization: localization.tasks.audiosProcessing,
                 revisioningPropertiesLocalizedSpecification,
                 consumingProjectLocalizedPreDefinedBuildingModes
               })
+            },
+
+            [localization.enumerations.tasksIDs.plainCopying]: {
+              newName: "plainCopying",
+              type: Array,
+              required: false,
+              preValidationModifications: nullToUndefined,
+              element: {
+                type: Object,
+                properties: PlainCopyingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
+                  plainCopyingLocalization: localization.tasks.plainCopying,
+                  consumingProjectLocalizedPreDefinedBuildingModes
+                })
+              }
             },
 
             [localization.enumerations.tasksIDs.browserLiveReloading]: {

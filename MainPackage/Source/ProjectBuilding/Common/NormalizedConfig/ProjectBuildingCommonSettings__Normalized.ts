@@ -1,6 +1,8 @@
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
 import type ConsumingProjectPreDefinedBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+
+import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
 
 
 type ProjectBuildingCommonSettings__Normalized = Readonly<{
@@ -17,13 +19,14 @@ type ProjectBuildingCommonSettings__Normalized = Readonly<{
  * https://github.com/eslint/eslint/issues/15504 */
 namespace ProjectBuildingCommonSettings__Normalized {
   export type TasksAndSourceFilesSelection = Readonly<{
-    markupProcessing?: Array<ProjectBuildingConfig__Normalized.EntryPointsGroupID>;
-    stylesProcessing?: Array<ProjectBuildingConfig__Normalized.EntryPointsGroupID>;
-    ECMA_ScriptLogicProcessing?: Array<ProjectBuildingConfig__Normalized.EntryPointsGroupID>;
-    imagesProcessing?: Array<ProjectBuildingConfig__Normalized.AssetsGroupID>;
-    fontsProcessing?: Array<ProjectBuildingConfig__Normalized.AssetsGroupID>;
-    audiosProcessing?: Array<ProjectBuildingConfig__Normalized.AssetsGroupID>;
-    videosProcessing?: Array<ProjectBuildingConfig__Normalized.AssetsGroupID>;
+    markupProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.EntryPointsGroupID>;
+    stylesProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.EntryPointsGroupID>;
+    ECMA_ScriptLogicProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.EntryPointsGroupID>;
+    imagesProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.AssetsGroupID>;
+    fontsProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.AssetsGroupID>;
+    audiosProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.AssetsGroupID>;
+    videosProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.AssetsGroupID>;
+    plainCopying?: ReadonlyArray<PlainCopyingSettings__Normalized.Group>;
   }>;
 }
 

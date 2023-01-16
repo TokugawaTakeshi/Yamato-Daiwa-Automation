@@ -5,6 +5,8 @@ import type ConsumingProjectPreDefinedBuildingModes from
 /* -- Raw valid config ---------------------------------------------------------------------------------------------- */
 import type SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid";
+import type ProjectBuildingCommonSettings__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 
 /* -- Normalized config --------------------------------------------------------------------------------------------- */
 import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
@@ -24,20 +26,21 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
   protected readonly abstract supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
 
-  protected readonly consumingProjectRootDirectoryAbsolutePath: string;
-  protected readonly consumingProjectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+  protected readonly projectBuildingCommonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
 
-  private readonly entryPointsGroupsIDsSelection?: Array<string>;
+  private readonly entryPointsGroupsIDsSelection?: ReadonlyArray<string>;
 
 
-  protected constructor(namedParameters: SourceCodeProcessingRawSettingsNormalizer.ConstructorParameters) {
+  protected constructor(
+    constructorParameters: SourceCodeProcessingRawSettingsNormalizer.ConstructorParameters
+  ) {
 
-    this.consumingProjectRootDirectoryAbsolutePath = namedParameters.consumingProjectRootDirectoryAbsolutePath;
-    this.consumingProjectBuildingMode = namedParameters.consumingProjectBuildingMode;
+    this.projectBuildingCommonSettings__normalized = constructorParameters.projectBuildingCommonSettings__normalized;
 
-    if (isNonEmptyArray(namedParameters.entryPointsGroupsIDsSelection)) {
-      this.entryPointsGroupsIDsSelection = namedParameters.entryPointsGroupsIDsSelection;
+    if (isNonEmptyArray(constructorParameters.entryPointsGroupsIDsSelection)) {
+      this.entryPointsGroupsIDsSelection = constructorParameters.entryPointsGroupsIDsSelection;
     }
+
   }
 
 
@@ -261,15 +264,31 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
     return sourceFilesGlobSelectorsForMultipleEntryPointsGroup;
   }
+
+
+  /* === Auxiliary getters ========================================================================================== */
+  protected get consumingProjectRootDirectoryAbsolutePath(): string {
+    return this.projectBuildingCommonSettings__normalized.projectRootDirectoryAbsolutePath;
+  }
+
+  protected get consumingProjectBuildingMode(): ConsumingProjectPreDefinedBuildingModes {
+    return this.projectBuildingCommonSettings__normalized.projectBuildingMode;
+  }
+
+  protected get actualPublicDirectoryAbsolutePath(): string | undefined {
+    return this.projectBuildingCommonSettings__normalized.actualPublicDirectoryAbsolutePath;
+  }
+
 }
 
 
 namespace SourceCodeProcessingRawSettingsNormalizer {
+
   export type ConstructorParameters = Readonly<{
-    consumingProjectRootDirectoryAbsolutePath: string;
-    consumingProjectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
-    entryPointsGroupsIDsSelection?: Array<string>;
+    projectBuildingCommonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
+    entryPointsGroupsIDsSelection?: ReadonlyArray<string>;
   }>;
+
 }
 
 

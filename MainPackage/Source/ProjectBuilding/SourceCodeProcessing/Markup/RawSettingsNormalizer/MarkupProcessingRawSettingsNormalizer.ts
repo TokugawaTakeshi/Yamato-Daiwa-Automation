@@ -33,7 +33,7 @@ import {
   InvalidExternalDataError,
   PoliteErrorsMessagesBuilder
 } from "@yamato-daiwa/es-extensions";
-import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
+import type { ArbitraryObject, WarningLog } from "@yamato-daiwa/es-extensions";
 import { ObjectDataFilesProcessor } from "@yamato-daiwa/es-extensions-nodejs";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 import type Mutable from "@UtilsIncubator/Types/Mutable";
@@ -68,8 +68,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
     const dataHoldingSelfInstance: MarkupProcessingRawSettingsNormalizer =
         new MarkupProcessingRawSettingsNormalizer({
-          consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
-          consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+          projectBuildingCommonSettings__normalized: commonSettings__normalized,
           ...isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) ? {
             entryPointsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.markupProcessing
           } : null,
@@ -85,6 +84,9 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
         supportedOutputFileNameExtensionsWithoutLeadingDots:
             MarkupProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots,
+
+        mustResolveResourcesReferencesToAbsolutePath: dataHoldingSelfInstance.
+            computeMustResolveResourcesReferencesToAbsolutePathPropertyValue(),
 
         periodBetweenFileUpdatingAndRebuildingStarting__seconds:
             markupProcessingSettings__fromFile__rawValid.common?.periodBetweenFileUpdatingAndRebuildingStarting__seconds ??
@@ -116,14 +118,59 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
 
   private constructor(
-    namedParameters:
+    constructorParameters:
         SourceCodeProcessingRawSettingsNormalizer.ConstructorParameters &
         Readonly<{ markupProcessingSettings__fromFile__rawValid: MarkupProcessingSettings__FromFile__RawValid; }>
   ) {
-    super(namedParameters);
-    this.markupProcessingSettings__fromFile__rawValid = namedParameters.markupProcessingSettings__fromFile__rawValid;
+    super(constructorParameters);
+    this.markupProcessingSettings__fromFile__rawValid = constructorParameters.markupProcessingSettings__fromFile__rawValid;
   }
 
+
+  private computeMustResolveResourcesReferencesToAbsolutePathPropertyValue(): boolean {
+
+    const explicitlySpecifiedMustResolveResourceReferencesToRelativePathsPropertyValue: boolean | undefined =
+        this.markupProcessingSettings__fromFile__rawValid.common?.
+          buildingModeDependent?.[this.consumingProjectBuildingMode]?.
+          mustResolveResourceReferencesToRelativePaths;
+
+    if (this.consumingProjectBuildingMode === ConsumingProjectPreDefinedBuildingModes.staticPreview) {
+
+      if (explicitlySpecifiedMustResolveResourceReferencesToRelativePathsPropertyValue === false) {
+        Logger.logWarning(
+          MarkupProcessingRawSettingsNormalizer.localization.
+              noNeedToSetResourcesReferencesResolvingToRelativePathsOnStaticPreviewModeLog
+        );
+      }
+
+      return false;
+
+    }
+
+
+    if (isUndefined(explicitlySpecifiedMustResolveResourceReferencesToRelativePathsPropertyValue)) {
+
+      if (isUndefined(this.actualPublicDirectoryAbsolutePath)) {
+
+        Logger.logWarning(
+          MarkupProcessingRawSettingsNormalizer.localization.generateUnableToResolveResourcesReferencesToAbsolutePathLog({
+            consumingProjectBuildingMode: this.consumingProjectBuildingMode
+          })
+        );
+
+        return false;
+
+      }
+
+
+      return true;
+
+    }
+
+
+    return !explicitlySpecifiedMustResolveResourceReferencesToRelativePathsPropertyValue;
+
+  }
 
   private normalizeLintingSettings(): MarkupProcessingSettings__Normalized.Linting {
 
@@ -473,6 +520,14 @@ namespace MarkupProcessingRawSettingsNormalizer {
 
   export type Localization = Readonly<{
 
+    noNeedToSetResourcesReferencesResolvingToRelativePathsOnStaticPreviewModeLog: Localization.
+        NoNeedToSetResourcesReferencesResolvingToRelativePathsOnStaticPreviewModeLog;
+
+    generateUnableToResolveResourcesReferencesToAbsolutePathLog:
+        (
+          namedParameters: Localization.UnableToResolveResourcesReferencesToAbsolutePathLog.NamedParameters
+        ) => Localization.UnableToResolveResourcesReferencesToAbsolutePathLog;
+
     generateStaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedMessage:
         (
           namedParameters: Localization.StaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedLog.
@@ -502,6 +557,20 @@ namespace MarkupProcessingRawSettingsNormalizer {
   }>;
 
   export namespace Localization {
+
+    export type NoNeedToSetResourcesReferencesResolvingToRelativePathsOnStaticPreviewModeLog =
+        Pick<WarningLog, "title" | "description">;
+
+
+    export type UnableToResolveResourcesReferencesToAbsolutePathLog =
+        Pick<WarningLog, "title" | "description">;
+
+    export namespace UnableToResolveResourcesReferencesToAbsolutePathLog {
+      export type NamedParameters = Readonly<{
+        consumingProjectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+      }>;
+    }
+
 
     export namespace StaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedLog {
       export type NamedParameters = Readonly<

@@ -22,6 +22,7 @@ import AudiosProcessingSettingsRepresentative from
 import VideosProcessingSettingsRepresentative from
     "@VideosProcessing/VideosProcessingSettingsRepresentative";
 
+import PlainCopyingSettingsRepresentative from "@ProjectBuilding/PlainCopying/PlainCopyingSettingsRepresentative";
 import BrowserLiveReloadingSettingsRepresentative from "@BrowserLiveReloading/BrowserLiveReloadingSettingsRepresentative";
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
@@ -48,6 +49,7 @@ export default class ProjectBuildingMasterConfigRepresentative {
   public readonly audiosProcessingSettingsRepresentative: AudiosProcessingSettingsRepresentative | undefined;
   public readonly videosProcessingSettingsRepresentative: VideosProcessingSettingsRepresentative | undefined;
 
+  public readonly plainCopyingSettingsRepresentative: PlainCopyingSettingsRepresentative | undefined;
   public readonly browserLiveReloadingSettingsRepresentative: BrowserLiveReloadingSettingsRepresentative | undefined;
 
 
@@ -124,14 +126,22 @@ export default class ProjectBuildingMasterConfigRepresentative {
       );
     }
 
+    if (isNotUndefined(projectBuilderNormalizedConfig.plainCopying)) {
+      this.plainCopyingSettingsRepresentative = new PlainCopyingSettingsRepresentative(
+        projectBuilderNormalizedConfig.plainCopying
+      );
+    }
+
     if (isNotUndefined(projectBuilderNormalizedConfig.browserLiveReloading)) {
       this.browserLiveReloadingSettingsRepresentative = new BrowserLiveReloadingSettingsRepresentative(
         projectBuilderNormalizedConfig.browserLiveReloading
       );
     }
+
   }
 
 
+  /* === Common settings ============================================================================================ */
   public get consumingProjectRootDirectoryAbsolutePath(): string {
     return this.commonSettings.projectRootDirectoryAbsolutePath;
   }

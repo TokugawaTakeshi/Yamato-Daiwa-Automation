@@ -18,7 +18,6 @@ import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extens
 
 
 type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid = Readonly<{
-  common?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Common;
   linting?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Linting;
   entryPointsGroups: Readonly<{ [groupID: string]: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
 }>;
@@ -31,8 +30,6 @@ type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid = Readonly<{
 namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
   /* === Types ====================================================================================================== */
-  export type Common = Readonly<{ directoriesRelativePathsAliases?: Readonly<{ [directoryAlias: string]: string; }>; }>;
-
   export type Linting = Readonly<{
     presetFileRelativePath?: string;
     enable?: boolean;
@@ -42,7 +39,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
       SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
       Readonly<{
         targetRuntime: EntryPointsGroup.Runtime;
-        entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML?: string;
+        customReferenceName?: string;
         associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer?: string;
         typeScriptConfigurationFileRelativePath?: string;
         distributing?: EntryPointsGroup.Distributing;
@@ -90,6 +87,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
         mustGenerate?: boolean;
         fileNameWithoutExtension?: string;
       }>;
+
     }
 
 
@@ -100,16 +98,12 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
           dynamicallyLoadedFilesSubdirectory?: string;
           dynamicallyLoadedFilesNamesTemplate?: string;
         }>;
+
   }
 
 
   /* === Localization =============================================================================================== */
   export type Localization = {
-
-    common: Readonly<{
-      KEY: string;
-      directoriesRelativePathsAliases: Readonly<{ KEY: string; }>;
-    }>;
 
     linting: Readonly<{ KEY: string; }>;
 
@@ -128,7 +122,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
         }>;
       }>;
 
-      entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML: Readonly<{ KEY: string; }>;
+      customReferenceName: Readonly<{ KEY: string; }>;
       associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer: Readonly<{ KEY: string; }>;
       typeScriptConfigurationFileRelativePath: Readonly<{ KEY: string; }>;
 
@@ -174,29 +168,6 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
   ): RawObjectDataProcessor.PropertiesSpecification {
 
     return {
-
-      [ECMA_ScriptProcessingLocalization.common.KEY]: {
-
-        newName: "common",
-        preValidationModifications: nullToUndefined,
-        type: Object,
-        required: false,
-
-        properties: {
-
-          [ECMA_ScriptProcessingLocalization.common.directoriesRelativePathsAliases.KEY]: {
-
-            newName: "directoriesRelativePathsAliases",
-            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-            required: false,
-
-            value: {
-              type: String,
-              minimalCharactersCount: 1
-            }
-          }
-        }
-      },
 
       [ECMA_ScriptProcessingLocalization.linting.KEY]: {
         newName: "linting",
@@ -256,11 +227,8 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
               }
             },
 
-            [
-              ECMA_ScriptProcessingLocalization.entryPointsGroups.
-                  entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML.KEY
-            ]: {
-              newName: "entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML",
+            [ECMA_ScriptProcessingLocalization.entryPointsGroups.customReferenceName.KEY]: {
+              newName: "customReferenceName",
               type: String,
               required: false,
               minimalCharactersCount: 1
@@ -406,7 +374,9 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
         }
       }
     };
+
   }
+
 }
 
 

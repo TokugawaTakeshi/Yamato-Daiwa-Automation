@@ -15,7 +15,7 @@ import ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectB
 
 /* --- Actuators ---------------------------------------------------------------------------------------------------- */
 import MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
-import MarkupSourceCodeLinter from "@MarkupProcessing/Subtasks/MarkupSourceCodeLinter/MarkupSourceCodeLinter";
+import MarkupSourceCodeLinter from "@MarkupProcessing/Subtasks/Linting/MarkupSourceCodeLinter";
 import CompiledInlineTypeScriptImporterForPug from "@MarkupProcessing/Subtasks/CompiledTypeScriptImporterForPug";
 import StylesProcessor from "@StylesProcessing/StylesProcessor";
 import ECMA_ScriptLogicProcessor from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessor";

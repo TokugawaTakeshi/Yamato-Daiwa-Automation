@@ -42,7 +42,7 @@ export default class BrowserLiveReloadingSettingsRepresentative {
 
   public get targetBrowsers(): Array<string> {
     return isNotUndefined(this.browserLiveReloadingSettings.setup.targetBrowsers) ?
-      [ ...this.browserLiveReloadingSettings.setup.targetBrowsers ] : [];
+        [ ...this.browserLiveReloadingSettings.setup.targetBrowsers ] : [];
   }
 
   public get proxy(): string | null {

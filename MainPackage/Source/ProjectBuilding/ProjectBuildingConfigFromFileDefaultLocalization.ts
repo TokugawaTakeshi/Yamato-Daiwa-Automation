@@ -15,6 +15,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       fontsProcessing: "fontsProcessing",
       audiosProcessing: "audiosProcessing",
       videosProcessing: "videosProcessing",
+      plainCopying: "plainCopying",
       browserLiveReloading: "browserLiveReloading"
     },
 
@@ -77,6 +78,12 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
         KEY: "common",
         periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
           KEY: "periodBetweenFileUpdatingAndRebuildingStarting__seconds"
+        },
+        buildingModeDependent: {
+          KEY: "buildingModeDependent",
+          mustResolveResourceReferencesToRelativePaths: {
+            KEY: "mustResolveResourceReferencesToRelativePaths"
+          }
         }
       },
 
@@ -154,9 +161,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
         KEY: "entryPointsGroups",
 
-        entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML: {
-          KEY: "entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML"
-        },
+        customReferenceName: { KEY: "customReferenceName" },
 
         buildingModeDependent: {
           KEY: "buildingModeDependent",
@@ -167,11 +172,6 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
     },
 
     ECMA_ScriptLogicProcessing: {
-
-      common: {
-        KEY: "common",
-        directoriesRelativePathsAliases: { KEY: "directoriesRelativePathsAliases" }
-      },
 
       linting: {
         KEY: "linting"
@@ -192,9 +192,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
           }
         },
 
-        entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML: {
-          KEY: "entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML"
-        },
+        customReferenceName: { KEY: "customReferenceName" },
         associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer: {
           KEY: "associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer"
         },
@@ -293,6 +291,20 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
             segmentsWhichLastDuplicatesMustBeRemoved: { KEY: "segmentsWhichLastDuplicatesMustBeRemoved" }
           }
         }
+      }
+    },
+
+    plainCopying: {
+      filesGroups: { KEY: "filesGroups" },
+      sourceFileRelativePath: { KEY: "sourceFileRelativePath" },
+      sourceDirectoryRelativePath: {
+        KEY: "sourceFileRelativePath",
+        REQUIREMENT_CONDITION_DESCRIPTION: "\"sourceFileRelativePath\" is not specified"
+      },
+      referenceName: { KEY: "referenceName" },
+      buildingModeDependent: {
+        KEY: "buildingModeDependent",
+        sourceDirectoryRelativePath: { KEY: "sourceDirectoryRelativePath" }
       }
     },
 

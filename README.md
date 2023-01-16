@@ -16,14 +16,14 @@ npm i @yamato-daiwa/automation -D -E
 
 ## Required terminology
 
-Please familiarize with the YDF terminology because it has being used in configuration.
+Please familiarize with the YDF terminology because it is being used in documentation.
 
-[📖 Terminology reference](Documentation/Terminology/Terminology.english.md)
+[📖 Terminology reference](TemporaryDocumentation/Terminology/Terminology.english.md)
 
 
 ## Conceptions
 
-* [📖 Resolving of path to resources](Documentation/Functionality/Shared/ResourcesPathsResolving/ResourcesPathsResolving.english.md)
+* [📖 Resolving of path to resources](TemporaryDocumentation/Functionality/Shared/ResourcesPathsResolving/ResourcesPathsResolving.english.md)
 
 
 ## API
@@ -33,14 +33,15 @@ Please familiarize with the YDF terminology because it has being used in configu
 **YDA** required the configuration filed.
 As default, **yda.config.yaml** file will be searched in the project root directory. 
 
-* [Common settings](Documentation/API/ConfigurationFile/CommonSettings/CommonSettings.english.md)
-* [Markup processing settings](Documentation/API/ConfigurationFile/Markup/MarkupProcessing.english.md)
-* [Styles processing settings](Documentation/API/ConfigurationFile/Styles/StylesProcessing.md)
+* [Common settings](TemporaryDocumentation/API/ConfigurationFile/CommonSettings/CommonSettings.english.md)
+* [Markup processing settings](TemporaryDocumentation/API/ConfigurationFile/Markup/MarkupProcessing.english.md)
+* [Styles processing settings](TemporaryDocumentation/API/ConfigurationFile/Styles/StylesProcessing.md)
+* [ECMAScript logic processing settings](TemporaryDocumentation/API/ConfigurationFile/ECMA_ScriptProcessing/ECMA_ScriptProcessing.md)
+* [Plain copying](TemporaryDocumentation/API/ConfigurationFile/PlainCopying/PlainCopying.md)
 
 // TODO 
-* [ECMAScript logic processing settings](Documentation/ECMA_ScriptProcessing.md)
-* [Assets processing settings](Documentation/AssetsProcessing.md)
-* [Browser live reloading settings](Documentation/API/ConfigurationFile/BrowserLiveReloading/BrowserLiveReloading.english.md)
+* [Assets processing settings](TemporaryDocumentation/AssetsProcessing.md)
+* [Browser live reloading settings](TemporaryDocumentation/API/ConfigurationFile/BrowserLiveReloading/BrowserLiveReloading.english.md)
 
 
 ### Console

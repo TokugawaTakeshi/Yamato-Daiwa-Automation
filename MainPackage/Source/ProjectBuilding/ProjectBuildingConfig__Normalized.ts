@@ -8,6 +8,7 @@ import type ImagesProcessingSettings__Normalized from "@ImagesProcessing/ImagesP
 import type FontsProcessingSettings__Normalized from "@FontsProcessing/FontsProcessingSettings__Normalized";
 import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosProcessingSettings__Normalized";
 import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosProcessingSettings__Normalized";
+import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
 import type BrowserLiveReloadingSettings__Normalized from "@BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
 
 
@@ -24,7 +25,10 @@ type ProjectBuildingConfig__Normalized = Readonly<{
   videosProcessing?: VideosProcessingSettings__Normalized;
   audiosProcessing?: AudiosProcessingSettings__Normalized;
 
+  plainCopying?: PlainCopyingSettings__Normalized;
+
   browserLiveReloading?: BrowserLiveReloadingSettings__Normalized;
+
 }>;
 
 

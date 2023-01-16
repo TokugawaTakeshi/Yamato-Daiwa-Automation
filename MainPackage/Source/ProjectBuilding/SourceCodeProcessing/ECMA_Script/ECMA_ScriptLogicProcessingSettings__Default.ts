@@ -64,6 +64,7 @@ const ECMA_ScriptLogicProcessingSettings__Default: Readonly<{
     },
 
     contentHashPostfixSeparator: "--"
+
   },
 
   linting: {
@@ -71,13 +72,16 @@ const ECMA_ScriptLogicProcessingSettings__Default: Readonly<{
   },
 
   distributing: {
+
     exposingOfExportsFromEntryPoints: {
       mustExpose: false
     },
+
     typeScriptTypesDeclarations: {
       mustGenerate: false,
       fileNameWithoutExtension: "index.d.ts"
     }
+
   }
 
 };

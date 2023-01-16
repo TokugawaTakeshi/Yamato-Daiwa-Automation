@@ -3,12 +3,8 @@ import type ConsumingProjectPreDefinedBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
-import {
-  RawObjectDataProcessor,
-  nullToUndefined,
-  isArbitraryObject,
-  isNonEmptyString
-} from "@yamato-daiwa/es-extensions";
+import { RawObjectDataProcessor, nullToUndefined, isNonEmptyString } from "@yamato-daiwa/es-extensions";
+import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
 
 
 namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {

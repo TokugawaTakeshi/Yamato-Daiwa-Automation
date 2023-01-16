@@ -40,7 +40,8 @@ import {
   appendFragmentToURI,
   isNonEmptyString,
   isUndefined,
-  isNull
+  isNull,
+  isNotNull
 } from "@yamato-daiwa/es-extensions";
 import type { WarningLog } from "@yamato-daiwa/es-extensions";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
@@ -55,6 +56,7 @@ class ResourcesReferencesResolverForHTML {
   private readonly HTML_FileContentCheerioCapturing: cheerio.Root;
 
   private readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+  private readonly actualPublicDirectoryAbsolutePath: string | null;
 
 
   public static resolve(
@@ -75,6 +77,7 @@ class ResourcesReferencesResolverForHTML {
            * like '&#x6587;' what could cause some troubles during post-processing of HTML code. */
           HTML_FileContentCheerioCapturing.
           html({ decodeEntities: false });
+
   }
 
 
@@ -82,11 +85,13 @@ class ResourcesReferencesResolverForHTML {
     compiledHTML_File: MarkupProcessor.MarkupVinylFile,
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
+
     this.compiledHTML_File = compiledHTML_File;
-    this.HTML_FileContentCheerioCapturing = cheerio.load(
-      extractStringifiedContentFromVinylFile(compiledHTML_File)
-    );
+    this.HTML_FileContentCheerioCapturing = cheerio.load(extractStringifiedContentFromVinylFile(compiledHTML_File));
     this.masterConfigRepresentative = masterConfigRepresentative;
+    this.actualPublicDirectoryAbsolutePath = masterConfigRepresentative.markupProcessingSettingsRepresentative?.
+        getAbsolutePublicPathIfMustToResolveReferencesToAbsolutePath() ?? null;
+
   }
 
 
@@ -138,16 +143,12 @@ class ResourcesReferencesResolverForHTML {
       }
 
 
-      anchorCheerioElement.attr(
-        "href",
-        this.buildResourceFileFinalPath({
-          resolvedOutputAbsolutePathOfResourceFile: resolvedURI,
-          resourceFileType__singularForm: markupProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM
-        })
-      );
+      anchorCheerioElement.attr("href", this.buildResourceFileFinalPath(resolvedURI));
+
     }
 
     return this;
+
   }
 
   private resolveStylesheetsPathsAliases(): this {
@@ -198,13 +199,8 @@ class ResourcesReferencesResolverForHTML {
       }
 
 
-      linkCheerioElement.attr(
-        "href",
-        this.buildResourceFileFinalPath({
-          resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfStylesheet,
-          resourceFileType__singularForm: stylesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
-        })
-      );
+      linkCheerioElement.attr("href", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfStylesheet));
+
     }
 
 
@@ -262,14 +258,8 @@ class ResourcesReferencesResolverForHTML {
       }
 
 
-      scriptCheerioElement.attr(
-        "src",
-        this.buildResourceFileFinalPath({
-          resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfScript,
-          resourceFileType__singularForm: ECMA_ScriptLogicProcessingConfigRepresentative.
-              TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM
-        })
-      );
+      scriptCheerioElement.attr("src", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfScript));
+
     }
 
 
@@ -305,13 +295,8 @@ class ResourcesReferencesResolverForHTML {
       }
 
 
-      imageCheerioElement.attr(
-        "src",
-        this.buildResourceFileFinalPath({
-          resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfImage,
-          resourceFileType__singularForm: imagesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
-        })
-      );
+      imageCheerioElement.attr("src", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfImage));
+
     }
 
     for (const sourceElement of Array.from(this.HTML_FileContentCheerioCapturing("picture>source"))) {
@@ -333,13 +318,8 @@ class ResourcesReferencesResolverForHTML {
       }
 
 
-      sourceCheerioElement.attr(
-        "srcset",
-        this.buildResourceFileFinalPath({
-          resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfImage,
-          resourceFileType__singularForm: imagesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
-        })
-      );
+      sourceCheerioElement.attr("srcset", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfImage));
+
     }
 
     for (const linkElement of Array.from(this.HTML_FileContentCheerioCapturing("link[type='image/x-icon']"))) {
@@ -361,13 +341,8 @@ class ResourcesReferencesResolverForHTML {
       }
 
 
-      linkCheerioElement.attr(
-        "href",
-        this.buildResourceFileFinalPath({
-          resolvedOutputAbsolutePathOfResourceFile: imageResolvedOutputAbsolutePath,
-          resourceFileType__singularForm: imagesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM
-        })
-      );
+      linkCheerioElement.attr("href", this.buildResourceFileFinalPath(imageResolvedOutputAbsolutePath));
+
     }
 
     return this;
@@ -444,13 +419,8 @@ class ResourcesReferencesResolverForHTML {
       }
 
 
-      sourceCheerioElement.attr(
-        "src",
-        this.buildResourceFileFinalPath({
-          resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfVideo,
-          resourceFileType__singularForm: videosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM
-        })
-      );
+      sourceCheerioElement.attr("src", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfVideo));
+
     }
 
     return this;
@@ -499,13 +469,8 @@ class ResourcesReferencesResolverForHTML {
       }
 
 
-      sourceCheerioElement.attr(
-        "src",
-        this.buildResourceFileFinalPath({
-          resolvedOutputAbsolutePathOfResourceFile: resolvedOutputAbsolutePathOfVideo,
-          resourceFileType__singularForm: audiosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM
-        })
-      );
+      sourceCheerioElement.attr("src", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfVideo));
+
     }
 
     return this;
@@ -549,6 +514,7 @@ class ResourcesReferencesResolverForHTML {
         sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.get(firstSegmentOfPickedPath);
 
     if (isUndefined(sourceFilesTopDirectoryAbsolutePathOfCurrentAlias)) {
+
       Logger.logWarning(
         ResourcesReferencesResolverForHTML.localization.generateUnknownResourceGroupReferenceWarningLog({
           fileType__pluralForm: fileTypeForLogging__pluralForm,
@@ -561,6 +527,7 @@ class ResourcesReferencesResolverForHTML {
       );
 
       return null;
+
     }
 
 
@@ -639,63 +606,33 @@ class ResourcesReferencesResolverForHTML {
       );
 
       return null;
+
     }
 
 
     return resolvedFileOutputAbsolutePath;
+
   }
 
 
-  private buildResourceFileFinalPath(
-    {
-      resolvedOutputAbsolutePathOfResourceFile,
-      resourceFileType__singularForm
-    }: {
-      resolvedOutputAbsolutePathOfResourceFile: string;
-      resourceFileType__singularForm: string;
-    }
-  ): string {
-
-    if (
-      this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-      isUndefined(this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath)
-    ) {
-
-      if (
-        !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
-        isUndefined(this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath)
-      ) {
-        Logger.logWarning(
-          ResourcesReferencesResolverForHTML.localization.generateUnableToResolveShortenedAbsolutePathWarningLog({
-            projectBuildingMode: this.masterConfigRepresentative.consumingProjectBuildingMode,
-            targetFileAbsolutePath: resolvedOutputAbsolutePathOfResourceFile,
-            filesType__singularForm: resourceFileType__singularForm
-          })
-        );
-      }
-
-      return ImprovedPath.computeRelativePath({
-        basePath: this.compiledHTML_File.outputDirectoryAbsolutePath,
-        comparedPath: resolvedOutputAbsolutePathOfResourceFile
-      });
-    }
-
-
-    return `/${ ImprovedPath.computeRelativePath({
-      basePath: this.masterConfigRepresentative.actualPublicDirectoryAbsolutePath,
-      comparedPath: resolvedOutputAbsolutePathOfResourceFile
-    }) }`;
+  private buildResourceFileFinalPath(resolvedOutputAbsolutePathOfResourceFile: string): string {
+    return isNotNull(this.actualPublicDirectoryAbsolutePath) ?
+        `/${ ImprovedPath.computeRelativePath({
+          basePath: this.actualPublicDirectoryAbsolutePath,
+          comparedPath: resolvedOutputAbsolutePathOfResourceFile
+        }) }` :
+        ImprovedPath.computeRelativePath({
+          basePath: this.compiledHTML_File.outputDirectoryAbsolutePath,
+          comparedPath: resolvedOutputAbsolutePathOfResourceFile
+        });
   }
+
 }
 
 
 namespace ResourcesReferencesResolverForHTML {
 
   export type Localization = Readonly<{
-
-    generateUnableToResolveShortenedAbsolutePathWarningLog: (
-      namedParameters: Localization.UnableToResolveShortenedAbsolutePathWarningLog.TemplateNamedParameters
-    ) => Localization.UnableToResolveShortenedAbsolutePathWarningLog;
 
     generateUnknownResourceGroupReferenceWarningLog: (
       namedParameters: Localization.UnknownResourceGroupReferenceWarningLog.TemplateNamedParameters
@@ -711,17 +648,6 @@ namespace ResourcesReferencesResolverForHTML {
   }>;
 
   export namespace Localization {
-
-    export type UnableToResolveShortenedAbsolutePathWarningLog = Readonly<Pick<WarningLog, "title" | "description">>;
-
-    export namespace UnableToResolveShortenedAbsolutePathWarningLog {
-      export type TemplateNamedParameters = Readonly<{
-        filesType__singularForm: string;
-        targetFileAbsolutePath: string;
-        projectBuildingMode: string;
-      }>;
-    }
-
 
     export type UnknownResourceGroupReferenceWarningLog = Readonly<Pick<WarningLog, "title" | "description">>;
 

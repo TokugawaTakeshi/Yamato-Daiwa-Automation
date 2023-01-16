@@ -12,6 +12,19 @@ projectBuilding:
           STATIC_PREVIEW:
             outputTopDirectoryRelativePath: 02-StaticPreviewBuild
 
+  stylesProcessing:
+
+    entryPointsGroups:
+
+      Main:
+
+        singleEntryPointRelativePath: 01-Source/SharedAssets/Main.styl
+#        customReferenceName: MainStylesheet
+
+        buildingModeDependent:
+          STATIC_PREVIEW:
+            outputTopDirectoryRelativePath: 02-StaticPreviewBuild/styles
+
   imagesProcessing:
 
     assetsGroups:

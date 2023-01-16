@@ -44,8 +44,7 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
     const dataHoldingSelfInstance: ECMA_ScriptLogicProcessingRawSettingsNormalizer =
         new ECMA_ScriptLogicProcessingRawSettingsNormalizer({
-          consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
-          consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+          projectBuildingCommonSettings__normalized: commonSettings__normalized,
           ...isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) ? {
             entryPointsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.ECMA_ScriptLogicProcessing
           } : null
@@ -63,28 +62,8 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
             ECMA_ScriptLogicProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
 
         supportedOutputFileNameExtensionsWithoutLeadingDots:
-            ECMA_ScriptLogicProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots,
+            ECMA_ScriptLogicProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots
 
-        directoriesAliasesRelativePaths: ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.common?.
-            directoriesRelativePathsAliases ?? {},
-
-        directoriesAliasesAbsolutePaths: ((): { [directoryAlias: string]: string; } => {
-
-          const directoriesAliasesAbsolutePaths: { [directoryAlias: string]: string; } = {};
-
-          for (
-            const [ directoryAlias, directoryAliasRelativePath ] of
-            Object.entries(ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.common?.directoriesRelativePathsAliases ?? {})
-          ) {
-            directoriesAliasesAbsolutePaths[directoryAlias] = ImprovedPath.joinPathSegments(
-              [ commonSettings__normalized.projectRootDirectoryAbsolutePath, directoryAliasRelativePath ],
-              { alwaysForwardSlashSeparators: true }
-            );
-          }
-
-          return directoriesAliasesAbsolutePaths;
-
-        })()
       },
 
       linting: {
@@ -168,11 +147,7 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
       entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML:
           `${ ECMA_ScriptLogicProcessingSettings__Default.entryPointsGroupReferencePrefix }` +
-          `${
-            entryPointsGroupSettings__rawValid.
-                entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML ??
-            entryPointsGroupGenericSettings__normalized.ID
-          }`,
+          `${ entryPointsGroupSettings__rawValid.customReferenceName ?? entryPointsGroupGenericSettings__normalized.ID }`,
 
       ...isNotUndefined(
         entryPointsGroupSettings__rawValid.

@@ -25,7 +25,7 @@ export { ResourcesReferencesResolverForHTML_Localization } from
 
 /* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
  * The namespace, not just type must me re-exported.  */
-export { MarkupSourceCodeLinterLocalization } from "@MarkupProcessing/Subtasks/MarkupSourceCodeLinter/MarkupSourceCodeLinter";
+export { MarkupSourceCodeLinterLocalization } from "@MarkupProcessing/Subtasks/Linting/MarkupSourceCodeLinter";
 
 
 /* === Browser live reloading ======================================================================================= */

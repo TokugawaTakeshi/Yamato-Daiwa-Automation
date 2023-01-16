@@ -121,6 +121,7 @@ export default class ECMA_ScriptLogicProcessor {
             callback();
           }
         });
+
       } catch (error: unknown) {
 
         /* [ Theory ] Once reached here, the Gulp tasks chain will collapse whatever will callback called to no. */
@@ -132,6 +133,7 @@ export default class ECMA_ScriptLogicProcessor {
           occurrenceLocation: "ECMA_ScriptLogicProcessor.provideLogicProcessing(masterConfigRepresentative)",
           caughtError: error
         });
+
       }
     };
   }
@@ -144,4 +146,5 @@ export default class ECMA_ScriptLogicProcessor {
     this.masterConfigRepresentative = masterConfigRepresentative;
     this.ECMA_ScriptLogicProcessingConfigRepresentative = ecmaScriptLogicProcessingConfigRepresentative;
   }
+
 }

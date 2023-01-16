@@ -20,12 +20,7 @@ type ECMA_ScriptLogicProcessingSettings__Normalized = Readonly<{
  * https://github.com/eslint/eslint/issues/15504 */
 namespace ECMA_ScriptLogicProcessingSettings__Normalized {
 
-  export type Common =
-      ProjectBuildingConfig__Normalized.SourceCodeProcessingCommonSettingsGenericProperties &
-      Readonly<{
-        directoriesAliasesAbsolutePaths?: Readonly<{ [directoryAlias: string]: string | undefined; }>;
-        directoriesAliasesRelativePaths?: Readonly<{ [directoryAlias: string]: string | undefined; }>;
-      }>;
+  export type Common = ProjectBuildingConfig__Normalized.SourceCodeProcessingCommonSettingsGenericProperties;
 
 
   export type Linting = Readonly<{
@@ -68,6 +63,7 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
       }>;
 
       export type Pug = Readonly<{ type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.pug; }>;
+
     }
 
     export type Distributing = Readonly<{
@@ -87,6 +83,7 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
         fileNameWithoutExtension: string;
       }>;
     }
+
   }
 
 }

@@ -9,7 +9,8 @@ export enum ProjectBuildingTasksIDsForConfigFile {
   fontsProcessing = "fontsProcessing",
   audiosProcessing = "audiosProcessing",
   videosProcessing = "videosProcessing",
-  browserLiveReloading = "browserLiveReloading"
+  browserLiveReloading = "browserLiveReloading",
+  plainCopying = "plainCopying"
 }
 
 

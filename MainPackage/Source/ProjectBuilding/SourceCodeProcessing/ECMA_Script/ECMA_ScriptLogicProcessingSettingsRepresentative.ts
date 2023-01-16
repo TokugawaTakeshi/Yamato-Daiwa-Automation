@@ -56,10 +56,6 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
   }
 
 
-  public get absolutePathsOfAliasesOfDirectories(): { [aliasName: string]: string | undefined; } {
-    return this.sourceCodeProcessingCommonSettings.directoriesAliasesAbsolutePaths ?? {};
-  }
-
   public get entryPointsGroupsNormalizedSettingsMappedByPathAliases():
       Map<string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup> {
 

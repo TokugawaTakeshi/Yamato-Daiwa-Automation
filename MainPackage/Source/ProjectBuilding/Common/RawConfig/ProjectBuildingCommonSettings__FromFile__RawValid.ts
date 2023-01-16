@@ -18,10 +18,6 @@ type ProjectBuildingCommonSettings__FromFile__RawValid = Readonly<{
 }>;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
 namespace ProjectBuildingCommonSettings__FromFile__RawValid {
 
   /* === Types ====================================================================================================== */
@@ -33,13 +29,14 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
   }>;
 
   type ProjectBuilderTasksAndSourceFilesSelection = Readonly<{
-    [ProjectBuildingTasksIDsForConfigFile.markupProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.stylesProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.ECMA_ScriptLogicProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.imagesProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.fontsProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.audiosProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.videosProcessing]?: Array<string>;
+    [ProjectBuildingTasksIDsForConfigFile.markupProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.stylesProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.ECMA_ScriptLogicProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.imagesProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.fontsProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.audiosProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.videosProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.plainCopying]?: ReadonlyArray<string>;
   }>;
 
 
@@ -47,8 +44,8 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
   export type Localization = Readonly<{
     selectiveExecutions: Readonly<{
       KEY: string;
-      tasksAndSourceFilesSelection: { KEY: string; };
-      browserLiveReloadingSetupID: { KEY: string; };
+      tasksAndSourceFilesSelection: Readonly<{ KEY: string; }>;
+      browserLiveReloadingSetupID: Readonly<{ KEY: string; }>;
     }>;
     publicDirectoriesRelativePaths: Readonly<{ KEY: string; }>;
   }>;
@@ -57,12 +54,14 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
     {
       projectBuildingCommonSettingsLocalization,
       tasksLocalizedIDs
-    }: {
+    }: Readonly<{
       projectBuildingCommonSettingsLocalization: Localization;
       tasksLocalizedIDs: ProjectBuildingTasksIDsForConfigFile__Localized;
-    }
+    }>
   ): RawObjectDataProcessor.PropertiesSpecification {
+
     return {
+
       [projectBuildingCommonSettingsLocalization.selectiveExecutions.KEY]: {
 
         newName: "selectiveExecutions",
@@ -71,6 +70,7 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
         required: false,
 
         value: {
+
           type: Object,
           properties: {
 
@@ -90,6 +90,7 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
                 [tasksLocalizedIDs.fontsProcessing]: ProjectBuildingTasksIDsForConfigFile.fontsProcessing,
                 [tasksLocalizedIDs.audiosProcessing]: ProjectBuildingTasksIDsForConfigFile.audiosProcessing,
                 [tasksLocalizedIDs.videosProcessing]: ProjectBuildingTasksIDsForConfigFile.videosProcessing,
+                [tasksLocalizedIDs.plainCopying]: ProjectBuildingTasksIDsForConfigFile.plainCopying,
                 [tasksLocalizedIDs.browserLiveReloading]: ProjectBuildingTasksIDsForConfigFile.browserLiveReloading
               },
 
@@ -103,6 +104,7 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
                   minimalCharactersCount: 1
                 }
               }
+
             },
 
             [projectBuildingCommonSettingsLocalization.selectiveExecutions.browserLiveReloadingSetupID.KEY]: {
@@ -110,8 +112,10 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
               type: String,
               required: false
             }
+
           }
         }
+
       },
 
       [projectBuildingCommonSettingsLocalization.publicDirectoriesRelativePaths.KEY]: {
@@ -124,8 +128,11 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
           minimalCharactersCount: 1
         }
       }
+
     };
+
   }
+
 }
 
 
