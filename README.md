@@ -39,7 +39,7 @@ As default, **yda.config.yaml** file will be searched in the project root direct
 * [ECMAScript logic processing settings](TemporaryDocumentation/API/ConfigurationFile/ECMA_ScriptProcessing/ECMA_ScriptProcessing.md)
 * [Plain copying](TemporaryDocumentation/API/ConfigurationFile/PlainCopying/PlainCopying.md)
 
-// TODO 
+[//]: # (// TODO )
 * [Assets processing settings](TemporaryDocumentation/AssetsProcessing.md)
 * [Browser live reloading settings](TemporaryDocumentation/API/ConfigurationFile/BrowserLiveReloading/BrowserLiveReloading.english.md)
 

@@ -14,7 +14,7 @@ import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extens
 
 type ProjectBuildingCommonSettings__FromFile__RawValid = Readonly<{
   selectiveExecutions?: ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecutions;
-  publicDirectoriesRelativePaths?: Readonly<{ [projectBuildingMode__possiblyCustom: string ]: string | undefined; }>;
+  publicDirectoriesRelativePaths?: Readonly<{ [projectBuildingMode: string]: string | undefined; }>;
 }>;
 
 

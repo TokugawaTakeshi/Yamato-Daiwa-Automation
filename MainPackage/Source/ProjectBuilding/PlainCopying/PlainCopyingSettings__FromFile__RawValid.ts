@@ -91,7 +91,7 @@ namespace PlainCopyingSettings__FromFile__RawValid {
               type: String,
               requiredIf: {
                 predicate: (rawObjectOfCurrentDepthLevel: ArbitraryObject): boolean =>
-                    !isNonEmptyString(rawObjectOfCurrentDepthLevel[plainCopyingLocalization.sourceFileRelativePath.KEY]), // TODO 確認必要
+                    !isNonEmptyString(rawObjectOfCurrentDepthLevel[plainCopyingLocalization.sourceFileRelativePath.KEY]),
                 descriptionForLogging: plainCopyingLocalization.sourceDirectoryRelativePath.REQUIREMENT_CONDITION_DESCRIPTION
               }
             },

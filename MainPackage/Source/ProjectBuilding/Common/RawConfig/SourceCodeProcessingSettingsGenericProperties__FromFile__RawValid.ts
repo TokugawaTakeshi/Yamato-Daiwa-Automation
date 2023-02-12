@@ -150,15 +150,8 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
         newName: "singleEntryPointRelativePath",
         type: String,
         requiredIf: {
-          predicate(rawObjectOfCurrentDepthLevel: unknown): boolean {
-
-            if (!isArbitraryObject(rawObjectOfCurrentDepthLevel)) {
-              return false;
-            }
-
-
-            return !isNonEmptyString(rawObjectOfCurrentDepthLevel.topDirectoryRelativePath);
-          },
+          predicate: (rawObjectOfCurrentDepthLevel: ArbitraryObject): boolean =>
+              !isNonEmptyString(rawObjectOfCurrentDepthLevel.topDirectoryRelativePath),
           descriptionForLogging: sourceCodeProcessingSettingsGenericPropertiesLocalization.singleEntryPointRelativePath.
               REQUIREMENT_CONDITION_DESCRIPTION
         },

@@ -147,7 +147,7 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
           WebpackVinylAdapter(
 
             /* @see https://www.npmjs.com/package/webpack-stream#user-content-multi-compiler-support */
-            /* @ts-expect-error Below case has been documented, but types definitions has not been provided for this case. */
+            /* @ts-ignore: TS2345 Below case has been documented, but types definitions has not been provided for this case. */
             { config: this.webpackConfigurationForEachTypeScriptFile },
             null,
             this.onFirstBuildHasCompleted.bind(this)

@@ -49,7 +49,6 @@ export default class WebpackConfigGenerator {
   } = {};
 
   private hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided: boolean = false;
-  private hasSourceCodeLintingFunctionalityAlreadyBeenProvided: boolean = false;
 
 
   public static generateWebpackConfigurationForEachEntryPointsGroup(
@@ -75,7 +74,6 @@ export default class WebpackConfigGenerator {
 
         webpackConfigurationForEachEntryPointsGroup.push(webpackConfiguration);
 
-        dataHoldingSelfInstance.hasSourceCodeLintingFunctionalityAlreadyBeenProvided = true;
         dataHoldingSelfInstance.hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided = true;
 
       }
@@ -500,17 +498,14 @@ export default class WebpackConfigGenerator {
 
         new VueLoaderWebpackPlugin(),
 
-        ...this.hasSourceCodeLintingFunctionalityAlreadyBeenProvided ?
-            [] :
-            [
-              new ES_LintWebpackPlugin({
-                extensions: [ "js", "ts", "jsx", "tsx", "vue" ],
-                failOnError: this.masterConfigRepresentative.isStagingBuildingMode ||
-                    this.masterConfigRepresentative.isProductionBuildingMode,
-                failOnWarning: this.masterConfigRepresentative.isStagingBuildingMode ||
-                    this.masterConfigRepresentative.isProductionBuildingMode
-              })
-            ]
+        new ES_LintWebpackPlugin({
+          extensions: [ "js", "ts", "jsx", "tsx", "vue" ],
+          failOnError: this.masterConfigRepresentative.isStagingBuildingMode ||
+              this.masterConfigRepresentative.isProductionBuildingMode,
+          failOnWarning: this.masterConfigRepresentative.isStagingBuildingMode ||
+              this.masterConfigRepresentative.isProductionBuildingMode
+        })
+
       ],
 
 

@@ -26,7 +26,7 @@ namespace ProjectBuildingCommonSettings__Normalized {
     fontsProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.AssetsGroupID>;
     audiosProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.AssetsGroupID>;
     videosProcessing?: ReadonlyArray<ProjectBuildingConfig__Normalized.AssetsGroupID>;
-    plainCopying?: ReadonlyArray<PlainCopyingSettings__Normalized.Group>;
+    plainCopying?: ReadonlyArray<PlainCopyingSettings__Normalized.FilesGroup.ID>;
   }>;
 }
 
