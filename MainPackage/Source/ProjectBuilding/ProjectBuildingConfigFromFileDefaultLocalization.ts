@@ -304,7 +304,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       referenceName: { KEY: "referenceName" },
       buildingModeDependent: {
         KEY: "buildingModeDependent",
-        sourceDirectoryRelativePath: { KEY: "sourceDirectoryRelativePath" }
+        outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" }
       }
     },
 

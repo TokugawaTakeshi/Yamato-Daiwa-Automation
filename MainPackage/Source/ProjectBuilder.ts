@@ -23,6 +23,7 @@ import ImagesProcessor from "@ImagesProcessing/ImagesProcessor";
 import FontsProcessor from "@FontsProcessing/FontsProcessor";
 import VideosProcessor from "@VideosProcessing/VideosProcessor";
 import AudiosProcessor from "@AudiosProcessing/AudiosProcessor";
+import PlainCopier from "@ProjectBuilding/PlainCopying/PlainCopier";
 import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
@@ -94,7 +95,8 @@ abstract class ProjectBuilder {
 
         Gulp.parallel([
           StylesProcessor.provideStylesProcessingIfMust(masterConfigRepresentative),
-          ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative)
+          ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative),
+          PlainCopier.providePlainCopierIfMust(masterConfigRepresentative)
         ]),
 
         /* 〔 理論 〕 何方でも重たいので、"Gulp.parallel"に結合しない方が良い。 */

@@ -405,7 +405,7 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
             "------------------------------------------------------------------------------------------------------\n" +
             `${ MarkupSourceCodeLinter.createExtractionFromCodeListingWithHighlightedIssueLine(issue) }\n` +
             "------------------------------------------------------------------------------------------------------\n" +
-            `${ issue.message }\n` +
+            `${ issue.message } (${ issue.code })\n` +
             `at line ${ issue.lineNumber }` +
             `${
                 insertSubstring(issue.columnNumber,

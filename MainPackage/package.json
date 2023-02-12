@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.2.0-alpha.5",
+  "version": "0.2.0-alpha.8",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",
@@ -19,12 +19,12 @@
     "EntryPoint.js"
   ],
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "5.51.0",
-    "@typescript-eslint/parser": "5.51.0",
+    "@typescript-eslint/eslint-plugin": "5.52.0",
+    "@typescript-eslint/parser": "5.52.0",
     "@vue/compiler-sfc": "3.2.47",
-    "@yamato-daiwa/es-extensions": "../../YamatoDaiwaES_Extensions/CoreLibrary/Package",
-    "@yamato-daiwa/es-extensions-nodejs": "../../YamatoDaiwaES_Extensions/NodeJS/Package",
-    "@yamato-daiwa/style_guides": "0.0.41",
+    "@yamato-daiwa/es-extensions": "1.6.2",
+    "@yamato-daiwa/es-extensions-nodejs": "1.6.0-alpha.8",
+    "@yamato-daiwa/style_guides": "0.0.44",
     "access-sniff": "3.2.0",
     "autoprefixer": "10.4.13",
     "browser-sync": "2.27.11",
@@ -95,6 +95,7 @@
     "@types/pug": "2.0.6",
     "@types/webpack-node-externals": "2.5.3",
     "@types/webpack-stream": "3.2.12",
+    "prettier": "2.8.4",
     "ts-node": "10.9.1",
     "typescript": "4.9.5",
     "webpack-cli": "5.0.1"

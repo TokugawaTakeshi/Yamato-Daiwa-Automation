@@ -51,7 +51,7 @@ namespace PlainCopyingSettings__FromFile__RawValid {
     referenceName: Readonly<{ KEY: string; }>;
     buildingModeDependent: Readonly<{
       KEY: string;
-      sourceDirectoryRelativePath: Readonly<{ KEY: string; }>;
+      outputTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
     }>;
   }>;
 
@@ -72,6 +72,7 @@ namespace PlainCopyingSettings__FromFile__RawValid {
         newName: "filesGroups",
         type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
         required: true,
+        minimalEntriesCount: 1,
 
         value: {
 
@@ -129,8 +130,8 @@ namespace PlainCopyingSettings__FromFile__RawValid {
                 type: Object,
 
                 properties: {
-                  [plainCopyingLocalization.buildingModeDependent.sourceDirectoryRelativePath.KEY]: {
-                    newName: "sourceDirectoryRelativePath",
+                  [plainCopyingLocalization.buildingModeDependent.outputTopDirectoryRelativePath.KEY]: {
+                    newName: "outputTopDirectoryRelativePath",
                     type: String,
                     required: true
                   }

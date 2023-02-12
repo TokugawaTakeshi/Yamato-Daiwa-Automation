@@ -77,9 +77,13 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
           audiosProcessing: actualSelectiveExecution.
               tasksAndSourceFilesSelection[ProjectBuildingTasksIDsForConfigFile.audiosProcessing],
 
+          plainCopying: actualSelectiveExecution.
+              tasksAndSourceFilesSelection[ProjectBuildingTasksIDsForConfigFile.plainCopying],
+
           videosProcessing: actualSelectiveExecution.
               tasksAndSourceFilesSelection[ProjectBuildingTasksIDsForConfigFile.videosProcessing]
         }
+
       } : null,
 
       browserLiveReloadingSetupID: actualSelectiveExecution?.browserLiveReloadingSetupID,

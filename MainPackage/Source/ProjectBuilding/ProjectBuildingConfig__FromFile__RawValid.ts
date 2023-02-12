@@ -236,16 +236,13 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
 
             [localization.enumerations.tasksIDs.plainCopying]: {
               newName: "plainCopying",
-              type: Array,
+              type: Object,
               required: false,
               preValidationModifications: nullToUndefined,
-              element: {
-                type: Object,
-                properties: PlainCopyingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
-                  plainCopyingLocalization: localization.tasks.plainCopying,
-                  consumingProjectLocalizedPreDefinedBuildingModes
-                })
-              }
+              properties: PlainCopyingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
+                plainCopyingLocalization: localization.tasks.plainCopying,
+                consumingProjectLocalizedPreDefinedBuildingModes
+              })
             },
 
             [localization.enumerations.tasksIDs.browserLiveReloading]: {

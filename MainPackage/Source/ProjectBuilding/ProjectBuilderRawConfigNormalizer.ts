@@ -307,6 +307,34 @@ abstract class ProjectBuilderRawConfigNormalizer {
 
       })(),
 
+      ...((): { plainCopying?: PlainCopyingSettings__Normalized; } => {
+
+        const plainCopyingSettings__rawValid__fromFile: PlainCopyingSettings__FromFile__RawValid | undefined =
+            projectBuildingConfig__fromFile__rawValid[ProjectBuildingTasksIDsForConfigFile.plainCopying];
+
+        if (isUndefined(plainCopyingSettings__rawValid__fromFile)) {
+          return {};
+        }
+
+
+        if (
+            isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) &&
+            isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection.plainCopying)
+        ) {
+          return {};
+        }
+
+
+        /* 〔 Theory 〕 See ※. */
+        return {
+          plainCopying: PlainCopyingRawSettingsNormalizer.normalize({
+            plainCopyingSettings__fromFile__rawValid: plainCopyingSettings__rawValid__fromFile,
+            commonSettings__normalized
+          })
+        };
+
+      })(),
+
       ...((): { browserLiveReloading?: BrowserLiveReloadingSettings__Normalized; } => {
 
         const browserLiveReloadingSettings__fromFile__rawValid: BrowserLiveReloadingSettings__FromFile__RawValid | undefined =
@@ -327,34 +355,6 @@ abstract class ProjectBuilderRawConfigNormalizer {
             ...isNotUndefined(selectedBrowserLiveReloadingSetupID) ? { selectedBrowserLiveReloadingSetupID } : {}
           })
         };
-      })(),
-
-      ...((): { plainCopying?: PlainCopyingSettings__Normalized; } => {
-
-        const plainCopyingSettings__rawValid__fromFile: PlainCopyingSettings__FromFile__RawValid | undefined =
-            projectBuildingConfig__fromFile__rawValid[ProjectBuildingTasksIDsForConfigFile.plainCopying];
-
-        if (isUndefined(plainCopyingSettings__rawValid__fromFile)) {
-          return {};
-        }
-
-
-        if (
-          isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) &&
-          isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection.plainCopying)
-        ) {
-          return {};
-        }
-
-
-        /* 〔 Theory 〕 See ※. */
-        return {
-          plainCopying: PlainCopyingRawSettingsNormalizer.normalize({
-            plainCopyingSettings__fromFile__rawValid: plainCopyingSettings__rawValid__fromFile,
-            commonSettings__normalized
-          })
-        };
-
       })()
 
     };
