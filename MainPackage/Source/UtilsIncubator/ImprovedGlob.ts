@@ -79,15 +79,24 @@ export default class ImprovedGlob {
   }
 
   public static buildAllFilesInCurrentDirectoryAndBelowGlobSelector(
-    parametersObject: {
+    compoundParameter: {
       basicDirectoryPath: string;
-      fileNamesExtensions: ReadonlyArray<string>;
+      fileNamesExtensions?: ReadonlyArray<string>;
     }
   ): string {
+
+    const fileNamesExtensions: ReadonlyArray<string> = compoundParameter.fileNamesExtensions ?? [];
+
     return replaceDoubleBackslashesWithForwardSlashes(
-        `${ removeSlashes(parametersObject.basicDirectoryPath, { leading: false, trailing: true }) }/**/**` +
-        `${ ImprovedGlob.createMultipleFilenameExtensionsGlobPostfix(parametersObject.fileNamesExtensions) }`
+      `${ removeSlashes(compoundParameter.basicDirectoryPath, { leading: false, trailing: true }) }/**/**` +
+      `${ 
+        insertSubstringIf(
+          ImprovedGlob.createMultipleFilenameExtensionsGlobPostfix(fileNamesExtensions),
+          fileNamesExtensions.length > 0
+        ) 
+      }`
     );
+
   }
 
   public static buildExcludingOfDirectoryAndSubdirectoriesGlobSelector(targetDirectoryPath: string): string {

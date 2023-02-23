@@ -298,7 +298,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       filesGroups: { KEY: "filesGroups" },
       sourceFileRelativePath: { KEY: "sourceFileRelativePath" },
       sourceDirectoryRelativePath: {
-        KEY: "sourceFileRelativePath",
+        KEY: "sourceDirectoryRelativePath",
         REQUIREMENT_CONDITION_DESCRIPTION: "\"sourceFileRelativePath\" is not specified"
       },
       referenceName: { KEY: "referenceName" },

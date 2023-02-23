@@ -1,5 +1,11 @@
 # Markup processing
 
+```yaml
+projectBuilding:
+
+  markupProcessing: # Markup processing settings going here (see schema and examples below)
+```
+
 ## Schema
 
 ```typescript
@@ -9,7 +15,7 @@ type MarkupProcessingSettings__FromFile__RawValid = {
     periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number;
     buildingModeDependent?: {
       [projectBuildingMode: string]: {
-        mustUseResolveResourceReferencesToRelativePaths: boolean;
+        mustUseResolveResourceReferencesToRelativePaths?: boolean;
       };
     }
   };
@@ -92,7 +98,7 @@ type MarkupProcessingSettings__FromFile__RawValid = {
 <dl>
 
   <dt>Type</dt>
-  <dd>object</dd>
+  <dd>Object</dd>
 
   <dt>Is required</dt>
   <dd>No</dd>
@@ -114,13 +120,13 @@ type MarkupProcessingSettings__FromFile__RawValid = {
 
 Specifies how many seconds must pass from one markup file will be saved until markup rebuilding will start.
 
-Even if the Integrated Development Environment (IDE) could save the files at once, the saving actually is not simultaneous,
+Even if the Integrated Development Environment (IDE) could save multiple files at once, the saving actually is not simultaneous
   and also the detecting of file changing is not instant.
 So, without any specific measures it will be one re-building per one changed file what is the wasting of computer's resources.
 
 The default value is enough for the starting of the development when the files quantity is not large, but as files
   quantity will become more, the increasing of default value could require. 
-The detecting of the changes in file and rebuilding are being logged, so consider the increasing of 
+The detecting of the changes in file and rebuilding staring are being logged, so consider the increasing of 
   **periodBetweenFileUpdatingAndRebuildingStarting__seconds** if some files changes still being logged immediately after 
   rebuilding started.
 
@@ -130,10 +136,10 @@ The detecting of the changes in file and rebuilding are being logged, so conside
 <dl>
 
   <dt>Type</dt>
-  <dd>Associative array like object</dd>
+  <dd>Associative array-like object</dd>
 
   <dt>Is required</dt>
-  <dd>true</dd>
+  <dd>No</dd>
 
   <dt>Key</dt>
   <dd>Project building modes</dd>
@@ -151,11 +157,20 @@ The detecting of the changes in file and rebuilding are being logged, so conside
 
   <dt>Value type</dt>
   <dd>Object</dd>
+
+  <dt>Value schema<dt>
+  <dd><pre><code>
+{
+  mustUseResolveResourceReferencesToRelativePaths?: boolean;
+}
+  </code></pre></dd>
+
+Value schema
   
 </dl>
 
-The settings dependent of project building mode however common for all entry points groups. 
-Do not be confused with `entryPointsGroups.[GROUP_ID].buildingModeDependent` which are individual for each
+The settings dependent of **project building mode** however common for all **entry points groups**. 
+Do not be confused with `entryPointsGroups.entryPointsGroups.[GROUP_ID].buildingModeDependent` which are individual for each
   entry points group.
   
 
@@ -173,24 +188,36 @@ Do not be confused with `entryPointsGroups.[GROUP_ID].buildingModeDependent` whi
 
 As default, the [resource references](../../../Functionality/Shared/ResourcesPathsResolving/ResourcesPathsResolving.english.md)
   are being resolved to _absolute_ paths for all project building modes _except_ **static preview** (because the absolute
-  paths are incompatible with **static preview** concept, for the **static preview** mode all **resource references** will
+  paths are incompatible with **static preview** concept; for the **static preview** mode all **resource references** will
   _always_ be resolved to _relative_ paths.)
 
-If this option will be set to <code>true</code>, the resource references will be resolved to _relative_ path. 
+If this option set to <code>true</code>, the resource references will be resolved to _relative_ path for target 
+  **project building mode**.
   
 
 ## `linting` - Markup source code linting settings
 
 <dl>
+
   <dt>Type</dt>
-  <dd>object</dd>
+  <dd>Object</dd>
+
   <dt>Is required</dt>
   <dd>No</dd>
+
+  <dt>Schema<dt>
+  <dd><pre><code>
+{
+  presetFileRelativePath?: string;
+  enable?: boolean;
+}
+  </code></pre></dd>
+
 </dl>
 
 
 The **linting** is the automatic check of the compliance of the source code with guidelines established in development team.
-**YDA** using [pug-lint](https://github.com/pugjs/pug-lint) linter with below improvements:
+**YDA** is using [pug-lint](https://github.com/pugjs/pug-lint) linter with below improvements:
 
 1. Better formatted logging
 2. Optimizations
@@ -198,20 +225,30 @@ The **linting** is the automatic check of the compliance of the source code with
 [📖 pug-lint](https://github.com/pugjs/pug-lint)
 
 
-### `presetFileRelativePath` - Relative path of "Puglint" configuration file
+### `presetFileRelativePath` - Relative path of "pug-lint" configuration file
 
 <dl>
+
   <dt>Type</dt>
-  <dd>string</dd>
+  <dd>String</dd>
+
   <dt>Is required</dt>
   <dd>No</dd>
-  <dt>Note</dt> 
-  <dd>Must be the valid path relative to project root; neither leading not trailing slashes required.</dd>
+
+  <dt>Notes</dt> 
+  <dd>
+    <ul>
+      <li>Must be the valid path relative to project root</li>
+      <li>Neither leading not trailing slashes required</li>
+    </ul>
+  </dd>
+
   <dt>Example</dt> 
   <dd><code>Settings/Markup.js</code></dd>
+
 </dl>
 
-The **pug-lint** search the configuration at:
+The **pug-lint** searches the configuration at:
 
 * **.pug-lintrc**
 * **.pug-lintrc.js**
@@ -219,66 +256,79 @@ The **pug-lint** search the configuration at:
 * option **pugLintConfig** of **package.json**
 
 Of none of above alternatives desired, specify the path of the configuration file relative to project root in 
-**presetFileRelativePath**.
+  this option, the **presetFileRelativePath**.
 
 
 ### `enable` - Enabling/disabling of markup source code linting
 
 <dl>
+
   <dt>Type</dt>
-  <dd>boolean</dd>
+  <dd>Boolean</dd>
+
   <dt>Default value</dt>
-  <dd>true</dd>
+  <dd><code>true</code></dd>
+
 </dl>
 
-In high-quality web development for which **YDA** is intended to be used the linting is de-facto required tool.
+In high-quality development for which **YDA** is intended to be used the linting is de-facto required tool.
 However, this option has been added because of foresight of complaints about unable of disabling the linting.
 
-If the linting is required, basically not need explicitly specify this option.
-However, if you has not declared any **entry points groups**, but need the linting, specify `enable: true` because
-  if will not be `markupProcessing` property at `projectBuilding`, the linting of the markup will not be executed.
+If the linting is desires, basically not need explicitly specify this option.
+However, if you has not declared any **entry points groups** for the markup, but need the linting, 
+  specify `enable: true` because if it will not be `markupProcessing` property at `projectBuilding`,
+  will be concluded that the markup processing has not been demanded and the linting of the markup will not be executed.
 
 
 ## `staticPreview` - Static preview specific configuration
 
 <dl>
+
   <dt>Type</dt>
-  <dd>object</dd>
+  <dd>Object</dd>
+
   <dt>Is required</dt>
   <dd>No</dd>
+
 </dl>
 
 
 [📖 The Static Preview concept](https://github.com/TokugawaTakeshi/Yamato-Daiwa-Frontend/blob/master/CoreLibrary/Package/Documentation/PagesTemplates/StaticPreviewAnywherePage/StaticPreviewAnywherePage.md#the-concept-of-static-preview)
 
 This group is actual only for the **static preview building** mode.
-It does not affect to something for the other project building modes.
+These settings will not affect to something for the other project building modes.
 
 
 ### `stateDependentPagesVariationsSpecificationFileRelativePath` - The relative path to state dependent page variation specification
 
 <dl>
+
   <dt>Type</dt>
-  <dd>string</dd>
+  <dd>String</dd>
+
   <dt>Is required</dt>
   <dd>No</dd>
+
   <dt>Note</dt> 
   <dd>
     <ul>
-      <li>Must be the valid path　path relative to project root</li>
+      <li>Must be the valid path relative to project root directory</li>
       <li>The filename extension could be omitted</li>
-      <li>Target file must the either "yaml" or "yml"</li>
+      <li>Target file must the either <b>yaml</b> or <b>yml</b></li>
     </ul>
   </dd>
+
   <dt>Example</dt> 
   <dd><code>StaticPreview/PagesStateDependentVariations.yaml</code></dd>
+
 </dl>
 
+[📖 The Page State Dependent Variations concept](../../../Functionality/MarkupProcessing/StaticPreview/StateDependentPagesVariations/StateDependentPagesVariations.english.md)
 
 The relative path to YAML file with declared specific **entry points** relative paths (the omitting of the filename 
   extensions is allowed) and corresponding Pug/JavaScript variables which will be automatically injected. 
 These settings are required to be defined in separate file because they could be large while they are about only one
-  functionality.
+  functionality namely the **static preview**.
 
 ```yaml
 projectBuilding:
@@ -363,14 +413,17 @@ else if InboxItemsListPageStatesSimulations.noItems
   // ...
 ```
 
-
+[//]: # (// TODO 再開点)　現在一件のみサポートなので、そう修正しないと。
 ### `importsFromStaticDataFiles` - The relative path to files with data for Pug
 
 <dl>
+
   <dt>Type</dt>
   <dd>Array</dd>
+
   <dt>Minimal elements count</dt>
   <dd>1</dd>
+
 </dl>
 
 The [static preview](https://github.com/TokugawaTakeshi/Yamato-Daiwa-Frontend/blob/master/CoreLibrary/Package/Documentation/PagesTemplates/StaticPreviewAnywherePage/StaticPreviewAnywherePage.md#the-concept-of-static-preview)
