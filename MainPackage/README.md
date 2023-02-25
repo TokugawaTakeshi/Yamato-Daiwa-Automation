@@ -22,6 +22,13 @@ npm i @yamato-daiwa/automation -D -E
   <dt>@vue/compiler-sfc, vue, vue-loader</dt>
   <dd>Used to provide the support of Vue Single File Components for ECMAScript logic processing</dd>
 
+  <dt>@webdiscus/pug-loader</dt>
+  <dd>
+    Used to provide the bundling of the Pug code to output JavaScript code by Webpack.
+    The better alternative of **pug-html-loader** because last one has multiple high and critical vulnerabilities
+      (at least it was so for the February 2023).
+  </dd>
+
   <dt>@yamato-daiwa/es-extensions, @yamato-daiwa/es-extensions-nodejs</dt>
   <dd>Used to reduce the routine code</dd>
 
@@ -82,9 +89,6 @@ npm i @yamato-daiwa/automation -D -E
   <dt>gulp-stylus</dt>
   <dd>Used to provide the basic Stylus-to-CSS transpiling</dd>
 
-  <dt>html-loader</dt>
-  <dd>Used to provide the import of HTML code as string to JavaScript bundle</dd>
-
   <dt>html-validator</dt>
   <dd>Used to get the HTML validation data from W3C service. The formatted output to terminal has been implemented by YDA development side.</dd>
 
@@ -102,12 +106,6 @@ npm i @yamato-daiwa/automation -D -E
 
   <dt>pug-plain-loader</dt>
   <dd>Used to providing of the Pug source code language for Vue templates in Single File Components</dd>
-
-  <dt>pug-html-loader</dt>
-  <dd>
-    Used in combination with <b>html-loader</b> to provide the importing of HTML code compiled from Pug language as string 
-    to JavaScript bundle
-  </dd>
 
   <dt>rev-hash</dt>
   <dd>

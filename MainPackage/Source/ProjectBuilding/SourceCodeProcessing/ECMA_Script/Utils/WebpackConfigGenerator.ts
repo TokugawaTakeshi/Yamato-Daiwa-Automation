@@ -360,31 +360,25 @@ export default class WebpackConfigGenerator {
           },
 
 
-          /* --- 構造設計記法 ----------------------------------------------------------------------------------------- */
+          /* --- Markup --------------------------------------------------------------------------------------------- */
           {
             test: /\.pug$/u,
             oneOf: [
+
               {
                 resourceQuery: /^\?vue/u,
                 use: [ "pug-plain-loader" ]
               },
-              {
-                use: [
-                  {
-                    loader: "html-loader",
-                    options: {
 
-                      /* [ Theory ] Without this option, all capital cases tags (invalid HTML5 vue normal for the Vue
-                       * templates loaded externally) will be converted to lower cased.
-                       * [ Reference ] https://stackoverflow.com/q/63164597/4818123 */
-                      minimize: {
-                        caseSensitive: true
-                      }
-                    }
-                  },
-                  "pug-html-loader"
-                ]
+              {
+
+                loader: "@webdiscus/pug-loader",
+
+                /* [ Third-party API ] The "render" method compiles the file content and allow to import it as HTML string. */
+                options: { method: "render" }
+
               }
+
             ]
           },
 
