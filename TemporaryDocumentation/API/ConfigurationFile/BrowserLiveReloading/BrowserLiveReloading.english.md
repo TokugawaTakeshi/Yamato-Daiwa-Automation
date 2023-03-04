@@ -1,14 +1,20 @@
 # Browser live reloading
 
-## Schema
+```yaml
+projectBuilding:
 
-The `projectBuilding.browserLiveReloading` property in the YDA configuration file is obeys to below TypeScript type. 
+  browserLiveReloading: # Browser live reloading settings going here (see schema and examples below)
+```
+
+
+## Schema
 
 ```typescript
 type BrowserLiveReloadingSettings__FromFile__RawValid = {
 
   setups: { 
     [setupID: string]: {
+      
       localServer: {
         rootDirectoryRelativePath: string;
         ignoredFilesAndDirectoriesRelativePaths?: Array<string>;
@@ -17,14 +23,19 @@ type BrowserLiveReloadingSettings__FromFile__RawValid = {
         useHTTPS?: boolean;
         useCORS?: boolean;
       };
+      
       proxy?: string;
       openInBrowsers?: Array<string> | string;
+      
       browserSyncUserInterface?: {
         customPort?: number;
         disable?: boolean;
       };
+      
       periodBetweenFileUpdatingAndBrowserReloading__seconds?: number;
-    }; 
+      
+    };
+    
   };
   
   logging?: {
@@ -40,18 +51,51 @@ type BrowserLiveReloadingSettings__FromFile__RawValid = {
 ## `setups`
 
 <dl>
+
   <dt>Type</dt>
   <dd>Associative array-like object</dd>
+
   <dt>Required</dt>
   <dd>Yes</dd>
+
   <dt>Key</dt>
   <dd>Setup ID</dd>
+
   <dt>Value</dt>
   <dd>Setup specification</dd>
+
+  <dt>Value schema</dt>
+  <dd><pre><code>
+{
+
+  localServer: {
+    rootDirectoryRelativePath: string;
+    ignoredFilesAndDirectoriesRelativePaths?: Array<string>;
+    customPort?: number;
+    customStartingFileNameWithExtension?: string;
+    useHTTPS?: boolean;
+    useCORS?: boolean;
+  };
+  
+  proxy?: string;
+  openInBrowsers?: Array<string> | string;
+  
+  browserSyncUserInterface?: {
+    customPort?: number;
+    disable?: boolean;
+  };
+  
+  periodBetweenFileUpdatingAndBrowserReloading__seconds?: number;
+  
+}
+  </code></pre></dd>
+
 </dl>
 
 You may need more than one setup, for example one for the **static preview mode** and one for the **local development mode**.
-The key is the setup ID; the value is the object with below schema.
+The difference could be the target directory and also starting HTML file. 
+
+
 
 
 ### Setup specification
@@ -252,3 +296,8 @@ To prevent this, once some out file has updated, the YDA waits `periodBetweenFil
 
 For the new project with few files, the default value is enough, however with the increase of source/output files,
   maybe this value will need to be increased too.
+
+
+## Typical setups
+
+[//]: # (TODO)

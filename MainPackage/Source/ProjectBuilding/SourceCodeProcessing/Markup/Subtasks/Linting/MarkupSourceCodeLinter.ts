@@ -254,18 +254,18 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
   }
 
 
-  protected lint(globSelectorOrAbsolutePathsOfTargetFiles: Array<string>): () => NodeJS.ReadWriteStream {
+  protected lint(globSelectorsOrAbsolutePathsOfTargetFiles: Array<string>): () => NodeJS.ReadWriteStream {
 
-    if (globSelectorOrAbsolutePathsOfTargetFiles.length === 0) {
+    if (globSelectorsOrAbsolutePathsOfTargetFiles.length === 0) {
       return createImmediatelyEndingEmptyStream();
     }
 
 
     return (): NodeJS.ReadWriteStream => Gulp.
 
-        /* [ Theory ] No need to read the file immediately - maybe it has not changed since last modification thus linting
+        /* [ Theory ] No need to read the files immediately - maybe it has not changed since last modification thus linting
               results could be cached. */
-        src(globSelectorOrAbsolutePathsOfTargetFiles, { read: false }).
+        src(globSelectorsOrAbsolutePathsOfTargetFiles, { read: false }).
 
         pipe(super.printProcessedFilesPathsAndQuantity({ subtaskName: this.SUBTASK_NAME_FOR_LOGGING })).
         pipe(super.handleErrorIfItWillOccur({ subtaskName: this.SUBTASK_NAME_FOR_LOGGING })).

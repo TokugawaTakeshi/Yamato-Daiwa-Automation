@@ -144,15 +144,17 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
         pipe(super.handleErrorIfItWillOccur({ subtaskName: this.SUBTASK_NAME_FOR_LOGGING })).
 
         pipe(
+
           WebpackVinylAdapter(
 
-            /* @see https://www.npmjs.com/package/webpack-stream#user-content-multi-compiler-support */
-            /* @ts-ignore: TS2345 Below case has been documented, but types definitions has not been provided for this case. */
-            { config: this.webpackConfigurationForEachTypeScriptFile },
+            this.webpackConfigurationForEachTypeScriptFile[0],
+
+            /* @ts-ignore: TS2345 The null as second argument is obeys to README of "webpck-stream" package. */
             null,
             this.onFirstBuildHasCompleted.bind(this)
 
           )
+
         ).
 
         pipe(GulpStreamModifier.modify({
@@ -182,6 +184,7 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
 
         on("data", (): void => {
 
+          /* [ Theory ] The subsequent invocation of the callback will be ignored. */
           if (this.hasFirstBuildCompleted) {
             callback();
           }

@@ -89,11 +89,11 @@ abstract class ProjectBuilder {
     Gulp.task(GULP_TASK_NAME, Gulp.parallel([
 
       MarkupSourceCodeLinter.provideMarkupLintingIfMust(masterConfigRepresentative),
-      CompiledInlineTypeScriptImporterForPug.provideTypeScriptImportsForMarkupIfMust(masterConfigRepresentative),
 
       Gulp.series([
 
         Gulp.parallel([
+          CompiledInlineTypeScriptImporterForPug.provideTypeScriptImportsForMarkupIfMust(masterConfigRepresentative),
           StylesProcessor.provideStylesProcessingIfMust(masterConfigRepresentative),
           ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative),
           PlainCopier.providePlainCopierIfMust(masterConfigRepresentative)

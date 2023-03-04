@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.2.0-alpha.8",
+  "version": "0.2.0",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",

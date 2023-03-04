@@ -23,11 +23,14 @@ import CSS_Nano from "cssnano";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import ContainerQueriesSyntaxNormalizerForStylus from
+    "@StylesProcessing/Plugins/ContainerQueriesSyntaxNormalizerForStylus/ContainerQueriesSyntaxNormalizerForStylus";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
 import { PassThrough } from "stream";
 import { isUndefined } from "@yamato-daiwa/es-extensions";
+import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
 
 export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
@@ -126,6 +129,13 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
             })
           ]
         }))).
+
+        pipe(GulpStreamModifier.modify({
+          async onStreamStartedEventCommonHandler(stylesheet: VinylFile): Promise<GulpStreamModifier.CompletionSignals> {
+            ContainerQueriesSyntaxNormalizerForStylus.normalizeSyntax(stylesheet);
+            return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+          }
+        })).
 
         pipe(gulpIf(
           this.masterConfigRepresentative.isStaticPreviewBuildingMode ||

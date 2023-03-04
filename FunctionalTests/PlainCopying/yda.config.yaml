@@ -1,0 +1,36 @@
+projectBuilding:
+
+  markupProcessing:
+
+    entryPointsGroups:
+
+      StaticPreview:
+
+        topDirectoryRelativePath: 01-Source/index.pug
+
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild }
+          PRODUCTION: { outputTopDirectoryRelativePath: 03-ProductionBuild }
+
+
+  plainCopying:
+
+    filesGroups:
+
+      DockerCompose:
+
+        sourceFileRelativePath: node_modules/bootstrap/dist/css/bootstrap.css
+        referenceName: Bootstrap
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild/styles }
+          PRODUCTION: { outputTopDirectoryRelativePath: 03-ProductionBuild/styles }
+
+
+  browserLiveReloading:
+
+    setups:
+
+      StaticPreview:
+
+        localServer:
+          rootDirectoryRelativePath: 02-LocalDevelopmentBuild

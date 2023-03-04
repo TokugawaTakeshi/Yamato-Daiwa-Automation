@@ -42,8 +42,9 @@ type MarkupProcessingSettings__FromFile__RawValid = {
         outputDirectoryRelativePath: string;
         customOutputFileNameWithoutLastExtension?: string;
       }>;
-    }
-  }
+    };
+    
+  };
 
   entryPointsGroups: {
     
@@ -58,7 +59,8 @@ type MarkupProcessingSettings__FromFile__RawValid = {
             excludeSubdirectoriesWithPrefixes?: Array<string> | string;
             excludeFilesWithPrefixes?: Array<string> | string;
           };
-        } | {
+        } | 
+        {
           singleEntryPointRelativePath: string;
         }
       ) &
@@ -81,16 +83,18 @@ type MarkupProcessingSettings__FromFile__RawValid = {
             outputTopDirectoryRelativePath: string;
           }
         };
-      } 
-  }
+        
+      }
+      
+  };
 
   logging: {
     filesPaths?: boolean;
     filesCount?: boolean;
     partialFilesAndParentEntryPointsCorrespondence?: boolean;
-  }
+  };
   
-}
+};
 ```
 
 ## `common` - Common settings
@@ -413,7 +417,7 @@ else if InboxItemsListPageStatesSimulations.noItems
   // ...
 ```
 
-[//]: # (// TODO 再開点)　現在一件のみサポートなので、そう修正しないと。
+
 ### `importsFromStaticDataFiles` - The relative path to files with data for Pug
 
 <dl>
@@ -428,9 +432,9 @@ else if InboxItemsListPageStatesSimulations.noItems
 
 The [static preview](https://github.com/TokugawaTakeshi/Yamato-Daiwa-Frontend/blob/master/CoreLibrary/Package/Documentation/PagesTemplates/StaticPreviewAnywherePage/StaticPreviewAnywherePage.md#the-concept-of-static-preview)
   may need some dummy data to display.
-For example, in the developing of the online shopping case, it is required to display some products in the products list page. 
+For example, in the case of developing of the online store, it is required to display some products in the products list page. 
 
-One way to get this dummy data on static preview stage with YDA is import it from the `.json` or `.yaml` files to Pug.
+One way to get this dummy data in static preview stage with YDA is import it from the `.json` or `.yaml` files to Pug.
 Each file could import one and only one variable - of object or array (which is the partial case of object for ECMAScript) type.
 
 ```yaml
@@ -464,7 +468,8 @@ ul.ProductsList
         span.ProductsList-Item-PriceLabel-Currency $
 ```
 
-Although the multiple file are supported, you may want to prepare single file with all data:
+Although the multiple files are supported, the storing of all dummy data in the single file is completely normal for 
+  this situation:
 
 ```yaml
 projectBuilding:
@@ -485,42 +490,58 @@ projectBuilding:
 ### `importsFromCompiledTypeScript` - Importing from the compiled TypeScript 
 
 <dl>
+
   <dt>Type</dt>
   <dd>Object</dd>
+
   <dt>Is required</dt>
   <dd>No</dd>
+
 </dl>
 
 
 Another way of the providing of the dummy data for the static preview is importing it from the TypeScript.
-YDA will take care about compiling of the TypeScript to JavaScript and then to Pug file.
-Currently, it is required to include this file manually.
+YDA will take care about compiling of the TypeScript to JavaScript and then - about wrapping to Pug file.
+
+Currently, it is required to include the output Pug file manually.
 
 
 ### `typeScriptConfigurationFileRelativePath`
 
 <dl>
+
   <dt>Type</dt>
   <dd>String</dd>
+
   <dt>Is required</dt>
   <dd>No</dd>
+
   <dt>Note</dt>
   <dd>As default, the TypeScript configuration will be searched at <code>tsconfig.json</code> in the project root directory.</dd>
+
 </dl>
 
-Basically, no need to specify the custom file because the entry point and required modules are being configured automatically.
+Basically, no need to specify the custom TypeScript configuration file because the entry point and required modules are
+  being configured automatically.
 
 
 ### `files`
 
 <dl>
+
   <dt>Type</dt>
   <dd>Array</dd>
+
   <dt>Is required</dt>
   <dd>No</dd>
+
   <dt>Minimal elements count</dt>
   <dd>1</dd>
+
   <dt>Element type</dt>
+  <dd>Object</dd>
+
+  <dt>Element schema</dt>
   <dd>
     <pre>
       <code>
@@ -538,10 +559,16 @@ Basically, no need to specify the custom file because the entry point and requir
 Basically, just one file (for example, **MockData.ts** which will be compiled to **MockData.pug**) is enough, 
   but YDA does not limit to one file.
 
+> #### ⚠️ Issue
+>
+> Because of [upstream bug](https://github.com/shama/webpack-stream/issues/247) (the bug of dependency), currently
+>   the automatic rebuilding in the case of multiple files is not available.
+> It is possible to implement the same functionality as dependency provides, however it will take some time.
+
 
 #### Example
 
-The target is compiling below **MockData.ts** file to **MockData.pug** which must include the compiled JavaScript code
+The target is compiling of below **MockData.ts** file to **MockData.pug** which must include the compiled JavaScript code
 and make `MockData` variable accessible from the Pug code.
 
 The content of **MockData.ts** could be like:
@@ -569,11 +596,13 @@ const MockData: {
 export default MockData;
 ```
 
+The implementation **MockDataSource** could be any; the only requirement is **MockDataSource** must grant access
+  to its data (in above example the  `categories`  and `products` are the public static readonly fields of array type).
+
 Next, the minimal YDA settings are:
 
 ```yaml
 projectBuilding:
-
 
   markupProcessing:
 
@@ -616,18 +645,71 @@ ul
     li= category.title
 ```
 
+If you are interesting how `MockData` has become accessible, the contains of the output Pug file is:  
+
+```pug
+-
+  !function(e,t){/* The compiled JavaScript code ... */;
+
+  const MockData = global.MockData.default;
+```
+
 
 ## `entryPointsGroups` - Entry point group dependent settings
 
 <dl>
+
   <dt>Type</dt>
   <dd>Associative array-like object</dd>
+
   <dt>Is required</dt>
   <dd>No</dd>
+
   <dt>Minimal entries count</dt>
   <dd>1</dd>
+
   <dt>Value type</dt>
-  <dd>object</dd>
+  <dd>Object</dd>
+
+  <dt>Value schema<dt>
+  <dd><pre><code>
+(
+  {
+    topDirectoryRelativePath: string;
+    partialsRecognition?: {
+      excludeAllSubdirectories?: boolean;
+      excludeSubdirectoriesWithNames?: Array<string> | string;
+      excludeSubdirectoriesWithPrefixes?: Array<string> | string;
+      excludeFilesWithPrefixes?: Array<string> | string;
+    };
+  } | 
+  {
+    singleEntryPointRelativePath: string;
+  }
+) &
+
+{
+
+  HTML_Validation?: {
+    disable?: boolean;
+  }
+
+  accessibilityInspection?: {
+    standard?: "WCAG2A" | "WCAG2AA" | "WCAG2AAA";
+    disable?: boolean;
+  };
+
+  convertToHandlebarsOnNonStaticPreviewModes?: boolean;
+
+  buildingModeDependent: {
+    [projectBuildingMode: string]: {
+      outputTopDirectoryRelativePath: string;
+    }
+  };
+
+}
+  </code></pre></dd>
+
 </dl>
 
 * The keys are the entry point group name.
@@ -637,14 +719,27 @@ ul
 ### `topDirectoryRelativePath` - Top directory relative path for multiple entry points group 
 
 <dl>
+
   <dt>Type</dt>
-  <dd>string</dd>
+  <dd>String</dd>
+
   <dt>Required if</dt>
-  <dd>Group includes the arbitrary number of entry points</dd>
+  <dd>The group includes the arbitrary number of entry points</dd>
+
   <dt>Minimal characters count</dt>
   <dd>1</dd>
+
   <dt>Note</dt>
-  <dd>Must be the valid relative path to project root directory; the trailing slash is not required.</dd>
+  <dd>
+    <ul>
+      <li>Must be the valid relative path to project root directory</li>
+      <li>The trailing slash is not required</li>
+    </ul>
+  </dd>
+
+  <dl>Valid value example</dl>
+  <dd><code>01-Source/Infrastructure/Elements/Client/StaticPreview</code></dd>
+
 </dl>
 
 The relative path to directory below which entry points will be searched.
@@ -663,18 +758,23 @@ projectBuilding:
         topDirectoryRelativePath: 01-Source/Infrastructure/Elements/Client/StaticPreview
 ```
 
-In above example, the entry points will be searched below "**[Project root directory]**/01-Source/Infrastructure/Elements/Client/StaticPreview"
+In above example, the entry points will be searched below 
+  "**[Project root directory]**/01-Source/Infrastructure/Elements/Client/StaticPreview".
 
 
 ### `partialsRecognition` - The strategy of entry points and child files distinction
 
 <dl>
+
   <dt>Type</dt>
-  <dd>object</dd>
+  <dd>Object</dd>
+
   <dt>Is required</dt>
   <dd>No</dd>
+
   <dt>Must be omitted if</dt>
   <dd>The group is including one explicit entry point</dd>
+
 </dl>
 
 Specifies how to distinguish the **entry points files** (which will be compiled to separate HTML files) and 
@@ -687,12 +787,24 @@ See [Entry points and children files distinction concept](../Shared/EntryPointsA
 ### `singleEntryPointRelativePath` - The relative path of single entry point group
 
 <dl>
+
   <dt>Type</dt>
   <dd>string</dd>
+
   <dt>Required if</dt>
-  <dd>Group includes exactly one entry point</dd>
-  <dt>Note</dt>
-  <dd>Must be the valid relative path file; the file name extension is required.</dd>
+  <dd>The group is including one explicit entry point</dd>
+
+  <dt>Notes</dt>
+  <dd>
+    <ul>
+      <li>Must be the valid relative path file</li>
+      <li>The file name extension is not required</li>
+    </ul>
+  </dd>
+
+  <dt>Valid value example</dt>
+  <dd><code>01-Source/Implementation/Elements/Client/index.pug</code></dd> 
+
 </dl>
 
 The relative path of exactly one entry point in group (to file of `.pug` extension).
@@ -702,10 +814,13 @@ The relative path of exactly one entry point in group (to file of `.pug` extensi
 #### `disable`
 
 <dl>
+
   <dt>Type</dt>
-  <dd>boolean</dd>
+  <dd>Boolean</dd>
+
   <dt>Default value</dt>
   <dd>false</dd>
+
 </dl>
 
 Disabling the HTML validation only for current entry points group.
@@ -715,12 +830,22 @@ Disabling the HTML validation only for current entry points group.
 #### `standard`
 
 <dl>
+
   <dt>Type</dt>
-  <dd>string</dd>
+  <dd>String</dd>
+
   <dt>Default value</dt>
   <dd><code>WCAG2AAA</code></dd>
+
   <dt>Allowed alternatives</dt>
-  <dd><code>WCAG2A</code>, <code>WCAG2AA</code>, <code>WCAG2AAA</code></dd>
+  <dt>
+    <ul>
+      <li><code>WCAG2A</code></li>
+      <li><code>WCAG2AA</code></li>
+      <li><code>WCAG2AAA</code></li>
+    </ul>
+  </dt>
+
 </dl>
 
 The target accessibility guidelines.
@@ -741,10 +866,13 @@ According [w3c.org](https://www.w3.org), many organizations strive to meet Level
 #### `disable`
 
 <dl>
+
   <dt>Type</dt>
-  <dd>boolean</dd>
+  <dd>Boolean</dd>
+
   <dt>Default value</dt>
   <dd>false</dd>
+
 </dl>
 
 Disabling the accessibility inspection only for current entry points group.
@@ -754,10 +882,16 @@ Disabling the accessibility inspection only for current entry points group.
 #### `outputTopDirectoryRelativePath`
 
 <dl>
+
   <dt>Type</dt>
-  <dd>string</dd>
+  <dd>String</dd>
+
   <dt>Is required</dt>
-  <dd>yes</dd>
+  <dd>Yes</dd>
+
+  <dt>Valid value example</dt>
+  <dd><code>03-LocalDevelopmentBuild/public</code></dd>
+
 </dl>
 
 The top directory where the compiled HTML files will be output.
@@ -772,10 +906,13 @@ For example, if `topDirectoryRelativePath` is `Pages` and file is `Top/TopPage.p
 #### `filesPaths` 
 
 <dl>
+
   <dt>Type</dt>
-  <dd>boolean</dd>
+  <dd>Boolean</dd>
+
   <dt>Default value</dt>
-  <dd>false</dd>
+  <dd><code>false</code></dd>
+
 </dl>
 
 If being set to `true`, the paths of all files which being processing will be logged.
@@ -784,10 +921,13 @@ If being set to `true`, the paths of all files which being processing will be lo
 #### `filesCount`
 
 <dl>
+
   <dt>Type</dt>
-  <dd>boolean</dd>
+  <dd>Boolean</dd>
+
   <dt>Default value</dt>
-  <dd>false</dd>
+  <dd><code>false</code></dd>
+
 </dl>
 
 If being set to `true`, the count of all files which being processing will be logged.
@@ -796,10 +936,23 @@ If being set to `true`, the count of all files which being processing will be lo
 #### `partialFilesAndParentEntryPointsCorrespondence`
 
 <dl>
+
   <dt>Type</dt>
-  <dd>boolean</dd>
+  <dd>Boolean</dd>
+
   <dt>Default value</dt>
-  <dd>false</dd>
+  <dd><code>false</code></dd>
+
 </dl>
 
 If being set to `true`, the parents of all partial files will be logged.
+
+
+## Typical setups
+### Full-stack REST web application
+
+[//]: # (TODO)
+
+### Full-stack web site
+
+[//]: # (TODO)
