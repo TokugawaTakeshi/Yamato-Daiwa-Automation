@@ -140,6 +140,9 @@ npm i @yamato-daiwa/automation -D -E
 
   <dt>vue-style-loader</dt>
   <dd>Used to provide the dynamical loading of CSS written in Vue Single File Components to HTML document</dd>
+
+  <dt>vue-tcs</dt>
+  <dd>Used to provide the optimized type checking of Vue and also TypeScript files.</dd>
   
   <dt>webpack</dt>
   <dd>Used as basic tool for the ECMAScript logic processing</dd>

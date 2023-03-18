@@ -19,6 +19,7 @@ import MarkupSourceCodeLinter from "@MarkupProcessing/Subtasks/Linting/MarkupSou
 import CompiledInlineTypeScriptImporterForPug from "@MarkupProcessing/Subtasks/CompiledTypeScriptImporterForPug";
 import StylesProcessor from "@StylesProcessing/StylesProcessor";
 import ECMA_ScriptLogicProcessor from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessor";
+import TypeScriptTypesChecker from "@ECMA_ScriptProcessing/Subtasks/TypeScirptTypesChecker/TypeScriptTypesChecker";
 import ImagesProcessor from "@ImagesProcessing/ImagesProcessor";
 import FontsProcessor from "@FontsProcessing/FontsProcessor";
 import VideosProcessor from "@VideosProcessing/VideosProcessor";
@@ -88,7 +89,8 @@ abstract class ProjectBuilder {
 
     Gulp.task(GULP_TASK_NAME, Gulp.parallel([
 
-      MarkupSourceCodeLinter.provideMarkupLintingIfMust(masterConfigRepresentative),
+      MarkupSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative),
+      TypeScriptTypesChecker.provideTypeCheckingIfMust(masterConfigRepresentative),
 
       Gulp.series([
 

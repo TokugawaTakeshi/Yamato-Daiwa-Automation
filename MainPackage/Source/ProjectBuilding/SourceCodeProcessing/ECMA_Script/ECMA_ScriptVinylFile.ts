@@ -6,7 +6,7 @@ import VinylFileClass from "@Utils/VinylFileClass";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-export default class PlainCopiedVinylFile extends VinylFileClass {
+export default class ECMA_ScriptVinylFile extends VinylFileClass {
 
   public readonly sourceAbsolutePath: string;
   public readonly outputDirectoryAbsolutePath: string;

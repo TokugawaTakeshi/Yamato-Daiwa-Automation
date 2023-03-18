@@ -17,7 +17,7 @@ projectBuilding:
 
     filesGroups:
 
-      DockerCompose:
+      BootstrapStyles:
 
         sourceFileRelativePath: node_modules/bootstrap/dist/css/bootstrap.css
         referenceName: Bootstrap

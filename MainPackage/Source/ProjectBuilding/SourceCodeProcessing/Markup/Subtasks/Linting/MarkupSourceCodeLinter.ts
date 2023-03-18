@@ -1,4 +1,4 @@
-/* --- Settings representative -------------------------------------------------------------------------------------- */
+/* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 
@@ -114,7 +114,7 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
   private cachedLintingResults: MarkupSourceCodeLinter.CachedLintingResults;
 
 
-  public static provideMarkupLintingIfMust(
+  public static provideLintingIfMust(
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): () => NodeJS.ReadWriteStream {
 
@@ -139,7 +139,7 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
           messageSpecificPart: MarkupSourceCodeLinter.localization.pugLintFileNotFoundErrorLog.
               pugLintConfigurationFileRequirementExplanation
         }),
-        occurrenceLocation: "MarkupSourceCodeLinter.provideMarkupLintingIfMust(masterConfigRepresentative)"
+        occurrenceLocation: "MarkupSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative)"
       });
 
       return createImmediatelyEndingEmptyStream();
