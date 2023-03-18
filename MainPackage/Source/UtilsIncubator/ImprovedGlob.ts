@@ -4,9 +4,10 @@ import minimatch from "minimatch";
 import {
   Logger,
   InvalidParameterValueError,
-  isNotUndefined,
+  insertSubstringIf,
+  replaceDoubleBackslashesWithForwardSlashes,
   removeNthCharacter,
-  replaceDoubleBackslashesWithForwardSlashes
+  isNotUndefined
 } from "@yamato-daiwa/es-extensions";
 import removeSlashes from "./removeSlashes";
 
@@ -14,7 +15,7 @@ import removeSlashes from "./removeSlashes";
 export default class ImprovedGlob {
 
   /** @description Improved 'glob.sync', allows to pass multiple Glob selectors */
-  public static getFilesAbsolutePathsSynchronously(globSelectors: Array<string>): Array<string> {
+  public static getFilesAbsolutePathsSynchronously(globSelectors: ReadonlyArray<string>): Array<string> {
 
     const inclusiveGlobSelectors: Array<string> = [];
     const exclusiveGlobSelectors: Array<string> = [];
@@ -68,7 +69,7 @@ export default class ImprovedGlob {
   public static buildAllFilesInCurrentDirectoryButNotBelowGlobSelector(
     parametersObject: {
       basicDirectoryPath: string;
-      fileNamesExtensions: Array<string>;
+      fileNamesExtensions: ReadonlyArray<string>;
     }
   ): string {
     return replaceDoubleBackslashesWithForwardSlashes(
@@ -78,15 +79,24 @@ export default class ImprovedGlob {
   }
 
   public static buildAllFilesInCurrentDirectoryAndBelowGlobSelector(
-    parametersObject: {
+    compoundParameter: {
       basicDirectoryPath: string;
-      fileNamesExtensions: Array<string>;
+      fileNamesExtensions?: ReadonlyArray<string>;
     }
   ): string {
+
+    const fileNamesExtensions: ReadonlyArray<string> = compoundParameter.fileNamesExtensions ?? [];
+
     return replaceDoubleBackslashesWithForwardSlashes(
-        `${ removeSlashes(parametersObject.basicDirectoryPath, { leading: false, trailing: true }) }/**/**` +
-        `${ ImprovedGlob.createMultipleFilenameExtensionsGlobPostfix(parametersObject.fileNamesExtensions) }`
+      `${ removeSlashes(compoundParameter.basicDirectoryPath, { leading: false, trailing: true }) }/**/**` +
+      `${ 
+        insertSubstringIf(
+          ImprovedGlob.createMultipleFilenameExtensionsGlobPostfix(fileNamesExtensions),
+          fileNamesExtensions.length > 0
+        ) 
+      }`
     );
+
   }
 
   public static buildExcludingOfDirectoryAndSubdirectoriesGlobSelector(targetDirectoryPath: string): string {
@@ -104,8 +114,8 @@ export default class ImprovedGlob {
   public static buildExcludingOfFilesWithSpecificPrefixesGlobSelector(
     parametersObject: {
       basicDirectoryPath: string;
-      filesNamesPrefixes: Array<string>;
-      filesNamesExtensions: Array<string>;
+      filesNamesPrefixes: ReadonlyArray<string>;
+      filesNamesExtensions: ReadonlyArray<string>;
     }
   ): string {
 
@@ -113,6 +123,7 @@ export default class ImprovedGlob {
       Logger.throwErrorAndLog({
         errorInstance: new InvalidParameterValueError({
           parameterName: "parametersObject.filesNamesPrefixes",
+          parameterNumber: 1,
           messageSpecificPart: "If must be define at leas element of 'filesNamesPrefixes'."
         }),
         title: InvalidParameterValueError.localization.defaultTitle,
@@ -125,6 +136,7 @@ export default class ImprovedGlob {
       Logger.throwErrorAndLog({
         errorInstance: new InvalidParameterValueError({
           parameterName: "parametersObject.filesNamesExtensions",
+          parameterNumber: 1,
           messageSpecificPart: "If must be define at leas element of 'filesNamesExtensions'."
         }),
         title: InvalidParameterValueError.localization.defaultTitle,
@@ -145,8 +157,8 @@ export default class ImprovedGlob {
   public static buildExcludingOfFilesInSubdirectoriesWithSpecificPrefixesGlobSelector(
     parametersObject: {
       basicDirectoryPath: string;
-      subdirectoriesPrefixes: Array<string>;
-      filesNamesExtensions?: Array<string>;
+      subdirectoriesPrefixes: ReadonlyArray<string>;
+      filesNamesExtensions?: ReadonlyArray<string>;
     }
   ): string {
 
@@ -154,6 +166,7 @@ export default class ImprovedGlob {
       Logger.throwErrorAndLog({
         errorInstance: new InvalidParameterValueError({
           parameterName: "parametersObject.subdirectoriesPrefixes",
+          parameterNumber: 1,
           messageSpecificPart: "If must be define at leas element of 'subdirectoriesPrefixes'."
         }),
         title: InvalidParameterValueError.localization.defaultTitle,
@@ -173,8 +186,8 @@ export default class ImprovedGlob {
   public static buildExcludingOfFilesInSpecificSubdirectoriesGlobSelector(
     parametersObject: {
       basicDirectoryPath: string;
-      subdirectoriesNames: Array<string>;
-      filenamesExtensions?: Array<string>;
+      subdirectoriesNames: ReadonlyArray<string>;
+      filenamesExtensions?: ReadonlyArray<string>;
     }
   ): string {
 
@@ -182,6 +195,7 @@ export default class ImprovedGlob {
       Logger.throwErrorAndLog({
         errorInstance: new InvalidParameterValueError({
           parameterName: "parametersObject.subdirectoriesNames",
+          parameterNumber: 1,
           messageSpecificPart: "If must be define at leas element of 'subdirectoriesNames'."
         }),
         title: InvalidParameterValueError.localization.defaultTitle,
@@ -202,11 +216,22 @@ export default class ImprovedGlob {
   /* [ Output example ] [ ".js", ".ts" ] の時： ".+(js|ts)" */
   /* [ Output example ] [ ".js", ".ts", ".dart" ] の時： ".+(js|ts|dart)" */
   public static createMultipleFilenameExtensionsGlobPostfix(
-    fileNamesExtensions: Array<string>
+    fileNamesExtensions: ReadonlyArray<string>
   ): string {
     return `.@(${ fileNamesExtensions.join("|").replace(/\./gu, "") })`;
   }
 
+  public static buildAbsolutePathBasedGlob(
+      namedParameters: Readonly<{
+        basicDirectoryPath: string;
+        relativePathBasedGlob: string;
+        isExclusive?: boolean;
+      }>
+  ): string {
+    return `${ insertSubstringIf("!", namedParameters.isExclusive === true) }` +
+        `${ removeSlashes(namedParameters.basicDirectoryPath, { leading: false, trailing: true }) }/` +
+        `${ removeSlashes(namedParameters.relativePathBasedGlob, { leading: true, trailing: true }) }`;
+  }
 
   private static isExcludingGlobSelector(globSelector: string): boolean {
 

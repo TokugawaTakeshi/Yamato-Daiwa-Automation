@@ -22,6 +22,13 @@ npm i @yamato-daiwa/automation -D -E
   <dt>@vue/compiler-sfc, vue, vue-loader</dt>
   <dd>Used to provide the support of Vue Single File Components for ECMAScript logic processing</dd>
 
+  <dt>@webdiscus/pug-loader</dt>
+  <dd>
+    Used to provide the bundling of the Pug code to output JavaScript code by Webpack.
+    The better alternative of **pug-html-loader** because last one has multiple high and critical vulnerabilities
+      (at least it was so for the February 2023).
+  </dd>
+
   <dt>@yamato-daiwa/es-extensions, @yamato-daiwa/es-extensions-nodejs</dt>
   <dd>Used to reduce the routine code</dd>
 
@@ -52,6 +59,9 @@ npm i @yamato-daiwa/automation -D -E
   <dt>gulp</dt>
   <dd>Used as main task manager, the tool for providing of arranging of the tasks to sequences and series and running them</dd>
 
+  <dt>gulp-data</dt>
+  <dd>Used to provide the global variables defined by user in appropriate configuration inside the Pug templates</dd>
+
   <dt>gulp-debug</dt>
   <dd>Used to outputs the processed files names and quantity to the terminal</dd>
 
@@ -79,9 +89,6 @@ npm i @yamato-daiwa/automation -D -E
   <dt>gulp-stylus</dt>
   <dd>Used to provide the basic Stylus-to-CSS transpiling</dd>
 
-  <dt>html-loader</dt>
-  <dd>Used to provide the import of HTML code as string to JavaScript bundle</dd>
-
   <dt>html-validator</dt>
   <dd>Used to get the HTML validation data from W3C service. The formatted output to terminal has been implemented by YDA development side.</dd>
 
@@ -93,15 +100,12 @@ npm i @yamato-daiwa/automation -D -E
 
   <dt>node-notifier</dt>
   <dd>Used for accessing to native toast message functionality</dd>
+  
+  <dt>pug-lint</dt>
+  <dd>Used to providing linting of Pug source code</dd>
 
   <dt>pug-plain-loader</dt>
   <dd>Used to providing of the Pug source code language for Vue templates in Single File Components</dd>
-
-  <dt>pug-html-loader</dt>
-  <dd>
-    Used in combination with <b>html-loader</b> to provide the importing of HTML code compiled from Pug language as string 
-    to JavaScript bundle
-  </dd>
 
   <dt>rev-hash</dt>
   <dd>
@@ -111,6 +115,9 @@ npm i @yamato-daiwa/automation -D -E
 
   <dt>stlint</dt>  
   <dd>Used for linting of styles written by Stylus. The formatted output to terminal has been implemented by YDA development side.</dd>
+
+  <dt>stream-combiner2</dt>
+  <dd>Used for creating of Gulp tasks with complicated conditionals and parallels.</dd>
 
   <dt>style-loader</dt>
   <dd>Used to provide the dynamic injection of CSS functionality which has been imported to JavaScript bundle built by Webpack</dd>
@@ -141,10 +148,20 @@ npm i @yamato-daiwa/automation -D -E
   <dd>
     Used to prevent the bundling of NodeJS modules by Webpack because this bundling brings a lot of warning and/or errors
     while not required for console and server applications
-  </dd>  
+  </dd>
 
-  <dt>yamljs</dt>
-  <dd>Used for reading and parsing of configuration YAML files</dd>
+  <dt>webpack-stream</dt>
+  <dd>
+    Used only for the generating of Pug files with integrated JavaScript compiled from TypeScript.
+    For this subtask, <b>webpack-stream</b> is perfect, but it has many limitations so it is not being used for the 
+    main processing of ECMAScript logic.
+  </dd>
+
+  <dt>webpack-node-externals</dt>
+  <dd>
+    Used to prevent the bundling of NodeJS modules by Webpack because this bundling brings a lot of warning and/or errors
+    while not required for console and server applications
+  </dd>
 
   <dt>yaml-loader</dt>
   <dd>Used to provide the import of content of YAML files converted to JavaScript native object</dd> 

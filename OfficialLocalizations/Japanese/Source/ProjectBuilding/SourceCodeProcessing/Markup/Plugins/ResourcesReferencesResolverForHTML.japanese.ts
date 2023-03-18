@@ -1,8 +1,8 @@
-import { ResourcesReferencesResolverForHTML } from "@yamato-daiwa/automation/LocalizationRequirements";
-import Localization = ResourcesReferencesResolverForHTML.Localization;
+import { ResourcesReferencesResolverForHTML_Localization } from "@yamato-daiwa/automation/LocalizationRequirements";
+import Localization = ResourcesReferencesResolverForHTML_Localization;
 
 
-const resourcesReferencesResolverForHTML_Localization__japanese: ResourcesReferencesResolverForHTML.Localization = {
+const resourcesReferencesResolverForHTML_Localization__japanese: ResourcesReferencesResolverForHTML_Localization = {
 
   generateUnableToResolveShortenedAbsolutePathWarningLog: (
     namedParameters: Localization.UnableToResolveShortenedAbsolutePathWarningLog.TemplateNamedParameters

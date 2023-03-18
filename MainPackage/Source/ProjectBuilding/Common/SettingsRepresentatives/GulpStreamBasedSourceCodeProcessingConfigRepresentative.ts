@@ -1,4 +1,5 @@
 import SourceCodeProcessingConfigRepresentative from "./SourceCodeProcessingConfigRepresentative";
+import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 
 /* --- Normalized settings ------------------------------------------------------------------------------------------ */
 import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
@@ -12,7 +13,7 @@ import {
 } from "@yamato-daiwa/es-extensions";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
-import PartialsFilesMapper from "@UtilsIncubator/PartialsFilesMapper";
+import PartialsFilesMapper from "@Utils/PartialsFilesMapper";
 
 
 abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
@@ -33,7 +34,7 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
 
   public readonly partialFilesAndEntryPointsRelationsMap: PartialsFilesMapper.
       PartialFilesAndParentEntryPointsRelationsMap = new Map();
-  public readonly onPartialFilesAndEntryPointsRelationsMapUpdatedEventSubscribers: Array<() => unknown> = [];
+  public readonly mustLogPartialFilesAndEntryPointsRelationsMap: boolean;
 
 
   /* === Static helpers ============================================================================================= */
@@ -49,7 +50,7 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
     }
 
 
-    return ImprovedPath.buildAbsolutePath(
+    return ImprovedPath.joinPathSegments(
       [
         respectiveEntryPointsGroupSettings.outputFilesTopDirectoryAbsolutePath,
         ImprovedPath.computeRelativePath({
@@ -63,6 +64,12 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
 
   public static setLocalization(newLocalization: GulpStreamBasedSourceCodeProcessingConfigRepresentative.Localization): void {
     this.#localization = newLocalization;
+  }
+
+
+  protected constructor(namedParameters: GulpStreamBasedSourceCodeProcessingConfigRepresentative.ConstructorNamedParameters) {
+    super(namedParameters.masterConfigRepresentative);
+    this.mustLogPartialFilesAndEntryPointsRelationsMap = namedParameters.mustLogPartialFilesAndEntryPointsRelationsMap;
   }
 
 
@@ -92,7 +99,7 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
     );
   }
 
-  public getEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(
+  public getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(
     targetSourceFileAbsolutePath: string
   ): EntryPointsGroupNormalizedSettings {
 
@@ -109,6 +116,7 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
         break;
       }
     }
+
 
     if (isUndefined(entryPointsGroupsNormalizedSettingsRelevantForTargetSourceFile)) {
       Logger.throwErrorAndLog({
@@ -138,17 +146,10 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
       PartialsFilesMapper.getPartialFilesAndParentEntryPointsRelationsMap({
         targetEntryPointsFilesAbsolutePaths: this.relevantEntryPointsSourceFilesAbsolutePaths,
         sourceFilesTypeLabelForLogging: this.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM,
-        masterConfigRepresentative: this.masterConfigRepresentative
+        masterConfigRepresentative: this.masterConfigRepresentative,
+        loggingIsEnabled: this.mustLogPartialFilesAndEntryPointsRelationsMap
       })
     );
-
-    for (const subscriber of this.onPartialFilesAndEntryPointsRelationsMapUpdatedEventSubscribers) {
-      subscriber();
-    }
-  }
-
-  public subscribeOnPartialFilesAndEntryPointsRelationsMapUpdatedEvent(subscriber: () => unknown): void {
-    this.onPartialFilesAndEntryPointsRelationsMapUpdatedEventSubscribers.push(subscriber);
   }
 
 
@@ -164,11 +165,18 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
 
 
 namespace GulpStreamBasedSourceCodeProcessingConfigRepresentative {
-  export type Localization = {
+
+  export type ConstructorNamedParameters = Readonly<{
+    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+    mustLogPartialFilesAndEntryPointsRelationsMap: boolean;
+  }>;
+
+  export type Localization = Readonly<{
     generateEntryPointsGroupNormalizedSettingsNotFoundForSpecifiedFilePath: (
       parametersObject: { targetSourceFileAbsolutePath: string; }
     ) => string;
-  };
+  }>;
+
 }
 
 

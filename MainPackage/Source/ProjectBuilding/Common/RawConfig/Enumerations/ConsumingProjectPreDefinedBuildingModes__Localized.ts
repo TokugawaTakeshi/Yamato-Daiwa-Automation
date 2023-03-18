@@ -1,6 +1,6 @@
 /* --- Enumerations ------------------------------------------------------------------------------------------------- */
 import type ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Defaults/ConsumingProjectPreDefinedBuildingModes";
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 
 /* --- Utils -------------------------------------------------------------------------------------------------------- */
 import type { InheritEnumerationKeys } from "@yamato-daiwa/es-extensions";

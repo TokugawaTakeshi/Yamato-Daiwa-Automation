@@ -9,9 +9,6 @@ import type ConsumingProjectPreDefinedBuildingModes__Localized from
 
 import ProjectBuildingCommonSettings__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/ProjectBuildingCommonSettings__FromFile__RawValid";
-import ProjectBuildingDebuggingSettings__FromFile__RawValid from
-    "@ProjectBuilding/Debugging/ProjectBuildingDebuggingSettings__FromFile__RawValid";
-
 import SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid";
 import RevisioningSettings__FromFile__RawValid from
@@ -32,6 +29,8 @@ import VideosProcessingSettings__FromFile__RawValid from
     "@VideosProcessing/VideosProcessingSettings__FromFile__RawValid";
 import AudiosProcessingSettings__FromFile__RawValid from
     "@AudiosProcessing/AudiosProcessingSettings__FromFile__RawValid";
+import PlainCopyingSettings__FromFile__RawValid from
+    "@ProjectBuilding/PlainCopying/PlainCopyingSettings__FromFile__RawValid";
 import BrowserLiveReloadingSettings__FromFile__RawValid from
     "@BrowserLiveReloading/BrowserLiveReloadingSettings__FromFile__RawValid";
 
@@ -42,7 +41,6 @@ import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extens
 type ProjectBuildingConfig__FromFile__RawValid = {
 
   commonSettings?: ProjectBuildingCommonSettings__FromFile__RawValid;
-  debugging?: ProjectBuildingDebuggingSettings__FromFile__RawValid;
 
   [ProjectBuildingTasksIDsForConfigFile.markupProcessing]?: MarkupProcessingSettings__FromFile__RawValid;
   [ProjectBuildingTasksIDsForConfigFile.stylesProcessing]?: StylesProcessingSettings__FromFile__RawValid;
@@ -53,7 +51,10 @@ type ProjectBuildingConfig__FromFile__RawValid = {
   [ProjectBuildingTasksIDsForConfigFile.videosProcessing]?: VideosProcessingSettings__FromFile__RawValid;
   [ProjectBuildingTasksIDsForConfigFile.audiosProcessing]?: AudiosProcessingSettings__FromFile__RawValid;
 
+  [ProjectBuildingTasksIDsForConfigFile.plainCopying]?: PlainCopyingSettings__FromFile__RawValid;
+
   [ProjectBuildingTasksIDsForConfigFile.browserLiveReloading]?: BrowserLiveReloadingSettings__FromFile__RawValid;
+
 };
 
 
@@ -63,43 +64,40 @@ type ProjectBuildingConfig__FromFile__RawValid = {
  * https://github.com/eslint/eslint/issues/15504 */
 namespace ProjectBuildingConfig__FromFile__RawValid {
 
-  export type Localization = {
+  export type Localization = Readonly<{
 
-    readonly KEY: string;
+    KEY: string;
 
-    readonly enumerations: {
-      readonly tasksIDs: ProjectBuildingTasksIDsForConfigFile__Localized;
-      readonly consumingProjectPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-    };
+    enumerations: Readonly<{
+      tasksIDs: ProjectBuildingTasksIDsForConfigFile__Localized;
+      consumingProjectPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
+    }>;
 
-    readonly reusables: {
-      readonly sourceCodeProcessingGenericProperties:
+    reusables: Readonly<{
+      sourceCodeProcessingGenericProperties:
           SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.Localization;
-      readonly revisioning: RevisioningSettings__FromFile__RawValid.Localization;
-      readonly lintingCommonSettings: LintingCommonSettings__FromFile__RawValid.Localization;
-    };
+      revisioning: RevisioningSettings__FromFile__RawValid.Localization;
+      lintingCommonSettings: LintingCommonSettings__FromFile__RawValid.Localization;
+    }>;
 
-    readonly commonSettings: {
-      readonly KEY: string;
-      readonly properties: ProjectBuildingCommonSettings__FromFile__RawValid.Localization;
-    };
+    commonSettings: Readonly<{
+      KEY: string;
+      properties: ProjectBuildingCommonSettings__FromFile__RawValid.Localization;
+    }>;
 
-    readonly tasks: {
-      readonly markupProcessing: MarkupProcessingSettings__FromFile__RawValid.Localization;
-      readonly stylesProcessing: StylesProcessingSettings__FromFile__RawValid.Localization;
-      readonly ECMA_ScriptLogicProcessing: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Localization;
-      readonly imagesProcessing: ImagesProcessingSettings__FromFile__RawValid.Localization;
-      readonly fontsProcessing: FontsProcessingSettings__FromFile__RawValid.Localization;
-      readonly videosProcessing: VideosProcessingSettings__FromFile__RawValid.Localization;
-      readonly audiosProcessing: AudiosProcessingSettings__FromFile__RawValid.Localization;
-      readonly browserLiveReloading: BrowserLiveReloadingSettings__FromFile__RawValid.Localization;
-    };
+    tasks: Readonly<{
+      markupProcessing: MarkupProcessingSettings__FromFile__RawValid.Localization;
+      stylesProcessing: StylesProcessingSettings__FromFile__RawValid.Localization;
+      ECMA_ScriptLogicProcessing: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Localization;
+      imagesProcessing: ImagesProcessingSettings__FromFile__RawValid.Localization;
+      fontsProcessing: FontsProcessingSettings__FromFile__RawValid.Localization;
+      videosProcessing: VideosProcessingSettings__FromFile__RawValid.Localization;
+      audiosProcessing: AudiosProcessingSettings__FromFile__RawValid.Localization;
+      plainCopying: PlainCopyingSettings__FromFile__RawValid.Localization;
+      browserLiveReloading: BrowserLiveReloadingSettings__FromFile__RawValid.Localization;
+    }>;
 
-    readonly debugging: {
-      readonly KEY: string;
-      readonly properties: ProjectBuildingDebuggingSettings__FromFile__RawValid.Localization;
-    };
-  };
+  }>;
 
 
   /* [ Theory ] "yamljs" will convert empty properties' values to 'null'; 'nullToUndefined' is required to recognize
@@ -181,8 +179,6 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               required: false,
               properties: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
                 ECMA_ScriptProcessingLocalization: localization.tasks.ECMA_ScriptLogicProcessing,
-                sourceCodeProcessingSettingsGenericPropertiesLocalization:
-                    localization.reusables.sourceCodeProcessingGenericProperties,
                 sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
                 consumingProjectLocalizedPreDefinedBuildingModes,
                 revisioningPropertiesLocalizedSpecification,
@@ -231,35 +227,31 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               type: Object,
               required: false,
               preValidationModifications: nullToUndefined,
-              properties: AudiosProcessingSettings__FromFile__RawValid.normalize({
+              properties: AudiosProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
                 audiosProcessingLocalization: localization.tasks.audiosProcessing,
                 revisioningPropertiesLocalizedSpecification,
                 consumingProjectLocalizedPreDefinedBuildingModes
               })
             },
 
-            [localization.enumerations.tasksIDs.browserLiveReloading]: {
-              newName: "browserLiveReloading",
-              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-              required: false,
-              preValidationModifications: nullToUndefined,
-              minimalEntriesCount: 1,
-
-              value: {
-                type: Object,
-                properties: BrowserLiveReloadingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification(
-                  localization.tasks.browserLiveReloading
-                )
-              }
-            },
-
-            [localization.debugging.KEY]: {
-              newName: "debugging",
-              preValidationModifications: nullToUndefined,
+            [localization.enumerations.tasksIDs.plainCopying]: {
+              newName: "plainCopying",
               type: Object,
               required: false,
-              properties: ProjectBuildingDebuggingSettings__FromFile__RawValid.
-                  getLocalizedPropertiesSpecification(localization.debugging.properties)
+              preValidationModifications: nullToUndefined,
+              properties: PlainCopyingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
+                plainCopyingLocalization: localization.tasks.plainCopying,
+                consumingProjectLocalizedPreDefinedBuildingModes
+              })
+            },
+
+            [localization.enumerations.tasksIDs.browserLiveReloading]: {
+              newName: "browserLiveReloading",
+              type: Object,
+              required: false,
+              preValidationModifications: nullToUndefined,
+              properties: BrowserLiveReloadingSettings__FromFile__RawValid.
+                  getLocalizedPropertiesSpecification(localization.tasks.browserLiveReloading)
             }
           }
         }

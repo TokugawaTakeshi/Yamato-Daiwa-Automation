@@ -1,0 +1,41 @@
+doctype html
+
+
+html(lang="en")
+
+  head
+
+    title Products list page
+
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+
+
+  body
+
+    h1 Products list page
+
+    if ProductsListPagePageStatesSimulations.loading
+
+      p Loading ...
+
+
+    else if ProductsListPagePageStatesSimulations.error
+
+      p Error occurred
+
+
+    else if ProductsListPagePageStatesSimulations.noItems
+
+      p No products has been registered yet
+
+
+    else if ProductsListPagePageStatesSimulations.noSearchResults
+
+      p No results matching with your search request
+
+    else
+
+      ul
+        li Product 1
+        li Product 2

@@ -1,11 +1,11 @@
-import { HTML_Validator } from "@yamato-daiwa/automation/LocalizationRequirements";
+import { HTML_ValidatorLocalization } from "@yamato-daiwa/automation/LocalizationRequirements";
 
 
-const HTML_ValidatorLocalization__russian: HTML_Validator.Localization = {
+const HTML_ValidatorLocalization__russian: HTML_ValidatorLocalization = {
 
   generateFileIsEmptyWarningLog: (
-    namedParameters: HTML_Validator.Localization.FileIsEmptyWarningLog.NamedParameters
-  ): HTML_Validator.Localization.FileIsEmptyWarningLog =>
+    namedParameters: HTML_ValidatorLocalization.FileIsEmptyWarningLog.NamedParameters
+  ): HTML_ValidatorLocalization.FileIsEmptyWarningLog =>
       ({
         title: "Валидация HTML кода прервана",
         description: `Файл '${ namedParameters.targetFileRelativePath }' пуст; валидация HTML кода не будет ` +
@@ -13,15 +13,15 @@ const HTML_ValidatorLocalization__russian: HTML_Validator.Localization = {
       }),
 
   generateValidationStartedInfoLog: (
-    namedParameters: HTML_Validator.Localization.ValidationStartedInfoLog.NamedParameters
-  ): HTML_Validator.Localization.ValidationStartedInfoLog => ({
+    namedParameters: HTML_ValidatorLocalization.ValidationStartedInfoLog.NamedParameters
+  ): HTML_ValidatorLocalization.ValidationStartedInfoLog => ({
     title: "Начало валидации HTML кода",
     description: `Проверка HTML кода файла '${ namedParameters.targetFileRelativePath }' на доступность началась ...`
   }),
 
   generateValidationFinishedWithNoIssuesFoundSuccessLog: (
-    namedParameters: HTML_Validator.Localization.ValidationFinishedWithNoIssuesFoundSuccessLog.NamedParameters
-  ): HTML_Validator.Localization.ValidationFinishedWithNoIssuesFoundSuccessLog => ({
+    namedParameters: HTML_ValidatorLocalization.ValidationFinishedWithNoIssuesFoundSuccessLog.NamedParameters
+  ): HTML_ValidatorLocalization.ValidationFinishedWithNoIssuesFoundSuccessLog => ({
     title: "Валидация HTML-кода завершена",
     description: `HTML-код файла '${ namedParameters.targetFileRelativePath }' полностью соответствует правилам и ` +
         `рекомендациям W3C\n Валидация заняла ${ namedParameters.secondsElapsed } секунд.`
@@ -34,7 +34,7 @@ const HTML_ValidatorLocalization__russian: HTML_Validator.Localization = {
   },
 
   generateIssueOccurrenceLocationIndication: (
-    namedParameters: HTML_Validator.Localization.IssueOccurrenceLocationIndication.NamedParameters
+    namedParameters: HTML_ValidatorLocalization.IssueOccurrenceLocationIndication.NamedParameters
   ): string => `Строка ${ namedParameters.lineNumber }, ` +
       `колонки ${ namedParameters.startingColumnNumber }-${ namedParameters.lastColumnNumber }`,
 
@@ -46,8 +46,8 @@ const HTML_ValidatorLocalization__russian: HTML_Validator.Localization = {
   },
 
   generateIssuesFoundErrorLog: (
-    namedParameters: HTML_Validator.Localization.IssuesFoundErrorLog.NamedParameters
-  ): HTML_Validator.Localization.IssuesFoundErrorLog => ({
+    namedParameters: HTML_ValidatorLocalization.IssuesFoundErrorLog.NamedParameters
+  ): HTML_ValidatorLocalization.IssuesFoundErrorLog => ({
     customBadgeText: "Валидация HTML-кода не пройдена",
     title: "Обнаружены нарушения стандарта HTML и/или пренебрежение рекомендациями W3C",
     description: `HTML файл '${ namedParameters.targetFileRelativePath }' содержит следующие проблемы валидности HTML-кода:` +

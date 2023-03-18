@@ -1,0 +1,20 @@
+01-Source/Pages/Product/ProductsListPage:
+
+  stateObjectTypeVariableName: "ProductsListPagePageStatesSimulations"
+
+  variations:
+
+    __Loading: { loading: true }
+    __Error: { error: true }
+    __NoItems: { noItems: true }
+    __NoSearchResults: { noSearchResults: true }
+
+
+01-Source/Pages/Product/ProductDetailsPage:
+
+  stateObjectTypeVariableName: "ProductDetailsPageStatesSimulations"
+
+  variations:
+
+    __EditingMode: { editingMode: true }
+    __Error: { error: true }

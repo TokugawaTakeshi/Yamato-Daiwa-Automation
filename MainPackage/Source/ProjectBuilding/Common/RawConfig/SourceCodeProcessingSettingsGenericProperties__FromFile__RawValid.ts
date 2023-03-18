@@ -1,56 +1,65 @@
-import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
+/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+import type ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+
+/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+import { RawObjectDataProcessor, nullToUndefined, isNonEmptyString } from "@yamato-daiwa/es-extensions";
+import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
 
 
 namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
 
   /* === Types ====================================================================================================== */
-  export type EntryPointsGroup = {
-    readonly entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath: string;
-    readonly partialsRecognition?: EntryPointsGroup.EntryPointsRecognitionSettings;
-    readonly buildingModeDependent: {
-      readonly [projectBuildingMode: string]: EntryPointsGroup.BuildingModeDependent;
-    };
-  };
+  export type EntryPointsGroup =
+      (
+        Readonly<{
+          topDirectoryRelativePath: string;
+          partialsRecognition?: EntryPointsGroup.EntryPointsRecognitionSettings;
+        }> |
+        Readonly<{ singleEntryPointRelativePath: string; }>
+      ) &
+      Readonly<{
+        buildingModeDependent: Readonly<{
+          [projectBuildingMode in ConsumingProjectPreDefinedBuildingModes]: EntryPointsGroup.BuildingModeDependent;
+        }>;
+      }>;
+
 
   export namespace EntryPointsGroup {
 
-    export type BuildingModeDependent = {
-      readonly outputBaseDirectoryRelativePath: string;
-    };
+    export type BuildingModeDependent = Readonly<{ outputTopDirectoryRelativePath: string; }>;
 
-    export type EntryPointsRecognitionSettings = {
-      readonly excludeAllSubdirectories?: boolean;
-      readonly excludeSubdirectoriesWithNames?: Array<string> | string;
-      readonly excludeSubdirectoriesWithPrefixes?: Array<string> | string;
-      readonly excludeFilesWithPrefixes?: Array<string> | string;
-    };
+    export type EntryPointsRecognitionSettings = Readonly<{
+      excludeAllSubdirectories?: boolean;
+      excludeSubdirectoriesWithNames?: Array<string> | string;
+      excludeSubdirectoriesWithPrefixes?: Array<string> | string;
+      excludeFilesWithPrefixes?: Array<string> | string;
+    }>;
   }
 
 
   /* === Localization =============================================================================================== */
-  export type Localization = {
-    readonly entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath: { KEY: string; };
-    readonly partialsRecognition: {
-      readonly KEY: string;
-      readonly excludeAllSubdirectories: { readonly KEY: string; };
-      readonly excludeSubdirectoriesWithNames: { readonly KEY: string; };
-      readonly excludeSubdirectoriesWithPrefixes: { readonly KEY: string; };
-      readonly excludeFilesWithPrefixes: { readonly KEY: string; };
-    };
-  };
+  export type Localization = Readonly<{
+    topDirectoryRelativePath: Readonly<{ KEY: string; }>;
+    singleEntryPointRelativePath: Readonly<{ KEY: string; REQUIREMENT_CONDITION_DESCRIPTION: string; }>;
+    partialsRecognition: Readonly<{
+      KEY: string;
+      excludeAllSubdirectories: Readonly<{ KEY: string; }>;
+      excludeSubdirectoriesWithNames: Readonly<{ KEY: string; }>;
+      excludeSubdirectoriesWithPrefixes: Readonly<{ KEY: string; }>;
+      excludeFilesWithPrefixes: Readonly<{ KEY: string; }>;
+    }>;
+  }>;
 
   export function getLocalizedPropertiesSpecification(
     sourceCodeProcessingSettingsGenericPropertiesLocalization: Localization
   ): RawObjectDataProcessor.PropertiesSpecification {
     return {
 
-      [
-        sourceCodeProcessingSettingsGenericPropertiesLocalization.
-            entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath.KEY
-      ]: {
-        newName: "entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath",
+      [sourceCodeProcessingSettingsGenericPropertiesLocalization.topDirectoryRelativePath.KEY]: {
+        newName: "topDirectoryRelativePath",
         type: String,
-        required: true,
+        required: false,
         minimalCharactersCount: 1
       },
 
@@ -135,6 +144,18 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
             ]
           }
         }
+      },
+
+      [sourceCodeProcessingSettingsGenericPropertiesLocalization.singleEntryPointRelativePath.KEY]: {
+        newName: "singleEntryPointRelativePath",
+        type: String,
+        requiredIf: {
+          predicate: (rawObjectOfCurrentDepthLevel: ArbitraryObject): boolean =>
+              !isNonEmptyString(rawObjectOfCurrentDepthLevel.topDirectoryRelativePath),
+          descriptionForLogging: sourceCodeProcessingSettingsGenericPropertiesLocalization.singleEntryPointRelativePath.
+              REQUIREMENT_CONDITION_DESCRIPTION
+        },
+        minimalCharactersCount: 1
       }
     };
   }

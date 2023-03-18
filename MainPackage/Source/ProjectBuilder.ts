@@ -1,4 +1,8 @@
-/* --- Raw valid config ---------------------------------------------------------------------------------------------- */
+/* --- Restrictions ------------------------------------------------------------------------------------------------- */
+import type ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+
+/* --- Raw valid config --------------------------------------------------------------------------------------------- */
 import ProjectBuildingConfig__FromFile__RawValid from
     "./ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid";
 import ProjectBuildingConfigDefaultLocalization__FromFile__RawValid from
@@ -11,12 +15,15 @@ import ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectB
 
 /* --- Actuators ---------------------------------------------------------------------------------------------------- */
 import MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
+import MarkupSourceCodeLinter from "@MarkupProcessing/Subtasks/Linting/MarkupSourceCodeLinter";
+import CompiledInlineTypeScriptImporterForPug from "@MarkupProcessing/Subtasks/CompiledTypeScriptImporterForPug";
 import StylesProcessor from "@StylesProcessing/StylesProcessor";
 import ECMA_ScriptLogicProcessor from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessor";
 import ImagesProcessor from "@ImagesProcessing/ImagesProcessor";
 import FontsProcessor from "@FontsProcessing/FontsProcessor";
 import VideosProcessor from "@VideosProcessing/VideosProcessor";
 import AudiosProcessor from "@AudiosProcessing/AudiosProcessor";
+import PlainCopier from "@ProjectBuilding/PlainCopying/PlainCopier";
 import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
@@ -38,7 +45,7 @@ abstract class ProjectBuilder {
       consumingProjectRootDirectoryAbsolutePath,
       projectBuildingConfig__fromConsole,
       rawConfigFromFile
-    }: ProjectBuilder.ParametersObject
+    }: ProjectBuilder.NamedParameters
   ): void {
 
     const rawDataProcessingResult: RawObjectDataProcessor.
@@ -81,11 +88,15 @@ abstract class ProjectBuilder {
 
     Gulp.task(GULP_TASK_NAME, Gulp.parallel([
 
+      MarkupSourceCodeLinter.provideMarkupLintingIfMust(masterConfigRepresentative),
+
       Gulp.series([
 
         Gulp.parallel([
+          CompiledInlineTypeScriptImporterForPug.provideTypeScriptImportsForMarkupIfMust(masterConfigRepresentative),
           StylesProcessor.provideStylesProcessingIfMust(masterConfigRepresentative),
-          ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative)
+          ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative),
+          PlainCopier.providePlainCopierIfMust(masterConfigRepresentative)
         ]),
 
         /* 〔 理論 〕 何方でも重たいので、"Gulp.parallel"に結合しない方が良い。 */
@@ -97,15 +108,16 @@ abstract class ProjectBuilder {
         MarkupProcessor.provideMarkupProcessingIfMust(masterConfigRepresentative),
 
         ...masterConfigRepresentative.mustProvideBrowserLiveReloading ? [
-          BrowserLiveReloader.provideBrowserLiveReloading(masterConfigRepresentative)
+          BrowserLiveReloader.provideBrowserLiveReloadingIfMust(masterConfigRepresentative)
         ] : []
       ])
+
     ]));
 
     /* eslint-disable-next-line @typescript-eslint/no-floating-promises --
     *  This issue is not false positive because gulp chain could collapse on some errors, but working solution has
     *  not been found yet. https://stackoverflow.com/q/66169978/4818123 */
-    Gulp.task(GULP_TASK_NAME)(
+    Gulp.task(GULP_TASK_NAME)?.(
       (error?: Error | null): void => {
         if (isNeitherUndefinedNorNull(error)) {
           Logger.logError({
@@ -118,26 +130,29 @@ abstract class ProjectBuilder {
         }
       }
     );
+
   }
+
 }
 
 
 namespace ProjectBuilder {
 
-  export type ParametersObject = {
-    readonly consumingProjectRootDirectoryAbsolutePath: string;
-    readonly projectBuildingConfig__fromConsole: ProjectBuildingConfig__FromConsole;
-    readonly rawConfigFromFile: unknown;
-  };
+  export type NamedParameters = Readonly<{
+    consumingProjectRootDirectoryAbsolutePath: string;
+    projectBuildingConfig__fromConsole: ProjectBuildingConfig__FromConsole;
+    rawConfigFromFile: unknown;
+  }>;
 
-  export type ProjectBuildingConfig__FromConsole = {
-    readonly projectBuildingMode: string;
-    readonly selectiveExecutionID?: string;
-  };
+  export type ProjectBuildingConfig__FromConsole = Readonly<{
+    projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+    selectiveExecutionID?: string;
+  }>;
 
-  export type ContainerizedProjectBuildingValidConfigFromFile = {
-    readonly projectBuilding: ProjectBuildingConfig__FromFile__RawValid;
-  };
+  export type ContainerizedProjectBuildingValidConfigFromFile = Readonly<{
+    projectBuilding: ProjectBuildingConfig__FromFile__RawValid;
+  }>;
+
 }
 
 

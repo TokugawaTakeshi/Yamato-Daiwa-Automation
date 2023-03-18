@@ -23,16 +23,16 @@ namespace AudiosProcessingSettings__FromFile__RawValid {
 
   export type Localization = AssetsProcessingSettingsGenericProperties__FromFile__RawValid.Localization;
 
-  export function normalize(
-    namedParameters: {
+  export function getLocalizedPropertiesSpecification(
+    compoundParameter: Readonly<{
       audiosProcessingLocalization: Localization;
       revisioningPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
       consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-    }
+    }>
   ): RawObjectDataProcessor.PropertiesSpecification {
     return AssetsProcessingSettingsGenericProperties__FromFile__RawValid.getLocalizedSpecification({
-      ...namedParameters,
-      assetsProcessingSettingsGenericPropertiesLocalization: namedParameters.audiosProcessingLocalization
+      ...compoundParameter,
+      assetsProcessingSettingsGenericPropertiesLocalization: compoundParameter.audiosProcessingLocalization
     });
   }
 }

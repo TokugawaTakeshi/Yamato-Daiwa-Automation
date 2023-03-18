@@ -10,7 +10,7 @@ import type MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import AccessibilityCheckingService from "access-sniff";
 import NodeNotifier from "node-notifier";
-import getExpectedToBeNonNullStringifiedContentOfVinylFile from "@Utils/getExpectedToBeNonNullStringifiedContentOfVinylFile";
+import extractStringifiedContentFromVinylFile from "@Utils/extractStringifiedContentFromVinylFile";
 import isCompiledHTML_ContentEmpty from "@Utils/isCompiledHTML_ContentEmpty";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
@@ -35,7 +35,7 @@ class AccessibilityInspector {
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): void {
 
-    const extractedHTML_Code: string = getExpectedToBeNonNullStringifiedContentOfVinylFile(compiledHTML_File);
+    const extractedHTML_Code: string = extractStringifiedContentFromVinylFile(compiledHTML_File);
     const targetFileRelativePath: string = ImprovedPath.computeRelativePath({
       basePath: masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
       comparedPath: compiledHTML_File.path
@@ -51,17 +51,19 @@ class AccessibilityInspector {
 
     Logger.logInfo(AccessibilityInspector.localization.generateInspectionStartedInfoLog({ targetFileRelativePath }));
 
-    /* [ Theory ]
-     * 1. With '{ verbose: true }' (default) it will be a lot of recommendations which never disappear. The output pollution.
-     * 2. In `import AccessSniff, { reports } from 'access-sniff';`, the 'reports' are 'undefined',
-     * 3. In 'then(function(report) {}}', the 'report' is an empty object. */
-    AccessibilityCheckingService(
-      getExpectedToBeNonNullStringifiedContentOfVinylFile(compiledHTML_File),
-      {
-        verbose: false,
-        accessibilityLevel: compiledHTML_File.processingSettings.accessibilityInspection.standard
-      }
-    ).
+    try {
+
+      /* [ Theory ]
+       * 1. With '{ verbose: true }' (default) it will be a lot of recommendations which never disappear. The output pollution.
+       * 2. In `import AccessSniff, { reports } from 'access-sniff';`, the 'reports' are 'undefined',
+       * 3. In 'then(function(report) {}}', the 'report' is an empty object. */
+      AccessibilityCheckingService(
+        extractStringifiedContentFromVinylFile(compiledHTML_File),
+        {
+          verbose: false,
+          accessibilityLevel: compiledHTML_File.processingSettings.accessibilityInspection.standard
+        }
+      ).
 
         then((): void => {
 
@@ -71,6 +73,7 @@ class AccessibilityInspector {
             targetFileRelativePath,
             secondsElapsed: inspectionPeriod__seconds
           }));
+
         }).
 
         catch((erroredResult: AccessibilityCheckingService.ErroredResult): void => {
@@ -100,11 +103,30 @@ class AccessibilityInspector {
             }
           }
 
-        Logger.logErrorLikeMessage(AccessibilityInspector.localization.generateIssuesFoundErrorLog({
-          targetFileRelativePath,
-          formattedErrorsAndWarnings: formattedErrors.join("\n\n")
-        }));
-      });
+          Logger.logErrorLikeMessage(AccessibilityInspector.localization.generateIssuesFoundErrorLog({
+            targetFileRelativePath,
+            formattedErrorsAndWarnings: formattedErrors.join("\n\n")
+          }));
+
+        });
+
+    } catch (error: unknown) {
+
+      if (error instanceof Error && error.message === "pattern is too long") {
+
+        // https://squizlabs.github.io/HTML_CodeSniffer/
+        Logger.logWarning(
+          AccessibilityInspector.localization.generateAccessSniffBugWarning({ targetFileRelativePath })
+        );
+
+        return;
+
+      }
+
+      throw error;
+
+    }
+
   }
 }
 
@@ -133,6 +155,9 @@ namespace AccessibilityInspector {
         Localization.IssuesFoundErrorLog;
 
     formattedError: Localization.FormattedError;
+
+    generateAccessSniffBugWarning: (namedParameters: Localization.AccessSniffBugWarningLog.NamedParameters) =>
+        Localization.AccessSniffBugWarningLog;
 
   }>;
 
@@ -187,8 +212,22 @@ namespace AccessibilityInspector {
       violatedGuidelineItem: string;
       keyAndValueSeparator: string;
     }>;
+
+
+    export type AccessSniffBugWarningLog = Readonly<Pick<InfoLog, "title" | "description">>;
+
+    export namespace AccessSniffBugWarningLog {
+      export type NamedParameters = Readonly<{ targetFileRelativePath: string; }>;
+    }
+
   }
 }
 
 
 export default AccessibilityInspector;
+
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars --
+ * It is the only way to extract the child namespace (no need to expose whole AccessibilityInspector for the localization
+ * packages).
+ * https://stackoverflow.com/a/73400523/4818123 */
+export import AccessibilityInspectorLocalization = AccessibilityInspector.Localization;

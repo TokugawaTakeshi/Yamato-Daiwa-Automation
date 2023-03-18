@@ -7,7 +7,8 @@ import AudiosProcessingSettingsRepresentative from "@AudiosProcessing/AudiosProc
 
 /* --- Tasks executors ---------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-import type GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedTaskExecutor";
+import type GulpStreamsBasedTaskExecutor from
+    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import Gulp from "gulp";
@@ -27,8 +28,8 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
   AudiosProcessingSettingsRepresentative
 > {
 
-  protected readonly TASK_NAME_FOR_LOGGING: string = "録音管理";
-  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "録音";
+  protected readonly TASK_NAME_FOR_LOGGING: string = "Audios processing";
+  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "Audio";
 
   private readonly audiosProcessingConfigRepresentative: AudiosProcessingSettingsRepresentative;
 
@@ -49,7 +50,7 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
       masterConfigRepresentative, audiosProcessingSettingsRepresentative
     );
 
-    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcher();
+    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcherIfMust();
 
     const assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode: Array<string> =
         audiosProcessingSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths;
@@ -88,6 +89,8 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
 
         pipe(
           Gulp.dest((targetFileInFinalState: VinylFile): string =>
+              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+               * No known simple solution; will be fixed at 2nd generation of AudiosProcessor.  */
               (targetFileInFinalState as AudiosProcessor.AudioVinylFile).outputDirectoryAbsolutePath)
         );
 
@@ -110,12 +113,15 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
           respectiveAssetsGroupNormalizedSettings: normalizedAudiosGroupSettingsActualForCurrentFile
         });
 
-
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of AudiosProcessor.  */
     return fileInInitialState as AudiosProcessor.AudioVinylFile;
   }
 
   private postProcess(_processedAudioFile: VinylFile): VinylFile {
 
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of AudiosProcessor.  */
     const processedAudioFile: AudiosProcessor.AudioVinylFile = _processedAudioFile as AudiosProcessor.AudioVinylFile;
 
     if (processedAudioFile.processingSettings.revisioning.mustExecute) {
@@ -129,7 +135,10 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
         sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.
         set(
           ImprovedPath.replacePathSeparatorsToForwardSlashes(processedAudioFile.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(processedAudioFile.outputDirectoryAbsolutePath, processedAudioFile.basename)
+          ImprovedPath.joinPathSegments(
+            [ processedAudioFile.outputDirectoryAbsolutePath, processedAudioFile.basename ],
+            { forwardSlashOnlySeparators: true }
+          )
         );
 
     return processedAudioFile;
@@ -140,9 +149,9 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
 namespace AudiosProcessor {
   export type AudioVinylFile =
       GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      {
-        readonly processingSettings: AudiosProcessingSettings__Normalized.AssetsGroup;
-      };
+      Readonly<{
+        processingSettings: AudiosProcessingSettings__Normalized.AssetsGroup;
+      }>;
 }
 
 

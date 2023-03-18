@@ -46,20 +46,20 @@ export default abstract class AssetsProcessingSettingsRepresentative<
     {
       targetSourceFileAbsolutePath,
       respectiveAssetsGroupNormalizedSettings
-    }: {
+    }: Readonly<{
       targetSourceFileAbsolutePath: string;
       respectiveAssetsGroupNormalizedSettings: AssetsGroupSettingsGenericProperties;
-    }
+    }>
   ): string {
 
-    let outputDirectoryAbsolutePathForCurrentSourceFile: string = ImprovedPath.buildAbsolutePath(
+    let outputDirectoryAbsolutePathForCurrentSourceFile: string = ImprovedPath.joinPathSegments(
       [
         respectiveAssetsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
         ImprovedPath.computeRelativePath(
-            {
-              basePath: respectiveAssetsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
-              comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
-            }
+          {
+            basePath: respectiveAssetsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
+            comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
+          }
         )
       ],
       { forwardSlashOnlySeparators: true }
@@ -81,25 +81,26 @@ export default abstract class AssetsProcessingSettingsRepresentative<
           ImprovedPath.splitPathToSegments(outputDirectoryAbsolutePathForCurrentSourceFile);
 
       respectiveAssetsGroupNormalizedSettings.
-      outputPathTransformations.
-      segmentsWhichLastDuplicatesMustBeRemoved.
-      forEach((segmentWhichLastDuplicatesMustBeRemoved: string): void => {
+          outputPathTransformations.
+          segmentsWhichLastDuplicatesMustBeRemoved.
+          forEach((segmentWhichLastDuplicatesMustBeRemoved: string): void => {
 
-        const indexesOfDuplicates: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
-            outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
-            (outputDirectoryAbsolutePathSegment: string): boolean =>
-                outputDirectoryAbsolutePathSegment === segmentWhichLastDuplicatesMustBeRemoved
-        );
+            const indexesOfDuplicates: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
+                outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
+                (outputDirectoryAbsolutePathSegment: string): boolean =>
+                    outputDirectoryAbsolutePathSegment === segmentWhichLastDuplicatesMustBeRemoved
+            );
 
-        removeArrayElementsByIndexes({
-          targetArray: outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
-          indexes: indexesOfDuplicates[indexesOfDuplicates.length - 1],
-          mutably: true
-        });
-      });
+            removeArrayElementsByIndexes({
+              targetArray: outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
+              indexes: indexesOfDuplicates[indexesOfDuplicates.length - 1],
+              mutably: true
+            });
+          });
 
       outputDirectoryAbsolutePathForCurrentSourceFile = ImprovedPath.joinPathSegments(
-        ...outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments
+        outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
+        { forwardSlashOnlySeparators: true }
       );
     }
 
@@ -112,7 +113,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
   }
 
 
-  public get supportedSourceFilesNamesExtensionsWithoutLeadingDots(): Array<string> {
+  public get supportedSourceFilesNamesExtensionsWithoutLeadingDots(): ReadonlyArray<string> {
     return this.assetsProcessingCommonSettings.supportedSourceFilesNamesExtensionsWithoutLeadingDots;
   }
 
@@ -135,6 +136,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
     );
 
     return assetsSourceFilesAbsolutePaths;
+
   }
 
   public getAssetsNormalizedSettingsActualForTargetSourceFile(
@@ -169,6 +171,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
 
 
     return assetsNormalizedSettingsActualForTargetSourceFile;
+
   }
 
   public get actualOutputFilesGlobSelectors(): Array<string> {
@@ -195,5 +198,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
         });
 
     return assetsGroupsNormalizedSettingsMappedByAssetAliases;
+
   }
+
 }

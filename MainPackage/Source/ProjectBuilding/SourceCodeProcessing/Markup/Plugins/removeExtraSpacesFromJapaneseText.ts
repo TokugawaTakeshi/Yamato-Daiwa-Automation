@@ -1,5 +1,5 @@
 import type VinylFile from "vinyl";
-import getExpectedToBeNonNullStringifiedContentOfVinylFile from "@Utils/getExpectedToBeNonNullStringifiedContentOfVinylFile";
+import extractStringifiedContentFromVinylFile from "@Utils/extractStringifiedContentFromVinylFile";
 import cheerio from "cheerio";
 import { isNull } from "@yamato-daiwa/es-extensions";
 
@@ -7,7 +7,7 @@ import { isNull } from "@yamato-daiwa/es-extensions";
 export default function removeExtraSpacesFromJapaneseText(compiledHTML_File: VinylFile): VinylFile {
 
   const $HTML_FileContentCheerioCapturing: cheerio.Root = cheerio.
-      load(getExpectedToBeNonNullStringifiedContentOfVinylFile(compiledHTML_File), { decodeEntities: false });
+      load(extractStringifiedContentFromVinylFile(compiledHTML_File), { decodeEntities: false });
 
   for (const targetElement of Array.from($HTML_FileContentCheerioCapturing("p"))) {
 
@@ -28,4 +28,5 @@ export default function removeExtraSpacesFromJapaneseText(compiledHTML_File: Vin
   compiledHTML_File.contents = Buffer.from($HTML_FileContentCheerioCapturing.html({ decodeEntities: false }));
 
   return compiledHTML_File;
+
 }

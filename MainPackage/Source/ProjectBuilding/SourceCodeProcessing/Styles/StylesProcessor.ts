@@ -7,7 +7,8 @@ import StylesProcessingSettingsRepresentative from "@StylesProcessing/StylesProc
 
 /* --- Tasks executors ---------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedSourceCodeProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedSourceCodeProcessor";
-import type GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedTaskExecutor";
+import type GulpStreamsBasedTaskExecutor from
+    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
 /* --- Gulp plugins ------------------------------------------------------------------------------------------------- */
 import Gulp from "gulp";
@@ -22,11 +23,14 @@ import CSS_Nano from "cssnano";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import ContainerQueriesSyntaxNormalizerForStylus from
+    "@StylesProcessing/Plugins/ContainerQueriesSyntaxNormalizerForStylus/ContainerQueriesSyntaxNormalizerForStylus";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
 import { PassThrough } from "stream";
 import { isUndefined } from "@yamato-daiwa/es-extensions";
+import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
 
 export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
@@ -56,7 +60,7 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
       masterConfigRepresentative, stylesProcessingSettingsRepresentative
     );
 
-    if (masterConfigRepresentative.isStaticPreviewBuildingMode || masterConfigRepresentative.isDevelopmentBuildingMode) {
+    if (masterConfigRepresentative.isStaticPreviewBuildingMode || masterConfigRepresentative.isLocalDevelopmentBuildingMode) {
       dataHoldingSelfInstance.initializeSourceFilesDirectoriesWhichAlwaysWillBeBeingWatchedGlobSelectors();
       dataHoldingSelfInstance.initializeOrUpdateWatchedSourceFilesGlobSelectors();
       dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcher();
@@ -96,14 +100,16 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
 
         pipe(gulpIf(
           this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-                this.masterConfigRepresentative.isDevelopmentBuildingMode,
+                this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
             gulpSourcemaps.init()
         )).
         pipe(gulpIf(
+        /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+         * No known simple solution; will be fixed at 2nd generation of StylesProcessor.  */
           (file: VinylFile): boolean => (file as StylesProcessor.StylesVinylFile).mustBeProcessedByStylus,
           gulpStylus({
 
-            /* [ Theory ] Allows to "@include XXX.css" which is critical for third-party libraries usage. */
+            /* [ Theory ] Allows to "@include XXX.css" which is critical for third-party libraries' usage. */
             "include css": true
           })
         )).
@@ -115,18 +121,25 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
                 "default",
                 {
                   normalizeWhitespace: !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
-                      !this.masterConfigRepresentative.isDevelopmentBuildingMode,
+                      !this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
                   discardComments: !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
-                      !this.masterConfigRepresentative.isDevelopmentBuildingMode
+                      !this.masterConfigRepresentative.isLocalDevelopmentBuildingMode
                 }
               ]
             })
           ]
         }))).
 
+        pipe(GulpStreamModifier.modify({
+          async onStreamStartedEventCommonHandler(stylesheet: VinylFile): Promise<GulpStreamModifier.CompletionSignals> {
+            ContainerQueriesSyntaxNormalizerForStylus.normalizeSyntax(stylesheet);
+            return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+          }
+        })).
+
         pipe(gulpIf(
           this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-                this.masterConfigRepresentative.isDevelopmentBuildingMode,
+                this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
             gulpSourcemaps.write()
         )).
 
@@ -134,6 +147,8 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
 
         pipe(
           Gulp.dest((targetFileInFinalState: VinylFile): string =>
+              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+               * No known simple solution; will be fixed at 2nd generation of StylesProcessor.  */
               (targetFileInFinalState as StylesProcessor.StylesVinylFile).outputDirectoryAbsolutePath)
         );
   }
@@ -142,7 +157,7 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
 
     const normalizedStylesEntryPointsGroupSettingsActualForCurrentFile: StylesProcessingSettings__Normalized.EntryPointsGroup =
         this.stylesProcessingConfigRepresentative.
-            getEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(fileInInitialState.path);
+            getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(fileInInitialState.path);
 
 
     fileInInitialState.processingSettings = normalizedStylesEntryPointsGroupSettingsActualForCurrentFile;
@@ -157,12 +172,16 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
     fileInInitialState.mustBeProcessedByStylus = StylesProcessingSettingsRepresentative.
         mustFileBeProcessedByStylus(fileInInitialState.path);
 
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of StylesProcessor.  */
     return fileInInitialState as StylesProcessor.StylesVinylFile;
   }
 
 
   private onPostProcessedCode(_compiledStylesheet: VinylFile): VinylFile {
 
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of StylesProcessor.  */
     const compiledStylesheet: StylesProcessor.StylesVinylFile = _compiledStylesheet as StylesProcessor.StylesVinylFile;
 
     if (compiledStylesheet.processingSettings.revisioning.mustExecute) {
@@ -175,7 +194,10 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
         sourceAndOutputFilesAbsolutePathsCorrespondenceMap.
         set(
           ImprovedPath.replacePathSeparatorsToForwardSlashes(compiledStylesheet.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(compiledStylesheet.outputDirectoryAbsolutePath, compiledStylesheet.basename)
+          ImprovedPath.joinPathSegments(
+            [ compiledStylesheet.outputDirectoryAbsolutePath, compiledStylesheet.basename ],
+            { forwardSlashOnlySeparators: true }
+          )
         );
 
     return compiledStylesheet;
@@ -186,10 +208,10 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
 export namespace StylesProcessor {
   export type StylesVinylFile =
       GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      {
-        readonly processingSettings: StylesProcessingSettings__Normalized.EntryPointsGroup;
-        readonly mustBeProcessedByStylus: boolean;
-      };
+      Readonly<{
+        processingSettings: StylesProcessingSettings__Normalized.EntryPointsGroup;
+        mustBeProcessedByStylus: boolean;
+      }>;
 }
 
 

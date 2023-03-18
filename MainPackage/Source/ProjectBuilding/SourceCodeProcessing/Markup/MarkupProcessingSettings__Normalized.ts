@@ -4,13 +4,18 @@ import type MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessin
 /* --- Normalized config -------------------------------------------------------------------------------------------- */
 import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
 
+/* --- Utils -------------------------------------------------------------------------------------------------------- */
+import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
+
 
 type MarkupProcessingSettings__Normalized = Readonly<{
   common: MarkupProcessingSettings__Normalized.Common;
   linting: MarkupProcessingSettings__Normalized.Linting;
-  relevantEntryPointsGroups: Map<
+  staticPreview: MarkupProcessingSettings__Normalized.StaticPreview;
+  relevantEntryPointsGroups: ReadonlyMap<
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, MarkupProcessingSettings__Normalized.EntryPointsGroup
   >;
+  logging: MarkupProcessingSettings__Normalized.Logging;
 }>;
 
 
@@ -22,27 +27,65 @@ namespace MarkupProcessingSettings__Normalized {
 
   export type Common =
       ProjectBuildingConfig__Normalized.SourceCodeProcessingCommonSettingsGenericProperties &
-      Readonly<{ waitingForSubsequentFilesWillBeSavedPeriod__seconds: number; }>;
+      Readonly<{
+        mustResolveResourcesReferencesToAbsolutePath: boolean;
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
+      }>;
+
 
   export type Linting = Readonly<{
     presetFileAbsolutePath?: string;
-    isCompletelyDisabled: boolean;
+    mustExecute: boolean;
   }>;
+
+
+  export type StaticPreview = Readonly<{
+    stateDependentPagesVariationsSpecification: StaticPreview.StateDependentPagesVariationsSpecification;
+    importsFromStaticDataFiles: StaticPreview.ImportsFromStaticDataFiles;
+    compiledTypeScriptImporting?: StaticPreview.ImportsFromCompiledTypeScript;
+  }>;
+
+  export namespace StaticPreview {
+
+    export type StateDependentPagesVariationsSpecification = Readonly<{
+      [entryPointSourceFileAbsolutePath: string]: PagesStateDependentVariationsSpecification.Page | undefined;
+    }>;
+
+    export type ImportsFromStaticDataFiles = Readonly<{ [variableName: string]: unknown; }>;
+
+    export namespace PagesStateDependentVariationsSpecification {
+      export type Page = Readonly<{
+        stateVariableName: string;
+        derivedPagesAndStatesMap: Readonly<{ [derivedFileAbsolutePath: string]: ArbitraryObject; }>;
+      }>;
+    }
+
+
+    export type ImportsFromCompiledTypeScript = Readonly<{
+      typeScriptConfigurationFileAbsolutePath: string;
+      files: ReadonlyArray<ImportsFromCompiledTypeScript.FileMetadata>;
+    }>;
+
+    export namespace ImportsFromCompiledTypeScript {
+      export type FileMetadata = Readonly<{
+        sourceFileAbsolutePath: string;
+        importedNamespace: string;
+        outputDirectoryAbsolutePath: string;
+        outputFileNameWithoutExtension: string;
+      }>;
+    }
+  }
+
 
   export type EntryPointsGroup =
       ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings &
       Readonly<{
-        linting: EntryPointsGroup.Linting;
         HTML_Validation: EntryPointsGroup.HTML_Validation;
         accessibilityInspection: EntryPointsGroup.AccessibilityInspection;
+        mustConvertToHandlebarsOnNonStaticPreviewModes: boolean;
       }>;
 
   export namespace EntryPointsGroup {
-
-    /* eslint-disable-next-line @typescript-eslint/no-shadow --
-     * The declaring of type/interface inside namespace with same name as defined in upper scope
-     * is completely valid TypeScript and not desired to be warned by @typescript-eslint. */
-    export type Linting = Readonly<{ mustExecute: boolean; }>;
 
     export type HTML_Validation = Readonly<{ mustExecute: boolean; }>;
 
@@ -51,6 +94,14 @@ namespace MarkupProcessingSettings__Normalized {
       standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
     }>;
   }
+
+
+  export type Logging = Readonly<{
+    filesPaths: boolean;
+    filesCount: boolean;
+    partialFilesAndParentEntryPointsCorrespondence: boolean;
+  }>;
+
 }
 
 

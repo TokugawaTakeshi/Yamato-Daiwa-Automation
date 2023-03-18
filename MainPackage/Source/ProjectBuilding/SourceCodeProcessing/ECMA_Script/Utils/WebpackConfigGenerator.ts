@@ -11,9 +11,14 @@ import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/Pro
 import type ECMA_ScriptLogicProcessingSettingsRepresentative from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettingsRepresentative";
 
+/* --- Third-party solutions specialises ---------------------------------------------------------------------------- */
+import WebpackSpecialist from "@ThirdPartySolutionsSpecialists/WebpackSpecialist";
+import TypeScriptSpecialist from "@ThirdPartySolutionsSpecialists/TypeScriptSpecialist";
+
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
-import type { Configuration as WebpackConfiguration } from "webpack";
 import Webpack from "webpack";
+import type { Configuration as WebpackConfiguration } from "webpack";
+import type TypeScript from "typescript";
 import { VueLoaderPlugin as VueLoaderWebpackPlugin } from "vue-loader";
 import ForkTS_CheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import ES_LintWebpackPlugin from "eslint-webpack-plugin";
@@ -21,6 +26,8 @@ import provideAccessToNodeJS_ExternalDependencies from "webpack-node-externals";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
 import Path from "path";
+import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
 import {
   isUndefined,
   isNotUndefined,
@@ -30,21 +37,29 @@ import {
   Logger,
   UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
-import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
 
 
 export default class WebpackConfigGenerator {
 
-  private readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
   private readonly ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
+  private readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+
+  private readonly typeScriptConfigurations: {
+    [typeScriptConfigurationFileAbsolutePath: string]: TypeScript.CompilerOptions | undefined;
+  } = {};
+
+  private hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided: boolean = false;
 
 
   public static generateWebpackConfigurationForEachEntryPointsGroup(
+    ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative,
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
-  ): Array<WebpackConfiguration> {
+  ): ReadonlyArray<WebpackConfiguration> {
 
-    const dataHoldingSelfInstance: WebpackConfigGenerator = new WebpackConfigGenerator(masterConfigRepresentative);
+    const dataHoldingSelfInstance: WebpackConfigGenerator = new WebpackConfigGenerator(
+      ECMA_ScriptLogicProcessingConfigRepresentative, masterConfigRepresentative
+    );
+
     const webpackConfigurationForEachEntryPointsGroup: Array<WebpackConfiguration> = [];
 
     for (
@@ -53,33 +68,89 @@ export default class WebpackConfigGenerator {
     ) {
 
       const webpackConfiguration: WebpackConfiguration | null = dataHoldingSelfInstance.
-          generateSingleWebpackConfigurationIfAtLeastOneTargetEntryPointFileExists(
-            ECMA_ScriptLogicEntryPointsGroupSettings
-          );
+          generateSingleWebpackConfigurationIfAtLeastOneTargetEntryPointFileExists(ECMA_ScriptLogicEntryPointsGroupSettings);
 
       if (isNotNull(webpackConfiguration)) {
+
         webpackConfigurationForEachEntryPointsGroup.push(webpackConfiguration);
+
+        dataHoldingSelfInstance.hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided = true;
+
       }
+
     }
 
     return webpackConfigurationForEachEntryPointsGroup;
+
+  }
+
+  public static getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
+    {
+      sourceFilesGlobSelectors,
+      entryPointsGroupID,
+      webpackContext
+    }: Readonly<{
+      entryPointsGroupID: string;
+      sourceFilesGlobSelectors: ReadonlyArray<string>;
+      webpackContext: string;
+    }>
+  ): Webpack.EntryObject | null {
+
+    /* [ Reference ] https://webpack.js.org/configuration/entry-context/#entry */
+    const webpackEntryPoints__objectSyntax: Webpack.EntryObject = {};
+    const targetEntryPointsSourceFilesAbsolutePaths: Array<string> = ImprovedGlob.
+        getFilesAbsolutePathsSynchronously(sourceFilesGlobSelectors);
+
+    if (targetEntryPointsSourceFilesAbsolutePaths.length === 0) {
+
+      Logger.logWarning({
+        title: "Restarting may required",
+        description: `No files has been found for the ECMAScript entry points group with id '${ entryPointsGroupID }'. ` +
+            "Please restart the building once these files will be added"
+      });
+
+      return null;
+
+    }
+
+    WebpackConfigGenerator.
+        checkForFilesWithSameDirectoryAndFileNameButDifferentExtensions(targetEntryPointsSourceFilesAbsolutePaths);
+
+    for (const entryPointSourceFileAbsolutePath of targetEntryPointsSourceFilesAbsolutePaths) {
+
+      const targetSourceFilePathRelativeToSourceEntryPointsTopDirectory: string = ImprovedPath.
+          computeRelativePath({
+            comparedPath: entryPointSourceFileAbsolutePath,
+            basePath: webpackContext
+          });
+
+      const outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory: string = ImprovedPath.
+          removeFilenameExtensionFromPath(targetSourceFilePathRelativeToSourceEntryPointsTopDirectory);
+
+      /* [ Webpack theory ] The key must be the output path without filename extension relative to 'output.path'.
+       *    The value must the source file path (relative or absolute), for example
+       * { 'HikariFrontend/StarterPugTemplate/StarterPugTemplate':
+       *      'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/HikariFrontend/StarterPugTemplate.ts',
+       *   'Minimal': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/Minimal.ts',
+       *   'TopPage': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/TopPage.ts'
+       * } */
+      webpackEntryPoints__objectSyntax[
+        outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory
+      ] = entryPointSourceFileAbsolutePath;
+
+    }
+
+    return webpackEntryPoints__objectSyntax;
+
   }
 
 
-  private constructor(masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative) {
-
+  private constructor(
+    ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative,
+    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+  ) {
+    this.ECMA_ScriptLogicProcessingConfigRepresentative = ECMA_ScriptLogicProcessingConfigRepresentative;
     this.masterConfigRepresentative = masterConfigRepresentative;
-
-    if (isUndefined(masterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative)) {
-      Logger.throwErrorAndLog({
-        errorInstance: new UnexpectedEventError("We are sorry, but it is a bug."),
-        title: UnexpectedEventError.localization.defaultTitle,
-        occurrenceLocation: "webpackConfigGenerator.constructor(masterConfigRepresentative)"
-      });
-    }
-
-    this.ECMA_ScriptLogicProcessingConfigRepresentative = masterConfigRepresentative.
-        ECMA_ScriptLogicProcessingSettingsRepresentative;
   }
 
 
@@ -94,8 +165,9 @@ export default class WebpackConfigGenerator {
     const webpackEntryPointsDefinition: Webpack.EntryObject | null =
         WebpackConfigGenerator.getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
           {
-            webpackContext: sourceFilesTopDirectoryAbsolutePath,
-            ECMA_ScriptLogicEntryPointsGroupSettings__normalized: entryPointsGroupSettings
+            entryPointsGroupID: entryPointsGroupSettings.ID,
+            sourceFilesGlobSelectors: entryPointsGroupSettings.sourceFilesGlobSelectors,
+            webpackContext: sourceFilesTopDirectoryAbsolutePath
           }
         );
 
@@ -106,6 +178,25 @@ export default class WebpackConfigGenerator {
             "entry points. Please restart the build once new files will be added."
       });
       return null;
+    }
+
+
+    let typeScriptCompilerOptions: TypeScript.CompilerOptions;
+    const cachedTypeScriptCompilerOptions: TypeScript.CompilerOptions | undefined = this.
+        typeScriptConfigurations[entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath];
+
+    if (isUndefined(cachedTypeScriptCompilerOptions)) {
+
+      typeScriptCompilerOptions = TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions(
+        entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath
+      );
+      this.typeScriptConfigurations[entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath] =
+          typeScriptCompilerOptions;
+
+    } else {
+
+      typeScriptCompilerOptions = cachedTypeScriptCompilerOptions;
+
     }
 
 
@@ -216,14 +307,14 @@ export default class WebpackConfigGenerator {
       ...willBrowserJS_LibraryBeBuilt ? { experiments: { outputModule: true } } : null,
 
       mode: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-          this.masterConfigRepresentative.isDevelopmentBuildingMode ?
+          this.masterConfigRepresentative.isLocalDevelopmentBuildingMode ?
               "development" : "production",
 
       watch: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-          this.masterConfigRepresentative.isDevelopmentBuildingMode,
+          this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
 
       devtool: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-          this.masterConfigRepresentative.isDevelopmentBuildingMode ?
+          this.masterConfigRepresentative.isLocalDevelopmentBuildingMode ?
               "eval" : false,
 
       ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS ? {
@@ -238,16 +329,16 @@ export default class WebpackConfigGenerator {
 
           /* --- Logic ---------------------------------------------------------------------------------------------- */
           {
-            test: /\.ts$/u,
+            test: /\.tsx?$/u,
             loader: "ts-loader",
             options: {
-              ...isNotUndefined(entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath) ? {
-                configFile: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath
-              } : {},
+
+              configFile: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
 
               /* [ Theory ] This option allows TypeScript to process the code extracted from a single file component.
                * [ Reference ] https://github.com/Microsoft/TypeScript-Vue-Starter#single-file-components */
               appendTsSuffixTo: [ /\.vue$/u ]
+
             }
           },
 
@@ -269,31 +360,25 @@ export default class WebpackConfigGenerator {
           },
 
 
-          /* --- 構造設計記法 ----------------------------------------------------------------------------------------- */
+          /* --- Markup --------------------------------------------------------------------------------------------- */
           {
             test: /\.pug$/u,
             oneOf: [
+
               {
                 resourceQuery: /^\?vue/u,
                 use: [ "pug-plain-loader" ]
               },
-              {
-                use: [
-                  {
-                    loader: "html-loader",
-                    options: {
 
-                      /* [ Theory ] Without this option, all capital cases tags (invalid HTML5 vue normal for the Vue
-                       * templates loaded externally) will be converted to lower cased.
-                       * [ Reference ] https://stackoverflow.com/q/63164597/4818123 */
-                      minimize: {
-                        caseSensitive: true
-                      }
-                    }
-                  },
-                  "pug-html-loader"
-                ]
+              {
+
+                loader: "@webdiscus/pug-loader",
+
+                /* [ Third-party API ] The "render" method compiles the file content and allow to import it as HTML string. */
+                options: { method: "render" }
+
               }
+
             ]
           },
 
@@ -353,24 +438,19 @@ export default class WebpackConfigGenerator {
             map((fileNameExtensionWithoutDot: string): string => `.${ fileNameExtensionWithoutDot }`),
 
         alias: {
-          ...this.ECMA_ScriptLogicProcessingConfigRepresentative.absolutePathsOfAliasesOfDirectories,
+          ...WebpackSpecialist.
+            convertPathsAliasesFromTypeScriptFormatToWebpackFormat({
+              typeScriptPathsSettings: typeScriptCompilerOptions.paths,
+              typeScriptBasicAbsolutePath:
+                typeScriptCompilerOptions.baseUrl ??
+                ImprovedPath.extractDirectoryFromFilePath(entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath)
+          }),
           vue: "vue/dist/vue.esm-bundler.js"
         }
       },
 
-      resolveLoader: {
-        modules: [
-
-          /* [ Theory ] Actual for normal usage via "npm install" */
-          ImprovedPath.buildAbsolutePath(
-            [ this.masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath, "node_modules" ],
-            { forwardSlashOnlySeparators: true }
-          ),
-
-          /* [ Theory ] Actual for "npm-link" usage. */
-          ImprovedPath.buildAbsolutePath([ __dirname, "node_modules" ], { forwardSlashOnlySeparators: true })
-        ]
-      },
+      resolveLoader: WebpackSpecialist.
+          generateLoadersResolvingSettings(this.masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath),
 
       ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS ? {
         externals: [ provideAccessToNodeJS_ExternalDependencies() ]
@@ -380,51 +460,46 @@ export default class WebpackConfigGenerator {
 
         new Webpack.DefinePlugin({
 
+          __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__: this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
+          __IS_TESTING_BUILDING_MODE__: this.masterConfigRepresentative.isTestingBuildingMode,
+          __IS_STAGING_BUILDING_MODE__: this.masterConfigRepresentative.isStagingBuildingMode,
+          __IS_PRODUCTION_BUILDING_MODE__: this.masterConfigRepresentative.isProductionBuildingMode,
+
           /* [ Theory ] Settings for the Vue 3 which must be defined explicitly. */
           __VUE_OPTIONS_API__: true,
           __VUE_PROD_DEVTOOLS__: false
 
         }),
 
-        new ForkTS_CheckerWebpackPlugin({
-          typescript: {
+        ...this.hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided ?
+            [] :
+            [
+              new ForkTS_CheckerWebpackPlugin({
+                typescript: {
 
-            /* [ Theory ] Webpack's "context" is default, but generally "tsconfig.json" could be not in same directory */
-            configFile: ((): string => {
+                  /* [ Theory ] Webpack's "context" is default, but generally "tsconfig.json" could be not in same directory */
+                  configFile: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
 
-              if (isNotUndefined(entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath)) {
-                return entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath;
-              }
-
-
-              return ImprovedPath.buildAbsolutePath(
-                [
-                  this.masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-                  "tsconfig.json"
-                ],
-                { forwardSlashOnlySeparators: true }
-              );
-
-            })(),
-
-            extensions: {
-              vue: {
-                enabled: true,
-                compiler: "@vue/compiler-sfc"
-              }
-            }
-          }
-        }),
+                  extensions: {
+                    vue: {
+                      enabled: true,
+                      compiler: "@vue/compiler-sfc"
+                    }
+                  }
+                }
+              })
+            ],
 
         new VueLoaderWebpackPlugin(),
 
         new ES_LintWebpackPlugin({
-          extensions: [ "js", "ts", "vue" ],
+          extensions: [ "js", "ts", "jsx", "tsx", "vue" ],
           failOnError: this.masterConfigRepresentative.isStagingBuildingMode ||
               this.masterConfigRepresentative.isProductionBuildingMode,
           failOnWarning: this.masterConfigRepresentative.isStagingBuildingMode ||
               this.masterConfigRepresentative.isProductionBuildingMode
         })
+
       ],
 
 
@@ -432,9 +507,10 @@ export default class WebpackConfigGenerator {
         minimize: this.masterConfigRepresentative.isStagingBuildingMode ||
             this.masterConfigRepresentative.isProductionBuildingMode,
         emitOnErrors: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-            this.masterConfigRepresentative.isDevelopmentBuildingMode
+            this.masterConfigRepresentative.isLocalDevelopmentBuildingMode
       }
     };
+
   }
 
 
@@ -462,7 +538,7 @@ export default class WebpackConfigGenerator {
 
     if (
       !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
-      !this.masterConfigRepresentative.isDevelopmentBuildingMode
+      !this.masterConfigRepresentative.isLocalDevelopmentBuildingMode
     ) {
       return "/";
     }
@@ -473,62 +549,6 @@ export default class WebpackConfigGenerator {
     );
   }
 
-  private static getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
-    {
-      ECMA_ScriptLogicEntryPointsGroupSettings__normalized,
-      webpackContext
-    }: {
-      ECMA_ScriptLogicEntryPointsGroupSettings__normalized: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup;
-      webpackContext: string;
-    }
-  ): Webpack.EntryObject | null {
-
-    /* [ Reference ] https://webpack.js.org/configuration/entry-context/#entry */
-    const webpackEntryPoints__objectSyntax: Webpack.EntryObject = {};
-    const targetEntryPointsSourceFilesAbsolutePaths: Array<string> = ImprovedGlob.getFilesAbsolutePathsSynchronously(
-      ECMA_ScriptLogicEntryPointsGroupSettings__normalized.sourceFilesGlobSelectors
-    );
-
-    if (targetEntryPointsSourceFilesAbsolutePaths.length === 0) {
-
-      Logger.logWarning({
-        title: "Restarting may required",
-        description: "No files has been found for the ECMAScript entry points group with id " +
-            `${ ECMA_ScriptLogicEntryPointsGroupSettings__normalized.ID }. Please restart the building once these files ` +
-            "will be added"
-      });
-
-      return null;
-    }
-
-    WebpackConfigGenerator.
-        checkForFilesWithSameDirectoryAndFileNameButDifferentExtensions(targetEntryPointsSourceFilesAbsolutePaths);
-
-    for (const entryPointSourceFileAbsolutePath of targetEntryPointsSourceFilesAbsolutePaths) {
-
-      const targetSourceFilePathRelativeToSourceEntryPointsTopDirectory: string = ImprovedPath.
-          computeRelativePath({
-            comparedPath: entryPointSourceFileAbsolutePath,
-            basePath: webpackContext
-          });
-
-      const outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory: string = ImprovedPath.
-          removeFilenameExtensionFromPath(targetSourceFilePathRelativeToSourceEntryPointsTopDirectory);
-
-      /* [ Webpack theory ] The key must be the output path without filename extension relative to 'output.path'.
-       *    The value must the source file path (relative or absolute), for example
-       * { 'HikariFrontend/StarterPugTemplate/StarterPugTemplate':
-       *      'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/HikariFrontend/StarterPugTemplate.ts',
-       *   'Minimal': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/Minimal.ts',
-       *   'TopPage': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/TopPage.ts'
-       * } */
-      webpackEntryPoints__objectSyntax[
-        outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory
-      ] = entryPointSourceFileAbsolutePath;
-    }
-
-    return webpackEntryPoints__objectSyntax;
-  }
 
   private static checkForFilesWithSameDirectoryAndFileNameButDifferentExtensions(
     entryPointsSourceFilesAbsolutePaths: Array<string>

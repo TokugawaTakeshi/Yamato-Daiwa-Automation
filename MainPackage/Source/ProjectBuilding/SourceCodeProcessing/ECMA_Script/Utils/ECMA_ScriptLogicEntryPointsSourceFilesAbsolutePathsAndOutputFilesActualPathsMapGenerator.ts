@@ -24,7 +24,6 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
 
     const entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> = new Map<string, string>();
 
-
     for (
       const entryPointsGroupNormalizedSettings
       of ecmaScriptLogicProcessingConfigRepresentative.relevantEntryPointsGroupsSettings.values()
@@ -45,6 +44,7 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
     }
 
     return entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap;
+
   }
 
 
@@ -57,9 +57,13 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
 
     if (entryPointsGroupNormalizedSettings.revisioning.mustExecute) {
 
-      const targetOutputFileGlobSelector: string = ImprovedPath.buildAbsolutePath(
+      const targetOutputFileGlobSelector: string = ImprovedPath.joinPathSegments(
         [
-          entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
+            entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
+            ImprovedPath.computeRelativePath({
+              basePath: entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
+              comparedPath: ImprovedPath.extractDirectoryFromFilePath(sourceFileAbsolutePath)
+            }),
           `${ ImprovedPath.extractFileNameWithoutExtensionFromPath(sourceFileAbsolutePath) }**.js`
         ],
         { forwardSlashOnlySeparators: true }
@@ -95,7 +99,7 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
 
     } else {
 
-      correspondingOutputFileAbsolutePath = ImprovedPath.buildAbsolutePath(
+      correspondingOutputFileAbsolutePath = ImprovedPath.joinPathSegments(
         [
           entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
           ImprovedPath.computeRelativePath({
@@ -111,4 +115,5 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
 
     return correspondingOutputFileAbsolutePath;
   }
+
 }

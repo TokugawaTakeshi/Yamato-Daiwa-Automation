@@ -1,0 +1,39 @@
+doctype html
+
+
+include ../Components/SharedSingletons/Header.pug
+
+
+html(lang="en")
+
+  head
+
+    title Top page - NNN Pet shop
+
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+
+    link(rel="stylesheet" href="@Main")
+
+
+  body
+
+    +Header
+
+    main
+
+      figure
+
+        //- src="/images/Cats/GrayCat.jpg"
+        //- src="/.images/Cats/GrayCat.jpg"
+        img(
+          src="@Shared/Cats/GrayCat"
+          alt="The gray cat"
+          style="width: 100%;"
+        )
+
+        figcaption
+          | The gray cat. Photo by
+          |
+          a(href="https://www.instagram.com/arenas_varela/" target="_blank" rel="noopener noreferrer nofollow" ) Steven Arenas
+          | .

@@ -13,11 +13,11 @@ export default abstract class SourceCodeProcessingConfigRepresentative<
   EntryPointsGroupNormalizedSettings extends ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings
 > {
 
-  public abstract readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string>;
+  public abstract readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
   public abstract readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string;
   public abstract readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string;
 
-  public abstract readonly relevantEntryPointsGroupsSettings: Map<
+  public abstract readonly relevantEntryPointsGroupsSettings: ReadonlyMap<
     ProjectBuildingConfig__Normalized.EntryPointsGroupID, EntryPointsGroupNormalizedSettings
   >;
   protected abstract readonly sourceCodeProcessingCommonSettings: SourceCodeProcessingCommonNormalizedSettings;
@@ -47,4 +47,5 @@ export default abstract class SourceCodeProcessingConfigRepresentative<
       })
     );
   }
+
 }

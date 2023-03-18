@@ -15,12 +15,13 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       fontsProcessing: "fontsProcessing",
       audiosProcessing: "audiosProcessing",
       videosProcessing: "videosProcessing",
+      plainCopying: "plainCopying",
       browserLiveReloading: "browserLiveReloading"
     },
 
     consumingProjectPreDefinedBuildingModes: {
       staticPreview: "STATIC_PREVIEW",
-      development: "DEVELOPMENT",
+      localDevelopment: "LOCAL_DEVELOPMENT",
       testing: "TESTING",
       staging: "STAGING",
       production: "PRODUCTION"
@@ -30,15 +31,17 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
   reusables: {
 
     sourceCodeProcessingGenericProperties: {
-      entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath: {
-        KEY: "entryPointsSourceFilesTopDirectoryOrSingleFileRelativePath"
-      },
+      topDirectoryRelativePath: { KEY: "topDirectoryRelativePath" },
       partialsRecognition: {
         KEY: "partialsRecognition",
         excludeAllSubdirectories: { KEY: "excludeAllSubdirectories" },
         excludeSubdirectoriesWithNames: { KEY: "excludeSubdirectoriesWithNames" },
         excludeSubdirectoriesWithPrefixes: { KEY: "excludeSubdirectoriesWithPrefixes" },
         excludeFilesWithPrefixes: { KEY: "excludeFilesWithPrefixes" }
+      },
+      singleEntryPointRelativePath: {
+        KEY: "singleEntryPointRelativePath",
+        REQUIREMENT_CONDITION_DESCRIPTION: "'topDirectoryRelativePath' is not defined"
       }
     },
 
@@ -49,7 +52,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
     lintingCommonSettings: {
       presetFileRelativePath: { KEY: "presetFileRelativePath" },
-      disableCompletely: { KEY: "disableCompletely" }
+      enabled: { KEY: "enabled" }
     }
   },
 
@@ -73,7 +76,38 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
       common: {
         KEY: "common",
-        waitingForSubsequentFilesWillBeSavedPeriod__seconds: { KEY: "waitingForSubsequentFilesWillBeSavedPeriod__seconds" }
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
+          KEY: "periodBetweenFileUpdatingAndRebuildingStarting__seconds"
+        },
+        buildingModeDependent: {
+          KEY: "buildingModeDependent",
+          mustResolveResourceReferencesToRelativePaths: {
+            KEY: "mustResolveResourceReferencesToRelativePaths"
+          }
+        }
+      },
+
+      staticPreview: {
+        KEY: "staticPreview",
+        stateDependentPagesVariationsSpecificationFileRelativePath: {
+          KEY: "stateDependentPagesVariationsSpecificationFileRelativePath"
+        },
+        importsFromStaticDataFiles: {
+          KEY: "importsFromStaticDataFiles",
+          importedVariableName: { KEY: "importedVariableName" },
+          fileRelativePath: { KEY: "fileRelativePath" }
+        },
+        importsFromCompiledTypeScript: {
+          KEY: "importsFromCompiledTypeScript",
+          typeScriptConfigurationFileRelativePath: { KEY: "typeScriptConfigurationFileRelativePath" },
+          files: {
+            KEY: "files",
+            importedNamespace: { KEY: "importedNamespace" },
+            sourceFileRelativePath: { KEY: "sourceFileRelativePath" },
+            outputDirectoryRelativePath: { KEY: "outputDirectoryRelativePath" },
+            customOutputFileNameWithoutLastExtension: { KEY: "customOutputFileNameWithoutLastExtension" }
+          }
+        }
       },
 
       linting: {
@@ -83,11 +117,6 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       entryPointsGroups: {
 
         KEY: "entryPointsGroups",
-
-        linting: {
-          KEY: "linting",
-          disable: { KEY: "disable" }
-        },
 
         HTML_Validation: {
           KEY: "HTML_Validation",
@@ -100,10 +129,18 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
           disable: { KEY: "disable" }
         },
 
+        convertToHandlebarsOnNonStaticPreviewModes: { KEY: "convertToHandlebarsOnNonStaticPreviewModes" },
+
         buildingModeDependent: {
           KEY: "buildingModeDependent",
-          outputBaseDirectoryRelativePath: { KEY: "outputBaseDirectoryRelativePath" }
+          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" }
         }
+      },
+
+      logging: {
+        filesPaths: { KEY: "filesPaths" },
+        filesCount: { KEY: "filesCount" },
+        partialFilesAndParentEntryPointsCorrespondence: { KEY: "partialFilesAndParentEntryPointsCorrespondence" }
       }
     },
 
@@ -111,7 +148,9 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
       common: {
         KEY: "common",
-        waitingForSubsequentFilesWillBeSavedPeriod__seconds: { KEY: "waitingForSubsequentFilesWillBeSavedPeriod__seconds" }
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
+          KEY: "periodBetweenFileUpdatingAndRebuildingStarting__seconds"
+        }
       },
 
       linting: {
@@ -122,29 +161,17 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
         KEY: "entryPointsGroups",
 
-        entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML: {
-          KEY: "entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML"
-        },
-
-        linting: {
-          KEY: "linting",
-          disable: { KEY: "disable" }
-        },
+        customReferenceName: { KEY: "customReferenceName" },
 
         buildingModeDependent: {
           KEY: "buildingModeDependent",
-          outputBaseDirectoryRelativePath: { KEY: "outputBaseDirectoryRelativePath" },
+          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" }
         }
       }
     },
 
     ECMA_ScriptLogicProcessing: {
-
-      common: {
-        KEY: "common",
-        directoriesRelativePathsAliases: { KEY: "directoriesRelativePathsAliases" }
-      },
 
       linting: {
         KEY: "linting"
@@ -165,18 +192,11 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
           }
         },
 
-        entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML: {
-          KEY: "entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML"
-        },
+        customReferenceName: { KEY: "customReferenceName" },
         associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer: {
           KEY: "associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer"
         },
         typeScriptConfigurationFileRelativePath: { KEY: "typeScriptConfigurationFileRelativePath" },
-
-        linting: {
-          KEY: "linting",
-          disable: { KEY: "disable" }
-        },
 
         distributing: {
           KEY: "distributing",
@@ -194,7 +214,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
         buildingModeDependent: {
           KEY: "buildingModeDependent",
-          outputBaseDirectoryRelativePath: { KEY: "outputBaseDirectoryRelativePath" },
+          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" },
           dynamicallyLoadedFilesSubdirectory: { KEY: "dynamicallyLoadedFilesSubdirectory" },
           dynamicallyLoadedFilesNamesTemplate: { KEY: "dynamicallyLoadedFilesNamesTemplate" }
@@ -209,7 +229,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
         sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
         buildingModeDependent: {
           KEY: "buildingModeDependent",
-          outputBaseDirectoryRelativePath: { KEY: "outputBaseDirectoryRelativePath" },
+          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" },
           outputPathTransformations: {
             KEY: "outputPathTransformations",
@@ -227,7 +247,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
         sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
         buildingModeDependent: {
           KEY: "buildingModeDependent",
-          outputBaseDirectoryRelativePath: { KEY: "outputBaseDirectoryRelativePath" },
+          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" },
           outputPathTransformations: {
             KEY: "outputPathTransformations",
@@ -245,7 +265,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
         sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
         buildingModeDependent: {
           KEY: "buildingModeDependent",
-          outputBaseDirectoryRelativePath: { KEY: "outputBaseDirectoryRelativePath" },
+          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" },
           outputPathTransformations: {
             KEY: "outputPathTransformations",
@@ -263,7 +283,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
         sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
         buildingModeDependent: {
           KEY: "buildingModeDependent",
-          outputBaseDirectoryRelativePath: { KEY: "outputBaseDirectoryRelativePath" },
+          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" },
           outputPathTransformations: {
             KEY: "outputPathTransformations",
@@ -274,30 +294,55 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       }
     },
 
-    browserLiveReloading: {
-      targetFilesRootDirectoryRelativePath: { KEY: "targetFilesRootDirectoryRelativePath" },
-      customStartingFilenameWithExtension: { KEY: "customStartingFilenameWithExtension" },
-      waitingForTheOtherFilesWillUpdateDuration__seconds: { KEY: "waitingForTheOtherFilesWillUpdateDuration__seconds" },
-      useHTTPS: { KEY: "useHTTPS" },
-      virtualHost: { KEY: "virtualHost" },
-      ports: {
-        KEY: "ports",
-        main: { KEY: "main" },
-        userInterface: { KEY: "userInterface" }
+    plainCopying: {
+      filesGroups: { KEY: "filesGroups" },
+      sourceFileRelativePath: { KEY: "sourceFileRelativePath" },
+      sourceDirectoryRelativePath: {
+        KEY: "sourceDirectoryRelativePath",
+        REQUIREMENT_CONDITION_DESCRIPTION: "\"sourceFileRelativePath\" is not specified"
       },
-      ignoredFilesAndDirectories: { KEY: "ignoredFilesAndDirectories" }
-    }
-  },
+      referenceName: { KEY: "referenceName" },
+      buildingModeDependent: {
+        KEY: "buildingModeDependent",
+        outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" }
+      }
+    },
 
-  debugging: {
+    browserLiveReloading: {
 
-    KEY: "debugging",
+      setups: {
 
-    properties: {
-      enabled: { KEY: "enabled" },
-      partials: {
-        KEY: "partials",
-        partialFilesAndParentEntryPointAccordance: { KEY: "partialFilesAndParentEntryPointAccordance" }
+        KEY: "setups",
+
+        localServer: {
+          KEY: "localServer",
+          rootDirectoryRelativePath: { KEY: "rootDirectoryRelativePath" },
+          ignoredFilesAndDirectoriesRelativePaths: { KEY: "ignoredFilesAndDirectoriesRelativePaths" },
+          customPort: { KEY: "customPort" },
+          customStartingFileNameWithExtension: { KEY: "customStartingFileNameWithExtension" },
+          useHTTPS: { KEY: "useHTTPS" },
+          useCORS: { KEY: "useCORS" }
+        },
+
+        proxy: { KEY: "proxy" },
+
+        openInBrowsers: { KEY: "openInBrowsers" },
+
+        browserSyncUserInterface: {
+          KEY: "browserSyncUserInterface",
+          customPort: { KEY: "customPort" },
+          disable: { KEY: "disable" }
+        },
+
+        periodBetweenFileUpdatingAndBrowserReloading__seconds: { KEY: "periodBetweenFileUpdatingAndBrowserReloading__seconds" }
+
+      },
+
+      logging: {
+        KEY: "logging",
+        outputFileChangeDetection: { KEY: "outputFileChangeDetection" },
+        browserTabWillBeReloadedSoon: { KEY: "browserTabWillBeReloadedSoon" },
+        browsersyncConnection: { KEY: "browsersyncConnection" }
       }
     }
   }

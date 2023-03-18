@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="150" height="19" viewBox="0 0 150 19">
+  <defs>
+    <clipPath id="clip-iPhone_14_Pro_Max_1">
+      <rect width="150" height="19"/>
+    </clipPath>
+  </defs>
+  <g id="iPhone_14_Pro_Max_1" data-name="iPhone 14 Pro Max – 1" clip-path="url(#clip-iPhone_14_Pro_Max_1)">
+    <rect width="150" height="19" fill="#fff"/>
+    <text id="NNN_Pet_shop" data-name="NNN Pet shop" transform="translate(-1 -7)" fill="#707070" font-size="20" font-family="Arial-Black, Arial" font-weight="800"><tspan x="0" y="22">NNN Pet shop</tspan></text>
+  </g>
+</svg>

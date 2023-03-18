@@ -9,47 +9,56 @@ import ApplicationConsoleLineInterface from "./ApplicationConsoleLineInterface";
 import ProjectBuilder from "./ProjectBuilder";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
-import PoliteErrorsMessagesBuilder from "./Utils/PoliteErrorsMessagesBuilder";
+import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
-import { Logger, FileReadingFailedError } from "@yamato-daiwa/es-extensions";
-import { ConsoleApplicationLogger, ConsoleCommandsParser } from "@yamato-daiwa/es-extensions-nodejs";
+import {
+  Logger,
+  FileReadingFailedError,
+  PoliteErrorsMessagesBuilder
+} from "@yamato-daiwa/es-extensions";
+import {
+  ConsoleApplicationLogger,
+  ConsoleCommandsParser,
+  ObjectDataFilesProcessor
+} from "@yamato-daiwa/es-extensions-nodejs";
 import Path from "path";
-import YAML from "yamljs";
 
 
 export default abstract class EntryPoint {
 
   static {
     Logger.setImplementation(ConsoleApplicationLogger);
+    PoliteErrorsMessagesBuilder.setDefaultBugTrackerURI("https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/issues");
   }
 
 
   public static interpretAndExecuteConsoleCommand(rawConsoleCommand: Array<string>): void {
 
+    /* [ Theory ] The global constant "__IS_DEVELOPMENT_BUILDING_MODE__" is not available in above static block. */
+    PoliteErrorsMessagesBuilder.setTechnicalDetailsOnlyModeIf(__IS_DEVELOPMENT_BUILDING_MODE__);
+
     const parsedConsoleCommand: ConsoleCommandsParser.
         ParsedCommand<ApplicationConsoleLineInterface.SupportedCommandsAndParametersCombinations> =
             ConsoleCommandsParser.parse(rawConsoleCommand, ApplicationConsoleLineInterface.specification);
 
-    if (__IS_DEVELOPMENT_BUILDING_MODE__) {
-      PoliteErrorsMessagesBuilder.setTechnicalDetailsOnlyMode();
-    }
-
+    const consumingProjectRootDirectoryAbsolutePath: string = process.cwd();
+    DotYDA_DirectoryManager.unrollDotYDA_Directory(consumingProjectRootDirectoryAbsolutePath);
 
     switch (parsedConsoleCommand.phrase) {
 
       case ApplicationConsoleLineInterface.CommandPhrases.buildProject: {
 
-        const consumingProjectRootDirectoryAbsolutePath: string = process.cwd();
         const rawConfigFileAbsolutePath: string = Path.resolve(
           consumingProjectRootDirectoryAbsolutePath, CONFIG_FILE_DEFAULT_NAME_WITH_EXTENSION
         );
 
+        /* [ Approach ] The validation is scenario-dependent thus will be executed later. */
         let rawConfigFromFile: unknown;
 
         try {
 
-          rawConfigFromFile = YAML.load(rawConfigFileAbsolutePath);
+          rawConfigFromFile = ObjectDataFilesProcessor.processFile({ filePath: rawConfigFileAbsolutePath });
 
         } catch (error: unknown) {
 
@@ -81,7 +90,10 @@ export default abstract class EntryPoint {
           title: "Not implemented yet",
           description: "This functionality has not been implemented yet."
         });
+
       }
+
     }
   }
+
 }

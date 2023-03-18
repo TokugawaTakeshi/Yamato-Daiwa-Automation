@@ -7,7 +7,8 @@ import VideosProcessingSettingsRepresentative from "@VideosProcessing/VideosProc
 
 /* --- Tasks executor ----------------------------------------------------------------------------------------------- */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-import type GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedTaskExecutor";
+import type GulpStreamsBasedTaskExecutor from
+    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import Gulp from "gulp";
@@ -49,7 +50,7 @@ class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
       masterConfigRepresentative, videosProcessingSettingsRepresentative
     );
 
-    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcher();
+    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcherIfMust();
 
     const assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode: Array<string> =
         videosProcessingSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths;
@@ -88,6 +89,8 @@ class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
 
         pipe(
           Gulp.dest((targetFileInFinalState: VinylFile): string =>
+              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+               * No known simple solution; will be fixed at 2nd generation of VideosProcessor.  */
               (targetFileInFinalState as VideosProcessor.VideoVinylFile).outputDirectoryAbsolutePath)
         );
 
@@ -111,11 +114,15 @@ class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
           respectiveAssetsGroupNormalizedSettings: normalizedVideosGroupSettingsActualForCurrentFile
         });
 
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of VideosProcessor.  */
     return fileInInitialState as VideosProcessor.VideoVinylFile;
   }
 
   private postProcess(_processedVideoFile: VinylFile): VinylFile {
 
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * No known simple solution; will be fixed at 2nd generation of VideosProcessor.  */
     const processedVideoFile: VideosProcessor.VideoVinylFile = _processedVideoFile as VideosProcessor.VideoVinylFile;
 
     if (processedVideoFile.processingSettings.revisioning.mustExecute) {
@@ -129,7 +136,10 @@ class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
         sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.
         set(
           ImprovedPath.replacePathSeparatorsToForwardSlashes(processedVideoFile.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(processedVideoFile.outputDirectoryAbsolutePath, processedVideoFile.basename)
+          ImprovedPath.joinPathSegments(
+            [ processedVideoFile.outputDirectoryAbsolutePath, processedVideoFile.basename ],
+            { forwardSlashOnlySeparators: true }
+          )
         );
 
     return processedVideoFile;
@@ -140,9 +150,9 @@ class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
 namespace VideosProcessor {
   export type VideoVinylFile =
       GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      {
-        readonly processingSettings: VideosProcessingSettings__Normalized.AssetsGroup;
-      };
+      Readonly<{
+        processingSettings: VideosProcessingSettings__Normalized.AssetsGroup;
+      }>;
 }
 
 

@@ -1,10 +1,10 @@
 import type { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
 
 
-type LintingCommonSettings__FromFile__RawValid = {
-  readonly presetFileRelativePath?: string;
-  readonly disableCompletely?: boolean;
-};
+type LintingCommonSettings__FromFile__RawValid = Readonly<{
+  presetFileRelativePath?: string;
+  enabled?: boolean;
+}>;
 
 
 /* eslint-disable-next-line @typescript-eslint/no-redeclare --
@@ -13,10 +13,10 @@ type LintingCommonSettings__FromFile__RawValid = {
  * https://github.com/eslint/eslint/issues/15504 */
 namespace LintingCommonSettings__FromFile__RawValid {
 
-  export type Localization = {
-    readonly presetFileRelativePath: { KEY: string; };
-    readonly disableCompletely: { KEY: string; };
-  };
+  export type Localization = Readonly<{
+    presetFileRelativePath: Readonly<{ KEY: string; }>;
+    enabled: Readonly<{ KEY: string; }>;
+  }>;
 
   export function getLocalizedPropertiesSpecification(
     lintingCommonSettingsLocalization: Localization
@@ -28,8 +28,8 @@ namespace LintingCommonSettings__FromFile__RawValid {
         required: false,
         minimalCharactersCount: 1
       },
-      [lintingCommonSettingsLocalization.disableCompletely.KEY]: {
-        newName: "disableCompletely",
+      [lintingCommonSettingsLocalization.enabled.KEY]: {
+        newName: "enabled",
         type: Boolean,
         required: false
       }

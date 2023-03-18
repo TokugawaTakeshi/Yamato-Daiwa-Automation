@@ -1,0 +1,18 @@
+projectBuilding:
+
+  commonSettings:
+
+    publicDirectoriesRelativePaths:
+
+      PRODUCTION: 02-ProductionBuilding
+
+
+  markupProcessing:
+
+    entryPointsGroups:
+
+      All:
+        topDirectoryRelativePath: 01-Source
+        buildingModeDependent:
+          PRODUCTION:
+            outputTopDirectoryRelativePath: 02-ProductionBuilding

@@ -1,6 +1,8 @@
 /* --- Business rules ----------------------------------------------------------------------------------------------- */
 import { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
+import type ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
 
 /* --- Raw valid config ---------------------------------------------------------------------------------------------- */
 import type ProjectBuildingCommonSettings__FromFile__RawValid from
@@ -12,7 +14,7 @@ import type ProjectBuildingCommonSettings__Normalized from
 
 /* --- Utils -------------------------------------------------------------------------------------------------------- */
 import { isNotUndefined } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default abstract class ProjectBuildingCommonSettingsNormalizer {
@@ -23,12 +25,12 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
       consumingProjectRootDirectoryAbsolutePath,
       projectBuildingMode,
       actualSelectiveExecution
-    }: {
+    }: Readonly<{
       commonSettings__fromFile__rawValid: ProjectBuildingCommonSettings__FromFile__RawValid;
       consumingProjectRootDirectoryAbsolutePath: string;
-      projectBuildingMode: string;
+      projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
       actualSelectiveExecution?: ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution;
-    }
+    }>
   ): ProjectBuildingCommonSettings__Normalized {
 
     const consumingProjectRootDirectoryAbsolutePath__forwardSlashes: string = ImprovedPath.
@@ -40,9 +42,9 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
     let actualPublicDirectoryAbsolutePath: string | undefined;
 
     if (isNotUndefined(actualPublicDirectoryRelativePath)) {
-      actualPublicDirectoryAbsolutePath = ImprovedPath.buildAbsolutePath(
+      actualPublicDirectoryAbsolutePath = ImprovedPath.joinPathSegments(
         [ consumingProjectRootDirectoryAbsolutePath__forwardSlashes, actualPublicDirectoryRelativePath ],
-        { forwardSlashOnlySeparators: true }
+        { alwaysForwardSlashSeparators: true }
       );
     }
 
@@ -75,14 +77,20 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
           audiosProcessing: actualSelectiveExecution.
               tasksAndSourceFilesSelection[ProjectBuildingTasksIDsForConfigFile.audiosProcessing],
 
+          plainCopying: actualSelectiveExecution.
+              tasksAndSourceFilesSelection[ProjectBuildingTasksIDsForConfigFile.plainCopying],
+
           videosProcessing: actualSelectiveExecution.
               tasksAndSourceFilesSelection[ProjectBuildingTasksIDsForConfigFile.videosProcessing]
         }
+
       } : null,
 
       browserLiveReloadingSetupID: actualSelectiveExecution?.browserLiveReloadingSetupID,
 
       actualPublicDirectoryAbsolutePath
     };
+
   }
+
 }

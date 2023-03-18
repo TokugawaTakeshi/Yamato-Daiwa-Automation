@@ -34,14 +34,14 @@ class Stopwatch {
     this.activationUnixTimestamp__milliseconds = 0;
     this.deactivationUnixTimestamp__milliseconds = 0;
   }
+
 }
 
 namespace Stopwatch {
-
-  export type ElapsedTimeData = {
-    readonly seconds: number;
-    readonly milliseconds: number;
-  };
+  export type ElapsedTimeData = Readonly<{
+    seconds: number;
+    milliseconds: number;
+  }>;
 }
 
 

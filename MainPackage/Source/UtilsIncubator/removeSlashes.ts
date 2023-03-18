@@ -1,13 +1,12 @@
-import { removeNthCharacter } from "@yamato-daiwa/es-extensions";
-import removeSpecificCharacterInLastPosition from "./removeSpecificCharacterInLastPosition";
+import { removeNthCharacter, removeSpecificCharacterFromCertainPosition } from "@yamato-daiwa/es-extensions";
 
 
 export default function removeSlashes(
   targetString: string,
-  options: {
+  options: Readonly<{
     leading: boolean;
     trailing: boolean;
-  }
+  }>
 ): string {
 
   let transformingWorkpiece: string = targetString;
@@ -20,8 +19,13 @@ export default function removeSlashes(
   }
 
   if (options.trailing && transformingWorkpiece.endsWith("/")) {
-    transformingWorkpiece = removeSpecificCharacterInLastPosition(transformingWorkpiece, "/");
+    transformingWorkpiece = removeSpecificCharacterFromCertainPosition({
+      targetString: transformingWorkpiece,
+      targetCharacter: "/",
+      fromLastPosition: true
+    });
   }
 
   return transformingWorkpiece;
+
 }

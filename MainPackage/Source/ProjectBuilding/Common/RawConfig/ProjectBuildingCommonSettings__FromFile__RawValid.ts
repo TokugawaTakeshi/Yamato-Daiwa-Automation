@@ -1,4 +1,8 @@
-/* --- Raw valid config ---------------------------------------------------------------------------------------------- */
+/* --- Defaults ----------------------------------------------------------------------------------------------------- */
+import ConsumingProjectPreDefinedBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+
+/* --- Raw valid config --------------------------------------------------------------------------------------------- */
 import type { ProjectBuildingTasksIDsForConfigFile__Localized } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 import { ProjectBuildingTasksIDsForConfigFile } from
@@ -8,57 +12,56 @@ import { ProjectBuildingTasksIDsForConfigFile } from
 import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
 
 
-type ProjectBuildingCommonSettings__FromFile__RawValid = {
-  readonly selectiveExecutions?: ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecutions;
-  readonly publicDirectoriesRelativePaths?: { [projectBuildingMode__possiblyCustom: string ]: string | undefined; };
-};
+type ProjectBuildingCommonSettings__FromFile__RawValid = Readonly<{
+  selectiveExecutions?: ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecutions;
+  publicDirectoriesRelativePaths?: Readonly<{ [projectBuildingMode: string]: string | undefined; }>;
+}>;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
 namespace ProjectBuildingCommonSettings__FromFile__RawValid {
 
   /* === Types ====================================================================================================== */
-  export type SelectiveExecutions = { [selectiveExecutionID: string]: SelectiveExecution | undefined; };
+  export type SelectiveExecutions = Readonly<{ [selectiveExecutionID: string]: SelectiveExecution | undefined; }>;
 
-  export type SelectiveExecution = {
-    readonly tasksAndSourceFilesSelection: ProjectBuilderTasksAndSourceFilesSelection;
-    readonly browserLiveReloadingSetupID?: string;
-  };
+  export type SelectiveExecution = Readonly<{
+    tasksAndSourceFilesSelection: ProjectBuilderTasksAndSourceFilesSelection;
+    browserLiveReloadingSetupID?: string;
+  }>;
 
-  type ProjectBuilderTasksAndSourceFilesSelection = {
-    [ProjectBuildingTasksIDsForConfigFile.markupProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.stylesProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.ECMA_ScriptLogicProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.imagesProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.fontsProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.audiosProcessing]?: Array<string>;
-    [ProjectBuildingTasksIDsForConfigFile.videosProcessing]?: Array<string>;
-  };
+  type ProjectBuilderTasksAndSourceFilesSelection = Readonly<{
+    [ProjectBuildingTasksIDsForConfigFile.markupProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.stylesProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.ECMA_ScriptLogicProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.imagesProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.fontsProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.audiosProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.videosProcessing]?: ReadonlyArray<string>;
+    [ProjectBuildingTasksIDsForConfigFile.plainCopying]?: ReadonlyArray<string>;
+  }>;
 
 
   /* === Localization =============================================================================================== */
-  export type Localization = {
-    readonly selectiveExecutions: {
-      readonly KEY: string;
-      readonly tasksAndSourceFilesSelection: { readonly KEY: string; };
-      readonly browserLiveReloadingSetupID: { readonly KEY: string; };
-    };
-    readonly publicDirectoriesRelativePaths: { readonly KEY: string; };
-  };
+  export type Localization = Readonly<{
+    selectiveExecutions: Readonly<{
+      KEY: string;
+      tasksAndSourceFilesSelection: Readonly<{ KEY: string; }>;
+      browserLiveReloadingSetupID: Readonly<{ KEY: string; }>;
+    }>;
+    publicDirectoriesRelativePaths: Readonly<{ KEY: string; }>;
+  }>;
 
   export function getLocalizedPropertiesSpecification(
     {
       projectBuildingCommonSettingsLocalization,
       tasksLocalizedIDs
-    }: {
+    }: Readonly<{
       projectBuildingCommonSettingsLocalization: Localization;
       tasksLocalizedIDs: ProjectBuildingTasksIDsForConfigFile__Localized;
-    }
+    }>
   ): RawObjectDataProcessor.PropertiesSpecification {
+
     return {
+
       [projectBuildingCommonSettingsLocalization.selectiveExecutions.KEY]: {
 
         newName: "selectiveExecutions",
@@ -67,6 +70,7 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
         required: false,
 
         value: {
+
           type: Object,
           properties: {
 
@@ -86,6 +90,7 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
                 [tasksLocalizedIDs.fontsProcessing]: ProjectBuildingTasksIDsForConfigFile.fontsProcessing,
                 [tasksLocalizedIDs.audiosProcessing]: ProjectBuildingTasksIDsForConfigFile.audiosProcessing,
                 [tasksLocalizedIDs.videosProcessing]: ProjectBuildingTasksIDsForConfigFile.videosProcessing,
+                [tasksLocalizedIDs.plainCopying]: ProjectBuildingTasksIDsForConfigFile.plainCopying,
                 [tasksLocalizedIDs.browserLiveReloading]: ProjectBuildingTasksIDsForConfigFile.browserLiveReloading
               },
 
@@ -99,6 +104,7 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
                   minimalCharactersCount: 1
                 }
               }
+
             },
 
             [projectBuildingCommonSettingsLocalization.selectiveExecutions.browserLiveReloadingSetupID.KEY]: {
@@ -106,11 +112,27 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
               type: String,
               required: false
             }
+
           }
         }
+
+      },
+
+      [projectBuildingCommonSettingsLocalization.publicDirectoriesRelativePaths.KEY]: {
+        newName: "publicDirectoriesRelativePaths",
+        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+        required: false,
+        allowedKeys: Object.values(ConsumingProjectPreDefinedBuildingModes),
+        value: {
+          type: String,
+          minimalCharactersCount: 1
+        }
       }
+
     };
+
   }
+
 }
 
 

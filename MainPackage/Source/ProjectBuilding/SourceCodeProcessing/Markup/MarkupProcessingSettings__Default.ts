@@ -3,11 +3,14 @@ import MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRest
 
 const MarkupProcessingSettings__Default: Readonly<{
 
-  waitingForOtherFilesWillBeSavedPeriod__seconds: number;
+  periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
+
+  staticPreview: Readonly<{
+    typeScriptConfigurationFileRelativePath: string;
+  }>;
 
   linting: Readonly<{
     mustExecute: boolean;
-    isDisabledForEntryPointGroups: boolean;
   }>;
 
   HTML_Validation: Readonly<{
@@ -19,13 +22,22 @@ const MarkupProcessingSettings__Default: Readonly<{
     standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
   }>;
 
+  logging: Readonly<{
+    filesPaths: boolean;
+    filesCount: boolean;
+    partialFilesAndParentEntryPointsCorrespondence: boolean;
+  }>;
+
 }> = {
 
-  waitingForOtherFilesWillBeSavedPeriod__seconds: 1,
+  periodBetweenFileUpdatingAndRebuildingStarting__seconds: 1,
+
+  staticPreview: {
+    typeScriptConfigurationFileRelativePath: "tsconfig.json"
+  },
 
   linting: {
-    mustExecute: true,
-    isDisabledForEntryPointGroups: false
+    mustExecute: true
   },
 
   HTML_Validation: {
@@ -35,6 +47,12 @@ const MarkupProcessingSettings__Default: Readonly<{
   accessibilityInspection: {
     mustExecute: true,
     standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards.WCAG2AAA
+  },
+
+  logging: {
+    filesPaths: true,
+    filesCount: true,
+    partialFilesAndParentEntryPointsCorrespondence: false
   }
 
 };

@@ -1,0 +1,29 @@
+doctype html
+
+
+html(lang="en")
+
+  head
+
+    title Products list page
+
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+
+
+  body
+
+
+    if ProductDetailsPageStatesSimulations.editingMode
+
+      h1 Products editing
+
+
+    else if ProductDetailsPageStatesSimulations.error
+
+      p Error occurred
+
+
+    else
+
+      h1 Products details

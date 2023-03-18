@@ -6,7 +6,7 @@ import SupportedECMA_ScriptRuntimesTypes = ECMA_ScriptLogicProcessingRestriction
 import ECMA_ScriptLogicProcessingSettings__Default from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Default";
 
-/* --- Raw settings ------------------------------------------------------------------------------------------------- */
+/* --- Raw valid settings ------------------------------------------------------------------------------------------- */
 import type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__FromFile__RawValid";
 
@@ -17,38 +17,37 @@ import type ProjectBuildingCommonSettings__Normalized from
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Normalized";
 
-/* --- Applied auxiliaries ------------------------------------------------------------------------------------------ */
+/* --- Settings normalizers ----------------------------------------------------------------------------------------- */
 import SourceCodeProcessingRawSettingsNormalizer from
     "@ProjectBuilding:Common/RawSettingsNormalizers/SourceCodeProcessingRawSettingsNormalizer";
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
 import { isNotUndefined } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSettingsNormalizer {
 
-  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string> =
-      ECMA_ScriptLogicProcessingRestrictions.supportedSourceFileNameExtensionsWithoutLeadingDots;
+  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string> =
+      ECMA_ScriptLogicProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots;
 
 
   public static normalize(
     {
       ECMA_ScriptLogicProcessingSettings__fromFile__rawValid,
       commonSettings__normalized
-    }: {
+    }: Readonly<{
       ECMA_ScriptLogicProcessingSettings__fromFile__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid;
       commonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
-    }
+    }>
   ): ECMA_ScriptLogicProcessingSettings__Normalized {
 
     const dataHoldingSelfInstance: ECMA_ScriptLogicProcessingRawSettingsNormalizer =
         new ECMA_ScriptLogicProcessingRawSettingsNormalizer({
-          consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
-          consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+          projectBuildingCommonSettings__normalized: commonSettings__normalized,
           ...isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) ? {
             entryPointsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.ECMA_ScriptLogicProcessing
-          } : {}
+          } : null
         });
 
     const lintingSettings__fromFile__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Linting =
@@ -60,47 +59,31 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
       common: {
 
         supportedSourceFileNameExtensionsWithoutLeadingDots:
-            ECMA_ScriptLogicProcessingRestrictions.supportedSourceFileNameExtensionsWithoutLeadingDots,
+            ECMA_ScriptLogicProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
 
         supportedOutputFileNameExtensionsWithoutLeadingDots:
-            ECMA_ScriptLogicProcessingRestrictions.supportedOutputFileNameExtensionsWithoutLeadingDots,
+            ECMA_ScriptLogicProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots
 
-        directoriesAliasesRelativePaths: ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.common?.
-            directoriesRelativePathsAliases ?? {},
-
-        directoriesAliasesAbsolutePaths: ((): { [directoryAlias: string]: string; } => {
-
-          const directoriesAliasesAbsolutePaths: { [directoryAlias: string]: string; } = {};
-
-          for (
-            const [ directoryAlias, directoryAliasRelativePath ] of
-            Object.entries(ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.common?.directoriesRelativePathsAliases ?? {})
-          ) {
-            directoriesAliasesAbsolutePaths[directoryAlias] = ImprovedPath.buildAbsolutePath(
-              [ commonSettings__normalized.projectRootDirectoryAbsolutePath, directoryAliasRelativePath ],
-              { forwardSlashOnlySeparators: true }
-            );
-          }
-
-          return directoriesAliasesAbsolutePaths;
-        })()
       },
 
       linting: {
+
+        mustExecute: ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.linting?.enable ??
+            ECMA_ScriptLogicProcessingSettings__Default.linting.mustExecute,
+
         ...isNotUndefined(lintingSettings__fromFile__rawValid.presetFileRelativePath) ? {
-          presetFileAbsolutePath: ImprovedPath.buildAbsolutePath(
-          [
-            dataHoldingSelfInstance.consumingProjectRootDirectoryAbsolutePath,
-            lintingSettings__fromFile__rawValid.presetFileRelativePath
-          ],
-          { forwardSlashOnlySeparators: true }
+          presetFileAbsolutePath: ImprovedPath.joinPathSegments(
+            [
+              dataHoldingSelfInstance.consumingProjectRootDirectoryAbsolutePath,
+              lintingSettings__fromFile__rawValid.presetFileRelativePath
+            ],
+            { alwaysForwardSlashSeparators: true }
           )
-        } : null,
-        isCompletelyDisabled: lintingSettings__fromFile__rawValid.disableCompletely === true ?
-            true : !ECMA_ScriptLogicProcessingSettings__Default.linting.mustExecute
+        } : null
+
       },
 
-      entryPointsGroups:
+      relevantEntryPointsGroups:
           dataHoldingSelfInstance.createNormalizedEntryPointsGroupsSettings(
             ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.entryPointsGroups,
             dataHoldingSelfInstance.
@@ -109,6 +92,7 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
                 bind(dataHoldingSelfInstance)
           )
     };
+
   }
 
 
@@ -162,12 +146,8 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
       })(),
 
       entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML:
-          `${ ECMA_ScriptLogicProcessingSettings__Default.filePathAliasNotation }` +
-          `${
-            entryPointsGroupSettings__rawValid.
-                entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML ??
-            entryPointsGroupGenericSettings__normalized.ID
-          }`,
+          `${ ECMA_ScriptLogicProcessingSettings__Default.entryPointsGroupReferencePrefix }` +
+          `${ entryPointsGroupSettings__rawValid.customReferenceName ?? entryPointsGroupGenericSettings__normalized.ID }`,
 
       ...isNotUndefined(
         entryPointsGroupSettings__rawValid.
@@ -179,15 +159,14 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
                     associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer
           } : null,
 
-      ...isNotUndefined(entryPointsGroupSettings__rawValid.typeScriptConfigurationFileRelativePath) ? {
-        typeScriptConfigurationFileAbsolutePath: ImprovedPath.buildAbsolutePath(
-          [
-            this.consumingProjectRootDirectoryAbsolutePath,
-            entryPointsGroupSettings__rawValid.typeScriptConfigurationFileRelativePath
-          ],
-          { forwardSlashOnlySeparators: true }
-        )
-      } : null,
+      typeScriptConfigurationFileAbsolutePath: ImprovedPath.joinPathSegments(
+        [
+          this.consumingProjectRootDirectoryAbsolutePath,
+          entryPointsGroupSettings__rawValid.typeScriptConfigurationFileRelativePath ??
+              ECMA_ScriptLogicProcessingSettings__Default.typeScriptConfigurationFileRelativePath
+        ],
+        { alwaysForwardSlashSeparators: true }
+      ),
 
       revisioning: {
         mustExecute:
@@ -204,12 +183,15 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
       },
 
       ...isNotUndefined(distributingSettings__rawValid) ? {
+
         distributing: {
+
           exposingOfExportsFromEntryPoints: {
             mustExpose: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.mustExpose ??
                 ECMA_ScriptLogicProcessingSettings__Default.distributing.exposingOfExportsFromEntryPoints.mustExpose,
             namespace: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.namespace
           },
+
           typeScriptTypesDeclarations: {
             mustGenerate: distributingSettings__rawValid.typeScriptTypesDeclarations?.mustGenerate ??
                 ECMA_ScriptLogicProcessingSettings__Default.distributing.typeScriptTypesDeclarations.mustGenerate,
@@ -217,7 +199,10 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
                 ECMA_ScriptLogicProcessingSettings__Default.distributing.typeScriptTypesDeclarations.fileNameWithoutExtension
           }
         }
+
       } : null
     };
+
   }
+
 }

@@ -27,13 +27,13 @@ abstract class AssetsProcessingRawSettingsNormalizer {
   protected consumingProjectRootDirectoryAbsolutePath: string;
   protected consumingProjectBuildingMode: string;
 
-  protected readonly assetsGroupsIDsSelection: Array<string>;
+  protected readonly assetsGroupsIDsSelection: ReadonlyArray<string>;
 
 
   protected constructor(namedParameters: AssetsProcessingRawSettingsNormalizer.ConstructorParameters) {
     this.consumingProjectRootDirectoryAbsolutePath = namedParameters.consumingProjectRootDirectoryAbsolutePath;
     this.consumingProjectBuildingMode = namedParameters.consumingProjectBuildingMode;
-    this.assetsGroupsIDsSelection = undefinedToEmptyArray(namedParameters.assetsGroupsIDsSelection);
+    this.assetsGroupsIDsSelection = namedParameters.assetsGroupsIDsSelection ?? [];
   }
 
 
@@ -69,7 +69,7 @@ abstract class AssetsProcessingRawSettingsNormalizer {
 
       const currentAssetsGroupSourceFilesDirectoryAbsolutePath: string =
           ImprovedPath.extractDirectoryFromFilePath(
-            ImprovedPath.buildAbsolutePath(
+            ImprovedPath.joinPathSegments(
               [
                 this.consumingProjectRootDirectoryAbsolutePath,
                 assetsGroupSettings__rawValid.sourceFilesTopDirectoryRelativePath
@@ -82,10 +82,10 @@ abstract class AssetsProcessingRawSettingsNormalizer {
         assetsGroupSettings__rawValid.sourceFilesTopDirectoryPathAliasForReferencingFromHTML ?? `@${ groupID }`;
 
       const outputFilesBaseDirectoryAbsolutePathActualForCurrentProjectBuildingMode: string =
-          ImprovedPath.buildAbsolutePath(
+          ImprovedPath.joinPathSegments(
             [
               this.consumingProjectRootDirectoryAbsolutePath,
-              assetsGroupSettings__buildingModeDependent__rawValid.outputBaseDirectoryRelativePath
+              assetsGroupSettings__buildingModeDependent__rawValid.outputTopDirectoryRelativePath
             ],
             { forwardSlashOnlySeparators: true }
           );
@@ -148,7 +148,7 @@ namespace AssetsProcessingRawSettingsNormalizer {
   export type ConstructorParameters = {
     readonly consumingProjectRootDirectoryAbsolutePath: string;
     readonly consumingProjectBuildingMode: string;
-    readonly assetsGroupsIDsSelection?: Array<string>;
+    readonly assetsGroupsIDsSelection?: ReadonlyArray<string>;
   };
 }
 

@@ -22,16 +22,14 @@ import SourceCodeProcessingRawSettingsNormalizer from
     "@ProjectBuilding:Common/RawSettingsNormalizers/SourceCodeProcessingRawSettingsNormalizer";
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
-import { isUndefined, isBoolean, isNotUndefined } from "@yamato-daiwa/es-extensions";
+import { isUndefined, isNotUndefined } from "@yamato-daiwa/es-extensions";
 import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
 
 export default class StylesProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSettingsNormalizer {
 
-  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: Array<string> = StylesProcessingRestrictions.
-      supportedSourceFileNameExtensionsWithoutLeadingDots;
-
-  private readonly lintingCommonSettings: StylesProcessingSettings__Normalized.Linting;
+  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string> = StylesProcessingRestrictions.
+      supportedSourceFilesNamesExtensionsWithoutLeadingDots;
 
 
   public static normalize(
@@ -50,10 +48,10 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
               isCompletelyDisabled: !StylesProcessingSettings__Default.linting.mustExecute
             } :
             {
-              isCompletelyDisabled: stylesProcessingSettings__fromFile__rawValid.linting.disableCompletely === true ?
+              isCompletelyDisabled: stylesProcessingSettings__fromFile__rawValid.linting.enable === true ?
                   true : !StylesProcessingSettings__Default.linting.mustExecute,
               ...isNotUndefined(stylesProcessingSettings__fromFile__rawValid.linting.presetFileRelativePath) ? {
-                presetFileAbsolutePath: ImprovedPath.buildAbsolutePath(
+                presetFileAbsolutePath: ImprovedPath.joinPathSegments(
                   [
                     commonSettings__normalized.projectRootDirectoryAbsolutePath,
                     StlintLinterSpecialist.DEFAULT_CONFIG_FILE_NAME_WITH_EXTENSION
@@ -65,8 +63,7 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
 
     const dataHoldingSelfInstance: StylesProcessingRawSettingsNormalizer =
         new StylesProcessingRawSettingsNormalizer({
-          consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
-          consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+          projectBuildingCommonSettings__normalized: commonSettings__normalized,
           ...isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) ? {
             entryPointsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.stylesProcessing
           } : {},
@@ -76,12 +73,12 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
     return {
       common: {
         supportedSourceFileNameExtensionsWithoutLeadingDots:
-            StylesProcessingRestrictions.supportedSourceFileNameExtensionsWithoutLeadingDots,
+            StylesProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
         supportedOutputFileNameExtensionsWithoutLeadingDots:
-            StylesProcessingRestrictions.supportedOutputFileNameExtensionsWithoutLeadingDots,
+            StylesProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots,
         waitingForSubsequentFilesWillBeSavedPeriod__seconds:
-          stylesProcessingSettings__fromFile__rawValid.common?.waitingForSubsequentFilesWillBeSavedPeriod__seconds ??
-          StylesProcessingSettings__Default.waitingForSubsequentFilesWillBeSavedPeriod__seconds
+          stylesProcessingSettings__fromFile__rawValid.common?.periodBetweenFileUpdatingAndRebuildingStarting__seconds ??
+          StylesProcessingSettings__Default.periodBetweenFileUpdatingAndRebuildingStarting__seconds
       },
       linting: lintingCommonSettings,
       entryPointsGroupsActualForCurrentProjectBuildingMode:
@@ -102,10 +99,7 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
           lintingCommonSettings: StylesProcessingSettings__Normalized.Linting;
         }
   ) {
-
     super(namedParameters);
-
-    this.lintingCommonSettings = namedParameters.lintingCommonSettings;
   }
 
 
@@ -119,46 +113,23 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
       ...entryPointsGroupGenericSettings__normalized,
 
       entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML:
-          `${ StylesProcessingSettings__Default.filePathAliasNotation }` +
-          `${
-            entryPointsGroupSettings__rawValid.
-                entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasNameForReferencingFromHTML ??
-            entryPointsGroupGenericSettings__normalized.ID
-          }`,
+          `${ StylesProcessingSettings__Default.entryPointsGroupReferencePrefix }` +
+          `${ entryPointsGroupSettings__rawValid.customReferenceName ?? entryPointsGroupGenericSettings__normalized.ID }`,
 
       revisioning: {
 
         mustExecute:
             entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
                 revisioning?.disable === true ?
-                    false : StylesProcessingSettings__Default.revisioning.mustExecute(this.consumingProjectBuildingMode),
+                    false : StylesProcessingSettings__Default.revisioning.mustExecute({
+                      consumingProjectBuildingMode: this.consumingProjectBuildingMode
+                    }),
         contentHashPostfixSeparator:
             entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
                 revisioning?.contentHashPostfixSeparator ??
             StylesProcessingSettings__Default.revisioning.contentHashPostfixSeparator
-      },
-
-      linting: {
-        mustExecute: ((): boolean => {
-
-          if (this.lintingCommonSettings.isCompletelyDisabled) {
-            return false;
-          }
-
-
-          if (isUndefined(entryPointsGroupSettings__rawValid.linting)) {
-            return StylesProcessingSettings__Default.linting.mustExecute;
-          }
-
-
-          if (isBoolean(entryPointsGroupSettings__rawValid.linting.disable)) {
-            return !entryPointsGroupSettings__rawValid.linting.disable;
-          }
-
-
-          return StylesProcessingSettings__Default.linting.mustExecute;
-        })()
       }
     };
+
   }
 }

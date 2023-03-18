@@ -2,19 +2,8 @@ import ResourcesReferencesResolverForHTML from
     "@MarkupProcessing/Plugins/ResourcesReferencesResolverForHTML/ResourcesReferencesResolverForHTML";
 import Localization = ResourcesReferencesResolverForHTML.Localization;
 
-import { capitalizeFirstCharacter } from "@yamato-daiwa/es-extensions";
-
 
 const resourcesReferencesResolverForHTML_Localization__english: ResourcesReferencesResolverForHTML.Localization = {
-
-  generateUnableToResolveShortenedAbsolutePathWarningLog: (
-    namedParameters: Localization.UnableToResolveShortenedAbsolutePathWarningLog.TemplateNamedParameters
-  ): Localization.UnableToResolveShortenedAbsolutePathWarningLog => ({
-    title: `${ capitalizeFirstCharacter(namedParameters.filesType__singularForm) } file, unable to resolve the absolute path`,
-    description: `Unable to resolve the shortened absolute path for the ${ namedParameters.filesType__singularForm } file ` +
-        `because no public path has been specified for '${ namedParameters.projectBuildingMode }' project building mode. ` +
-        "Relative path will be used instead."
-  }),
 
   generateUnknownResourceGroupReferenceWarningLog: (
     namedParameters: Localization.UnknownResourceGroupReferenceWarningLog.TemplateNamedParameters
@@ -30,8 +19,8 @@ const resourcesReferencesResolverForHTML_Localization__english: ResourcesReferen
     namedParameters: Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog.TemplateNamedParameters
   ): Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog => ({
     title: `Unknown path to ${ namedParameters.fileType__singularForm } file`,
-    description: `The aliased path '${ namedParameters.pickedPathOfTargetResourceFile }' without filename extension ` +
-        "refers to unknown file. Tried to search at path with all supported filename extensions: " +
+    description: `The aliased path '${ namedParameters.pickedPathOfTargetResourceFile }' refers to unknown file. ` +
+        "Tried to search at path with all supported filename extensions: " +
         `${ namedParameters.checkedAbsolutePaths__formatted }.`
   }),
 
