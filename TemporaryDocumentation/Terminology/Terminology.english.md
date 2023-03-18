@@ -1,18 +1,5 @@
 # Terminology
 
-## YDA
-
-## Task
-
-## Scenario
-
-## Entry points and partials
-
-## Assets
-
-## Selective execution
-
-
 <dl>
 
   <dt>YDA</dt>
