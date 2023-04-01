@@ -44,7 +44,7 @@ export default class ImprovedGlob {
 
 
   /** @description The facading of 'minimatch'.　*/
-  public static isFileMatchingWithGlobSelector(
+  public static isFilePathMatchingWithGlobSelector(
     parametersObject: { filePath: string; globSelector: string; }
   ): boolean {
     return minimatch(parametersObject.filePath, parametersObject.globSelector);
@@ -233,13 +233,8 @@ export default class ImprovedGlob {
         `${ removeSlashes(namedParameters.relativePathBasedGlob, { leading: true, trailing: true }) }`;
   }
 
-  private static isExcludingGlobSelector(globSelector: string): boolean {
-
-    if (globSelector.length === 0) {
-      return false;
-    }
-
-
+  public static isExcludingGlobSelector(globSelector: string): boolean {
     return globSelector.startsWith("!");
   }
+
 }

@@ -89,7 +89,7 @@ export default abstract class GulpStreamsBasedSourceCodeProcessor<
         const sourceFilesDirectoryThatAlwaysWillBeBeingWatchedGlobSelector
         of this.globSelectorsOfSourceFilesWithSupportedFilenameExtensionsInEntryPointsGroupRootDirectoryAndBelow
       ) {
-        if (ImprovedGlob.isFileMatchingWithGlobSelector({
+        if (ImprovedGlob.isFilePathMatchingWithGlobSelector({
           filePath: partialFileAbsolutePath,
           globSelector: sourceFilesDirectoryThatAlwaysWillBeBeingWatchedGlobSelector
         })) {

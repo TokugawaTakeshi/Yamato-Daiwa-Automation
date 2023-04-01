@@ -147,7 +147,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
         Array.from(this.actualAssetsGroupsSettings.values()).
           find(
               (assetsGroupNormalizedSettings: SpecificAssetsGroupNormalizedSettings): boolean =>
-                  ImprovedGlob.isFileMatchingWithGlobSelector({
+                  ImprovedGlob.isFilePathMatchingWithGlobSelector({
                     filePath: targetSourceFileAbsolutePath,
                     globSelector: assetsGroupNormalizedSettings.sourceFilesGlobSelector
                   })
