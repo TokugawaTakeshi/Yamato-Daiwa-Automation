@@ -1,132 +1,85 @@
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 
-/* --- Abstractions ------------------------------------------------------------------------------------------------- */
-import GulpStreamsBasedSourceCodeLinter from
-    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/SourceCodeLinter/GulpStreamsBasedSourceCodeLinter";
+/* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
+import MarkupSourceFilesWatcher from "@MarkupProcessing/MarkupSourceFilesWatcher";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
-import Gulp from "gulp";
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+import LinterLikeTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/LinterLikeTaskExecutor";
+
+/* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
+import type VinylFile from "vinyl";
+
+/* ─── Third-party Solutions Specialises ──────────────────────────────────────────────────────────────────────────── */
+import PugPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/PugPreProcessorSpecialist";
+
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import PugLint from "pug-lint";
 import PugLintConfigFile from "pug-lint/lib/config-file";
-import gulpIf from "gulp-if";
-import type VinylFile from "vinyl";
 import GulpStreamModifier from "@Utils/GulpStreamModifier";
 import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
-import { obj as combineObjectStreams } from "stream-combiner2";
-import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
-import FileSystem from "fs";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
-import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
   RawObjectDataProcessor,
   PoliteErrorsMessagesBuilder,
   Logger,
-  InvalidExternalDataError,
   InvalidConfigError,
   ConfigFileNotFoundError,
   isNonEmptyArray,
   isUndefined,
-  isNotUndefined,
   insertSubstring,
-  stringifyAndFormatArbitraryValue
+  cropString,
+  limitMinimalValue
 } from "@yamato-daiwa/es-extensions";
-import extractSubstring from "@UtilsIncubator/extractSubstring";
 import type { ErrorLog } from "@yamato-daiwa/es-extensions";
-import { ObjectDataFilesProcessor } from "@yamato-daiwa/es-extensions-nodejs";
+import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
-/* --- Localization ------------------------------------------------------------------------------------------------- */
+/* ─── Localization ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import markupSourceCodeLinterLocalization__english from
     "@MarkupProcessing/Subtasks/Linting/MarkupSourceCodeLinterLocalization.english";
 
 
-class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
+class MarkupSourceCodeLinter extends LinterLikeTaskExecutor<MarkupSourceCodeLinter.LintingIssue> {
 
   public static localization: MarkupSourceCodeLinter.Localization = markupSourceCodeLinterLocalization__english;
-
-  private static readonly LINTING_OPTIMIZATIONS_FILE_NAME_WITH_EXTENSION: string = "MarkupLintingCache.json";
-  private static readonly cachedLintingResultsFileContentSpecification: RawObjectDataProcessor.
-      AssociativeArrayOfUniformValuesTypeDataSpecification =
-      {
-        subtype: RawObjectDataProcessor.ObjectSubtypes.associativeArray,
-        nameForLogging: "CachedMarkupLintingResultsFileContent",
-        value: {
-          type: Object,
-          properties: {
-            issues: {
-              type: Array,
-              required: true,
-              element: {
-                type: Object,
-                properties: {
-                  code: {
-                    type: String,
-                    required: true,
-                    minimalCharactersCount: 1
-                  },
-                  message: {
-                    type: String,
-                    required: true,
-                    minimalCharactersCount: 1
-                  },
-                  sourceListing: {
-                    type: String,
-                    required: true
-                  },
-                  lineNumber: {
-                    type: Number,
-                    required: true,
-                    numbersSet: RawObjectDataProcessor.NumbersSets.nonNegativeInteger
-                  },
-                  columnNumber: {
-                    type: Number,
-                    required: false,
-                    numbersSet: RawObjectDataProcessor.NumbersSets.nonNegativeInteger
-                  }
-                }
-              }
-            },
-            modificationDatetime__ISO_8601: {
-              type: String,
-              required: true,
-              minimalCharactersCount: 1
-            }
-          }
-        }
-      };
-
-  private static readonly DISPLAYING_LINES_COUNT_BEFORE_ISSUE_IN_CODE_LISTING: number = 2;
-  private static readonly DISPLAYING_LINES_COUNT_AFTER_ISSUE_IN_CODE_LISTING: number = 1;
-
-
-  protected readonly targetFilesGlobSelectors: Array<string>;
-  protected readonly TASK_NAME_FOR_LOGGING: string;
-  protected readonly SUBTASK_NAME_FOR_LOGGING: string = "Markup linting";
-  protected readonly LINTER_NAME: string = "Markup source files linter";
 
   private readonly pugLintInstance: PugLint = new PugLint();
   private readonly pugLintConfig: PugLint.Config;
 
-  private readonly CACHED_LINTING_RESULTS_FILE_ABSOLUTE_PATH: string;
-  private cachedLintingResults: MarkupSourceCodeLinter.CachedLintingResults;
-
 
   public static provideLintingIfMust(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): () => NodeJS.ReadWriteStream {
 
     const markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative | undefined =
-        masterConfigRepresentative.markupProcessingSettingsRepresentative;
+        projectBuildingMasterConfigRepresentative.markupProcessingSettingsRepresentative;
 
     if (isUndefined(markupProcessingSettingsRepresentative)) {
       return createImmediatelyEndingEmptyStream();
     }
 
 
-    const pugLintConfig: PugLint.Config | undefined = PugLintConfigFile.load();
+    let pugLintConfig: PugLint.Config | undefined;
+
+    try {
+
+      pugLintConfig = PugLintConfigFile.load();
+
+    } catch (error: unknown) {
+
+      Logger.throwErrorAndLog({
+        errorInstance: new InvalidConfigError({
+          customMessage: "Invalid puglint config."
+        }),
+        title: InvalidConfigError.localization.defaultTitle,
+        occurrenceLocation: "MarkupSourceCodeLinter.provideLintingIfMust(projectBuildingMasterConfigRepresentative)",
+        innerError: error
+      });
+
+    }
+
 
     if (isUndefined(pugLintConfig)) {
 
@@ -135,11 +88,11 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
         title: MarkupSourceCodeLinter.localization.pugLintFileNotFoundErrorLog.title,
         description: ConfigFileNotFoundError.localization.generateDescription({
           targetTechnologyName: "pug-lint",
-          configFilePathOrMultipleOfThem: [ ".pug-lintrc", ".pug-lintrc.js", ".pug-lintrc.json", "package.json[pugLintConfig]" ],
+          configFilePathOrMultipleOfThem: PugPreProcessorSpecialist.linterConfigurationFilesNamesWithExtensions,
           messageSpecificPart: MarkupSourceCodeLinter.localization.pugLintFileNotFoundErrorLog.
               pugLintConfigurationFileRequirementExplanation
         }),
-        occurrenceLocation: "MarkupSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative)"
+        occurrenceLocation: "MarkupSourceCodeLinter.provideLintingIfMust(projectBuildingMasterConfigRepresentative)"
       });
 
       return createImmediatelyEndingEmptyStream();
@@ -147,87 +100,148 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
     }
 
 
-    const dataHoldingSelfInstance: MarkupSourceCodeLinter = new MarkupSourceCodeLinter({
-      masterConfigRepresentative,
+    const dataHoldingSelfSoleInstance: MarkupSourceCodeLinter = new MarkupSourceCodeLinter({
       markupProcessingSettingsRepresentative,
+      projectBuildingMasterConfigRepresentative,
       pugLintConfig
     });
 
-    return dataHoldingSelfInstance.lint(dataHoldingSelfInstance.targetFilesGlobSelectors);
+    if (projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
+
+      MarkupSourceFilesWatcher.
+          initializeIfRequiredAndGetInstance({
+            markupProcessingSettingsRepresentative,
+            projectBuildingMasterConfigRepresentative
+          }).
+          addOnAnyRelatedFileAddedEventHandler({
+            handlerID: "ON_ANY_MARKUP_FILE_ADDED--BY_MARKUP_SOURCE_CODE_LINTER",
+            handler: dataHoldingSelfSoleInstance.onFileHasBeenAddedOrUpdated.bind(dataHoldingSelfSoleInstance)
+          }).
+          addOnAnyRelatedFileUpdatedEventHandler({
+            handlerID: "ON_ANY_MARKUP_FILE_UPDATED--BY_MARKUP_SOURCE_CODE_LINTER",
+            handler: dataHoldingSelfSoleInstance.onFileHasBeenAddedOrUpdated.bind(dataHoldingSelfSoleInstance)
+          }).
+          addOnAnyRelatedFileDeletedEventHandler({
+            handlerID: "ON_ANY_MARKUP_FILE_DELETED--BY_MARKUP_SOURCE_CODE_LINTER",
+            handler: dataHoldingSelfSoleInstance.onFileHasBeenDeleted.bind(dataHoldingSelfSoleInstance)
+          });
+
+    }
+
+    return dataHoldingSelfSoleInstance.checkFiles(dataHoldingSelfSoleInstance.targetFilesGlobSelectors);
 
   }
 
 
   private constructor(
     {
-      masterConfigRepresentative,
       markupProcessingSettingsRepresentative,
+      projectBuildingMasterConfigRepresentative,
       pugLintConfig
     }: Readonly<{
-      masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
       markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
+      projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
       pugLintConfig: PugLint.Config;
     }>
   ) {
 
-    super(masterConfigRepresentative);
+    super({
 
-    this.CACHED_LINTING_RESULTS_FILE_ABSOLUTE_PATH = ImprovedPath.joinPathSegments(
-      [
-        DotYDA_DirectoryManager.OPTIMIZATION_FILES_DIRECTORY_ABSOLUTE_PATH,
-        MarkupSourceCodeLinter.LINTING_OPTIMIZATIONS_FILE_NAME_WITH_EXTENSION
+      projectBuildingMasterConfigRepresentative,
+
+      taskTitleForLogging: "Markup processing / Markup source code linting",
+
+      sourceFilesCachedCheckingResults: {
+        fileNameWithExtension: "MarkupLintingCache.json",
+        contentSpecification: {
+          subtype: RawObjectDataProcessor.ObjectSubtypes.fixedKeyAndValuePairsObject,
+          nameForLogging: "CachedMarkupLintingResultsFileContent",
+          properties: {
+            files: {
+              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+              required: true,
+              value: {
+                type: Object,
+                properties: {
+                  issues: {
+                    type: Array,
+                    required: true,
+                    element: {
+                      type: Object,
+                      properties: {
+                        code: {
+                          type: String,
+                          required: true,
+                          minimalCharactersCount: 1
+                        },
+                        message: {
+                          type: String,
+                          required: true,
+                          minimalCharactersCount: 1
+                        },
+                        sourceListing: {
+                          type: String,
+                          required: true
+                        },
+                        lineNumber: {
+                          type: Number,
+                          required: true,
+                          numbersSet: RawObjectDataProcessor.NumbersSets.nonNegativeInteger
+                        },
+                        columnNumber: {
+                          type: Number,
+                          required: false,
+                          numbersSet: RawObjectDataProcessor.NumbersSets.nonNegativeInteger
+                        }
+                      }
+                    }
+                  },
+                  modificationDateTime__ISO_8601: {
+                    type: String,
+                    required: true,
+                    minimalCharactersCount: 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        emptyValue: {
+          files: {}
+        }
+      },
+
+      targetFilesGlobSelectors: [
+
+        ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
+          basicDirectoryPath: projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
+          fileNamesExtensions: [ "pug" ]
+        }),
+
+        ImprovedGlob.buildExcludingOfDirectoryWithSubdirectoriesGlobSelector(
+          ImprovedPath.joinPathSegments(
+            [ projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath, "node_modules" ]
+          )
+        ),
+
+        ...isNonEmptyArray(pugLintConfig.excludeFiles) ? pugLintConfig.excludeFiles.map(
+          (globSelector: string): string => ImprovedGlob.buildAbsolutePathBasedGlob({
+            basicDirectoryPath: projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
+            relativePathBasedGlob: globSelector,
+            isExclusive: true
+          })
+        ) : []
+
       ],
-      { forwardSlashOnlySeparators: true }
-    );
 
-    if (FileSystem.existsSync(this.CACHED_LINTING_RESULTS_FILE_ABSOLUTE_PATH)) {
-
-      try {
-
-        this.cachedLintingResults = ObjectDataFilesProcessor.processFile({
-          filePath: this.CACHED_LINTING_RESULTS_FILE_ABSOLUTE_PATH,
-          validDataSpecification: MarkupSourceCodeLinter.cachedLintingResultsFileContentSpecification
-        });
-
-      } catch (error: unknown) {
-
-        Logger.logError({
-          errorType: InvalidExternalDataError.NAME,
-          title: InvalidExternalDataError.localization.defaultTitle,
-          description: PoliteErrorsMessagesBuilder.buildMessage({
-            technicalDetails: InvalidExternalDataError.localization.generateDescription({
-              mentionToExpectedData: MarkupSourceCodeLinter.cachedLintingResultsFileContentSpecification.nameForLogging
-            }),
-            politeExplanation: MarkupSourceCodeLinter.localization.invalidCachedLintingResultsDataErrorLog.politeExplanation
-          }),
-          occurrenceLocation: "MarkupSourceCodeLinter.provideMarkupProcessingIfMust(masterConfigRepresentative)",
-          caughtError: error
-        });
-
-        this.cachedLintingResults = {};
-
+      logging: {
+        pathsOfFilesWillBeProcessed: markupProcessingSettingsRepresentative.loggingSettings.filesPaths,
+        quantityOfFilesWillBeProcessed: markupProcessingSettingsRepresentative.loggingSettings.filesCount,
+        checkingStart: markupProcessingSettingsRepresentative.loggingSettings.linting.starting,
+        completionWithoutIssues: markupProcessingSettingsRepresentative.loggingSettings.linting.completionWithoutIssues
       }
 
-    } else {
-      this.cachedLintingResults = {};
-    }
-
-    this.targetFilesGlobSelectors = [
-
-      ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
-        basicDirectoryPath: masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-        fileNamesExtensions: [ "pug" ]
-      }),
-
-      ...isNonEmptyArray(pugLintConfig.excludeFiles) ? pugLintConfig.excludeFiles.map(
-        (globSelector: string): string => ImprovedGlob.buildAbsolutePathBasedGlob({
-          isExclusive: true,
-          basicDirectoryPath: masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-          relativePathBasedGlob: globSelector
-        })
-      ) : []
-
-    ];
+    });
 
     this.pugLintConfig = pugLintConfig;
 
@@ -242,182 +256,74 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
           customMessage: MarkupSourceCodeLinter.localization.pugLintConfigurationIsInvalid.description
         }),
         title: MarkupSourceCodeLinter.localization.pugLintConfigurationIsInvalid.title,
-        occurrenceLocation: "MarkupSourceCodeLinter.provideMarkupProcessingIfMust(masterConfigRepresentative)",
-        wrappableError: error
+        occurrenceLocation:
+            "MarkupSourceCodeLinter.provideLintingIfMust(projectBuildingMasterConfigRepresentative) ->" +
+            "constructor(compoundParameter)",
+        innerError: error
       });
 
     }
 
-
-    this.TASK_NAME_FOR_LOGGING = markupProcessingSettingsRepresentative.TASK_NAME_FOR_LOGGING;
-
   }
 
 
-  protected lint(globSelectorsOrAbsolutePathsOfTargetFiles: Array<string>): () => NodeJS.ReadWriteStream {
+  /* ━━━  Pipeline methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  protected async checkSingleFile(targetMarkupSourceFile: VinylFile): Promise<GulpStreamModifier.CompletionSignals> {
 
-    if (globSelectorsOrAbsolutePathsOfTargetFiles.length === 0) {
-      return createImmediatelyEndingEmptyStream();
+    try {
+
+      targetMarkupSourceFile[LinterLikeTaskExecutor.CHECKING_ISSUES_MESSAGES_PROPERTY_NAME_AT_VINYL_FILE_INSTANCE] =
+          this.pugLintInstance.
+              checkFile(targetMarkupSourceFile.path).
+              map(
+                (error: PugLint.RawError): MarkupSourceCodeLinter.LintingIssue =>
+                    ({
+                      code: error.code,
+                      message: error.msg,
+                      sourceListing: error.src,
+                      lineNumber: error.line,
+                      columnNumber: error.column
+                    })
+              );
+
+    } catch (error: unknown) {
+
+      Logger.throwErrorAndLog({
+        errorType: "MarkupLintingError",
+        title: MarkupSourceCodeLinter.localization.lintingFailedErrorLog.title,
+        description: PoliteErrorsMessagesBuilder.buildMessage({
+          technicalDetails: MarkupSourceCodeLinter.localization.lintingFailedErrorLog.technicalDetails,
+          politeExplanation: MarkupSourceCodeLinter.localization.lintingFailedErrorLog.politeExplanation
+        }),
+        occurrenceLocation: "markupSourceCodeLinter.checkSingleFile()",
+        innerError: error
+      });
+
     }
 
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
 
-    return (): NodeJS.ReadWriteStream => Gulp.
-
-        /* [ Theory ] No need to read the files immediately - maybe it has not changed since last modification thus linting
-              results could be cached. */
-        src(globSelectorsOrAbsolutePathsOfTargetFiles, { read: false }).
-
-        pipe(super.printProcessedFilesPathsAndQuantity({ subtaskName: this.SUBTASK_NAME_FOR_LOGGING })).
-        pipe(super.handleErrorIfItWillOccur({ subtaskName: this.SUBTASK_NAME_FOR_LOGGING })).
-
-        pipe(gulpIf(
-
-          (markupSourceFile: VinylFile): boolean =>
-              this.hasLintingResultsBeenCachedForSpecificMarkupFile(markupSourceFile),
-
-          GulpStreamModifier.modify({
-            onStreamStartedEventCommonHandler:
-                async (markupSourceFile: VinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
-
-                  const targetFileRelativePath: string = ImprovedPath.computeRelativePath({
-                    comparedPath: markupSourceFile.path,
-                    basePath: this.masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
-                  });
-
-                  markupSourceFile.lintingResults = this.cachedLintingResults[targetFileRelativePath]?.issues;
-
-                  return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-
-                }
-          }),
-
-          combineObjectStreams(
-
-            GulpStreamModifier.modify({
-              async onStreamStartedEventCommonHandler(file: VinylFile): Promise<GulpStreamModifier.CompletionSignals> {
-                file.contents = FileSystem.readFileSync(file.path);
-                return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-              }
-            }),
-
-            GulpStreamModifier.modify({
-              onStreamStartedEventCommonHandler: async (file: VinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
-
-                let lintingIssues: ReadonlyArray<MarkupSourceCodeLinter.NormalizedLintingIssue>;
-
-                try {
-
-                  lintingIssues = this.pugLintInstance.checkFile(file.path).
-                      map((error: PugLint.RawError): MarkupSourceCodeLinter.NormalizedLintingIssue =>
-                          ({
-                            code: error.code,
-                            message: error.msg,
-                            sourceListing: error.src,
-                            lineNumber: error.line,
-                            columnNumber: error.column
-                          }));
-
-                } catch (error: unknown) {
-
-                  Logger.throwErrorAndLog({
-                    errorType: "MarkupLintingError",
-                    title: MarkupSourceCodeLinter.localization.pugLintingFailedErrorLog.title,
-                    description: PoliteErrorsMessagesBuilder.buildMessage({
-                      technicalDetails: MarkupSourceCodeLinter.localization.pugLintingFailedErrorLog.technicalDetails,
-                      politeExplanation: MarkupSourceCodeLinter.localization.pugLintingFailedErrorLog.politeExplanation
-                    }),
-                    occurrenceLocation: "markupSourceCodeLinter.lint()",
-                    wrappableError: error
-                  });
-
-                }
-
-                file.lintingIssues = lintingIssues;
-
-                return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-
-              }
-            }),
-
-            GulpStreamModifier.modify({
-              onStreamStartedEventCommonHandler: async (file: VinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
-
-                this.cachedLintingResults[ImprovedPath.replacePathSeparatorsToForwardSlashes(file.relative)] = {
-                  issues: file.lintingIssues,
-                  modificationDatetime__ISO_8601: file.stat?.mtime.toJSON() ?? new Date().toISOString()
-                };
-
-                return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-              }
-            })
-        )
-    )).
-
-    on("end", (): void => {
-
-      const atLeastOneLintingIssueFound: boolean = Object.values(this.cachedLintingResults).some(
-          (lintingResult: MarkupSourceCodeLinter.CachedLintingResult | undefined): boolean =>
-              isNotUndefined(lintingResult) && lintingResult.issues.length > 0
-      );
-
-      if (atLeastOneLintingIssueFound) {
-
-        const issuesFormattedLogs: Array<string> = [];
-
-        for (const [ fileRelativePath, lintingResult ] of Object.entries(this.cachedLintingResults)) {
-
-          if (isUndefined(lintingResult) || lintingResult.issues.length === 0) {
-            continue;
-          }
-
-
-          issuesFormattedLogs.push(
-            `■ ${ fileRelativePath }: ${ lintingResult.issues.length } issue(s)` +
-            `\n${ MarkupSourceCodeLinter.formatIssuesOfSingleFile(lintingResult) }`
-          );
-        }
-
-        Logger.logErrorLikeMessage({
-          title: "Markup linting, issue(s) found",
-          description: `\n${ issuesFormattedLogs.join("\n\n") }`
-        });
-      }
-
-
-      FileSystem.writeFileSync(
-        this.CACHED_LINTING_RESULTS_FILE_ABSOLUTE_PATH,
-        stringifyAndFormatArbitraryValue(this.cachedLintingResults)
-      );
-
-    });
   }
 
-  private hasLintingResultsBeenCachedForSpecificMarkupFile(targetMarkupSourceFile: VinylFile): boolean {
-    return this.cachedLintingResults[ImprovedPath.replacePathSeparatorsToForwardSlashes(targetMarkupSourceFile.relative)]?.
-        modificationDatetime__ISO_8601 === targetMarkupSourceFile.stat?.mtime.toJSON();
-  }
-
-  private static formatIssuesOfSingleFile(
-    lintingResult: MarkupSourceCodeLinter.CachedLintingResult
+  protected formatIssuesOfSingleFile(
+    lintingResult: LinterLikeTaskExecutor.CachedCheckingResults.File<MarkupSourceCodeLinter.LintingIssue>
   ): string {
     return lintingResult.issues.map(
-        (issue: MarkupSourceCodeLinter.NormalizedLintingIssue): string =>
+        (issue: MarkupSourceCodeLinter.LintingIssue): string =>
             "------------------------------------------------------------------------------------------------------\n" +
-            `${ MarkupSourceCodeLinter.createExtractionFromCodeListingWithHighlightedIssueLine(issue) }\n` +
+            `${ this.createExtractionFromCodeListingWithHighlightedIssueLine(issue) }\n` +
             "------------------------------------------------------------------------------------------------------\n" +
             `${ issue.message } (${ issue.code })\n` +
             `at line ${ issue.lineNumber }` +
-            `${
-                insertSubstring(issue.columnNumber,
-                {
-                  modifier: (stringifiedColumnNumber: string): string => `, column ${ stringifiedColumnNumber }`
-                })
-            }`
+            insertSubstring(
+              issue.columnNumber,
+              { modifier: (stringifiedColumnNumber: string): string => `, column ${ stringifiedColumnNumber }` }
+            )
     ).join("\n\n");
   }
 
-  private static createExtractionFromCodeListingWithHighlightedIssueLine(
-    issue: MarkupSourceCodeLinter.NormalizedLintingIssue
+  private createExtractionFromCodeListingWithHighlightedIssueLine(
+    issue: MarkupSourceCodeLinter.LintingIssue
   ): string {
 
     const sourceCodeListingExplodedToLines: Array<string> = issue.sourceListing.split("\n");
@@ -428,55 +334,61 @@ class MarkupSourceCodeLinter extends GulpStreamsBasedSourceCodeLinter {
     } else {
 
       const targetCodeLine: string = sourceCodeListingExplodedToLines[issue.lineNumber - 1];
-      const codeFragmentPartWhichMustBeHighlighted: string = extractSubstring(targetCodeLine, {
-        startingSymbolNumber__numerationFrom1: issue.columnNumber,
-        lastSymbolNumber__numerationFrom0: targetCodeLine.length - 1
+
+      /* [ Pug-lint theory ]
+      *  Is it the bug it or not, but the "pug-lint" could refer to the empty line.
+      *  To prevent the `-1` value for `endingCharacterNumber__numerationFrom0`, `limitMinimalValue` is required.
+      *  */
+      const codeFragmentPartWhichMustBeHighlighted: string = cropString({
+        targetString: targetCodeLine,
+        startingCharacterNumber__numerationFrom1: issue.columnNumber,
+        endingCharacterNumber__numerationFrom0: limitMinimalValue({
+          targetNumber: targetCodeLine.length - 1,
+          minimalValue: 0
+        }),
+        mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: false
       });
 
       sourceCodeListingExplodedToLines[issue.lineNumber - 1] = targetCodeLine.replace(
-          codeFragmentPartWhichMustBeHighlighted,
-          Logger.highlightText(codeFragmentPartWhichMustBeHighlighted)
+        codeFragmentPartWhichMustBeHighlighted,
+        Logger.highlightText(codeFragmentPartWhichMustBeHighlighted)
       );
     }
 
 
     let firstLineWhichBeExtractedFromCodeListingForLogging: number = issue.lineNumber - 1 -
-        MarkupSourceCodeLinter.DISPLAYING_LINES_COUNT_BEFORE_ISSUE_IN_CODE_LISTING;
+        this.DISPLAYING_LINES_COUNT_BEFORE_ISSUED_LINE_IN_CODE_LISTING_OF_REPORT;
 
     if (firstLineWhichBeExtractedFromCodeListingForLogging < 0) {
       firstLineWhichBeExtractedFromCodeListingForLogging = 0;
     }
 
     let lastLineWhichBeExtractedFromCodeListingForLogging: number = issue.lineNumber +
-        MarkupSourceCodeLinter.DISPLAYING_LINES_COUNT_AFTER_ISSUE_IN_CODE_LISTING;
+        this.DISPLAYING_LINES_COUNT_AFTER_ISSUED_LINE_IN_CODE_LISTING_OF_REPORT;
 
     if (lastLineWhichBeExtractedFromCodeListingForLogging > sourceCodeListingExplodedToLines.length) {
       lastLineWhichBeExtractedFromCodeListingForLogging = sourceCodeListingExplodedToLines.length;
     }
 
     const partialListing: Array<string> = sourceCodeListingExplodedToLines.slice(
-        firstLineWhichBeExtractedFromCodeListingForLogging,
-        lastLineWhichBeExtractedFromCodeListingForLogging
+      firstLineWhichBeExtractedFromCodeListingForLogging,
+      lastLineWhichBeExtractedFromCodeListingForLogging
     );
 
     return partialListing.join("\n");
 
   }
+
 }
 
 
 namespace MarkupSourceCodeLinter {
 
-  export type CachedLintingResults = {
-    [fileRelativePath: string]: CachedLintingResult | undefined;
-  };
+  export type CachedLintingResults =
+      LinterLikeTaskExecutor.CachedCheckingResults<LintingIssue> &
+      Readonly<{ rulesChecksum: string; }>;
 
-  export type CachedLintingResult = {
-    issues: Array<NormalizedLintingIssue>;
-    modificationDatetime__ISO_8601: string;
-  };
-
-  export type NormalizedLintingIssue = Readonly<{
+  export type LintingIssue = Readonly<{
     code: string;
     message: string;
     sourceListing: string;
@@ -491,11 +403,9 @@ namespace MarkupSourceCodeLinter {
       pugLintConfigurationFileRequirementExplanation: string;
     }>;
 
-    invalidCachedLintingResultsDataErrorLog: Readonly<{ politeExplanation: string; }>;
-
     pugLintConfigurationIsInvalid: Readonly<Pick<ErrorLog, "title" | "description">>;
 
-    pugLintingFailedErrorLog: Readonly<{
+    lintingFailedErrorLog: Readonly<{
       title: string;
       technicalDetails: string;
       politeExplanation: string;

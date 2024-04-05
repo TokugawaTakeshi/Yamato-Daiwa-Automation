@@ -1,6 +1,6 @@
 /* --- Restrictions ------------------------------------------------------------------------------------------------- */
-import type ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+import type ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 /* --- Raw valid config --------------------------------------------------------------------------------------------- */
 import ProjectBuildingConfig__FromFile__RawValid from
@@ -8,7 +8,7 @@ import ProjectBuildingConfig__FromFile__RawValid from
 import ProjectBuildingConfigDefaultLocalization__FromFile__RawValid from
     "@ProjectBuilding/ProjectBuildingConfigFromFileDefaultLocalization";
 
-/* --- Normalized config -------------------------------------------------------------------------------------------- */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingConfig__Normalized from "./ProjectBuilding/ProjectBuildingConfig__Normalized";
 import ProjectBuilderRawConfigNormalizer from "./ProjectBuilding/ProjectBuilderRawConfigNormalizer";
 import ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
@@ -19,16 +19,19 @@ import MarkupSourceCodeLinter from "@MarkupProcessing/Subtasks/Linting/MarkupSou
 import CompiledInlineTypeScriptImporterForPug from "@MarkupProcessing/Subtasks/CompiledTypeScriptImporterForPug";
 import StylesProcessor from "@StylesProcessing/StylesProcessor";
 import ECMA_ScriptLogicProcessor from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessor";
-import TypeScriptTypesChecker from "@ECMA_ScriptProcessing/Subtasks/TypeScirptTypesChecker/TypeScriptTypesChecker";
+import ECMA_ScriptSourceCodeLinter from "@ECMA_ScriptProcessing/Subtasks/Linting/ECMA_ScriptSourceCodeLinter";
 import ImagesProcessor from "@ImagesProcessing/ImagesProcessor";
 import FontsProcessor from "@FontsProcessing/FontsProcessor";
 import VideosProcessor from "@VideosProcessing/VideosProcessor";
 import AudiosProcessor from "@AudiosProcessing/AudiosProcessor";
 import PlainCopier from "@ProjectBuilding/PlainCopying/PlainCopier";
+import LocalDevelopmentServerOrchestrator from
+    "@ECMA_ScriptProcessing/Subtasks/LocalDevelopmentServerOrchestration/LocalDevelopmentServerOrchestrator";
 import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import Gulp from "gulp";
+import FilesMasterWatcher from "@ProjectBuilding/FilesWatching/Watchers/FilesMasterWatcher";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
 import {
@@ -46,7 +49,7 @@ abstract class ProjectBuilder {
       consumingProjectRootDirectoryAbsolutePath,
       projectBuildingConfig__fromConsole,
       rawConfigFromFile
-    }: ProjectBuilder.NamedParameters
+    }: ProjectBuilder.CompoundParameter
   ): void {
 
     const rawDataProcessingResult: RawObjectDataProcessor.
@@ -90,7 +93,7 @@ abstract class ProjectBuilder {
     Gulp.task(GULP_TASK_NAME, Gulp.parallel([
 
       MarkupSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative),
-      TypeScriptTypesChecker.provideTypeCheckingIfMust(masterConfigRepresentative),
+      ECMA_ScriptSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative),
 
       Gulp.series([
 
@@ -109,9 +112,13 @@ abstract class ProjectBuilder {
 
         MarkupProcessor.provideMarkupProcessingIfMust(masterConfigRepresentative),
 
-        ...masterConfigRepresentative.mustProvideBrowserLiveReloading ? [
-          BrowserLiveReloader.provideBrowserLiveReloadingIfMust(masterConfigRepresentative)
-        ] : []
+        BrowserLiveReloader.provideBrowserLiveReloadingIfMust(masterConfigRepresentative),
+
+        Gulp.parallel([
+          FilesMasterWatcher.watchIfMust(masterConfigRepresentative),
+          LocalDevelopmentServerOrchestrator.orchestrateIfMust(masterConfigRepresentative)
+        ])
+
       ])
 
     ]));
@@ -140,14 +147,14 @@ abstract class ProjectBuilder {
 
 namespace ProjectBuilder {
 
-  export type NamedParameters = Readonly<{
+  export type CompoundParameter = Readonly<{
     consumingProjectRootDirectoryAbsolutePath: string;
     projectBuildingConfig__fromConsole: ProjectBuildingConfig__FromConsole;
     rawConfigFromFile: unknown;
   }>;
 
   export type ProjectBuildingConfig__FromConsole = Readonly<{
-    projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+    projectBuildingMode: ConsumingProjectBuildingModes;
     selectiveExecutionID?: string;
   }>;
 

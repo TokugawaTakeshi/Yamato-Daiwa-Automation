@@ -1,0 +1,16 @@
+extends ../node_modules/@yamato-daiwa/frontend/PagesTemplates/RegularWebPage.pug
+
+
+block append Metadata
+
+  -
+
+    HTML_PAGE_TITLE = "Pug Modules Loading Test — YDA"
+
+    scriptsURIs.endOfBody = [ "@SingleEntryPoint" ];
+
+
+
+block append PageContent
+
+  #APPLICATION

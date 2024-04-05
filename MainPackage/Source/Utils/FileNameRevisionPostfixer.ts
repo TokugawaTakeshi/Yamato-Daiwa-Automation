@@ -35,6 +35,6 @@ export default class FileNameRevisionPostfixer {
 
 
     targetFile.stem = `${ targetFile.stem }${ options.contentHashPostfixSeparator }` +
-        `${ generateRevisionHash(targetFile.contents) }`;
+        generateRevisionHash(targetFile.contents);
   }
 }

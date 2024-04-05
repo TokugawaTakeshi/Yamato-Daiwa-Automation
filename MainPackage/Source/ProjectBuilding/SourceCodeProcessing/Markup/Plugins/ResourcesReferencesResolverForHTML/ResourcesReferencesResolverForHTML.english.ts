@@ -3,33 +3,33 @@ import ResourcesReferencesResolverForHTML from
 import Localization = ResourcesReferencesResolverForHTML.Localization;
 
 
-const resourcesReferencesResolverForHTML_Localization__english: ResourcesReferencesResolverForHTML.Localization = {
+const resourcesReferencesResolverForHTML_Localization__english: Localization = {
 
   generateUnknownResourceGroupReferenceWarningLog: (
-    namedParameters: Localization.UnknownResourceGroupReferenceWarningLog.TemplateNamedParameters
+    templateVariables: Localization.UnknownResourceGroupReferenceWarningLog.TemplateVariables
   ): Localization.UnknownResourceGroupReferenceWarningLog => ({
-    title: `Unknown reference to ${ namedParameters.fileType__pluralForm } files group`,
-    description: `The reference '${ namedParameters.firstPathSegment }' in path ` +
-        `'${ namedParameters.pickedPathOfTargetResourceFile }' refers to unknown resources group. ` +
-        `Below references are available for ${ namedParameters.fileType__pluralForm } files: \n` +
-        `${ namedParameters.formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap }`
+    title: `Unknown reference to ${ templateVariables.fileType__pluralForm } files group`,
+    description: `The reference '${ templateVariables.firstPathSegment }' in path ` +
+        `'${ templateVariables.pickedPathOfTargetResourceFile }' refers to unknown resources group. ` +
+        `Below references are available for ${ templateVariables.fileType__pluralForm } files: \n` +
+        templateVariables.formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap
   }),
 
   generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog: (
-    namedParameters: Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog.TemplateNamedParameters
+    templateVariables: Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog.TemplateVariables
   ): Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog => ({
-    title: `Unknown path to ${ namedParameters.fileType__singularForm } file`,
-    description: `The aliased path '${ namedParameters.pickedPathOfTargetResourceFile }' refers to unknown file. ` +
+    title: `Unknown path to ${ templateVariables.fileType__singularForm } file`,
+    description: `The aliased path '${ templateVariables.pickedPathOfTargetResourceFile }' refers to unknown file. ` +
         "Tried to search at path with all supported filename extensions: " +
-        `${ namedParameters.checkedAbsolutePaths__formatted }.`
+        `${ templateVariables.checkedAbsolutePaths__formatted }.`
   }),
 
   generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog: (
-    namedParameters: Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog.TemplateNamedParameters
+    templateVariables: Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog.TemplateVariables
   ): Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog => ({
-    title: `Unknown path to ${ namedParameters.fileType__singularForm } file`,
-    description: `No ${ namedParameters.fileType__singularForm } output file has been found for specified source ` +
-      `file path '${ namedParameters.pickedPathOfTargetResourceFile }' including reference.`
+    title: `Unknown path to ${ templateVariables.fileType__singularForm } file`,
+    description: `No ${ templateVariables.fileType__singularForm } output file has been found for specified source ` +
+      `file path '${ templateVariables.pickedPathOfTargetResourceFile }' including reference.`
   })
 };
 

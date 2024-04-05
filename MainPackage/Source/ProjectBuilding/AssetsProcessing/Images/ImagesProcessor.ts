@@ -1,77 +1,100 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ImagesProcessingSettings__Normalized from "@ImagesProcessing/ImagesProcessingSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import ImagesProcessingSettingsRepresentative from "@ImagesProcessing/ImagesProcessingSettingsRepresentative";
+import type ImagesProcessingSettingsRepresentative from "@ImagesProcessing/ImagesProcessingSettingsRepresentative";
 
-/* --- Tasks executor ----------------------------------------------------------------------------------------------- */
+/* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
+import ImagesSourceFilesWatcher from "@ImagesProcessing/ImagesSourceFilesWatcher";
+
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-import type GulpStreamsBasedTaskExecutor from
-    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import ImagesProcessingSharedState from "@ImagesProcessing/ImagesProcessingSharedState";
+
+/* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
-import gulpIf from "gulp-if";
 import type VinylFile from "vinyl";
-import gulpIntercept from "gulp-intercept";
-import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import gulpIf from "gulp-if";
 import gulpImagemin from "gulp-imagemin";
 import pngQuant from "imagemin-pngquant";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
-import { isUndefined } from "@yamato-daiwa/es-extensions";
-import { PassThrough } from "stream";
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
+import AssetVinylFile from "@ProjectBuilding/Common/VinylFiles/AssetVinylFile";
+
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import { isUndefined, readonlyArrayToMutableOne } from "@yamato-daiwa/es-extensions";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
+export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
   ImagesProcessingSettings__Normalized.Common,
   ImagesProcessingSettings__Normalized.AssetsGroup,
   ImagesProcessingSettingsRepresentative
 > {
 
-  protected readonly TASK_NAME_FOR_LOGGING: string = "画像管理";
-  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "画像";
-
-  private readonly imagesProcessorConfigRepresentative: ImagesProcessingSettingsRepresentative;
-
-
   public static provideImagesProcessingIfMust(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): () => NodeJS.ReadWriteStream {
 
-    const imagesProcessorSettingsRepresentative: ImagesProcessingSettingsRepresentative | undefined =
-        masterConfigRepresentative.imagesProcessingSettingsRepresentative;
+    const imagesProcessingSettingsRepresentative: ImagesProcessingSettingsRepresentative | undefined =
+        projectBuildingMasterConfigRepresentative.imagesProcessingSettingsRepresentative;
 
-    if (isUndefined(imagesProcessorSettingsRepresentative)) {
-      return (): NodeJS.ReadWriteStream => new PassThrough().end();
+    if (isUndefined(imagesProcessingSettingsRepresentative)) {
+      return createImmediatelyEndingEmptyStream();
     }
 
 
     const dataHoldingSelfInstance: ImagesProcessor = new ImagesProcessor(
-      masterConfigRepresentative, imagesProcessorSettingsRepresentative
+      projectBuildingMasterConfigRepresentative, imagesProcessingSettingsRepresentative
     );
 
-    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcherIfMust();
+    if (projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
 
-    const assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode: Array<string> =
-        imagesProcessorSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths;
+        ImagesSourceFilesWatcher.
+            initializeIfRequiredAndGetInstance({
+              imagesProcessingSettingsRepresentative,
+              projectBuildingMasterConfigRepresentative
+            }).
+            addOnFileAddedEventHandler({
+              handlerID: "ON_IMAGES_FILE_ADDED--BY_IMAGES_PROCESSOR",
+              handler: dataHoldingSelfInstance.onSourceFilesWatcherEmittedFileAddingOrUpdatingEvent.bind(dataHoldingSelfInstance)
+            }).
+            addFileUpdatedEventHandler({
+              handlerID: "ON_IMAGES_FILE_UPDATED--BY_IMAGES_PROCESSOR",
+              handler: dataHoldingSelfInstance.onSourceFilesWatcherEmittedFileAddingOrUpdatingEvent.bind(dataHoldingSelfInstance)
+            }).
+            addOnFileDeletedEventHandler({
+              handlerID: "ON_IMAGES_FILE_DELETED--BY_IMAGES_PROCESSOR",
+              handler: dataHoldingSelfInstance.onImageFileDeleted.bind(dataHoldingSelfInstance)
+            });
 
-    return dataHoldingSelfInstance.processAssets(assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode);
+   }
+
+    return dataHoldingSelfInstance.processAssets(imagesProcessingSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths);
+
   }
 
 
   private constructor(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
-    imagesManagementConfigRepresentative: ImagesProcessingSettingsRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
+    imagesProcessingSettingsRepresentative: ImagesProcessingSettingsRepresentative
   ) {
-    super(masterConfigRepresentative, imagesManagementConfigRepresentative);
-    this.imagesProcessorConfigRepresentative = imagesManagementConfigRepresentative;
+    super({
+      projectBuildingMasterConfigRepresentative,
+      associatedAssetsProcessingSettingsRepresentative: imagesProcessingSettingsRepresentative,
+      taskTitleForLogging: "Images Processing",
+      waitingForSubsequentFilesWillSavedPeriod__seconds: imagesProcessingSettingsRepresentative.assetsProcessingCommonSettings.
+          periodBetweenFileUpdatingAndRebuildingStarting__seconds
+    });
   }
 
 
-  protected processAssets(sourceFilesAbsolutePaths: Array<string>): () => NodeJS.ReadWriteStream {
+  protected processAssets(sourceFilesAbsolutePaths: ReadonlyArray<string>): () => NodeJS.ReadWriteStream {
 
     /* [ Theory ] If to pass the empty array to 'Gulp.src(".")' error will occur but the cause will not be told clearly.
      *    However, the empty array is usual scenario (for example when user declared the configuration but has not added
@@ -81,92 +104,78 @@ class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
     }
 
 
-    return (): NodeJS.ReadWriteStream => Gulp.src(sourceFilesAbsolutePaths).
+    return (): NodeJS.ReadWriteStream => Gulp.
 
-        pipe(super.printProcessedFilesPathsAndQuantity()).
+        src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
+
         pipe(super.handleErrorIfItWillOccur()).
+        pipe(super.logProcessedFilesIfMust()).
 
-        pipe(gulpIntercept(this.addActualSourceCodeProcessingSettingsToVinylFile.bind(this))).
-
-        pipe(gulpIf(
-          this.masterConfigRepresentative.isStagingBuildingMode || this.masterConfigRepresentative.isProductionBuildingMode,
-          gulpImagemin([
-            gulpImagemin.mozjpeg({ progressive: true }),
-            gulpImagemin.gifsicle({ interlaced: true }),
-            gulpImagemin.svgo({}),
-            pngQuant()
-          ])
-        )).
-
-        pipe(gulpIntercept(this.postProcess.bind(this))).
+         pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
+          })
+        ).
 
         pipe(
-          Gulp.dest((targetFileInFinalState: VinylFile): string =>
-              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-               * No known simple solution; will be fixed at 2nd generation of ImagesProcessor.  */
-              (targetFileInFinalState as ImagesProcessor.ImageVinylFile).outputDirectoryAbsolutePath)
-        );
+          gulpIf(
+            this.projectBuildingMasterConfigRepresentative.isStagingBuildingMode ||
+                this.projectBuildingMasterConfigRepresentative.isProductionBuildingMode,
+            gulpImagemin([
+              gulpImagemin.mozjpeg({ progressive: true }),
+              gulpImagemin.gifsicle({ interlaced: true }),
+              gulpImagemin.svgo({}),
+              pngQuant()
+            ])
+          )
+        ).
 
-  }
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ AssetVinylFile, GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust ]
+            ])
+          })
+        ).
 
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ AssetVinylFile, ImagesProcessor.postProcessFile ]
+            ])
+          })
+        ).
 
-  private addActualSourceCodeProcessingSettingsToVinylFile(fileInInitialState: VinylFile): ImagesProcessor.ImageVinylFile {
-
-    const normalizedImagesGroupSettingsActualForCurrentFile: ImagesProcessingSettings__Normalized.AssetsGroup =
-        this.imagesProcessorConfigRepresentative.
-            getAssetsNormalizedSettingsActualForTargetSourceFile(fileInInitialState.path);
-
-    fileInInitialState.processingSettings = normalizedImagesGroupSettingsActualForCurrentFile;
-
-    /* [ Theory ] The value of 'path' could change during file processing. */
-    fileInInitialState.sourceAbsolutePath = fileInInitialState.path;
-    fileInInitialState.outputDirectoryAbsolutePath = ImagesProcessingSettingsRepresentative.
-        computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
-          targetSourceFileAbsolutePath: fileInInitialState.path,
-          respectiveAssetsGroupNormalizedSettings: normalizedImagesGroupSettingsActualForCurrentFile
-        });
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of ImagesProcessor.  */
-    return fileInInitialState as ImagesProcessor.ImageVinylFile;
-  }
-
-  private postProcess(_processedImageFile: VinylFile): VinylFile {
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of ImagesProcessor.  */
-    const processedImageFile: ImagesProcessor.ImageVinylFile = _processedImageFile as ImagesProcessor.ImageVinylFile;
-
-    if (processedImageFile.processingSettings.revisioning.mustExecute) {
-      FileNameRevisionPostfixer.appendPostfixIfPossible(
-        processedImageFile,
-        { contentHashPostfixSeparator: processedImageFile.processingSettings.revisioning.contentHashPostfixSeparator }
-      );
-    }
-
-
-    this.imagesProcessorConfigRepresentative.
-        sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.
-        set(
-          ImprovedPath.replacePathSeparatorsToForwardSlashes(processedImageFile.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(
-            [ processedImageFile.outputDirectoryAbsolutePath, processedImageFile.basename ],
-            { forwardSlashOnlySeparators: true }
+        pipe(
+          Gulp.dest(
+            (targetFileInFinalState: VinylFile): string =>
+                AssetVinylFile.getOutputDirectoryAbsolutePathOfExpectedToBeSelfInstance(targetFileInFinalState)
           )
         );
 
-    return processedImageFile;
   }
+
+
+  /* ━━━ Files watcher handlers ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private onImageFileDeleted(targetVideoFileAbsolutePath: string): void {
+    this.absolutePathOfFilesWaitingForReProcessing.delete(targetVideoFileAbsolutePath);
+    ImagesProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.delete(targetVideoFileAbsolutePath);
+  }
+
+
+  /* ━━━ Pipeline methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private static async postProcessFile(processedImageFile: AssetVinylFile): Promise<GulpStreamModifier.CompletionSignals> {
+
+    ImagesProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.set(
+      ImprovedPath.replacePathSeparatorsToForwardSlashes(processedImageFile.sourceAbsolutePath),
+        ImprovedPath.joinPathSegments(
+          [ processedImageFile.outputDirectoryAbsolutePath, processedImageFile.basename ],
+          { alwaysForwardSlashSeparators: true }
+        )
+    );
+
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+  }
+
 }
-
-
-namespace ImagesProcessor {
-  export type ImageVinylFile =
-      GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      Readonly<{
-        processingSettings: ImagesProcessingSettings__Normalized.AssetsGroup;
-      }>;
-}
-
-
-export default ImagesProcessor;

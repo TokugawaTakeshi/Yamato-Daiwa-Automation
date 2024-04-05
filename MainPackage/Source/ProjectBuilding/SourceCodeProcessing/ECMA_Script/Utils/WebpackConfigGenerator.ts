@@ -21,22 +21,21 @@ import type { Configuration as WebpackConfiguration } from "webpack";
 import type TypeScript from "typescript";
 import { VueLoaderPlugin as VueLoaderWebpackPlugin } from "vue-loader";
 import ForkTS_CheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
-import ES_LintWebpackPlugin from "eslint-webpack-plugin";
 import provideAccessToNodeJS_ExternalDependencies from "webpack-node-externals";
 
 /* --- General utils ------------------------------------------------------------------------------------------------ */
 import Path from "path";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
-import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
 import {
   isUndefined,
   isNotUndefined,
   isNull,
   isNotNull,
   insertSubstringIf,
+  removeAllFileNameExtensions,
   Logger,
   UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
+import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default class WebpackConfigGenerator {
@@ -87,10 +86,10 @@ export default class WebpackConfigGenerator {
   public static getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
     {
       sourceFilesGlobSelectors,
-      entryPointsGroupID,
+      entryPointsGroupID_ForLogging,
       webpackContext
     }: Readonly<{
-      entryPointsGroupID: string;
+      entryPointsGroupID_ForLogging: string;
       sourceFilesGlobSelectors: ReadonlyArray<string>;
       webpackContext: string;
     }>
@@ -105,13 +104,15 @@ export default class WebpackConfigGenerator {
 
       Logger.logWarning({
         title: "Restarting may required",
-        description: `No files has been found for the ECMAScript entry points group with id '${ entryPointsGroupID }'. ` +
+        description:
+            `No files has been found for the ECMAScript entry points group with id "${ entryPointsGroupID_ForLogging }". ` +
             "Please restart the building once these files will be added"
       });
 
       return null;
 
     }
+
 
     WebpackConfigGenerator.
         checkForFilesWithSameDirectoryAndFileNameButDifferentExtensions(targetEntryPointsSourceFilesAbsolutePaths);
@@ -124,8 +125,8 @@ export default class WebpackConfigGenerator {
             basePath: webpackContext
           });
 
-      const outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory: string = ImprovedPath.
-          removeFilenameExtensionFromPath(targetSourceFilePathRelativeToSourceEntryPointsTopDirectory);
+      const outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory: string =
+          removeAllFileNameExtensions(targetSourceFilePathRelativeToSourceEntryPointsTopDirectory);
 
       /* [ Webpack theory ] The key must be the output path without filename extension relative to 'output.path'.
        *    The value must the source file path (relative or absolute), for example
@@ -165,7 +166,7 @@ export default class WebpackConfigGenerator {
     const webpackEntryPointsDefinition: Webpack.EntryObject | null =
         WebpackConfigGenerator.getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
           {
-            entryPointsGroupID: entryPointsGroupSettings.ID,
+            entryPointsGroupID_ForLogging: entryPointsGroupSettings.ID,
             sourceFilesGlobSelectors: entryPointsGroupSettings.sourceFilesGlobSelectors,
             webpackContext: sourceFilesTopDirectoryAbsolutePath
           }
@@ -214,6 +215,8 @@ export default class WebpackConfigGenerator {
         entryPointsGroupSettings.distributing?.exposingOfExportsFromEntryPoints.mustExpose === true &&
         entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.pug;
 
+    const distributingSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup.Distributing | undefined =
+        entryPointsGroupSettings.distributing;
 
     return {
 
@@ -241,10 +244,10 @@ export default class WebpackConfigGenerator {
 
           case SupportedECMA_ScriptRuntimesTypes.nodeJS: {
             return `node${ entryPointsGroupSettings.targetRuntime.minimalVersion.major }` +
-                `${ insertSubstringIf(
-                  `.${ entryPointsGroupSettings.targetRuntime.minimalVersion.minor }`, 
+                insertSubstringIf(
+                  `.${ entryPointsGroupSettings.targetRuntime.minimalVersion.minor }`,
                   isNotUndefined(entryPointsGroupSettings.targetRuntime.minimalVersion.minor)
-                ) }`;
+                );
           }
         }
       })(),
@@ -274,8 +277,12 @@ export default class WebpackConfigGenerator {
 
               switch (entryPointsGroupSettings.targetRuntime.type) {
 
-                case SupportedECMA_ScriptRuntimesTypes.browser: return "module";
+                case SupportedECMA_ScriptRuntimesTypes.browser:
+                  return entryPointsGroupSettings.distributing.exposingOfExportsFromEntryPoints.mustAssignToWindowObject ?
+                      "window" : "module";
+
                 case SupportedECMA_ScriptRuntimesTypes.nodeJS: return "commonjs";
+
                 case SupportedECMA_ScriptRuntimesTypes.pug: return "umd";
 
                 default: {
@@ -304,6 +311,20 @@ export default class WebpackConfigGenerator {
         ...willPugLibraryBeBuilt ? { globalObject: "globalThis" } : null
       },
 
+      ...isNotUndefined(distributingSettings) && distributingSettings.externalizingDependencies.length > 0 ? {
+        externals: distributingSettings.externalizingDependencies.
+            reduce(
+              (
+                accumulatingObject: { [packageName: string]: string; },
+                packageName: string
+              ): { [packageName: string]: string; } => {
+                accumulatingObject[packageName] = packageName;
+                return accumulatingObject;
+              },
+              {}
+            )
+      } : null,
+
       ...willBrowserJS_LibraryBeBuilt ? { experiments: { outputModule: true } } : null,
 
       mode: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
@@ -313,9 +334,16 @@ export default class WebpackConfigGenerator {
       watch: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
           this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
 
+      watchOptions: {
+        ignored: [ "node_modules" ]
+      },
+
+      /* [ Theory ] Although "cheap-module-source-map" causes both slow first building and slow rebuilding,
+       *   faster alternatives including "eval" could cause the errors related with security.
+       *   See https://stackoverflow.com/a/49100966. */
       devtool: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
           this.masterConfigRepresentative.isLocalDevelopmentBuildingMode ?
-              "eval" : false,
+              "cheap-module-source-map" : false,
 
       ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS ? {
         node: {
@@ -367,16 +395,24 @@ export default class WebpackConfigGenerator {
 
               {
                 resourceQuery: /^\?vue/u,
-                use: [ "pug-plain-loader" ]
+                loader: "@webdiscus/pug-loader",
+                options: { mode: "html" }
               },
 
               {
-
+                test: /\.renderer\.pug$/u,
                 loader: "@webdiscus/pug-loader",
+                options: { mode: "compile" }
+              },
 
-                /* [ Third-party API ] The "render" method compiles the file content and allow to import it as HTML string. */
-                options: { method: "render" }
+              {
+                test: /\.ydfr\.pug$/u,
+                loader: "pug3-ast-loader"
+              },
 
+              {
+                loader: "@webdiscus/pug-loader",
+                options: { mode: "render" }
               }
 
             ]
@@ -443,9 +479,18 @@ export default class WebpackConfigGenerator {
               typeScriptPathsSettings: typeScriptCompilerOptions.paths,
               typeScriptBasicAbsolutePath:
                 typeScriptCompilerOptions.baseUrl ??
-                ImprovedPath.extractDirectoryFromFilePath(entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath)
+                ImprovedPath.extractDirectoryFromFilePath({
+                  targetPath: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
+                  ambiguitiesResolution: {
+                    mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+                    mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
+                    mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                  },
+                  alwaysForwardSlashSeparators: true
+                })
           }),
-          vue: "vue/dist/vue.esm-bundler.js"
+          ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.browser ?
+              { vue: "vue/dist/vue.esm-bundler.js" } : null
         }
       },
 
@@ -465,9 +510,13 @@ export default class WebpackConfigGenerator {
           __IS_STAGING_BUILDING_MODE__: this.masterConfigRepresentative.isStagingBuildingMode,
           __IS_PRODUCTION_BUILDING_MODE__: this.masterConfigRepresentative.isProductionBuildingMode,
 
-          /* [ Theory ] Settings for the Vue 3 which must be defined explicitly. */
-          __VUE_OPTIONS_API__: true,
-          __VUE_PROD_DEVTOOLS__: false
+          /* [ Theory ] Settings for the Vue 3 which must be defined explicitly.
+          * https://github.com/vuejs/core/tree/main/packages/vue#bundler-build-feature-flags */
+          ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.browser ? {
+            __VUE_OPTIONS_API__: true,
+            __VUE_PROD_DEVTOOLS__: false,
+            __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
+          } : null
 
         }),
 
@@ -490,15 +539,7 @@ export default class WebpackConfigGenerator {
               })
             ],
 
-        new VueLoaderWebpackPlugin(),
-
-        new ES_LintWebpackPlugin({
-          extensions: [ "js", "ts", "jsx", "tsx", "vue" ],
-          failOnError: this.masterConfigRepresentative.isStagingBuildingMode ||
-              this.masterConfigRepresentative.isProductionBuildingMode,
-          failOnWarning: this.masterConfigRepresentative.isStagingBuildingMode ||
-              this.masterConfigRepresentative.isProductionBuildingMode
-        })
+        new VueLoaderWebpackPlugin()
 
       ],
 
@@ -558,9 +599,7 @@ export default class WebpackConfigGenerator {
 
     for (const entryPointSourceFileAbsolutePath of entryPointsSourceFilesAbsolutePaths) {
 
-      const filePathParsingResult: ImprovedPath.ParsedPath = ImprovedPath.parsePath(entryPointSourceFileAbsolutePath);
-      const filePathWithoutFilenameExtension: string =
-          `${ filePathParsingResult.directory }/${ filePathParsingResult.getFilenameWithoutExtensionWhichExpectedToBeDefined() }`;
+      const filePathWithoutFilenameExtension: string = removeAllFileNameExtensions(entryPointSourceFileAbsolutePath);
 
       if (entryPointsSourceFiles.has(filePathWithoutFilenameExtension)) {
 

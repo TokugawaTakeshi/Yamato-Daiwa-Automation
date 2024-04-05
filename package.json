@@ -4,6 +4,6 @@
     "Install all dependendies": "lerna bootstrap"
   },
   "devDependencies": {
-    "lerna": "6.0.1"
+    "lerna": "6.6.1"
   }
 }

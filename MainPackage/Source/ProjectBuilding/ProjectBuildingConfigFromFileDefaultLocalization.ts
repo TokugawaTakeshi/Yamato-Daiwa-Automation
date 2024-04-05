@@ -16,7 +16,8 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       audiosProcessing: "audiosProcessing",
       videosProcessing: "videosProcessing",
       plainCopying: "plainCopying",
-      browserLiveReloading: "browserLiveReloading"
+      browserLiveReloading: "browserLiveReloading",
+      filesWatching: "filesWatching"
     },
 
     consumingProjectPreDefinedBuildingModes: {
@@ -26,23 +27,48 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       staging: "STAGING",
       production: "PRODUCTION"
     }
+
   },
 
   reusables: {
 
     sourceCodeProcessingGenericProperties: {
-      topDirectoryRelativePath: { KEY: "topDirectoryRelativePath" },
-      partialsRecognition: {
-        KEY: "partialsRecognition",
-        excludeAllSubdirectories: { KEY: "excludeAllSubdirectories" },
-        excludeSubdirectoriesWithNames: { KEY: "excludeSubdirectoriesWithNames" },
-        excludeSubdirectoriesWithPrefixes: { KEY: "excludeSubdirectoriesWithPrefixes" },
-        excludeFilesWithPrefixes: { KEY: "excludeFilesWithPrefixes" }
-      },
-      singleEntryPointRelativePath: {
-        KEY: "singleEntryPointRelativePath",
-        REQUIREMENT_CONDITION_DESCRIPTION: "'topDirectoryRelativePath' is not defined"
+
+      entryPointsGroups: {
+
+        KEY: "entryPointsGroups",
+        sourceFilesTopDirectoryRelativePath: { KEY: "sourceFilesTopDirectoryRelativePath" },
+        sourceFilesTopDirectoryPathAliasName: { KEY: "sourceFilesTopDirectoryPathAliasName" },
+        singleEntryPointSourceFilePathAliasName: { KEY: "singleEntryPointSourceFilePathAliasName" },
+
+        partialsRecognition: {
+          KEY: "partialsRecognition",
+          excludeAllSubdirectories: { KEY: "excludeAllSubdirectories" },
+          excludeSubdirectoriesWithNames: { KEY: "excludeSubdirectoriesWithNames" },
+          excludeSubdirectoriesWithPrefixes: { KEY: "excludeSubdirectoriesWithPrefixes" },
+          excludeFilesWithPrefixes: { KEY: "excludeFilesWithPrefixes" }
+        },
+
+        singleEntryPointSourceFileRelativePath: {
+          KEY: "singleEntryPointSourceFileRelativePath",
+          REQUIREMENT_CONDITION_DESCRIPTION: "\"sourceFilesTopDirectoryRelativePath\" has not been specified"
+        },
+
+        buildingModeDependent: {
+          KEY: "buildingModeDependent",
+          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
+          revisioning: { KEY: "revisioning" },
+          outputPathTransformations: { KEY: "outputPathTransformations" }
+        }
+
       }
+
+    },
+
+    resourceFilesGroupBuildingModeDependentOutputGenericSettings: {
+      KEY: "resourceFilesGroupBuildingModeDependentOutputGenericSettings",
+      outputPathTransformations: { KEY: "outputPathTransformations" },
+      outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" }
     },
 
     revisioning: {
@@ -52,8 +78,17 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
     lintingCommonSettings: {
       presetFileRelativePath: { KEY: "presetFileRelativePath" },
-      enabled: { KEY: "enabled" }
+      disable: { KEY: "enabled" }
+    },
+
+    outputPathTransformationsSettings: {
+      segmentsWhichMustBeRemoved: { KEY: "segmentsWhichMustBeRemoved" },
+      segmentsWhichLastDuplicatesMustBeRemoved: { KEY: "segmentsWhichLastDuplicatesMustBeRemoved" },
+      segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved: {
+        KEY: "segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved"
+      }
     }
+
   },
 
   commonSettings: {
@@ -68,6 +103,7 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       },
       publicDirectoriesRelativePaths: { KEY: "publicDirectoriesRelativePaths" }
     }
+
   },
 
   tasks: {
@@ -96,22 +132,24 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
           KEY: "importsFromStaticDataFiles",
           importedVariableName: { KEY: "importedVariableName" },
           fileRelativePath: { KEY: "fileRelativePath" }
-        },
-        importsFromCompiledTypeScript: {
-          KEY: "importsFromCompiledTypeScript",
-          typeScriptConfigurationFileRelativePath: { KEY: "typeScriptConfigurationFileRelativePath" },
-          files: {
-            KEY: "files",
-            importedNamespace: { KEY: "importedNamespace" },
-            sourceFileRelativePath: { KEY: "sourceFileRelativePath" },
-            outputDirectoryRelativePath: { KEY: "outputDirectoryRelativePath" },
-            customOutputFileNameWithoutLastExtension: { KEY: "customOutputFileNameWithoutLastExtension" }
-          }
         }
       },
 
       linting: {
         KEY: "linting"
+      },
+
+      importingFromTypeScript: {
+
+        KEY: "importingFromTypeScript",
+
+        typeScriptConfigurationFileRelativePath: { KEY: "typeScriptConfigurationFileRelativePath" },
+        importedNamespace: { KEY: "importedNamespace" },
+        sourceFileRelativePath: { KEY: "sourceFileRelativePath" },
+        nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected: {
+          KEY: "nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected"
+        }
+
       },
 
       entryPointsGroups: {
@@ -120,28 +158,67 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
         HTML_Validation: {
           KEY: "HTML_Validation",
-          disable: { KEY: "disable" }
+          disable: { KEY: "disable" },
+          ignoring: {
+            KEY: "ignoring",
+            files: { KEY: "files" },
+            directories: { KEY: "directories" }
+          }
         },
 
         accessibilityInspection: {
           KEY: "accessibilityInspection",
           standard: { KEY: "standard" },
-          disable: { KEY: "disable" }
+          disable: { KEY: "disable" },
+          ignoring: {
+            KEY: "ignoring",
+            files: { KEY: "files" },
+            directories: { KEY: "directories" }
+          }
         },
 
-        convertToHandlebarsOnNonStaticPreviewModes: { KEY: "convertToHandlebarsOnNonStaticPreviewModes" },
+        outputFormat: { KEY: "outputFormat" },
 
         buildingModeDependent: {
           KEY: "buildingModeDependent",
-          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" }
+          outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
+          outputCodeFormatting: {
+            KEY: "outputCodeFormatting",
+            disable: { KEY: "enabled" }
+          }
         }
+
       },
 
       logging: {
+
+        KEY: "logging",
+
         filesPaths: { KEY: "filesPaths" },
         filesCount: { KEY: "filesCount" },
-        partialFilesAndParentEntryPointsCorrespondence: { KEY: "partialFilesAndParentEntryPointsCorrespondence" }
+        partialFilesAndParentEntryPointsCorrespondence: { KEY: "partialFilesAndParentEntryPointsCorrespondence" },
+        filesWatcherEvents: { KEY: "filesWatcherEvents" },
+
+        linting: {
+          KEY: "linting",
+          starting: { KEY: "starting" },
+          completionWithoutIssues: { KEY: "completionWithoutIssues" }
+        },
+
+        HTML_Validation: {
+          KEY: "HTML_Validation",
+          starting: { KEY: "starting" },
+          completionWithoutIssues: { KEY: "completionWithoutIssues" }
+        },
+
+        accessibilityChecking: {
+          KEY: "accessibilityChecking",
+          starting: { KEY: "starting" },
+          completionWithoutIssues: { KEY: "completionWithoutIssues" }
+        }
+
       }
+
     },
 
     stylesProcessing: {
@@ -161,14 +238,31 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
         KEY: "entryPointsGroups",
 
-        customReferenceName: { KEY: "customReferenceName" },
-
         buildingModeDependent: {
           KEY: "buildingModeDependent",
           outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" }
         }
+
+      },
+
+      logging: {
+
+        KEY: "logging",
+
+        filesPaths: { KEY: "filesPaths" },
+        filesCount: { KEY: "filesCount" },
+        partialFilesAndParentEntryPointsCorrespondence: { KEY: "partialFilesAndParentEntryPointsCorrespondence" },
+        filesWatcherEvents: { KEY: "filesWatcherEvents" },
+
+        linting: {
+          KEY: "linting",
+          starting: { KEY: "starting" },
+          completionWithoutIssues: { KEY: "completionWithoutIssues" }
+        }
+
       }
+
     },
 
     ECMA_ScriptLogicProcessing: {
@@ -192,9 +286,9 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
           }
         },
 
-        customReferenceName: { KEY: "customReferenceName" },
-        associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer: {
-          KEY: "associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer"
+        referenceCustomAliasName: { KEY: "referenceCustomAliasName" },
+        associatedMarkupEntryPointsGroupID_ForDynamicModulesLoadingWithoutDevelopmentServer: {
+          KEY: "associatedMarkupEntryPointsGroupID_ForDynamicModulesLoadingWithoutDevelopmentServer"
         },
         typeScriptConfigurationFileRelativePath: { KEY: "typeScriptConfigurationFileRelativePath" },
 
@@ -203,8 +297,10 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
           exposingOfExportsFromEntryPoints: {
             KEY: "exposingOfExportsFromEntryPoints",
             mustExpose: { KEY: "mustExpose" },
-            namespace: { KEY: "namespace" }
+            namespace: { KEY: "namespace" },
+            mustAssignToWindowObject: { KEY: "mustAssignToWindowObject" }
           },
+          externalizingDependencies: { KEY: "externalizingDependencies" },
           typeScriptTypesDeclarations: {
             KEY: "typeScriptTypesDeclarations",
             mustGenerate: { KEY: "mustGenerate" },
@@ -219,93 +315,215 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
           dynamicallyLoadedFilesSubdirectory: { KEY: "dynamicallyLoadedFilesSubdirectory" },
           dynamicallyLoadedFilesNamesTemplate: { KEY: "dynamicallyLoadedFilesNamesTemplate" }
         }
+
+      },
+
+      localDevelopmentServerOrchestration: {
+        KEY: "localDevelopmentServerOrchestration",
+        targetSingularEntryPointsGroupID: { KEY: "targetSingularEntryPointsGroupID" },
+        arguments: { KEY: "arguments" },
+        environmentVariables: { KEY: "environmentVariables" }
+      },
+
+      logging: {
+
+        KEY: "logging",
+
+        filesPaths: { KEY: "filesPaths" },
+        filesCount: { KEY: "filesCount" },
+        partialFilesAndParentEntryPointsCorrespondence: { KEY: "partialFilesAndParentEntryPointsCorrespondence" },
+        filesWatcherEvents: { KEY: "filesWatcherEvents" },
+
+        linting: {
+          KEY: "linting",
+          starting: { KEY: "starting" },
+          completionWithoutIssues: { KEY: "completionWithoutIssues" }
+        }
+
       }
+
     },
 
     imagesProcessing: {
+
+      common: {
+        KEY: "common",
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
+          KEY: "periodBetweenFileUpdatingAndRebuildingStarting__seconds"
+        }
+      },
+
+      logging: {
+        KEY: "logging",
+        filesPaths: { KEY: "filesPaths" },
+        filesCount: { KEY: "filesCount" },
+        filesWatcherEvents: { KEY: "filesWatcherEvents" }
+      },
+
       assetsGroups: {
+
         KEY: "assetsGroups",
         sourceFilesTopDirectoryRelativePath: { KEY: "sourceFilesTopDirectoryRelativePath" },
-        sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
+        referenceCustomAliasName: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
+
         buildingModeDependent: {
           KEY: "buildingModeDependent",
           outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" },
-          outputPathTransformations: {
-            KEY: "outputPathTransformations",
-            segmentsWhichMustBeRemoved: { KEY: "segmentsWhichMustBeRemoved" },
-            segmentsWhichLastDuplicatesMustBeRemoved: { KEY: "segmentsWhichLastDuplicatesMustBeRemoved" }
-          }
+          outputPathTransformations: { KEY: "outputPathTransformations" }
         }
+
       }
+
     },
 
     fontsProcessing: {
+
+      common: {
+        KEY: "common",
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
+          KEY: "periodBetweenFileUpdatingAndRebuildingStarting__seconds"
+        }
+      },
+
+      logging: {
+        KEY: "logging",
+        filesPaths: { KEY: "filesPaths" },
+        filesCount: { KEY: "filesCount" },
+        filesWatcherEvents: { KEY: "filesWatcherEvents" }
+      },
+
       assetsGroups: {
+
         KEY: "assetsGroups",
+
         sourceFilesTopDirectoryRelativePath: { KEY: "sourceFilesTopDirectoryRelativePath" },
-        sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
+        referenceCustomAliasName: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
+
         buildingModeDependent: {
           KEY: "buildingModeDependent",
           outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" },
-          outputPathTransformations: {
-            KEY: "outputPathTransformations",
-            segmentsWhichMustBeRemoved: { KEY: "segmentsWhichMustBeRemoved" },
-            segmentsWhichLastDuplicatesMustBeRemoved: { KEY: "segmentsWhichLastDuplicatesMustBeRemoved" }
-          }
+          outputPathTransformations: { KEY: "outputPathTransformations" }
         }
+
       }
+
     },
 
     videosProcessing: {
+
+      common: {
+        KEY: "common",
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
+          KEY: "periodBetweenFileUpdatingAndRebuildingStarting__seconds"
+        }
+      },
+
+      logging: {
+        KEY: "logging",
+        filesPaths: { KEY: "filesPaths" },
+        filesCount: { KEY: "filesCount" },
+        filesWatcherEvents: { KEY: "filesWatcherEvents" }
+      },
+
       assetsGroups: {
+
         KEY: "assetsGroups",
+
         sourceFilesTopDirectoryRelativePath: { KEY: "sourceFilesTopDirectoryRelativePath" },
-        sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
+        referenceCustomAliasName: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
+
         buildingModeDependent: {
           KEY: "buildingModeDependent",
           outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" },
-          outputPathTransformations: {
-            KEY: "outputPathTransformations",
-            segmentsWhichMustBeRemoved: { KEY: "segmentsWhichMustBeRemoved" },
-            segmentsWhichLastDuplicatesMustBeRemoved: { KEY: "segmentsWhichLastDuplicatesMustBeRemoved" }
-          }
+          outputPathTransformations: { KEY: "outputPathTransformations" }
         }
+
       }
+
     },
 
     audiosProcessing: {
+
+      common: {
+        KEY: "common",
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
+          KEY: "periodBetweenFileUpdatingAndRebuildingStarting__seconds"
+        }
+      },
+
+      logging: {
+        KEY: "logging",
+        filesPaths: { KEY: "filesPaths" },
+        filesCount: { KEY: "filesCount" },
+        filesWatcherEvents: { KEY: "filesWatcherEvents" }
+      },
+
       assetsGroups: {
+
         KEY: "assetsGroups",
+
         sourceFilesTopDirectoryRelativePath: { KEY: "sourceFilesTopDirectoryRelativePath" },
-        sourceFilesTopDirectoryPathAliasForReferencingFromHTML: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
+        referenceCustomAliasName: { KEY: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML" },
+
         buildingModeDependent: {
           KEY: "buildingModeDependent",
           outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
           revisioning: { KEY: "revisioning" },
-          outputPathTransformations: {
-            KEY: "outputPathTransformations",
-            segmentsWhichMustBeRemoved: { KEY: "segmentsWhichMustBeRemoved" },
-            segmentsWhichLastDuplicatesMustBeRemoved: { KEY: "segmentsWhichLastDuplicatesMustBeRemoved" }
-          }
+          outputPathTransformations: { KEY: "outputPathTransformations" }
         }
+
       }
+
     },
 
     plainCopying: {
+
       filesGroups: { KEY: "filesGroups" },
+
       sourceFileRelativePath: { KEY: "sourceFileRelativePath" },
-      sourceDirectoryRelativePath: {
-        KEY: "sourceDirectoryRelativePath",
+
+      sourceTopDirectoryRelativePath: {
+        KEY: "sourceTopDirectoryRelativePath",
         REQUIREMENT_CONDITION_DESCRIPTION: "\"sourceFileRelativePath\" is not specified"
       },
-      referenceName: { KEY: "referenceName" },
+
+      fileNameLastExtensions: { KEY: "fileNameLastExtensions" },
+
+      aliasName: { KEY: "aliasName" },
+
       buildingModeDependent: {
+
         KEY: "buildingModeDependent",
-        outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" }
+
+        outputDirectoryRelativePath: { KEY: "outputDirectoryRelativePath" },
+        outputTopDirectoryRelativePath: { KEY: "outputTopDirectoryRelativePath" },
+
+        revisioning: {
+          KEY: "revisioning",
+          enable: { KEY: "enable" },
+          contentHashPostfixSeparator: { KEY: "contentHashPostfixSeparator" }
+        },
+
+        newFileNameWithExtension: { KEY: "newFileNameWithExtension" },
+
+        filesRenamings: {
+          KEY: "filesRenamings",
+          pathRelativeToSourceDirectory: { KEY: "pathRelativeToSourceDirectory" },
+          newFileNameWithExtension: { KEY: "newFileNameWithExtension" }
+        },
+
+        outputDirectoryPathTransformations: { KEY: "outputDirectoryPathTransformations" }
+
       }
+
+    },
+
+    filesWatching: {
+      relativePathsOfExcludeFiles: { KEY: "relativePathsOfExcludeFiles" },
+      relativePathsOfExcludeDirectories: { KEY: "relativePathsOfExcludeDirectories" }
     },
 
     browserLiveReloading: {
@@ -320,7 +538,11 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
           ignoredFilesAndDirectoriesRelativePaths: { KEY: "ignoredFilesAndDirectoriesRelativePaths" },
           customPort: { KEY: "customPort" },
           customStartingFileNameWithExtension: { KEY: "customStartingFileNameWithExtension" },
-          useHTTPS: { KEY: "useHTTPS" },
+          HTTPS: {
+            KEY: "HTTPS",
+            SSL_KeyRelativePath: { KEY: "SSL_KeyRelativePath" },
+            SSL_CertificateRelativePath: { KEY: "SSL_CertificateRelativePath" }
+          },
           useCORS: { KEY: "useCORS" }
         },
 

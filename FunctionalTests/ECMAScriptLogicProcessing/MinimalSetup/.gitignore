@@ -1,0 +1,8 @@
+/02-ProductionBuild/
+
+/node_modules/
+
+**/.DS_Store
+
+# Temporary
+.yda/

@@ -1,0 +1,29 @@
+doctype html
+
+
+block Requirements
+
+
+html(lang="en")
+
+  head
+
+    block Metadata
+
+    title= PAGE_TITLE
+
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+
+
+  body
+
+    .BasicLayout
+
+      +Header.BasicLayout-Header
+
+      main.BasicLayout-MainContent
+
+        block DynamicContent
+
+      footer.BasicLayout-Footer Copyright (c) 2023-present, Yamato Daiwa Co., Ltd

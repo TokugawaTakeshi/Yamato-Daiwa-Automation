@@ -14,7 +14,7 @@ import {
 
 abstract class GulpStreamModifier {
 
-  public static modify(namedParameters: GulpStreamModifier.NamedParameters): Stream.Transform {
+  public static modify(compoundParameter: GulpStreamModifier.ConstructorParameter): Stream.Transform {
 
     return new Stream.Transform({
 
@@ -35,7 +35,7 @@ abstract class GulpStreamModifier {
               })
             ),
             title: UnexpectedEventError.localization.defaultTitle,
-            occurrenceLocation: "GulpStreamModifier.modify(namedParameters)",
+            occurrenceLocation: "GulpStreamModifier.modify(compoundParameter)",
             additionalData: { chunk }
           });
         }
@@ -55,7 +55,7 @@ abstract class GulpStreamModifier {
 
         for (
           const [ ClassExtendedFromVinylFile, handler ] of
-          namedParameters.onStreamStartedEventHandlersForSpecificFileTypes ??
+          compoundParameter.onStreamStartedEventHandlersForSpecificFileTypes ??
           new Map<
             new () => VinylFile,
             (file: VinylFile, addNewFileToStream: GulpStreamModifier.NewFilesAdder) =>
@@ -87,6 +87,8 @@ abstract class GulpStreamModifier {
 
                 }).
 
+                /* eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable --
+                * `TransformCallback` does not accept the error of `unknown` type. */
                 catch((error: Error): void => { callback(error); });
           }
 
@@ -94,13 +96,13 @@ abstract class GulpStreamModifier {
 
         if (!hasSpecificHandlerForCurrentVinylFileInheritor) {
 
-          if (isUndefined(namedParameters.onStreamStartedEventCommonHandler)) {
+          if (isUndefined(compoundParameter.onStreamStartedEventCommonHandler)) {
             callback(null, targetFile);
             return;
           }
 
 
-          namedParameters.onStreamStartedEventCommonHandler(targetFile, addNewFilesToStream).
+          compoundParameter.onStreamStartedEventCommonHandler(targetFile, addNewFilesToStream).
 
               then((completionSignal: GulpStreamModifier.CompletionSignals): void => {
 
@@ -120,13 +122,15 @@ abstract class GulpStreamModifier {
 
               }).
 
+              /* eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable --
+               * `TransformCallback` does not accept the error of `unknown` type. */
               catch((error: Error): void => { callback(error); });
         }
       },
 
       flush(this: Stream.Transform, callback: TransformCallback): void {
 
-        if (isUndefined(namedParameters.onStreamEndedEventHandler)) {
+        if (isUndefined(compoundParameter.onStreamEndedEventHandler)) {
           callback();
           return;
         }
@@ -141,9 +145,11 @@ abstract class GulpStreamModifier {
 
             };
 
-        namedParameters.
+        compoundParameter.
             onStreamEndedEventHandler(addNewFilesToStream).
             then((): void => { callback(); }).
+            /* eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable --
+             * `TransformCallback` does not accept the error of `unknown` type. */
             catch((error: Error): void => { callback(error); });
 
       }
@@ -156,7 +162,7 @@ abstract class GulpStreamModifier {
 
 namespace GulpStreamModifier {
 
-  export type NamedParameters<FileTypes extends VinylFile = VinylFile> = {
+  export type ConstructorParameter<FileTypes extends VinylFile = VinylFile> = {
     onStreamStartedEventCommonHandler?: (file: VinylFile, addNewFileToStream: NewFilesAdder) => Promise<CompletionSignals>;
     onStreamStartedEventHandlersForSpecificFileTypes?: Map<
       new () => FileTypes, (file: FileTypes, addNewFileToStream: NewFilesAdder) => Promise<CompletionSignals>

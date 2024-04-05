@@ -7,7 +7,7 @@ import {
   InvalidConfigError,
   isArbitraryObject
 } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default abstract class TypeScriptSpecialist {
@@ -33,7 +33,7 @@ export default abstract class TypeScriptSpecialist {
         title: FileReadingFailedError.localization.defaultTitle,
         occurrenceLocation: "TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions" +
             "(typeScriptConfigurationFileAbsolutePath)",
-        wrappableError: error
+        innerError: error
       });
 
     }
@@ -46,7 +46,7 @@ export default abstract class TypeScriptSpecialist {
         title: FileReadingFailedError.localization.defaultTitle,
         occurrenceLocation: "TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions" +
             "(typeScriptConfigurationFileAbsolutePath)",
-        wrappableError: isNonEmptyString(typeScriptFileReadingResult.error.messageText) ?
+        innerError: isNonEmptyString(typeScriptFileReadingResult.error.messageText) ?
             typeScriptFileReadingResult.error.messageText : typeScriptFileReadingResult.error.messageText.messageText
       });
 
@@ -75,7 +75,15 @@ export default abstract class TypeScriptSpecialist {
       typeCompilerOptionsConfigurationParsingResult = TypeScript.
         convertCompilerOptionsFromJson(
           typeScriptFileReadingResult.config.compilerOptions,
-          ImprovedPath.extractDirectoryFromFilePath(typeScriptConfigurationFileAbsolutePath)
+          ImprovedPath.extractDirectoryFromFilePath({
+            targetPath: typeScriptConfigurationFileAbsolutePath,
+            alwaysForwardSlashSeparators: true,
+            ambiguitiesResolution: {
+              mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+              mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
+              mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+            }
+          })
       );
 
     } catch (error: unknown) {
@@ -85,7 +93,7 @@ export default abstract class TypeScriptSpecialist {
         title: FileReadingFailedError.localization.defaultTitle,
         occurrenceLocation: "TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions" +
             "(typeScriptConfigurationFileAbsolutePath)",
-        wrappableError: error
+        innerError: error
       });
 
     }
@@ -98,7 +106,7 @@ export default abstract class TypeScriptSpecialist {
         title: FileReadingFailedError.localization.defaultTitle,
         occurrenceLocation: "TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions" +
             "(typeScriptConfigurationFileAbsolutePath)",
-        wrappableError: typeCompilerOptionsConfigurationParsingResult.errors.
+        innerError: typeCompilerOptionsConfigurationParsingResult.errors.
             map(
               (error: TypeScript.Diagnostic): string =>
                   (isNonEmptyString(error.messageText) ? error.messageText : error.messageText.messageText)

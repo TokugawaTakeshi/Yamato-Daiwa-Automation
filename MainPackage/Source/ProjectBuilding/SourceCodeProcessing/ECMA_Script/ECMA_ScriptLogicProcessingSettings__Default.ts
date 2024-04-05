@@ -1,12 +1,10 @@
-import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+import ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 import ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRestrictions";
 import SupportedECMA_ScriptRuntimesTypes = ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes;
 
 
 const ECMA_ScriptLogicProcessingSettings__Default: Readonly<{
-
-  entryPointsGroupReferencePrefix: string;
 
   typeScriptConfigurationFileRelativePath: string;
 
@@ -16,7 +14,10 @@ const ECMA_ScriptLogicProcessingSettings__Default: Readonly<{
 
   revisioning: Readonly<{
     mustExecute: (
-      namedParameters: Readonly<{ consumingProjectBuildingMode: string; targetRuntimeType: SupportedECMA_ScriptRuntimesTypes; }>
+      compoundParameter: Readonly<{
+        consumingProjectBuildingMode: ConsumingProjectBuildingModes;
+        targetRuntimeType: SupportedECMA_ScriptRuntimesTypes;
+      }>
     ) => boolean;
     contentHashPostfixSeparator: string;
   }>;
@@ -26,18 +27,34 @@ const ECMA_ScriptLogicProcessingSettings__Default: Readonly<{
   }>;
 
   distributing: Readonly<{
+
     exposingOfExportsFromEntryPoints: Readonly<{
       mustExpose: boolean;
+      mustAssignToWindowObject: boolean;
     }>;
+
     typeScriptTypesDeclarations: Readonly<{
       mustGenerate: boolean;
       fileNameWithoutExtension: string;
     }>;
+
   }>;
 
-}> = {
+  logging: {
 
-  entryPointsGroupReferencePrefix: "@",
+    filesPaths: boolean;
+    filesCount: boolean;
+    partialFilesAndParentEntryPointsCorrespondence: boolean;
+    filesWatcherEvents: boolean;
+
+    linting: Readonly<{
+      starting: boolean;
+      completionWithoutIssues: boolean;
+    }>;
+
+  };
+
+}> = {
 
   typeScriptConfigurationFileRelativePath: "tsconfig.json",
 
@@ -48,19 +65,23 @@ const ECMA_ScriptLogicProcessingSettings__Default: Readonly<{
   revisioning: {
 
     mustExecute(
-      namedParameters: Readonly<{ consumingProjectBuildingMode: string; targetRuntimeType: SupportedECMA_ScriptRuntimesTypes; }>
+      compoundParameter: Readonly<{
+        consumingProjectBuildingMode: ConsumingProjectBuildingModes;
+        targetRuntimeType: SupportedECMA_ScriptRuntimesTypes;
+      }>
     ): boolean {
 
       if (
-        namedParameters.targetRuntimeType === SupportedECMA_ScriptRuntimesTypes.browser ||
-        namedParameters.targetRuntimeType === SupportedECMA_ScriptRuntimesTypes.webWorker
+        compoundParameter.targetRuntimeType === SupportedECMA_ScriptRuntimesTypes.browser ||
+        compoundParameter.targetRuntimeType === SupportedECMA_ScriptRuntimesTypes.webWorker
       ) {
-        return namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.staticPreview &&
-            namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.localDevelopment;
+        return compoundParameter.consumingProjectBuildingMode !== ConsumingProjectBuildingModes.staticPreview &&
+            compoundParameter.consumingProjectBuildingMode !== ConsumingProjectBuildingModes.localDevelopment;
       }
 
 
       return false;
+
     },
 
     contentHashPostfixSeparator: "--"
@@ -74,12 +95,27 @@ const ECMA_ScriptLogicProcessingSettings__Default: Readonly<{
   distributing: {
 
     exposingOfExportsFromEntryPoints: {
-      mustExpose: false
+      mustExpose: false,
+      mustAssignToWindowObject: false
     },
 
     typeScriptTypesDeclarations: {
       mustGenerate: false,
       fileNameWithoutExtension: "index.d.ts"
+    }
+
+  },
+
+  logging: {
+
+    filesPaths: true,
+    filesCount: false,
+    partialFilesAndParentEntryPointsCorrespondence: false,
+    filesWatcherEvents: true,
+
+    linting: {
+      starting: true,
+      completionWithoutIssues: true
     }
 
   }

@@ -1,25 +1,28 @@
-/* --- Restrictions ------------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import FontsProcessingRestrictions from "@FontsProcessing/FontsProcessingRestrictions";
 
-/* --- Raw settings ------------------------------------------------------------------------------------------------- */
+/* ─── Default Settings ───────────────────────────────────────────────────────────────────────────────────────────── */
+import FontsProcessingSettings__Default from "@FontsProcessing/FontsProcessingSettings__Default";
+
+/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
 import type FontsProcessingSettings__FromFile__RawValid from "@FontsProcessing/FontsProcessingSettings__FromFile__RawValid";
 
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 import type FontsProcessingSettings__Normalized from "@FontsProcessing/FontsProcessingSettings__Normalized";
+import type AssetsProcessingSettingsGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
+
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
 import AssetsProcessingRawSettingsNormalizer from
     "@ProjectBuilding/Common/RawSettingsNormalizers/AssetsProcessingRawSettingsNormalizer";
 
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import { isNotUndefined } from "@yamato-daiwa/es-extensions";
 
 
 export default class FontsProcessingSettingsRawSettingsNormalizer extends AssetsProcessingRawSettingsNormalizer {
-
-  protected readonly supportedEntryPointsSourceFilenameExtensionsWithoutLeadingDots: Array<string> =
-      FontsProcessingRestrictions.supportedSourceFileNameExtensionsWithoutLeadingDots;
 
   private readonly fontsProcessingSettings__fromFile__rawValid: FontsProcessingSettings__FromFile__RawValid;
 
@@ -28,50 +31,80 @@ export default class FontsProcessingSettingsRawSettingsNormalizer extends Assets
     {
       fontsProcessingSettings__fromFile__rawValid,
       commonSettings__normalized
-    }: {
+    }: Readonly<{
       fontsProcessingSettings__fromFile__rawValid: FontsProcessingSettings__FromFile__RawValid;
       commonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
-    }
+    }>
   ): FontsProcessingSettings__Normalized {
 
     const dataHoldingSelfInstance: FontsProcessingSettingsRawSettingsNormalizer =
         new FontsProcessingSettingsRawSettingsNormalizer({
-          fontsProcessingSettings__fromFile__rawValid,
-          consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
-          consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+
           ...isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) ? {
             assetsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.imagesProcessing
-          } : {}
+          } : null,
+
+          supportedSourceFilesNamesExtensionsWithoutLeadingDots: FontsProcessingRestrictions.
+              supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+
+          fontsProcessingSettings__fromFile__rawValid,
+
+          consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
+          consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath
+
         });
 
     return {
+
       common: {
         supportedSourceFilesNamesExtensionsWithoutLeadingDots: FontsProcessingRestrictions.
-            supportedSourceFileNameExtensionsWithoutLeadingDots
+            supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds:
+            fontsProcessingSettings__fromFile__rawValid.common?.periodBetweenFileUpdatingAndRebuildingStarting__seconds ??
+            FontsProcessingSettings__Default.periodBetweenFileUpdatingAndRebuildingStarting__seconds
       },
+
       assetsGroups: dataHoldingSelfInstance.createNormalizedAssetsGroupsSettings(
         dataHoldingSelfInstance.fontsProcessingSettings__fromFile__rawValid.assetsGroups,
         FontsProcessingSettingsRawSettingsNormalizer.
             completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings
-      )
+      ),
+
+      logging: {
+
+        filesPaths:
+            fontsProcessingSettings__fromFile__rawValid.logging?.filesPaths ??
+            FontsProcessingSettings__Default.logging.filesPaths,
+
+        filesCount:
+            fontsProcessingSettings__fromFile__rawValid.logging?.filesCount ??
+            FontsProcessingSettings__Default.logging.filesCount,
+
+        filesWatcherEvents:
+            fontsProcessingSettings__fromFile__rawValid.logging?.filesWatcherEvents ??
+            FontsProcessingSettings__Default.logging.filesWatcherEvents
+
+      }
+
     };
+
   }
 
 
   private constructor(
-    namedParameters:
-        AssetsProcessingRawSettingsNormalizer.ConstructorParameters & {
-          fontsProcessingSettings__fromFile__rawValid: FontsProcessingSettings__FromFile__RawValid;
-        }
+    compoundParameter:
+        AssetsProcessingRawSettingsNormalizer.CompoundParameter &
+        Readonly<{ fontsProcessingSettings__fromFile__rawValid: FontsProcessingSettings__FromFile__RawValid; }>
   ) {
-    super(namedParameters);
-    this.fontsProcessingSettings__fromFile__rawValid = namedParameters.fontsProcessingSettings__fromFile__rawValid;
+    super(compoundParameter);
+    this.fontsProcessingSettings__fromFile__rawValid = compoundParameter.fontsProcessingSettings__fromFile__rawValid;
   }
 
 
   private static completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings(
-    imagesGroupSettings__generalProperties__normalized: ProjectBuildingConfig__Normalized.AssetsGroupSettingsGenericProperties
+    imagesGroupSettings__generalProperties__normalized: AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup
   ): FontsProcessingSettings__Normalized.AssetsGroup {
     return { ...imagesGroupSettings__generalProperties__normalized };
   }
+
 }

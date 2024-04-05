@@ -1,81 +1,77 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 
-/* --- Tasks executors ---------------------------------------------------------------------------------------------- */
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
 import GulpStreamsBasedTaskExecutor from
     "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import MarkupProcessingSharedState from "@MarkupProcessing/MarkupProcessingSharedState";
+
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
 import Gulp from "gulp";
 import type VinylFile from "vinyl";
 import extractStringifiedContentFromVinylFile from "@Utils/extractStringifiedContentFromVinylFile";
 import GulpStreamModifier from "@Utils/GulpStreamModifier";
-import type Webpack from "webpack";
+import Webpack from "webpack";
 import type { Configuration as WebpackConfiguration } from "webpack";
 import WebpackVinylAdapter from "webpack-stream";
 import WebpackConfigGenerator from "@ECMA_ScriptProcessing/Utils/WebpackConfigGenerator";
 import WebpackSpecialist from "@ThirdPartySolutionsSpecialists/WebpackSpecialist";
-import ForkTS_CheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import type TypeScript from "typescript";
 import TypeScriptSpecialist from "@ThirdPartySolutionsSpecialists/TypeScriptSpecialist";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
-  isNotNull,
+  Logger,
   isNotUndefined,
   isNeitherUndefinedNorNull,
   isNull,
   isUndefined
 } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import { FileNotFoundError, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsBasedTaskExecutor {
 
-  protected readonly TASK_NAME_FOR_LOGGING: string;
-  protected readonly SUBTASK_NAME_FOR_LOGGING: string = "Importing from TypeScript";
+  protected readonly logging: GulpStreamsBasedTaskExecutor.Logging = {
+    pathsOfFilesWillBeProcessed: false,
+    quantityOfFilesWillBeProcessed: false
+  };
 
-  private readonly markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
+  private readonly webpackConfiguration: WebpackConfiguration;
 
-  private readonly webpackConfigurationForEachTypeScriptFile: Array<WebpackConfiguration>;
-
-  private hasFirstBuildCompleted: boolean = false;
+  private readonly typeScriptSourceFileAbsolutePath: string;
+  private readonly importedNamespaceName: string;
 
 
   public static provideTypeScriptImportsForMarkupIfMust(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): (callback: () => void) => NodeJS.ReadWriteStream {
 
-    if (!masterConfigRepresentative.isStaticPreviewBuildingMode) {
-      return createImmediatelyEndingEmptyStream();
-    }
-
-
     const markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative | undefined =
-        masterConfigRepresentative.markupProcessingSettingsRepresentative;
+        projectBuildingMasterConfigRepresentative.markupProcessingSettingsRepresentative;
 
     if (isUndefined(markupProcessingSettingsRepresentative)) {
       return createImmediatelyEndingEmptyStream();
     }
 
 
-    const compiledTypeScriptImportingSettings: MarkupProcessingSettings__Normalized.StaticPreview.
-        ImportsFromCompiledTypeScript | undefined = markupProcessingSettingsRepresentative.compiledTypeScriptImportingSettings;
+    const importingFromTypeScriptSettings: MarkupProcessingSettings__Normalized.ImportingFromTypeScript | undefined =
+        markupProcessingSettingsRepresentative.importingFromTypeScriptSettings;
 
-    if (isUndefined(compiledTypeScriptImportingSettings)) {
+    if (isUndefined(importingFromTypeScriptSettings)) {
       return createImmediatelyEndingEmptyStream();
     }
 
-
     const dataHoldingSelfInstance: CompiledInlineTypeScriptImporterForPug = new CompiledInlineTypeScriptImporterForPug(
-      masterConfigRepresentative,
-      markupProcessingSettingsRepresentative,
-      compiledTypeScriptImportingSettings
+      projectBuildingMasterConfigRepresentative,
+      importingFromTypeScriptSettings
     );
 
     return (callback: () => void): NodeJS.ReadWriteStream => dataHoldingSelfInstance.provideTypeScriptImports(callback);
@@ -84,15 +80,14 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
 
 
   private constructor(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
-    markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative,
-    compiledTypeScriptImportingSettings: MarkupProcessingSettings__Normalized.StaticPreview.ImportsFromCompiledTypeScript
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
+    compiledTypeScriptImportingSettings: MarkupProcessingSettings__Normalized.ImportingFromTypeScript
   ) {
 
-    super(masterConfigRepresentative);
-
-    this.markupProcessingSettingsRepresentative = markupProcessingSettingsRepresentative;
-    this.TASK_NAME_FOR_LOGGING = this.markupProcessingSettingsRepresentative.TASK_NAME_FOR_LOGGING;
+    super({
+      projectBuildingMasterConfigRepresentative,
+      taskTitleForLogging: "Exporting of TypeScript to Pug"
+    });
 
     const typeScriptCompilerOptions: TypeScript.CompilerOptions = TypeScriptSpecialist.
         readTypeScriptConfigurationFileAndGetCompilerOptions(
@@ -104,29 +99,50 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
           typeScriptPathsSettings: typeScriptCompilerOptions.paths,
           typeScriptBasicAbsolutePath:
               typeScriptCompilerOptions.baseUrl ??
-              ImprovedPath.extractDirectoryFromFilePath(
-                compiledTypeScriptImportingSettings.typeScriptConfigurationFileAbsolutePath
-              )
+              ImprovedPath.extractDirectoryFromFilePath({
+                targetPath: compiledTypeScriptImportingSettings.typeScriptConfigurationFileAbsolutePath,
+                alwaysForwardSlashSeparators: true,
+                ambiguitiesResolution: {
+                  mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+                  mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
+                  mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: false
+                }
+              })
           });
 
-    const webpackConfigurationForEachTypeScriptFile: Array<WebpackConfiguration> = [];
+    /** @see https://webpack.js.org/configuration/entry-context/#entry */
+    const webpackEntryPointDefinition: Webpack.EntryObject | null =
+        WebpackConfigGenerator.getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
+          {
+            entryPointsGroupID_ForLogging: "IMPORTS_FOR_PUG",
+            sourceFilesGlobSelectors: [ compiledTypeScriptImportingSettings.sourceFileAbsolutePath ],
+            webpackContext: projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
+          }
+        );
 
-    for (const importFromCompiledTypeScriptFileSettings of compiledTypeScriptImportingSettings.files) {
-
-      const webpackConfigurationForCurrentTypeScriptFile: WebpackConfiguration | null =
-          CompiledInlineTypeScriptImporterForPug.getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings({
-            importFromCompiledTypeScriptFileSettings,
-            consumingProjectRootDirectoryAbsolutePath: this.masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-            webpackAliasesConfiguration
-          });
-
-      if (isNotNull(webpackConfigurationForCurrentTypeScriptFile)) {
-        webpackConfigurationForEachTypeScriptFile.push(webpackConfigurationForCurrentTypeScriptFile);
-      }
-
+    if (isNull(webpackEntryPointDefinition)) {
+      Logger.throwErrorAndLog({
+        errorInstance: new FileNotFoundError({
+          customMessage:
+              `The TypeScript file "${ compiledTypeScriptImportingSettings.sourceFileAbsolutePath }" for ` +
+                "the exporting to Pug was not found. " +
+              "Please create this file and provide some exports from it."
+        }),
+        title: FileNotFoundError.localization.defaultTitle,
+        occurrenceLocation: "compiledInlineTypeScriptImporterForPug.constructor(...parameters)"
+      });
     }
 
-    this.webpackConfigurationForEachTypeScriptFile = webpackConfigurationForEachTypeScriptFile;
+    this.webpackConfiguration = CompiledInlineTypeScriptImporterForPug.
+        getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings({
+          webpackEntryPointDefinition,
+          compiledTypeScriptImportingSettings,
+          projectBuildingMasterConfigRepresentative,
+          webpackAliasesConfiguration
+        });
+
+    this.typeScriptSourceFileAbsolutePath = compiledTypeScriptImportingSettings.sourceFileAbsolutePath;
+    this.importedNamespaceName = compiledTypeScriptImportingSettings.importedNamespace;
 
   }
 
@@ -138,76 +154,78 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
 
     return Gulp.
 
-        src(this.markupProcessingSettingsRepresentative.importedTypeScriptSourceFilesAbsolutePaths).
+        src(this.typeScriptSourceFileAbsolutePath).
 
-        pipe(super.printProcessedFilesPathsAndQuantity({ subtaskName: this.SUBTASK_NAME_FOR_LOGGING })).
-        pipe(super.handleErrorIfItWillOccur({ subtaskName: this.SUBTASK_NAME_FOR_LOGGING })).
+        pipe(super.handleErrorIfItWillOccur()).
+        pipe(super.logProcessedFilesIfMust()).
 
         pipe(
 
           WebpackVinylAdapter(
 
-            this.webpackConfigurationForEachTypeScriptFile[0],
+            this.webpackConfiguration,
 
-            /* @ts-ignore: TS2345 The null as second argument is obeys to README of "webpck-stream" package. */
+            /* @ts-ignore: TS2345 The null as second argument is obeying to README of "webpack-stream" package. */
             null,
-            this.onFirstBuildHasCompleted.bind(this)
+            this.onBuildHasCompleted.bind(this)
 
           )
 
         ).
 
-        pipe(GulpStreamModifier.modify({
-          onStreamStartedEventCommonHandler: async (vinylFile: VinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventCommonHandler: async (vinylFile: VinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
 
-            /* [ Theory ] In this case, the "vinylFile.path" will be absolute. */
-            const importedNamespace: string = this.markupProcessingSettingsRepresentative.
-                getTypeScriptImportingSettingsExpectedToExistForSpecificOutputJavaScriptFile(
-                  ImprovedPath.replacePathSeparatorsToForwardSlashes(vinylFile.path)
-                ).importedNamespace;
+              const outputJavaScriptCode: string = extractStringifiedContentFromVinylFile(vinylFile);
 
-            const outputJavaScriptCode: string = extractStringifiedContentFromVinylFile(vinylFile);
+              MarkupProcessingSharedState.importingFromTypeScriptPugCodeGenerator =
+                  (
+                    {
+                      indentString,
+                      lineSeparator,
+                      initialIndentationDepth__numerationFrom0
+                    }: MarkupProcessingSharedState.ImportingFromTypeScriptPugCodeGenerator.CompoundParameter
+                  ): string =>
+                      `${ indentString.repeat(initialIndentationDepth__numerationFrom0) }-${ lineSeparator.repeat(2) }` +
+                      indentString.repeat(initialIndentationDepth__numerationFrom0 + 1) +
+                      `${ outputJavaScriptCode }${ lineSeparator.repeat(2) }` +
+                      indentString.repeat(initialIndentationDepth__numerationFrom0 + 1) +
+                      `const ${ this.importedNamespaceName } = global.${ this.importedNamespaceName }.default;`;
 
-            vinylFile.contents = Buffer.from(
-              `-\n\t${ outputJavaScriptCode }\n\n` +
-              `\tconst ${ importedNamespace } = global.${ importedNamespace }.default;\n`
-            );
+              /* [ Theory ] The subsequent invocation of the callback will be ignored. */
+              callback();
 
-            vinylFile.extname = ".pug";
+              return Promise.resolve(GulpStreamModifier.CompletionSignals.REMOVING_FILE_FROM_STREAM);
 
-            return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-
-          }
-        })).
-
-        pipe(Gulp.dest(this.masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath)).
-
-        on("data", (): void => {
-
-          /* [ Theory ] The subsequent invocation of the callback will be ignored. */
-          if (this.hasFirstBuildCompleted) {
-            callback();
-          }
-
-        });
+            }
+          })
+        );
 
   }
 
 
-  private onFirstBuildHasCompleted(hardError?: Error | null, statistics?: Webpack.MultiStats): void {
-
-    this.hasFirstBuildCompleted = true;
+  private onBuildHasCompleted(hardError?: Error | null, statistics?: Webpack.MultiStats): void {
 
     if (isNeitherUndefinedNorNull(hardError)) {
 
-      /* [ Theory ] In this case, error will be emitted by "webpack-stream"/ */
+      /* [ Theory ] In this case, error will be emitted by "webpack-stream". */
       return;
 
     }
 
 
     if (isNotUndefined(statistics)) {
+
+      Logger.logSuccess({
+        title: "Injection of transpiled TypeScript to Pug successful",
+        description:
+            "The TypeScript file has been transpiled and injected to Pug. " +
+            `The exported entity stored to "${ this.importedNamespaceName }" variable.`
+      });
+
       process.stdout.write(`${ statistics.toString({ colors: true }) }\n`);
+
     }
 
   }
@@ -215,31 +233,17 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
 
   private static getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
     {
-      importFromCompiledTypeScriptFileSettings,
-      consumingProjectRootDirectoryAbsolutePath,
+      webpackEntryPointDefinition,
+      compiledTypeScriptImportingSettings,
+      projectBuildingMasterConfigRepresentative,
       webpackAliasesConfiguration
     }: Readonly<{
-      importFromCompiledTypeScriptFileSettings: MarkupProcessingSettings__Normalized.StaticPreview.
-          ImportsFromCompiledTypeScript.FileMetadata;
-      consumingProjectRootDirectoryAbsolutePath: string;
+      webpackEntryPointDefinition: Webpack.EntryObject;
+      compiledTypeScriptImportingSettings: MarkupProcessingSettings__Normalized.ImportingFromTypeScript;
+      projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
       webpackAliasesConfiguration: Readonly<{ [ alias: string ]: string | Array<string>; }>;
     }>
-  ): WebpackConfiguration | null {
-
-    /** @see https://webpack.js.org/configuration/entry-context/#entry */
-    const webpackEntryPointDefinition: Webpack.EntryObject | null =
-        WebpackConfigGenerator.getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
-          {
-            entryPointsGroupID: importFromCompiledTypeScriptFileSettings.importedNamespace,
-            sourceFilesGlobSelectors: [ importFromCompiledTypeScriptFileSettings.sourceFileAbsolutePath ],
-            webpackContext: consumingProjectRootDirectoryAbsolutePath
-          }
-        );
-
-    if (isNull(webpackEntryPointDefinition)) {
-      return null;
-    }
-
+  ): WebpackConfiguration {
 
     return {
 
@@ -248,12 +252,12 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
       output: {
         library: {
           type: "umd",
-          name: importFromCompiledTypeScriptFileSettings.importedNamespace
+          name: compiledTypeScriptImportingSettings.importedNamespace
         },
         globalObject: "globalThis"
       },
 
-      watch: true,
+      watch: projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding,
       mode: "production",
       optimization: { minimize: true },
 
@@ -261,7 +265,10 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
         rules: [
           {
             test: /\.ts$/u,
-            loader: "ts-loader"
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true
+            }
           }
         ]
       },
@@ -271,12 +278,17 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
         alias: webpackAliasesConfiguration
       },
 
-      resolveLoader: WebpackSpecialist.generateLoadersResolvingSettings(consumingProjectRootDirectoryAbsolutePath),
+      resolveLoader: WebpackSpecialist.
+          generateLoadersResolvingSettings(projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath),
 
       plugins: [
-        new ForkTS_CheckerWebpackPlugin()
+        new Webpack.DefinePlugin({
+          __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__: projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
+          __IS_TESTING_BUILDING_MODE__: projectBuildingMasterConfigRepresentative.isTestingBuildingMode,
+          __IS_STAGING_BUILDING_MODE__: projectBuildingMasterConfigRepresentative.isStagingBuildingMode,
+          __IS_PRODUCTION_BUILDING_MODE__: projectBuildingMasterConfigRepresentative.isProductionBuildingMode
+        })
       ]
-
     };
 
   }

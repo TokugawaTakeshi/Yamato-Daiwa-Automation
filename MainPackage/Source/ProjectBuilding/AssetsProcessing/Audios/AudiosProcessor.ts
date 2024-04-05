@@ -1,74 +1,98 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosProcessingSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import AudiosProcessingSettingsRepresentative from "@AudiosProcessing/AudiosProcessingSettingsRepresentative";
+import type AudiosProcessingSettingsRepresentative from "@AudiosProcessing/AudiosProcessingSettingsRepresentative";
 
-/* --- Tasks executors ---------------------------------------------------------------------------------------------- */
+/* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
+import AudiosSourceFilesWatcher from "@AudiosProcessing/AudiosSourceFilesWatcher";
+
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-import type GulpStreamsBasedTaskExecutor from
-    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import AudiosProcessingSharedState from "@AudiosProcessing/AudiosProcessingSharedState";
+
+/* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
 import type VinylFile from "vinyl";
-import gulpIntercept from "gulp-intercept";
-import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
-import { PassThrough } from "stream";
-import { isUndefined } from "@yamato-daiwa/es-extensions";
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
+import AssetVinylFile from "@ProjectBuilding/Common/VinylFiles/AssetVinylFile";
+
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import { isUndefined, readonlyArrayToMutableOne } from "@yamato-daiwa/es-extensions";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
+export default class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
   AudiosProcessingSettings__Normalized.Common,
   AudiosProcessingSettings__Normalized.AssetsGroup,
   AudiosProcessingSettingsRepresentative
 > {
 
-  protected readonly TASK_NAME_FOR_LOGGING: string = "Audios processing";
-  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "Audio";
-
-  private readonly audiosProcessingConfigRepresentative: AudiosProcessingSettingsRepresentative;
-
-
   public static provideAudiosProcessingIfMust(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): () => NodeJS.ReadWriteStream {
 
     const audiosProcessingSettingsRepresentative: AudiosProcessingSettingsRepresentative | undefined =
-        masterConfigRepresentative.audiosProcessingSettingsRepresentative;
+        projectBuildingMasterConfigRepresentative.audiosProcessingSettingsRepresentative;
 
     if (isUndefined(audiosProcessingSettingsRepresentative)) {
-      return (): NodeJS.ReadWriteStream => new PassThrough().end();
+      return createImmediatelyEndingEmptyStream();
     }
 
 
     const dataHoldingSelfInstance: AudiosProcessor = new AudiosProcessor(
-      masterConfigRepresentative, audiosProcessingSettingsRepresentative
+      projectBuildingMasterConfigRepresentative, audiosProcessingSettingsRepresentative
     );
 
-    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcherIfMust();
+    if (projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
 
-    const assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode: Array<string> =
-        audiosProcessingSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths;
+      AudiosSourceFilesWatcher.
+          initializeIfRequiredAndGetInstance({
+            audiosProcessingSettingsRepresentative,
+            projectBuildingMasterConfigRepresentative
+          }).
+          addOnFileAddedEventHandler({
+            handlerID: "ON_AUDIO_FILE_ADDED--BY_AUDIOS_PROCESSOR",
+            handler: dataHoldingSelfInstance.onSourceFilesWatcherEmittedFileAddingOrUpdatingEvent.bind(dataHoldingSelfInstance)
+          }).
+          addFileUpdatedEventHandler({
+            handlerID: "ON_AUDIO_FILE_UPDATED--BY_AUDIOS_PROCESSOR",
+            handler: dataHoldingSelfInstance.onSourceFilesWatcherEmittedFileAddingOrUpdatingEvent.bind(dataHoldingSelfInstance)
+          }).
+          addOnFileDeletedEventHandler({
+            handlerID: "ON_AUDIO_FILE_DELETED--BY_AUDIOS_PROCESSOR",
+            handler: dataHoldingSelfInstance.onAudioFileDeleted.bind(dataHoldingSelfInstance)
+          });
 
-    return dataHoldingSelfInstance.processAssets(assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode);
+    }
+
+
+    return dataHoldingSelfInstance.processAssets(audiosProcessingSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths);
+
   }
 
 
   private constructor(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
-    audiosProcessingConfigRepresentative: AudiosProcessingSettingsRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
+    audiosProcessingSettingsRepresentative: AudiosProcessingSettingsRepresentative
   ) {
-    super(masterConfigRepresentative, audiosProcessingConfigRepresentative);
-    this.audiosProcessingConfigRepresentative = audiosProcessingConfigRepresentative;
+    super({
+      projectBuildingMasterConfigRepresentative,
+      associatedAssetsProcessingSettingsRepresentative: audiosProcessingSettingsRepresentative,
+      taskTitleForLogging: "Audios processing",
+      waitingForSubsequentFilesWillSavedPeriod__seconds: audiosProcessingSettingsRepresentative.assetsProcessingCommonSettings.
+          periodBetweenFileUpdatingAndRebuildingStarting__seconds
+    });
   }
 
 
-  protected processAssets(sourceFilesAbsolutePaths: Array<string>): () => NodeJS.ReadWriteStream {
+  protected processAssets(sourceFilesAbsolutePaths: ReadonlyArray<string>): () => NodeJS.ReadWriteStream {
 
     /* [ Theory ] If to pass the empty array to 'Gulp.src(".")' error will occur but the cause will not be told clearly.
      *    However, the empty array is usual scenario (for example when user declared the configuration but has not added
@@ -78,81 +102,65 @@ class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
     }
 
 
-    return (): NodeJS.ReadWriteStream => Gulp.src(sourceFilesAbsolutePaths).
+    return (): NodeJS.ReadWriteStream => Gulp.
 
-        pipe(super.printProcessedFilesPathsAndQuantity()).
+        src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
+
         pipe(super.handleErrorIfItWillOccur()).
-
-        pipe(gulpIntercept(this.addActualSourceCodeProcessingSettingsToVinylFile.bind(this))).
-
-        pipe(gulpIntercept(this.postProcess.bind(this))).
+        pipe(super.logProcessedFilesIfMust()).
 
         pipe(
-          Gulp.dest((targetFileInFinalState: VinylFile): string =>
-              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-               * No known simple solution; will be fixed at 2nd generation of AudiosProcessor.  */
-              (targetFileInFinalState as AudiosProcessor.AudioVinylFile).outputDirectoryAbsolutePath)
-        );
+          GulpStreamModifier.modify({
+            onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
+          })
+        ).
 
-  }
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ AssetVinylFile, GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust ]
+            ])
+          })
+        ).
 
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ AssetVinylFile, AudiosProcessor.postProcessFile ]
+            ])
+          })
+        ).
 
-  private addActualSourceCodeProcessingSettingsToVinylFile(fileInInitialState: VinylFile): AudiosProcessor.AudioVinylFile {
-
-    const normalizedAudiosGroupSettingsActualForCurrentFile: AudiosProcessingSettings__Normalized.AssetsGroup =
-        this.audiosProcessingConfigRepresentative.
-            getAssetsNormalizedSettingsActualForTargetSourceFile(fileInInitialState.path);
-
-    fileInInitialState.processingSettings = normalizedAudiosGroupSettingsActualForCurrentFile;
-
-    /* [ Theory ] The value of 'path' could change during file processing. */
-    fileInInitialState.sourceAbsolutePath = fileInInitialState.path;
-    fileInInitialState.outputDirectoryAbsolutePath =
-        AudiosProcessingSettingsRepresentative.computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
-          targetSourceFileAbsolutePath: fileInInitialState.path,
-          respectiveAssetsGroupNormalizedSettings: normalizedAudiosGroupSettingsActualForCurrentFile
-        });
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of AudiosProcessor.  */
-    return fileInInitialState as AudiosProcessor.AudioVinylFile;
-  }
-
-  private postProcess(_processedAudioFile: VinylFile): VinylFile {
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of AudiosProcessor.  */
-    const processedAudioFile: AudiosProcessor.AudioVinylFile = _processedAudioFile as AudiosProcessor.AudioVinylFile;
-
-    if (processedAudioFile.processingSettings.revisioning.mustExecute) {
-      FileNameRevisionPostfixer.appendPostfixIfPossible(
-        processedAudioFile,
-        { contentHashPostfixSeparator: processedAudioFile.processingSettings.revisioning.contentHashPostfixSeparator }
-      );
-    }
-
-    this.audiosProcessingConfigRepresentative.
-        sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.
-        set(
-          ImprovedPath.replacePathSeparatorsToForwardSlashes(processedAudioFile.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(
-            [ processedAudioFile.outputDirectoryAbsolutePath, processedAudioFile.basename ],
-            { forwardSlashOnlySeparators: true }
+        pipe(
+          Gulp.dest(
+            (targetFileInFinalState: VinylFile): string =>
+                AssetVinylFile.getOutputDirectoryAbsolutePathOfExpectedToBeSelfInstance(targetFileInFinalState)
           )
         );
 
-    return processedAudioFile;
   }
+
+
+  /* ━━━ Files watcher handlers ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private onAudioFileDeleted(targetAudioFileAbsolutePath: string): void {
+    this.absolutePathOfFilesWaitingForReProcessing.delete(targetAudioFileAbsolutePath);
+    AudiosProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.delete(targetAudioFileAbsolutePath);
+  }
+
+
+  /* ━━━ Pipeline methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private static async postProcessFile(processedAudioFile: AssetVinylFile): Promise<GulpStreamModifier.CompletionSignals> {
+
+    AudiosProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.set(
+      ImprovedPath.replacePathSeparatorsToForwardSlashes(processedAudioFile.sourceAbsolutePath),
+        ImprovedPath.joinPathSegments(
+          [ processedAudioFile.outputDirectoryAbsolutePath, processedAudioFile.basename ],
+          { alwaysForwardSlashSeparators: true }
+        )
+    );
+
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+  }
+
 }
-
-
-namespace AudiosProcessor {
-  export type AudioVinylFile =
-      GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      Readonly<{
-        processingSettings: AudiosProcessingSettings__Normalized.AssetsGroup;
-      }>;
-}
-
-
-export default AudiosProcessor;

@@ -1,6 +1,6 @@
 namespace ECMA_ScriptLogicProcessingRestrictions {
 
-  export const supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string> = [ "js", "mjs", "jsx", "ts", "tsx" ];
+  export const supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string> = [ "js", "mjs", "ts", "tsx", "jsx" ];
   export const supportedOutputFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string> = [ "js" ];
 
   export enum SupportedECMA_ScriptRuntimesTypes {

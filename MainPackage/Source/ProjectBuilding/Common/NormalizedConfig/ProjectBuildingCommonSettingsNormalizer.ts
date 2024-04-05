@@ -1,20 +1,22 @@
 /* --- Business rules ----------------------------------------------------------------------------------------------- */
 import { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
-import type ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+import type ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 /* --- Raw valid config ---------------------------------------------------------------------------------------------- */
 import type ProjectBuildingCommonSettings__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/ProjectBuildingCommonSettings__FromFile__RawValid";
 
-/* --- Normalized config -------------------------------------------------------------------------------------------- */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 
 /* --- Utils -------------------------------------------------------------------------------------------------------- */
 import { isNotUndefined } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+import mustProvideIncrementalProjectBuilding
+  from "@ProjectBuilding/Common/Restrictions/mustProvideIncrementalProjectBuilding";
 
 
 export default abstract class ProjectBuildingCommonSettingsNormalizer {
@@ -24,11 +26,13 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
       commonSettings__fromFile__rawValid,
       consumingProjectRootDirectoryAbsolutePath,
       projectBuildingMode,
+      actualSelectiveExecutionID,
       actualSelectiveExecution
     }: Readonly<{
       commonSettings__fromFile__rawValid: ProjectBuildingCommonSettings__FromFile__RawValid;
       consumingProjectRootDirectoryAbsolutePath: string;
-      projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+      projectBuildingMode: ConsumingProjectBuildingModes;
+      actualSelectiveExecutionID?: string;
       actualSelectiveExecution?: ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution;
     }>
   ): ProjectBuildingCommonSettings__Normalized {
@@ -54,6 +58,10 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
       projectRootDirectoryAbsolutePath: consumingProjectRootDirectoryAbsolutePath__forwardSlashes,
 
       projectBuildingMode,
+
+      mustProvideIncrementalBuilding: mustProvideIncrementalProjectBuilding(projectBuildingMode),
+
+      ...isNotUndefined(actualSelectiveExecutionID) ? { selectiveExecutionID: actualSelectiveExecutionID } : null,
 
       ...isNotUndefined(actualSelectiveExecution) ? {
 

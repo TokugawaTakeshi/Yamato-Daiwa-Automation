@@ -1,12 +1,14 @@
-import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+import ConsumingProjectBuildingModes from
+      "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 
 export default {
   revisioning: {
-    mustExecute: (projectBuildingMode__possiblyCustom: string): boolean =>
-        projectBuildingMode__possiblyCustom !== ConsumingProjectPreDefinedBuildingModes.staticPreview &&
-        projectBuildingMode__possiblyCustom !== ConsumingProjectPreDefinedBuildingModes.localDevelopment,
+    mustExecute: (
+      { consumingProjectBuildingMode }: Readonly<{ consumingProjectBuildingMode: ConsumingProjectBuildingModes; }>
+    ): boolean =>
+        consumingProjectBuildingMode !== ConsumingProjectBuildingModes.staticPreview &&
+        consumingProjectBuildingMode !== ConsumingProjectBuildingModes.localDevelopment,
     contentHashPostfixSeparator: "--"
   }
 };

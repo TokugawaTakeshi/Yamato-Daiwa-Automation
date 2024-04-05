@@ -1,0 +1,87 @@
+extends ../../../node_modules/@yamato-daiwa/programming_documentation/Layouts/Minimal/MinimalLayout.pug
+
+
+block append Requirements
+
+  include ../../SharedAssets/Markup/SharedAssets.russian.pug
+  include ../../SharedComponents/SharedComponents.russian.pug
+
+
+block append Metadata
+
+  -
+
+    HTML_PAGE_LANGUAGE = "ru";
+    HTML_PAGE_TITLE = buildHTML_PageTitle("Главная страница");
+    HTML_PageMetaData = {
+      description:
+          "Node.js-утилита «Yamato Daiwa Automation» (сокращённо: «YDA», читается: «Уай-ди-эй») — " +
+            "высокоуровневый инструмент для сборки проектов: клиентских и серверных приложений, консольных приложений, " +
+            "библиотек для браузерного JavaScript и Node.js. " +
+          "Предназначен для разработки высокого качестве, что проявляется в строгих настройках по умолчанию и отказе в" +
+              "в сборке проекта на продакшен-подобных режимов при наличии определённых нарушений. " +
+          "Является компромиссным решением между такими низкоуровневыми утилитами с императивной настройкой, как «Gulp» и " +
+            "«Webpack», и сверхвысокоуровневыми инструментами с минимальной кастомизацией, такими так «Laravel Elixir». " +
+          "Настройки YDA описываются в декларативной форме (в формате «YAML»), при этом этот сборщик проектов не навязывает " +
+            "конкретной структуры проекта.",
+      author: HTML_PAGE_AUTHOR
+    };
+
+    FAVICON_URI = "@MustBeInPublicRoot/favicon.ico"
+
+    styleSheetsURIs = [
+      "$CommonStyles",
+      "$LayoutsStyles/Minimal/MinimalLayout.css",
+      "$PreMadesStyles",
+      "@CustomizedExternalComponents",
+      "@Pages/Top/TopPage"
+    ];
+
+    scriptsURIs.endOfBody = [ "$CommonLogic" ];
+
+    RoutingEmulator.setCurrentRoute("top");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: "./../index.html",
+      japanese: "./TopPage.japanese.html"
+    });
+
+
+block append HeadScriptsLinks
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  main.TopPage
+
+    .TopPage-ImageAndTopHeadingGroup
+
+      img.TopPage-ImageAndTopHeadingGroup-Image(
+        src="@Shared/Icons/YDA_Icon.svg"
+        alt="Логотип утилиты «Yamato Daiwa Automation» (сокращённо: «YDA», читается: «Уай-ди-эй»)"
+      )
+
+      h1.TopPage-ImageAndTopHeadingGroup-Heading
+        span.TopPage-ImageAndTopHeadingGroup-Heading-FirstLine Yamato Daiwa
+        span.TopPage-ImageAndTopHeadingGroup-Heading-SecondLine Automation
+
+    p.TopPage-ShortDescription-Heading.
+      Высокоуровневый сборщик проектов с декларативной настройкой
+
+    +AdmonitionBlock--YDF({
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning,
+      SVG_Icon: true
+    }).TopPage-Disclaimer.
+
+      Сайт документации находится на стадии разработки разработки.
+      До тех пор, пока некоторые страницы не готовы, Вы будете перенаправлены на временную англоязычную
+        Markdown-документацию на официальном GitHub-репозитории этого проекта.
+      Просим Вас понять, что качественное документирование требует больше времени, чем разработка, а библиотека
+        нуждается в новой функциональности, а потому разработка новой функциональности будет осуществляться с большим
+        приоритетом.
+
+    +CompactTableOfContents--YDF_DK(localizedRouting).TopPage-TableOfContents

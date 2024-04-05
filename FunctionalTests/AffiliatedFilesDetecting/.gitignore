@@ -1,0 +1,8 @@
+02-LocalDevelopmentBuild/
+03-ProductionBuild/
+
+node_modules/
+
+**/.DS_Store
+
+.yda/

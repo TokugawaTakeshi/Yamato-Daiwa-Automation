@@ -19,11 +19,29 @@ projectBuilding:
 
       BootstrapStyles:
 
-        sourceFileRelativePath: node_modules/bootstrap/dist/css/bootstrap.css
-        referenceName: Bootstrap
+#        sourceFileRelativePath: node_modules/bootstrap/dist/css/bootstrap.css
+        sourceDirectoryRelativePath: node_modules/bootstrap/dist/css
+        aliasName: Bootstrap
         buildingModeDependent:
-          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild/styles }
+          LOCAL_DEVELOPMENT:
+            outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild/styles
+            filesRenamings:
+              - pathRelativeToSourceDirectory: bootstrap-grid.min.css
+                newFileNameWithExtension: BootstrapGrid.min.css
+
           PRODUCTION: { outputTopDirectoryRelativePath: 03-ProductionBuild/styles }
+
+      Env:
+
+        sourceFileRelativePath: 01-Source/.env
+        referenceName: Env
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT:
+            outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild/styles
+            newFileNameWithExtension: ".env.local"
+          PRODUCTION:
+            outputTopDirectoryRelativePath: 03-ProductionBuild/styles
+            newFileNameWithExtension: ".env.production"
 
 
   browserLiveReloading:

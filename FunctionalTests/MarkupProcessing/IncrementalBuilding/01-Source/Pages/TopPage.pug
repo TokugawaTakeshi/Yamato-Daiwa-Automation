@@ -1,0 +1,26 @@
+extends ../Layouts/MainLayout.pug
+
+
+block append Requirements
+
+  include ../Components/NewsFeed.pug
+
+
+block prepend SpecificContent
+
+  h1 Top page
+
+  +NewsFeed
+
+  //-
+    a()
+      span
+      a() Foo
+        div
+        a() bar
+
+    span
+
+    h1
+
+    button

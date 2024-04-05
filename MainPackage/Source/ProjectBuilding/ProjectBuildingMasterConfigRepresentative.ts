@@ -1,6 +1,6 @@
 /* --- Business rules ----------------------------------------------------------------------------------------------- */
-import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+import ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 /* --- Normalized settings ------------------------------------------------------------------------------------------ */
 import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
@@ -23,6 +23,8 @@ import VideosProcessingSettingsRepresentative from
     "@VideosProcessing/VideosProcessingSettingsRepresentative";
 
 import PlainCopyingSettingsRepresentative from "@ProjectBuilding/PlainCopying/PlainCopyingSettingsRepresentative";
+
+import FilesWatchingSettingsRepresentative from "@ProjectBuilding/FilesWatching/FilesWatchingSettingsRepresentative";
 import BrowserLiveReloadingSettingsRepresentative from "@BrowserLiveReloading/BrowserLiveReloadingSettingsRepresentative";
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
@@ -30,7 +32,8 @@ import {
   Logger,
   ClassRedundantSubsequentInitializationError,
   isNotUndefined,
-  isNotNull
+  isNotNull,
+  undefinedToNull
 } from "@yamato-daiwa/es-extensions";
 
 
@@ -50,6 +53,8 @@ export default class ProjectBuildingMasterConfigRepresentative {
   public readonly videosProcessingSettingsRepresentative: VideosProcessingSettingsRepresentative | undefined;
 
   public readonly plainCopyingSettingsRepresentative: PlainCopyingSettingsRepresentative | undefined;
+
+  public readonly filesWatchingSettingsRepresentative: FilesWatchingSettingsRepresentative;
   public readonly browserLiveReloadingSettingsRepresentative: BrowserLiveReloadingSettingsRepresentative | undefined;
 
 
@@ -132,6 +137,9 @@ export default class ProjectBuildingMasterConfigRepresentative {
       );
     }
 
+    this.filesWatchingSettingsRepresentative =
+        new FilesWatchingSettingsRepresentative(projectBuilderNormalizedConfig.filesWatching, this);
+
     if (isNotUndefined(projectBuilderNormalizedConfig.browserLiveReloading)) {
       this.browserLiveReloadingSettingsRepresentative = new BrowserLiveReloadingSettingsRepresentative(
         projectBuilderNormalizedConfig.browserLiveReloading
@@ -150,32 +158,37 @@ export default class ProjectBuildingMasterConfigRepresentative {
     return this.commonSettings.actualPublicDirectoryAbsolutePath;
   }
 
+  public get selectiveExecutionID(): string | undefined {
+    return this.commonSettings.selectiveExecutionID;
+  }
+
 
   /* --- Project building mode -------------------------------------------------------------------------------------- */
   public get consumingProjectBuildingMode(): string { return this.commonSettings.projectBuildingMode; }
 
   public get isStaticPreviewBuildingMode(): boolean {
-    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.staticPreview;
+    return this.commonSettings.projectBuildingMode === ConsumingProjectBuildingModes.staticPreview;
   }
 
   public get isLocalDevelopmentBuildingMode(): boolean {
-    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.localDevelopment;
+    return this.commonSettings.projectBuildingMode === ConsumingProjectBuildingModes.localDevelopment;
   }
 
   public get isTestingBuildingMode(): boolean {
-    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.testing;
+    return this.commonSettings.projectBuildingMode === ConsumingProjectBuildingModes.testing;
   }
 
   public get isStagingBuildingMode(): boolean {
-    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.staging;
+    return this.commonSettings.projectBuildingMode === ConsumingProjectBuildingModes.staging;
   }
 
   public get isProductionBuildingMode(): boolean {
-    return this.commonSettings.projectBuildingMode === ConsumingProjectPreDefinedBuildingModes.production;
+    return this.commonSettings.projectBuildingMode === ConsumingProjectBuildingModes.production;
   }
 
 
   /* --- Tasks execution requirement -------------------------------------------------------------------------------- */
+  /* eslint-disable @stylistic/brace-style -- In this case the Allman style provides symmetry. */
   public get mustProcessMarkup(): boolean {
     return isNotUndefined(this.markupProcessingSettingsRepresentative) &&
         this.markupProcessingSettingsRepresentative.hasAtLeastOneRelevantEntryPointsGroup;
@@ -190,8 +203,19 @@ export default class ProjectBuildingMasterConfigRepresentative {
         this.stylesProcessingSettingsRepresentative.hasAtLeastOneRelevantEntryPointsGroup;
   }
 
-  public get mustProcessECMA_ScriptBasedLogic(): boolean {
-    return isNotUndefined(this.ECMA_ScriptLogicProcessingSettingsRepresentative);
+  public getECMA_ScriptLogicProcessingSettingsRepresentativeIfMustProcessECMA_ScriptLogic():
+      ECMA_ScriptLogicProcessingSettingsRepresentative | null
+  {
+    return undefinedToNull(this.ECMA_ScriptLogicProcessingSettingsRepresentative);
+  }
+
+  public getECMA_ScriptLogicProcessingSettingsRepresentativeIfMustOrchestrateLocalDevelopmentServer():
+      ECMA_ScriptLogicProcessingSettingsRepresentative | null
+  {
+    return isNotUndefined(
+      this.ECMA_ScriptLogicProcessingSettingsRepresentative?.localDevelopmentServerOrchestrationSettings
+    ) && this.isLocalDevelopmentBuildingMode ? this.ECMA_ScriptLogicProcessingSettingsRepresentative : null;
+
   }
 
   public get mustProcessImages(): boolean {
@@ -210,23 +234,23 @@ export default class ProjectBuildingMasterConfigRepresentative {
     return isNotUndefined(this.videosProcessingSettingsRepresentative);
   }
 
-  public get mustProvideBrowserLiveReloading(): boolean {
-    return isNotUndefined(this.browserLiveReloadingSettingsRepresentative) &&
-        (this.isStaticPreviewBuildingMode || this.isLocalDevelopmentBuildingMode);
+  public get mustProvideLocalDevelopmentServerOrchestration(): boolean {
+    return isNotUndefined(this.ECMA_ScriptLogicProcessingSettingsRepresentative) &&
+        this.isLocalDevelopmentBuildingMode &&
+        isNotUndefined(this.ECMA_ScriptLogicProcessingSettingsRepresentative.localDevelopmentServerOrchestrationSettings);
   }
+
+  public getBrowserLiveReloadingSettingsRepresentativeIfMustProvideBrowserLiveReloading():
+      BrowserLiveReloadingSettingsRepresentative | null
+  {
+    return this.mustProvideIncrementalBuilding ? undefinedToNull(this.browserLiveReloadingSettingsRepresentative) : null;
+  }
+  /* eslint-enable @stylistic/brace-style */
 
 
   /* --- Other ------------------------------------------------------------------------------------------------------ */
-  public get allOutputFilesGlobSelectors(): Array<string> {
-    return [
-      ...this.markupProcessingSettingsRepresentative?.actualOutputFilesGlobSelectors ?? [],
-      ...this.stylesProcessingSettingsRepresentative?.actualOutputFilesGlobSelectors ?? [],
-      ...this.ECMA_ScriptLogicProcessingSettingsRepresentative?.actualOutputFilesGlobSelectors ?? [],
-      ...this.imagesProcessingSettingsRepresentative?.actualOutputFilesGlobSelectors ?? [],
-      ...this.fontsProcessingSettingsRepresentative?.actualOutputFilesGlobSelectors ?? [],
-      ...this.audiosProcessingSettingsRepresentative?.actualOutputFilesGlobSelectors ?? [],
-      ...this.videosProcessingSettingsRepresentative?.actualOutputFilesGlobSelectors ?? []
-    ];
+  public get mustProvideIncrementalBuilding(): boolean {
+    return this.commonSettings.mustProvideIncrementalBuilding;
   }
 
 }

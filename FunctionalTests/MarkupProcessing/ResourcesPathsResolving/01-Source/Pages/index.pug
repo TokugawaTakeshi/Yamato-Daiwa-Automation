@@ -1,7 +1,7 @@
 doctype html
 
 
-include ../Components/SharedSingletons/Header.pug
+include ../SharedComponents/Singletons/Header.pug
 
 
 html(lang="en")
@@ -30,6 +30,7 @@ html(lang="en")
           src="@Shared/Cats/GrayCat"
           alt="The gray cat"
           style="width: 100%;"
+          data-yda-auto_aspect_ratio
         )
 
         figcaption
@@ -37,3 +38,8 @@ html(lang="en")
           |
           a(href="https://www.instagram.com/arenas_varela/" target="_blank" rel="noopener noreferrer nofollow" ) Steven Arenas
           | .
+
+      //-
+        div(
+          style="aspect-ratio: 2/3; background: url('@Shared/NNN_PetShopLogo), url('@Shared/Cats/GrayCat'); color: red;"
+        )

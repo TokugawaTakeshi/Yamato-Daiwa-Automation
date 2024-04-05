@@ -1,48 +1,52 @@
-/* --- Restrictions ------------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import type MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRestrictions";
 
-/* --- Normalized config -------------------------------------------------------------------------------------------- */
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+/* ─── Normalized config ──────────────────────────────────────────────────────────────────────────────────────────── */
+import type SourceCodeProcessingGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
+import type LintingSettings__Normalized from "@ProjectBuilding/Common/NormalizedConfig/LintingSettings__Normalized";
 
-/* --- Utils -------------------------------------------------------------------------------------------------------- */
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
 
 
 type MarkupProcessingSettings__Normalized = Readonly<{
   common: MarkupProcessingSettings__Normalized.Common;
   linting: MarkupProcessingSettings__Normalized.Linting;
+  importingFromTypeScript?: MarkupProcessingSettings__Normalized.ImportingFromTypeScript;
   staticPreview: MarkupProcessingSettings__Normalized.StaticPreview;
   relevantEntryPointsGroups: ReadonlyMap<
-    ProjectBuildingConfig__Normalized.EntryPointsGroupID, MarkupProcessingSettings__Normalized.EntryPointsGroup
+    SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
+    MarkupProcessingSettings__Normalized.EntryPointsGroup
   >;
   logging: MarkupProcessingSettings__Normalized.Logging;
 }>;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
 namespace MarkupProcessingSettings__Normalized {
 
   export type Common =
-      ProjectBuildingConfig__Normalized.SourceCodeProcessingCommonSettingsGenericProperties &
+      SourceCodeProcessingGenericProperties__Normalized.Common &
       Readonly<{
         mustResolveResourcesReferencesToAbsolutePath: boolean;
         periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
       }>;
 
 
-  export type Linting = Readonly<{
-    presetFileAbsolutePath?: string;
-    mustExecute: boolean;
+  export type Linting = LintingSettings__Normalized;
+
+
+  export type ImportingFromTypeScript = Readonly<{
+    typeScriptConfigurationFileAbsolutePath: string;
+    sourceFileAbsolutePath: string;
+    importedNamespace: string;
+    nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected: string;
   }>;
 
 
   export type StaticPreview = Readonly<{
     stateDependentPagesVariationsSpecification: StaticPreview.StateDependentPagesVariationsSpecification;
     importsFromStaticDataFiles: StaticPreview.ImportsFromStaticDataFiles;
-    compiledTypeScriptImporting?: StaticPreview.ImportsFromCompiledTypeScript;
   }>;
 
   export namespace StaticPreview {
@@ -60,46 +64,64 @@ namespace MarkupProcessingSettings__Normalized {
       }>;
     }
 
-
-    export type ImportsFromCompiledTypeScript = Readonly<{
-      typeScriptConfigurationFileAbsolutePath: string;
-      files: ReadonlyArray<ImportsFromCompiledTypeScript.FileMetadata>;
-    }>;
-
-    export namespace ImportsFromCompiledTypeScript {
-      export type FileMetadata = Readonly<{
-        sourceFileAbsolutePath: string;
-        importedNamespace: string;
-        outputDirectoryAbsolutePath: string;
-        outputFileNameWithoutExtension: string;
-      }>;
-    }
   }
 
 
   export type EntryPointsGroup =
-      ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings &
+      SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup &
       Readonly<{
+        outputFormat: MarkupProcessingRestrictions.OutputFormats;
         HTML_Validation: EntryPointsGroup.HTML_Validation;
         accessibilityInspection: EntryPointsGroup.AccessibilityInspection;
-        mustConvertToHandlebarsOnNonStaticPreviewModes: boolean;
+        outputCodeFormatting: EntryPointsGroup.OutputCodeFormatting;
       }>;
 
   export namespace EntryPointsGroup {
 
-    export type HTML_Validation = Readonly<{ mustExecute: boolean; }>;
+    export type HTML_Validation = Readonly<{
+      mustExecute: boolean;
+      ignoring: Readonly<{
+        filesAbsolutePaths: ReadonlyArray<string>;
+        directoriesAbsolutePaths: ReadonlyArray<string>;
+      }>;
+    }>;
 
     export type AccessibilityInspection = Readonly<{
       mustExecute: boolean;
       standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
+      ignoring: Readonly<{
+        filesAbsolutePaths: ReadonlyArray<string>;
+        directoriesAbsolutePaths: ReadonlyArray<string>;
+      }>;
     }>;
+
+    export type OutputCodeFormatting = Readonly<{ mustExecute: boolean; }>;
+
   }
 
 
   export type Logging = Readonly<{
+
     filesPaths: boolean;
     filesCount: boolean;
     partialFilesAndParentEntryPointsCorrespondence: boolean;
+    filesWatcherEvents: boolean;
+
+    linting: Readonly<{
+      starting: boolean;
+      completionWithoutIssues: boolean;
+    }>;
+
+    HTML_Validation: Readonly<{
+      starting: boolean;
+      completionWithoutIssues: boolean;
+    }>;
+
+    accessibilityChecking: Readonly<{
+      starting: boolean;
+      completionWithoutIssues: boolean;
+    }>;
+
   }>;
 
 }

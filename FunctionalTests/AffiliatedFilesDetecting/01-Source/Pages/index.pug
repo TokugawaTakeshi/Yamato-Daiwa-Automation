@@ -1,0 +1,16 @@
+extends ../Layouts/Main/MainLayout.pug
+
+
+block append Requirements
+
+  include ../SharedComponents/SharedComponents.pug
+
+
+block append Metadata
+
+  - const PAGE_TITLE = "Top page - Affiliated Files Detecting - YDA";
+
+
+block append DynamicContent
+
+  h1= PAGE_TITLE

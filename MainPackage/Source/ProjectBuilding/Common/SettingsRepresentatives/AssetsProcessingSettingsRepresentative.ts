@@ -1,204 +1,225 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
-import AssetsProcessingCommonSettingsGenericProperties = ProjectBuildingConfig__Normalized.
-    AssetsProcessingCommonSettingsGenericProperties;
-import AssetsGroupSettingsGenericProperties = ProjectBuildingConfig__Normalized.
-    AssetsGroupSettingsGenericProperties;
-
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 
-/* --- Utils -------------------------------------------------------------------------------------------------------- */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+import type AssetsProcessingSettingsGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
+
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
-  Logger,
-  UnexpectedEventError,
   getIndexesOfArrayElementsWhichSatisfiesThePredicate,
-  stringifyAndFormatArbitraryValue,
+  getArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne,
   removeArrayElementsByIndexes,
-  isUndefined,
+  removeSpecificSegmentsFromURI_Path,
+  explodeURI_PathToSegments,
+  isNumber,
   isNonEmptyArray
 } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
-import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
+import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default abstract class AssetsProcessingSettingsRepresentative<
-  SpecificAssetsProcessingCommonSettingsGenericProperties extends AssetsProcessingCommonSettingsGenericProperties,
-  SpecificAssetsGroupNormalizedSettings extends AssetsGroupSettingsGenericProperties
+  SpecificAssetsProcessingCommonSettingsGenericProperties extends AssetsProcessingSettingsGenericProperties__Normalized.Common,
+  SpecificAssetsGroupNormalizedSettings extends AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup
 > {
 
-  public abstract readonly relevantSourceFilesGlobSelectors: Array<string>;
+  /* ━━━ Public abstract fields ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  public abstract readonly relevantSourceFilesGlobSelectors: ReadonlyArray<string>;
+
   public abstract readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string;
   public abstract readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string;
 
-  protected abstract assetsProcessingCommonSettings: SpecificAssetsProcessingCommonSettingsGenericProperties;
-  protected abstract actualAssetsGroupsSettings: Map<
-    ProjectBuildingConfig__Normalized.AssetsGroupID, SpecificAssetsGroupNormalizedSettings
+
+  /* ━━━ Public readonly fields ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  public readonly assetsProcessingCommonSettings: SpecificAssetsProcessingCommonSettingsGenericProperties;
+  public readonly loggingSettings: AssetsProcessingSettingsGenericProperties__Normalized.Logging;
+
+  public readonly relevantAssetsGroupsSettingsMappedByGroupID: ReadonlyMap<
+    AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID, SpecificAssetsGroupNormalizedSettings
   >;
 
-  public readonly sourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> = new Map<string, string>();
-  public readonly prefixOfAliasOfTopDirectoryOfEntryPointsGroup: string = "@";
+  public readonly relevantAssetsGroupsSettingsMappedBySourceFilesTopDirectoryAliasName: ReadonlyMap<
+    string, SpecificAssetsGroupNormalizedSettings
+  >;
 
-  protected masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+  public readonly hasAtLeastOneActualAssetsGroup: boolean;
+
+  public readonly actualAssetsSourceFilesAbsolutePaths: ReadonlyArray<string>;
+  public readonly actualOutputFilesGlobSelectors: ReadonlyArray<string>;
+
+  public readonly supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string>;
 
 
-  public static computeActualOutputDirectoryAbsolutePathForTargetSourceFile(
+  /* ━━━ Protected fields ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  protected readonly projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+
+
+  /* ━━━ Public static methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  public static computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
     {
       targetSourceFileAbsolutePath,
-      respectiveAssetsGroupNormalizedSettings
+      relevantAssetsGroupNormalizedSettings
     }: Readonly<{
       targetSourceFileAbsolutePath: string;
-      respectiveAssetsGroupNormalizedSettings: AssetsGroupSettingsGenericProperties;
+      relevantAssetsGroupNormalizedSettings: AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup;
     }>
   ): string {
 
-    let outputDirectoryAbsolutePathForCurrentSourceFile: string = ImprovedPath.joinPathSegments(
+    let outputDirectoryAbsolutePathForTargetSourceFile: string = ImprovedPath.joinPathSegments(
       [
-        respectiveAssetsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
+        relevantAssetsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
         ImprovedPath.computeRelativePath(
           {
-            basePath: respectiveAssetsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
-            comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
+            basePath: relevantAssetsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
+            comparedPath: ImprovedPath.extractDirectoryFromFilePath({
+              targetPath: targetSourceFileAbsolutePath,
+              ambiguitiesResolution: {
+                mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
+                mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+                mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+              },
+              alwaysForwardSlashSeparators: true
+            })
           }
         )
       ],
-      { forwardSlashOnlySeparators: true }
+      { alwaysForwardSlashSeparators: true }
     );
 
-    if (isNonEmptyArray(respectiveAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichMustBeRemoved)) {
-      outputDirectoryAbsolutePathForCurrentSourceFile = ImprovedPath.removeSegmentsFromPath(
-        outputDirectoryAbsolutePathForCurrentSourceFile,
-        respectiveAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichMustBeRemoved
-      );
-    }
-
-
-    if (isNonEmptyArray(
-      respectiveAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved
-    )) {
-
-      const outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments: Array<string> =
-          ImprovedPath.splitPathToSegments(outputDirectoryAbsolutePathForCurrentSourceFile);
-
-      respectiveAssetsGroupNormalizedSettings.
-          outputPathTransformations.
-          segmentsWhichLastDuplicatesMustBeRemoved.
-          forEach((segmentWhichLastDuplicatesMustBeRemoved: string): void => {
-
-            const indexesOfDuplicates: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
-                outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
-                (outputDirectoryAbsolutePathSegment: string): boolean =>
-                    outputDirectoryAbsolutePathSegment === segmentWhichLastDuplicatesMustBeRemoved
-            );
-
-            removeArrayElementsByIndexes({
-              targetArray: outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
-              indexes: indexesOfDuplicates[indexesOfDuplicates.length - 1],
-              mutably: true
-            });
-          });
-
-      outputDirectoryAbsolutePathForCurrentSourceFile = ImprovedPath.joinPathSegments(
-        outputDirectoryAbsolutePathForCurrentSourceFile__explodedToSegments,
-        { forwardSlashOnlySeparators: true }
-      );
-    }
-
-    return outputDirectoryAbsolutePathForCurrentSourceFile;
-  }
-
-
-  protected constructor(masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative) {
-    this.masterConfigRepresentative = masterConfigRepresentative;
-  }
-
-
-  public get supportedSourceFilesNamesExtensionsWithoutLeadingDots(): ReadonlyArray<string> {
-    return this.assetsProcessingCommonSettings.supportedSourceFilesNamesExtensionsWithoutLeadingDots;
-  }
-
-  public get hasAtLeastOneActualAssetsGroup(): boolean {
-    return this.actualAssetsGroupsSettings.size > 0;
-  }
-
-  public get actualAssetsSourceFilesAbsolutePaths(): Array<string> {
-
-    const assetsSourceFilesAbsolutePaths: Array<string> = [];
-
-    this.actualAssetsGroupsSettings.forEach(
-      (assetsGroupSettings: SpecificAssetsGroupNormalizedSettings): void => {
-        assetsSourceFilesAbsolutePaths.push(
-          ...ImprovedGlob.getFilesAbsolutePathsSynchronously([
-            assetsGroupSettings.sourceFilesGlobSelector
-          ])
-        );
-      }
-    );
-
-    return assetsSourceFilesAbsolutePaths;
-
-  }
-
-  public getAssetsNormalizedSettingsActualForTargetSourceFile(
-    targetSourceFileAbsolutePath: string
-  ): SpecificAssetsGroupNormalizedSettings {
-
-    const assetsNormalizedSettingsActualForTargetSourceFile: SpecificAssetsGroupNormalizedSettings | undefined =
-        Array.from(this.actualAssetsGroupsSettings.values()).
-          find(
-              (assetsGroupNormalizedSettings: SpecificAssetsGroupNormalizedSettings): boolean =>
-                  ImprovedGlob.isFilePathMatchingWithGlobSelector({
-                    filePath: targetSourceFileAbsolutePath,
-                    globSelector: assetsGroupNormalizedSettings.sourceFilesGlobSelector
-                  })
-          );
-
-    if (isUndefined(assetsNormalizedSettingsActualForTargetSourceFile)) {
-      Logger.throwErrorAndLog({
-        errorInstance: new UnexpectedEventError(
-            `ファイル：「${ targetSourceFileAbsolutePath }」に適切な設定が発見されず。設定通りファイルファイルを回収には下記のGlob正規表示が建てられたが、` +
-            "逆に、当ファイルに何方のGlob正規表現とも合っていない。\n" +
-            `${ stringifyAndFormatArbitraryValue(Array.from(this.actualAssetsGroupsSettings.values()).map(
-                (assetsGroupNormalizedSettings: SpecificAssetsGroupNormalizedSettings): string =>
-                    assetsGroupNormalizedSettings.sourceFilesGlobSelector
-            )) }`
-        ),
-        occurrenceLocation: "AssetsProcessingSettingsRepresentative." +
-            "getAssetsNormalizedSettingsActualForTargetSourceFile(targetSourceFileAbsolutePath: string)",
-        title: UnexpectedEventError.localization.defaultTitle
+    if (isNonEmptyArray(relevantAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichMustBeRemoved)) {
+      outputDirectoryAbsolutePathForTargetSourceFile = removeSpecificSegmentsFromURI_Path({
+        targetPath: outputDirectoryAbsolutePathForTargetSourceFile,
+        targetSegments: relevantAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichMustBeRemoved,
+        mustOutputAlwaysWithForwardSlashesPathSeparators: true
       });
     }
 
 
-    return assetsNormalizedSettingsActualForTargetSourceFile;
+    if (
+      isNonEmptyArray(relevantAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved)
+    ) {
 
-  }
+      const outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile: Array<string> =
+          explodeURI_PathToSegments(outputDirectoryAbsolutePathForTargetSourceFile);
 
-  public get actualOutputFilesGlobSelectors(): Array<string> {
-    return Array.from(this.actualAssetsGroupsSettings.values()).map(
-        (assetsGroupSettings__normalized: SpecificAssetsGroupNormalizedSettings): string =>
-            ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
-              basicDirectoryPath: assetsGroupSettings__normalized.outputFilesTopDirectoryAbsolutePath,
-              fileNamesExtensions: this.supportedSourceFilesNamesExtensionsWithoutLeadingDots
-            })
-    );
-  }
+      for (
+        const pathSegmentWhichLastDuplicateMustBeRemoved of
+            relevantAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved
+      ) {
 
-  public get assetsGroupsNormalizedSettingsMappedByAssetAliases(): Map<string, SpecificAssetsGroupNormalizedSettings> {
+        const indexesOfDuplicatesOfTargetPathSegment: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
+            outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile,
+            (outputDirectoryAbsolutePathSegment: string): boolean =>
+                outputDirectoryAbsolutePathSegment === pathSegmentWhichLastDuplicateMustBeRemoved
+        );
 
-    const assetsGroupsNormalizedSettingsMappedByAssetAliases: Map<string, SpecificAssetsGroupNormalizedSettings> =
-        new Map<string, SpecificAssetsGroupNormalizedSettings>();
-
-    this.actualAssetsGroupsSettings.
-        forEach((assetsGroupNormalizedSettings: SpecificAssetsGroupNormalizedSettings): void => {
-          assetsGroupsNormalizedSettingsMappedByAssetAliases.set(
-              assetsGroupNormalizedSettings.sourceFilesTopDirectoryPathAlias,
-              assetsGroupNormalizedSettings
-          );
+        removeArrayElementsByIndexes({
+          targetArray: outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile,
+          indexes: indexesOfDuplicatesOfTargetPathSegment[indexesOfDuplicatesOfTargetPathSegment.length - 1],
+          mutably: true
         });
 
-    return assetsGroupsNormalizedSettingsMappedByAssetAliases;
+        outputDirectoryAbsolutePathForTargetSourceFile =
+            outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile.join("/");
 
+      }
+
+    }
+
+    if (
+      isNumber(
+        relevantAssetsGroupNormalizedSettings.outputPathTransformations.
+            segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved
+      )
+    ) {
+      outputDirectoryAbsolutePathForTargetSourceFile =
+          explodeURI_PathToSegments(outputDirectoryAbsolutePathForTargetSourceFile).
+          slice(
+            0,
+            -relevantAssetsGroupNormalizedSettings.outputPathTransformations.
+                segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved
+          ).
+          join("/");
+    }
+
+    return outputDirectoryAbsolutePathForTargetSourceFile;
+
+  }
+
+
+  /* ━━━ Constructor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  protected constructor(
+    {
+      projectBuildingMasterConfigRepresentative,
+      assetsProcessingCommonSettings,
+      loggingSettings,
+      relevantAssetsGroupsSettingsMappedByGroupID
+    }: Readonly<{
+      projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+      assetsProcessingCommonSettings: SpecificAssetsProcessingCommonSettingsGenericProperties;
+      loggingSettings: AssetsProcessingSettingsGenericProperties__Normalized.Logging;
+      relevantAssetsGroupsSettingsMappedByGroupID: ReadonlyMap<
+        AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID, SpecificAssetsGroupNormalizedSettings
+      >;
+    }>
+  ) {
+
+    this.projectBuildingMasterConfigRepresentative = projectBuildingMasterConfigRepresentative;
+
+    this.assetsProcessingCommonSettings = assetsProcessingCommonSettings;
+    this.loggingSettings = loggingSettings;
+
+    this.relevantAssetsGroupsSettingsMappedByGroupID = relevantAssetsGroupsSettingsMappedByGroupID;
+
+    this.relevantAssetsGroupsSettingsMappedBySourceFilesTopDirectoryAliasName =
+      new Map<string, SpecificAssetsGroupNormalizedSettings>(
+        Array.from(this.relevantAssetsGroupsSettingsMappedByGroupID.values()).
+            map(
+              (
+                assetsGroupNormalizedSettings: SpecificAssetsGroupNormalizedSettings
+              ): [ string, SpecificAssetsGroupNormalizedSettings ] =>
+                  [
+                    assetsGroupNormalizedSettings.sourceFilesTopDirectoryPathAliasName,
+                    assetsGroupNormalizedSettings
+                  ]
+            )
+      );
+
+    this.hasAtLeastOneActualAssetsGroup = this.relevantAssetsGroupsSettingsMappedByGroupID.size > 0;
+
+    this.actualAssetsSourceFilesAbsolutePaths = Array.from(this.relevantAssetsGroupsSettingsMappedByGroupID.values()).
+        flatMap(
+          (assetsGroupSettings: SpecificAssetsGroupNormalizedSettings): ReadonlyArray<string> =>
+              ImprovedGlob.getFilesAbsolutePathsSynchronously([ assetsGroupSettings.sourceFilesGlobSelector ])
+        );
+
+    this.actualOutputFilesGlobSelectors = Array.from(this.relevantAssetsGroupsSettingsMappedByGroupID.values()).
+        map(
+          (assetsGroupSettings__normalized: SpecificAssetsGroupNormalizedSettings): string =>
+              ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
+                basicDirectoryPath: assetsGroupSettings__normalized.outputFilesTopDirectoryAbsolutePath,
+                fileNamesExtensions: this.supportedSourceFilesNamesExtensionsWithoutLeadingDots
+              })
+        );
+
+    this.supportedSourceFilesNamesExtensionsWithoutLeadingDots = this.assetsProcessingCommonSettings.
+        supportedSourceFilesNamesExtensionsWithoutLeadingDots;
+
+  }
+
+
+  /* ━━━ Public instance methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  public getAssetsNormalizedSettingsActualForTargetSourceFile(
+    targetSourceFileAbsolutePath: string
+  ): SpecificAssetsGroupNormalizedSettings {
+    return getArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne(
+      Array.from(this.relevantAssetsGroupsSettingsMappedByGroupID.values()),
+      (assetsGroupNormalizedSettings: SpecificAssetsGroupNormalizedSettings): boolean =>
+          ImprovedGlob.isFilePathMatchingWithGlobSelector({
+            filePath: targetSourceFileAbsolutePath,
+            globSelector: assetsGroupNormalizedSettings.sourceFilesGlobSelector
+          }),
+      { mustThrowErrorIfElementNotFoundOrMatchesAreMultiple: true }
+    );
   }
 
 }

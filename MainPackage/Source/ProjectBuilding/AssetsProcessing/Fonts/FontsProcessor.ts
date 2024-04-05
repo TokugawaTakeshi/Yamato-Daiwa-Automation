@@ -1,74 +1,97 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type FontsProcessingSettings__Normalized from "@FontsProcessing/FontsProcessingSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import FontsProcessingSettingsRepresentative from "@FontsProcessing/FontsProcessingSettingsRepresentative";
+import type FontsProcessingSettingsRepresentative from "@FontsProcessing/FontsProcessingSettingsRepresentative";
 
-/* --- Tasks executor ----------------------------------------------------------------------------------------------- */
+/* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
+import FontsSourceFilesWatcher from "@FontsProcessing/FontsSourceFilesWatcher";
+
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-import type GulpStreamsBasedTaskExecutor from
-    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import FontsProcessingSharedState from "@FontsProcessing/FontsProcessingSharedState";
+
+/* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
 import type VinylFile from "vinyl";
-import gulpIntercept from "gulp-intercept";
-import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
-import { PassThrough } from "stream";
-import { isUndefined } from "@yamato-daiwa/es-extensions";
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
+import AssetVinylFile from "@ProjectBuilding/Common/VinylFiles/AssetVinylFile";
+
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import { isUndefined, readonlyArrayToMutableOne } from "@yamato-daiwa/es-extensions";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
+export default class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
   FontsProcessingSettings__Normalized.Common,
   FontsProcessingSettings__Normalized.AssetsGroup,
   FontsProcessingSettingsRepresentative
 > {
 
-  public readonly fontsProcessorConfigRepresentative: FontsProcessingSettingsRepresentative;
-
-  protected readonly TASK_NAME_FOR_LOGGING: string = "活字管理";
-  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "活字";
-
-
   public static provideFontsProcessingIfMust(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): () => NodeJS.ReadWriteStream {
 
-    const fontsProcessorSettingsRepresentative: FontsProcessingSettingsRepresentative | undefined =
-        masterConfigRepresentative.fontsProcessingSettingsRepresentative;
+    const fontsProcessingSettingsRepresentative: FontsProcessingSettingsRepresentative | undefined =
+        projectBuildingMasterConfigRepresentative.fontsProcessingSettingsRepresentative;
 
-    if (isUndefined(fontsProcessorSettingsRepresentative)) {
-      return (): NodeJS.ReadWriteStream => new PassThrough().end();
+    if (isUndefined(fontsProcessingSettingsRepresentative)) {
+      return createImmediatelyEndingEmptyStream();
     }
 
 
     const dataHoldingSelfInstance: FontsProcessor = new FontsProcessor(
-      masterConfigRepresentative, fontsProcessorSettingsRepresentative
+      projectBuildingMasterConfigRepresentative, fontsProcessingSettingsRepresentative
     );
 
-    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcherIfMust();
+    if (projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
 
-    const assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode: Array<string> =
-        fontsProcessorSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths;
+      FontsSourceFilesWatcher.
+          initializeIfRequiredAndGetInstance({
+            fontsProcessingSettingsRepresentative,
+            projectBuildingMasterConfigRepresentative
+          }).
+          addOnFileAddedEventHandler({
+            handlerID: "ON_FONTS_FILE_ADDED--BY_FONTS_PROCESSOR",
+            handler: dataHoldingSelfInstance.onSourceFilesWatcherEmittedFileAddingOrUpdatingEvent.bind(dataHoldingSelfInstance)
+          }).
+          addFileUpdatedEventHandler({
+            handlerID: "ON_FONTS_FILE_UPDATED--BY_FONTS_PROCESSOR",
+            handler: dataHoldingSelfInstance.onSourceFilesWatcherEmittedFileAddingOrUpdatingEvent.bind(dataHoldingSelfInstance)
+          }).
+          addOnFileDeletedEventHandler({
+            handlerID: "ON_FONTS_FILE_DELETED--BY_FONTS_PROCESSOR",
+            handler: dataHoldingSelfInstance.onFontFileDeleted.bind(dataHoldingSelfInstance)
+          });
 
-    return dataHoldingSelfInstance.processAssets(assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode);
+    }
+
+    return dataHoldingSelfInstance.processAssets(fontsProcessingSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths);
+
   }
 
 
   private constructor(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
-    fontsProcessorConfigRepresentative: FontsProcessingSettingsRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
+    fontsProcessingSettingsRepresentative: FontsProcessingSettingsRepresentative
   ) {
-    super(masterConfigRepresentative, fontsProcessorConfigRepresentative);
-    this.fontsProcessorConfigRepresentative = fontsProcessorConfigRepresentative;
+    super({
+      projectBuildingMasterConfigRepresentative,
+      associatedAssetsProcessingSettingsRepresentative: fontsProcessingSettingsRepresentative,
+      taskTitleForLogging: "Fonts processing",
+      waitingForSubsequentFilesWillSavedPeriod__seconds: fontsProcessingSettingsRepresentative.assetsProcessingCommonSettings.
+          periodBetweenFileUpdatingAndRebuildingStarting__seconds
+    });
   }
 
 
-  protected processAssets(sourceFilesAbsolutePaths: Array<string>): () => NodeJS.ReadWriteStream {
+  protected processAssets(sourceFilesAbsolutePaths: ReadonlyArray<string>): () => NodeJS.ReadWriteStream {
 
     /* [ Theory ] If to pass the empty array to 'Gulp.src(".")' error will occur but the cause will not be told clearly.
      *    However, the empty array is usual scenario (for example when user declared the configuration but has not added
@@ -78,81 +101,65 @@ class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
     }
 
 
-    return (): NodeJS.ReadWriteStream => Gulp.src(sourceFilesAbsolutePaths).
+    return (): NodeJS.ReadWriteStream => Gulp.
 
-        pipe(super.printProcessedFilesPathsAndQuantity()).
+        src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
+
         pipe(super.handleErrorIfItWillOccur()).
-
-        pipe(gulpIntercept(this.addActualSourceCodeProcessingSettingsToVinylFile.bind(this))).
-
-        pipe(gulpIntercept(this.postProcess.bind(this))).
+        pipe(super.logProcessedFilesIfMust()).
 
         pipe(
-          Gulp.dest((targetFileInFinalState: VinylFile): string =>
-              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-               * No known simple solution; will be fixed at 2nd generation of FontsProcessor.  */
-              (targetFileInFinalState as FontsProcessor.FontVinylFile).outputDirectoryAbsolutePath)
-        );
+          GulpStreamModifier.modify({
+            onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
+          })
+        ).
 
-  }
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ AssetVinylFile, GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust ]
+            ])
+          })
+        ).
 
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ AssetVinylFile, FontsProcessor.postProcessFile ]
+            ])
+          })
+        ).
 
-  private addActualSourceCodeProcessingSettingsToVinylFile(fileInInitialState: VinylFile): FontsProcessor.FontVinylFile {
-
-    const normalizedFontsGroupSettingsActualForCurrentFile: FontsProcessingSettings__Normalized.AssetsGroup =
-        this.fontsProcessorConfigRepresentative.
-            getAssetsNormalizedSettingsActualForTargetSourceFile(fileInInitialState.path);
-
-    fileInInitialState.processingSettings = normalizedFontsGroupSettingsActualForCurrentFile;
-
-    /* [ Theory ] The value of 'path' could change during file processing. */
-    fileInInitialState.sourceAbsolutePath = fileInInitialState.path;
-    fileInInitialState.outputDirectoryAbsolutePath = FontsProcessingSettingsRepresentative.
-        computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
-          targetSourceFileAbsolutePath: fileInInitialState.path,
-          respectiveAssetsGroupNormalizedSettings: normalizedFontsGroupSettingsActualForCurrentFile
-        });
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of FontsProcessor.  */
-    return fileInInitialState as FontsProcessor.FontVinylFile;
-  }
-
-  private postProcess(_processedFontFile: VinylFile): VinylFile {
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of FontsProcessor.  */
-    const processedFontFile: FontsProcessor.FontVinylFile = _processedFontFile as FontsProcessor.FontVinylFile;
-
-    if (processedFontFile.processingSettings.revisioning.mustExecute) {
-      FileNameRevisionPostfixer.appendPostfixIfPossible(
-        processedFontFile,
-        { contentHashPostfixSeparator: processedFontFile.processingSettings.revisioning.contentHashPostfixSeparator }
-      );
-    }
-
-    this.fontsProcessorConfigRepresentative.
-        sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.
-        set(
-          ImprovedPath.replacePathSeparatorsToForwardSlashes(processedFontFile.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(
-            [ processedFontFile.outputDirectoryAbsolutePath, processedFontFile.basename ],
-            { forwardSlashOnlySeparators: true }
+        pipe(
+          Gulp.dest(
+            (targetFileInFinalState: VinylFile): string =>
+                AssetVinylFile.getOutputDirectoryAbsolutePathOfExpectedToBeSelfInstance(targetFileInFinalState)
           )
         );
 
-    return processedFontFile;
   }
+
+
+  /* ━━━ Files watcher handlers ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private onFontFileDeleted(targetVideoFileAbsolutePath: string): void {
+    this.absolutePathOfFilesWaitingForReProcessing.delete(targetVideoFileAbsolutePath);
+    FontsProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.delete(targetVideoFileAbsolutePath);
+  }
+
+
+  /* ━━━ Pipeline methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private static async postProcessFile(processedFontFile: AssetVinylFile): Promise<GulpStreamModifier.CompletionSignals> {
+
+    FontsProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.set(
+      ImprovedPath.replacePathSeparatorsToForwardSlashes(processedFontFile.sourceAbsolutePath),
+        ImprovedPath.joinPathSegments(
+          [ processedFontFile.outputDirectoryAbsolutePath, processedFontFile.basename ],
+          { alwaysForwardSlashSeparators: true }
+        )
+    );
+
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+  }
+
 }
-
-
-namespace FontsProcessor {
-  export type FontVinylFile =
-      GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      Readonly<{
-        processingSettings: FontsProcessingSettings__Normalized.AssetsGroup;
-      }>;
-}
-
-
-export default FontsProcessor;

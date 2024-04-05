@@ -1,15 +1,13 @@
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type BrowserLiveReloadingSettingsRepresentative from "@BrowserLiveReloading/BrowserLiveReloadingSettingsRepresentative";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
-import Gulp from "gulp";
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import BrowserSync from "browser-sync";
+import BrowserCoordinatorRelatedFilesWatcher from "@BrowserLiveReloading/BrowserCoordinatorRelatedFilesWatcher";
 
-/* --- Third-party solutions specialises ---------------------------------------------------------------------------- */
-import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/Chokidar/ChokidarSpecialist";
-
-/* --- General utils ------------------------------------------------------------------------------------------------ */
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import type HTTP from "http";
 import Timeout = NodeJS.Timeout;
 import {
   Logger,
@@ -19,8 +17,9 @@ import {
   secondsToMilliseconds
 } from "@yamato-daiwa/es-extensions";
 import type { InfoLog } from "@yamato-daiwa/es-extensions";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
-/* --- Localization ------------------------------------------------------------------------------------------------- */
+/* ─── Localization ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import BrowserLiveReloaderLocalization__English from "@BrowserLiveReloading/BrowserLiveReloaderLocalization.english";
 
 
@@ -28,140 +27,169 @@ class BrowserLiveReloader {
 
   public static localization: BrowserLiveReloader.Localization = BrowserLiveReloaderLocalization__English;
 
-  private readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+  private static readonly onURI_ChangedEventHandlers: Array<BrowserLiveReloader.OnURI_ChangedEventHandler> = [];
+
   private readonly browserLiveReloadingSettingsRepresentative: BrowserLiveReloadingSettingsRepresentative;
+
+  private waitingForSubsequentFilesWillBeUpdatedCountdown: Timeout | undefined;
 
 
   public static provideBrowserLiveReloadingIfMust(
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): (callback: () => void) => void {
 
-    const browserLiveReloadingConfigRepresentative: BrowserLiveReloadingSettingsRepresentative | undefined =
-        masterConfigRepresentative.browserLiveReloadingSettingsRepresentative;
+    const browserLiveReloadingConfigRepresentative: BrowserLiveReloadingSettingsRepresentative | null =
+        masterConfigRepresentative.getBrowserLiveReloadingSettingsRepresentativeIfMustProvideBrowserLiveReloading();
 
-    if (isUndefined(browserLiveReloadingConfigRepresentative)) {
+    if (isNull(browserLiveReloadingConfigRepresentative)) {
       return (callback: () => void): void => { callback(); };
     }
 
 
-    const dataHoldingSelfInstance: BrowserLiveReloader = new BrowserLiveReloader(
-      masterConfigRepresentative, browserLiveReloadingConfigRepresentative
-    );
+    const dataHoldingSelfInstance: BrowserLiveReloader = new BrowserLiveReloader(browserLiveReloadingConfigRepresentative);
 
-    return (): void => {
+    return (callback: () => void): void => {
+
+      BrowserCoordinatorRelatedFilesWatcher.initialize({
+        onAnyEventRelatedWithActualFilesHandler: dataHoldingSelfInstance.onAnyChangeInRelatedFiles.
+            bind(dataHoldingSelfInstance),
+        browserLiveReloadingSettingsRepresentative: browserLiveReloadingConfigRepresentative
+      });
+
       dataHoldingSelfInstance.initializeBrowsersync();
-      dataHoldingSelfInstance.initializeOutputFilesWatcher();
+
+      callback();
+
     };
 
   }
 
+  public static addOnURI_ChangedEventHandler(onURI_ChangedEventHandler: BrowserLiveReloader.OnURI_ChangedEventHandler): void {
+    this.onURI_ChangedEventHandlers.push(onURI_ChangedEventHandler);
+  }
+
 
   private constructor(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
     browserLiveReloadingConfigRepresentative: BrowserLiveReloadingSettingsRepresentative
   ) {
-    this.masterConfigRepresentative = masterConfigRepresentative;
     this.browserLiveReloadingSettingsRepresentative = browserLiveReloadingConfigRepresentative;
   }
 
 
   private initializeBrowsersync(): void {
 
-    BrowserSync.init({
+    BrowserSync.init(
 
-      /* [ Browsersync theory ] Either "server" or "proxy" could be specified but not both. */
-      ...isNull(this.browserLiveReloadingSettingsRepresentative.proxy) ? {
-        server: {
-          baseDir: this.browserLiveReloadingSettingsRepresentative.targetFilesRootDirectoryAbsolutePath,
-          index: this.browserLiveReloadingSettingsRepresentative.startingFileNameWithExtension
-        }
-      } : {
-        proxy: this.browserLiveReloadingSettingsRepresentative.proxy
-      },
+        {
 
-      https: this.browserLiveReloadingSettingsRepresentative.mustUseHTTPS,
-      cors: this.browserLiveReloadingSettingsRepresentative.mustUseCORS,
+        /* [ Browsersync theory ] Either "server" or "proxy" could be specified but not both. */
+        ...isNull(this.browserLiveReloadingSettingsRepresentative.proxy) ? {
+          server: {
+            baseDir: this.browserLiveReloadingSettingsRepresentative.targetFilesRootDirectoryAbsolutePath,
+            index: this.browserLiveReloadingSettingsRepresentative.startingFileNameWithExtension
+          }
+        } : {
+          proxy: this.browserLiveReloadingSettingsRepresentative.proxy
+        },
 
-      /* [ Browsersync theory ] When port is undefined, it will be assigned automatically. */
-      ...isNotNull(this.browserLiveReloadingSettingsRepresentative.localServerCustomPort) ? {
-        port: this.browserLiveReloadingSettingsRepresentative.localServerCustomPort
-      } : null,
+        ...isNotNull(this.browserLiveReloadingSettingsRepresentative.HTTPS) ? {
+          https: {
+            key: this.browserLiveReloadingSettingsRepresentative.HTTPS.keyAbsolutePath,
+            cert: this.browserLiveReloadingSettingsRepresentative.HTTPS.certificateAbsolutePath
+          }
+        } : null,
 
-      watch: true,
-      ignore: this.browserLiveReloadingSettingsRepresentative.globSelectorsOfFilesAndDirectoriesWhichWillBeIgnored,
-
-      /* [ Browsersync theory ] When value is empty array, no browsers will be opened. */
-      ...this.browserLiveReloadingSettingsRepresentative.targetBrowsers.length > 0 ? {
-        browser: this.browserLiveReloadingSettingsRepresentative.targetBrowsers
-      } : null,
-
-      ui: this.browserLiveReloadingSettingsRepresentative.mustEnableBrowsersyncUserInterface ? {
+        cors: this.browserLiveReloadingSettingsRepresentative.mustUseCORS,
 
         /* [ Browsersync theory ] When port is undefined, it will be assigned automatically. */
-        ...isNotNull(this.browserLiveReloadingSettingsRepresentative.browsersyncUserInterfaceCustomPort) ? {
-          port: this.browserLiveReloadingSettingsRepresentative.browsersyncUserInterfaceCustomPort
-        } : null
+        ...isNotNull(this.browserLiveReloadingSettingsRepresentative.localServerCustomPort) ? {
+          port: this.browserLiveReloadingSettingsRepresentative.localServerCustomPort
+        } : null,
 
-      } : false,
+        ignore: this.browserLiveReloadingSettingsRepresentative.globSelectorsOfFilesAndDirectoriesWhichWillBeIgnored,
 
-      logLevel: "warn",
-      notify: this.browserLiveReloadingSettingsRepresentative.mustDisplayBrowsersyncConnectedPopupInBrowser
+        /* [ Browsersync theory ] When value is empty array, no browsers will be opened. */
+        ...this.browserLiveReloadingSettingsRepresentative.targetBrowsers.length > 0 ? {
+          browser: this.browserLiveReloadingSettingsRepresentative.targetBrowsers
+        } : null,
 
-    });
+        ui: this.browserLiveReloadingSettingsRepresentative.mustEnableBrowsersyncUserInterface ? {
+
+          /* [ Browsersync theory ] When port is undefined, it will be assigned automatically. */
+          ...isNotNull(this.browserLiveReloadingSettingsRepresentative.browsersyncUserInterfaceCustomPort) ? {
+            port: this.browserLiveReloadingSettingsRepresentative.browsersyncUserInterfaceCustomPort
+          } : null
+
+        } : false,
+
+        logLevel: "warn",
+        notify: this.browserLiveReloadingSettingsRepresentative.mustDisplayBrowsersyncConnectedPopupInBrowser,
+
+        middleware: this.onRequest.bind(this)
+
+      }
+
+    );
 
   }
 
-  private initializeOutputFilesWatcher(): void {
+  private onAnyChangeInRelatedFiles(): void {
 
-    let waitingForSubsequentFilesWillBeUpdatedCountdown: Timeout;
+    clearTimeout(this.waitingForSubsequentFilesWillBeUpdatedCountdown);
 
-    Gulp.watch(this.masterConfigRepresentative.allOutputFilesGlobSelectors).
+    this.waitingForSubsequentFilesWillBeUpdatedCountdown = setTimeout(
+      (): void => {
 
-        on("all", (eventName: string, fileOrDirectoryPath: string): void => {
-
-          if (
-            eventName === ChokidarSpecialist.EventsNames.directoryAdded ||
-            eventName === ChokidarSpecialist.EventsNames.directoryDeleted
-          ) {
-            return;
-          }
-
-
-          clearTimeout(waitingForSubsequentFilesWillBeUpdatedCountdown);
-
-          if (this.browserLiveReloadingSettingsRepresentative.mustLogOutputFileChangeDetection) {
-
-            Logger.logInfo(BrowserLiveReloader.localization.generateOutputFileChangeDetectionLog({
-              filePath: fileOrDirectoryPath,
-              eventLocalizedInterpretation: ChokidarSpecialist.getEventNameInterpretation(eventName)
-            }));
-
-          }
-
-
-          waitingForSubsequentFilesWillBeUpdatedCountdown = setTimeout(
-            (): void => {
-
-              if (this.browserLiveReloadingSettingsRepresentative.mustLogBrowserTabWillBeReloadedSoon) {
-
-                Logger.logInfo(BrowserLiveReloader.localization.browserTabWillBeReloadedSoonLog);
-
-                BrowserSync.reload();
-
-              }
-
-            },
-            secondsToMilliseconds(
-              this.browserLiveReloadingSettingsRepresentative.periodBetweenFileUpdatingAndBrowserReloading__seconds
-            )
-          );
+        Logger.logInfo({
+          mustOutputIf: this.browserLiveReloadingSettingsRepresentative.mustLogBrowserTabWillBeReloadedSoon,
+          ...BrowserLiveReloader.localization.browserTabWillBeReloadedSoonLog
         });
+
+        BrowserSync.reload();
+
+      },
+      secondsToMilliseconds(
+        this.browserLiveReloadingSettingsRepresentative.periodBetweenFileUpdatingAndBrowserReloading__seconds
+      )
+    );
+
+  }
+
+  private onRequest(request: HTTP.IncomingMessage, _response: HTTP.ServerResponse, letPass: () => void): void {
+
+    if (isUndefined(request.url)) {
+      letPass();
+      return;
+    }
+
+
+    const targetHTML_FileAbsolutePath: string = request.url === "/" ?
+        ImprovedPath.joinPathSegments(
+          [
+            this.browserLiveReloadingSettingsRepresentative.targetFilesRootDirectoryAbsolutePath,
+            this.browserLiveReloadingSettingsRepresentative.startingFileNameWithExtension
+          ],
+          { alwaysForwardSlashSeparators: true }
+        ) :
+        ImprovedPath.joinPathSegments(
+          [ this.browserLiveReloadingSettingsRepresentative.targetFilesRootDirectoryAbsolutePath, request.url ],
+          { alwaysForwardSlashSeparators: true }
+        );
+
+    for (const handler of BrowserLiveReloader.onURI_ChangedEventHandlers) {
+      handler(targetHTML_FileAbsolutePath);
+    }
+
+    letPass();
+
   }
 
 }
 
 
 namespace BrowserLiveReloader {
+
+  export type OnURI_ChangedEventHandler = (targetFileAbsolutePath: string) => void;
 
   export type Localization = {
 

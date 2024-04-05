@@ -19,7 +19,7 @@ npm i @yamato-daiwa/automation -D -E
 
 <dl>
 
-  <dt>@vue/compiler-sfc, vue, vue-loader</dt>
+  <dt>@vue/compiler-sfc, vue-loader</dt>
   <dd>Used to provide the support of Vue Single File Components for ECMAScript logic processing</dd>
 
   <dt>@webdiscus/pug-loader</dt>
@@ -41,17 +41,11 @@ npm i @yamato-daiwa/automation -D -E
   <dt>browser-sync</dt>
   <dd>Used to provide the automation of browser opening and reloading when project incrementally rebuilt</dd>
 
-  <dt>cheerio</dt>
-  <dd>Used for manipulation with compiled HTML code like resolving of paths aliases</dd>
-
   <dt>css-loader</dt>
   <dd>Used to provide the imports of stylesheets to ECMAScript bundles</dd>
 
   <dt>cssnano</dt>
   <dd>Used to provide optimization and minification of compiled CSS code</dd>
-
-  <dt>eslint-webpack-plugin</dt>
-  <dd>Used to provide the ESLint inspection with output to terminal during processing of ECMAScript logic</dd>
 
   <dt>fork-ts-checker-webpack-plugin</dt>
   <dd>Used to improve the performance of TypeScript transpiling functionality</dd>
@@ -62,9 +56,6 @@ npm i @yamato-daiwa/automation -D -E
   <dt>gulp-data</dt>
   <dd>Used to provide the global variables defined by user in appropriate configuration inside the Pug templates</dd>
 
-  <dt>gulp-debug</dt>
-  <dd>Used to outputs the processed files names and quantity to the terminal</dd>
-
   <dt>gulp-html-prettify</dt>
   <dd>Used to provide the formatting of output HTML code better than suggested by Pug pre-processor</dd>
 
@@ -73,9 +64,6 @@ npm i @yamato-daiwa/automation -D -E
 
   <dt>gulp-imagemin</dt>
   <dd>Used to provide the automation of images files optimization</dd>
-
-  <dt>gulp-intercept</dt>
-  <dd>Used for defining of configuration-dependent logic inside Gulp pipelines</dd>
 
   <dt>gulp-plumber</dt>
   <dd>Used for errors handing inside Gulp pipelines</dd>
@@ -89,23 +77,33 @@ npm i @yamato-daiwa/automation -D -E
   <dt>gulp-stylus</dt>
   <dd>Used to provide the basic Stylus-to-CSS transpiling</dd>
 
-  <dt>html-validator</dt>
-  <dd>Used to get the HTML validation data from W3C service. The formatted output to terminal has been implemented by YDA development side.</dd>
-
   <dt>imagemin-pngquant</dt>
   <dd>Used to provides the optimization of PNG files</dd>
 
   <dt>json5-loader</dt>
   <dd>Used to provide the imports of JSON5 as ECMAScript native object to JavaScript bundle</dd>
 
+  <dt>node-html-parser</dt>
+  <dd>Used for the accessibility inspection of the HTML code</dd>
+
   <dt>node-notifier</dt>
   <dd>Used for accessing to native toast message functionality</dd>
+
+  <dt>pa11y</dt>
+  <dd>Used for manipulation with compiled HTML code like resolving of paths aliases</dd>
   
+  <dt>probe-image-size</dt>
+  <dd>Used for retrieving of the images with and height.</dd>
+
   <dt>pug-lint</dt>
   <dd>Used to providing linting of Pug source code</dd>
 
-  <dt>pug-plain-loader</dt>
-  <dd>Used to providing of the Pug source code language for Vue templates in Single File Components</dd>
+  <dt>puppeteer</dt>
+  <dd>
+    Used for the accessibility inspection of the HTML code.
+    The <b>pa11y</b> works only with URIs and does not support the raw HTML code; to check the accessibility of the
+      raw HTML code, the <b>puppeteer</b> is required. 
+  </dd>
 
   <dt>rev-hash</dt>
   <dd>
@@ -143,6 +141,9 @@ npm i @yamato-daiwa/automation -D -E
 
   <dt>vue-tcs</dt>
   <dd>Used to provide the optimized type checking of Vue and also TypeScript files.</dd>
+
+  <dt>w3c-html-validator</dt>
+  <dd>Used to get the HTML validation data from W3C service. The formatted output to terminal has been implemented by YDA development side.</dd>
   
   <dt>webpack</dt>
   <dd>Used as basic tool for the ECMAScript logic processing</dd>
@@ -178,6 +179,12 @@ All **@types** are the TypeScript types definitions that required for normal tra
 
 <dl>
 
+  <dt>eslint-webpack-plugin</dt>
+  <dd>
+    Required for the outputting of ESLint error only on building of YDA application.
+    YDA itself uses own ESLint wrapper for better performance. 
+  </dd>
+
   <dt>ts-node</dt>
   <dd>Used to support the Webpack configuration written by TypeScript</dd>
 
@@ -186,18 +193,5 @@ All **@types** are the TypeScript types definitions that required for normal tra
 
   <dt>webpack-cli</dt>
   <dd>Used for the project building</dd>
-
-</dl>
-
-
-### Temporary dependencies
-
-<dl>
-
-  <dt>glob</dt>
-  <dd>Used by <b>ImprovedGlob</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency </dd>
-
-  <dt>minimatch</dt>
-  <dd>used by <b>ImprovedGlob</b> which will be moved to <b>@yamato-daiwa/es-extensions-nodejs</b> and used as dependency </dd>
 
 </dl>

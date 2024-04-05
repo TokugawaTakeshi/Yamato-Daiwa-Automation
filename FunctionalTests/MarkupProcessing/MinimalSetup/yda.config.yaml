@@ -12,7 +12,7 @@ projectBuilding:
     entryPointsGroups:
 
       All:
-        topDirectoryRelativePath: 01-Source
+        sourceFilesTopDirectoryRelativePath: 01-Source
         buildingModeDependent:
           PRODUCTION:
             outputTopDirectoryRelativePath: 02-ProductionBuilding

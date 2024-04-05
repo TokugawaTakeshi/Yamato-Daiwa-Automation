@@ -25,9 +25,18 @@ namespace BrowserLiveReloadingSettings__Normalized {
       ignoredFilesAndDirectoriesRelativePaths: ReadonlyArray<string>;
       port?: number;
       startingFileNameWithExtension: string;
-      mustUseHTTPS: boolean;
+      HTTPS?: LocalServer.HTTPS;
       mustUseCORS: boolean;
     }>;
+
+    export namespace LocalServer {
+
+      export type HTTPS = Readonly<{
+        keyAbsolutePath: string;
+        certificateAbsolutePath: string;
+      }>;
+
+    }
 
     export type BrowserSyncUserInterface = Readonly<{
       enabled: boolean;

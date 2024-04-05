@@ -1,28 +1,31 @@
-/* --- Restrictions ------------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRestrictions";
-import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+import ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* --- Default settings --------------------------------------------------------------------------------------------- */
+/* ─── Default Settings ───────────────────────────────────────────────────────────────────────────────────────────── */
 import MarkupProcessingSettings__Default from "@MarkupProcessing/MarkupProcessingSettings__Default";
 
-/* --- Raw valid settings ------------------------------------------------------------------------------------------- */
+/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
 import type MarkupProcessingSettings__FromFile__RawValid from
     "@MarkupProcessing/MarkupProcessingSettings__FromFile__RawValid";
 
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+import type SourceCodeProcessingGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 import type MarkupProcessingSettings__Normalized from
     "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 
-/* --- Settings normalizers ----------------------------------------------------------------------------------------- */
+/* ─── Settings normalizers ───────────────────────────────────────────────────────────────────────────────────────── */
 import SourceCodeProcessingRawSettingsNormalizer from
     "@ProjectBuilding/Common/RawSettingsNormalizers/SourceCodeProcessingRawSettingsNormalizer";
 
-/* --- Utils -------------------------------------------------------------------------------------------------------- */
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
+  appendLastFileNameExtension,
+  removeAllFileNameExtensions,
   stringifyAndFormatArbitraryValue,
   isArbitraryObject,
   isNonEmptyString,
@@ -34,19 +37,18 @@ import {
   PoliteErrorsMessagesBuilder
 } from "@yamato-daiwa/es-extensions";
 import type { ArbitraryObject, WarningLog } from "@yamato-daiwa/es-extensions";
-import { ObjectDataFilesProcessor } from "@yamato-daiwa/es-extensions-nodejs";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import { ObjectDataFilesProcessor, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 import type Mutable from "@UtilsIncubator/Types/Mutable";
 
-/* --- Localization ------------------------------------------------------------------------------------------------- */
-import MarkupProcessingRawSettingsNormalizerLocalization__English from
+/* ─── Localization ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import markupProcessingRawSettingsNormalizerLocalization__english from
     "./MarkupProcessingRawSettingsNormalizerLocalization.english";
 
 
 class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSettingsNormalizer {
 
   public static localization: MarkupProcessingRawSettingsNormalizer.Localization =
-      MarkupProcessingRawSettingsNormalizerLocalization__English;
+      markupProcessingRawSettingsNormalizerLocalization__english;
 
 
   protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string> =
@@ -96,18 +98,24 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
       linting: dataHoldingSelfInstance.normalizeLintingSettings(),
 
+      ...isNotUndefined(markupProcessingSettings__fromFile__rawValid.importingFromTypeScript) ?
+          {
+            importingFromTypeScript: dataHoldingSelfInstance.
+                normalizeImportingFromTypeScriptSettings(markupProcessingSettings__fromFile__rawValid.importingFromTypeScript)
+          } : null,
+
       staticPreview: {
         stateDependentPagesVariationsSpecification: dataHoldingSelfInstance.
             normalizeStaticPreviewStateDependentPageVariationsSpecification(),
-        importsFromStaticDataFiles: dataHoldingSelfInstance.normalizeImportsFromStaticDataFiles(),
-        ...dataHoldingSelfInstance.normalizeImportsFromTypeScriptFiles()
+        importsFromStaticDataFiles: dataHoldingSelfInstance.normalizeImportsFromStaticDataFiles()
       },
 
       relevantEntryPointsGroups:
           dataHoldingSelfInstance.createNormalizedEntryPointsGroupsSettings(
             markupProcessingSettings__fromFile__rawValid.entryPointsGroups,
-            MarkupProcessingRawSettingsNormalizer.
-                completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilMarkupEntryPointsGroupNormalizedSettings
+            dataHoldingSelfInstance.
+                completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilMarkupEntryPointsGroupNormalizedSettings.
+                bind(dataHoldingSelfInstance)
           ),
 
       logging: dataHoldingSelfInstance.normalizeLoggingSettings()
@@ -118,12 +126,12 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
 
   private constructor(
-    constructorParameters:
-        SourceCodeProcessingRawSettingsNormalizer.ConstructorParameters &
+    constructorParameter:
+        SourceCodeProcessingRawSettingsNormalizer.ConstructorParameter &
         Readonly<{ markupProcessingSettings__fromFile__rawValid: MarkupProcessingSettings__FromFile__RawValid; }>
   ) {
-    super(constructorParameters);
-    this.markupProcessingSettings__fromFile__rawValid = constructorParameters.markupProcessingSettings__fromFile__rawValid;
+    super(constructorParameter);
+    this.markupProcessingSettings__fromFile__rawValid = constructorParameter.markupProcessingSettings__fromFile__rawValid;
   }
 
 
@@ -134,7 +142,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
           buildingModeDependent?.[this.consumingProjectBuildingMode]?.
           mustResolveResourceReferencesToRelativePaths;
 
-    if (this.consumingProjectBuildingMode === ConsumingProjectPreDefinedBuildingModes.staticPreview) {
+    if (this.consumingProjectBuildingMode === ConsumingProjectBuildingModes.staticPreview) {
 
       if (explicitlySpecifiedMustResolveResourceReferencesToRelativePathsPropertyValue === false) {
         Logger.logWarning(
@@ -186,7 +194,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
                 this.consumingProjectRootDirectoryAbsolutePath,
                 this.markupProcessingSettings__fromFile__rawValid.linting.presetFileRelativePath
               ],
-              { forwardSlashOnlySeparators: true }
+              { alwaysForwardSlashSeparators: true }
             )
           } : null
         } :
@@ -194,10 +202,43 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
   }
 
+  private normalizeImportingFromTypeScriptSettings(
+    importingFromTypeScriptSettings__fromFile__rawValid: MarkupProcessingSettings__FromFile__RawValid.ImportingFromTypeScript
+  ): MarkupProcessingSettings__Normalized.ImportingFromTypeScript {
 
-  private normalizeStaticPreviewStateDependentPageVariationsSpecification(): MarkupProcessingSettings__Normalized.StaticPreview.
-      StateDependentPagesVariationsSpecification
-  /* eslint-disable-next-line @typescript-eslint/brace-style -- In this case, the Allman style more readable. */
+    const sourceFileAbsolutePath: string = ImprovedPath.joinPathSegments(
+      [
+        this.consumingProjectRootDirectoryAbsolutePath,
+        importingFromTypeScriptSettings__fromFile__rawValid.sourceFileRelativePath
+      ],
+      { alwaysForwardSlashSeparators: true }
+    );
+
+    return {
+      typeScriptConfigurationFileAbsolutePath:
+          ImprovedPath.joinPathSegments(
+            [
+              this.consumingProjectRootDirectoryAbsolutePath,
+              isNotUndefined(importingFromTypeScriptSettings__fromFile__rawValid.typeScriptConfigurationFileRelativePath) ?
+                  appendLastFileNameExtension({
+                    targetPath: importingFromTypeScriptSettings__fromFile__rawValid.typeScriptConfigurationFileRelativePath,
+                    targetFileNameExtensionWithOrWithoutLeadingDot: "json",
+                    mustAppendDuplicateEvenIfTargetLastFileNameExtensionAlreadyPresentsAtSpecifiedPath: false
+                  }) :
+                  MarkupProcessingSettings__Default.staticPreview.typeScriptConfigurationFileRelativePath
+            ],
+            { alwaysForwardSlashSeparators: true }
+          ),
+      sourceFileAbsolutePath,
+      importedNamespace: importingFromTypeScriptSettings__fromFile__rawValid.importedNamespace,
+      nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected:
+          importingFromTypeScriptSettings__fromFile__rawValid.nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected
+    };
+  }
+
+  private normalizeStaticPreviewStateDependentPageVariationsSpecification(): MarkupProcessingSettings__Normalized.
+      StaticPreview.StateDependentPagesVariationsSpecification
+  /* eslint-disable-next-line @stylistic/brace-style -- In this case, the Allman style more readable. */
   {
 
     const staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath: string | undefined =
@@ -206,7 +247,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
     if (
       isUndefined(staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath) ||
-      this.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.staticPreview
+      this.consumingProjectBuildingMode !== ConsumingProjectBuildingModes.staticPreview
     ) {
       return {};
     }
@@ -214,7 +255,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
     const staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath: string = ImprovedPath.joinPathSegments(
       [ this.consumingProjectRootDirectoryAbsolutePath, staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath ],
-        { forwardSlashOnlySeparators: true }
+      { alwaysForwardSlashSeparators: true }
     );
 
     /* [ Approach ] Currently, the `RawObjectDataProcessor` thus `ObjectDataFilesProcessor` are ignoring and not keep the
@@ -224,7 +265,8 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
     try {
 
       rawData = ObjectDataFilesProcessor.processFile({
-        filePath: staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath
+        filePath: staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath,
+        synchronously: true
       });
 
     } catch (error: unknown) {
@@ -238,8 +280,8 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
         }),
         title: FileReadingFailedError.localization.defaultTitle,
         occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-            "normalizeStaticPreviewStateDependentPageVariationsSpecification(namedParameters)",
-        wrappableError: error
+            "normalizeStaticPreviewStateDependentPageVariationsSpecification()",
+        innerError: error
       });
 
     }
@@ -259,10 +301,11 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
               })
         ),
         occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-            "normalizeStaticPreviewStateDependentPageVariationsSpecification(namedParameters)"
+            "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
       });
 
       return {};
+
     }
 
 
@@ -275,8 +318,10 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
       Object.entries(rawData)
     ) {
 
-      const markupSourceFileRelativePath: string = ImprovedPath.addFileNameExtensionIfNotPresent({
-        targetFilePath: markupSourceFileRelativePath__possiblyWithoutExtension, fileNameExtension: "pug"
+      const markupSourceFileRelativePath: string = appendLastFileNameExtension({
+        targetPath: markupSourceFileRelativePath__possiblyWithoutExtension,
+        targetFileNameExtensionWithOrWithoutLeadingDot: "pug",
+        mustAppendDuplicateEvenIfTargetLastFileNameExtensionAlreadyPresentsAtSpecifiedPath: false
       });
 
       if (!isArbitraryObject(stateDependentPageVariationsData)) {
@@ -292,7 +337,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
           }),
           title: InvalidExternalDataError.localization.defaultTitle,
           occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-              "normalizeStaticPreviewStateDependentPageVariationsSpecification(namedParameters)"
+              "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
         });
       }
 
@@ -309,7 +354,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
           }),
           title: InvalidExternalDataError.localization.defaultTitle,
           occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-              "normalizeStaticPreviewStateDependentPageVariationsSpecification(namedParameters)"
+              "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
         });
       }
 
@@ -326,14 +371,14 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
           }),
           title: InvalidExternalDataError.localization.defaultTitle,
           occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-              "normalizeStaticPreviewStateDependentPageVariationsSpecification(namedParameters)"
+              "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
         });
       }
 
 
       const markupSourceFileFileAbsolutePath: string = ImprovedPath.joinPathSegments(
         [ this.consumingProjectRootDirectoryAbsolutePath, markupSourceFileRelativePath ],
-        { forwardSlashOnlySeparators: true }
+        { alwaysForwardSlashSeparators: true }
       );
 
       const derivedPagesAndStatesMap: { [derivedFileAbsolutePath: string]: ArbitraryObject; } = {};
@@ -341,7 +386,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
       for (const [ postfix, state ] of Object.entries(stateDependentPageVariationsData.variations)) {
 
         const derivedFileAbsolutePath: string =
-            `${ ImprovedPath.removeFilenameExtensionFromPath(markupSourceFileFileAbsolutePath) }${ postfix }.pug`;
+            `${ removeAllFileNameExtensions(markupSourceFileFileAbsolutePath) }${ postfix }.pug`;
 
         if (!isArbitraryObject(state)) {
           Logger.throwErrorAndLog({
@@ -354,20 +399,23 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
             }),
             title: InvalidExternalDataError.localization.defaultTitle,
             occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-                "normalizeStaticPreviewStateDependentPageVariationsSpecification(namedParameters)"
+                "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
           });
         }
 
         derivedPagesAndStatesMap[derivedFileAbsolutePath] = state;
+
       }
 
       staticPreviewStateDependentPageVariationsData[markupSourceFileFileAbsolutePath] = {
         stateVariableName: stateDependentPageVariationsData.stateObjectTypeVariableName,
         derivedPagesAndStatesMap
       };
+
     }
 
     return staticPreviewStateDependentPageVariationsData;
+
   }
 
   private normalizeImportsFromStaticDataFiles(): MarkupProcessingSettings__Normalized.StaticPreview.ImportsFromStaticDataFiles {
@@ -386,7 +434,8 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
         importedData = ObjectDataFilesProcessor.processFile({
           filePath: ImprovedPath.joinPathSegments([
             this.consumingProjectRootDirectoryAbsolutePath, importFromStaticDataFile.fileRelativePath
-          ])
+          ]),
+          synchronously: true
         });
 
       } catch (error: unknown) {
@@ -397,7 +446,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
           }),
           title: FileReadingFailedError.localization.defaultTitle,
           occurrenceLocation: "markupProcessingRawSettingsNormalizer.normalizeImportsFromStaticDataFiles()",
-          wrappableError: error
+          innerError: error
         });
 
       }
@@ -410,64 +459,87 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
   }
 
-  private normalizeImportsFromTypeScriptFiles(): {
-    compiledTypeScriptImporting?: MarkupProcessingSettings__Normalized.StaticPreview.ImportsFromCompiledTypeScript;
-  } {
+  private completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilMarkupEntryPointsGroupNormalizedSettings(
+    entryPointsGroupGenericSettings__normalized: SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup,
+    entryPointsGroupSettings__rawValid: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup
+  ): MarkupProcessingSettings__Normalized.EntryPointsGroup {
 
-    const importsFromCompiledTypeScriptSettings: MarkupProcessingSettings__FromFile__RawValid.
-        StaticPreview.ImportFromCompiledTypeScript | undefined =
-            this.markupProcessingSettings__fromFile__rawValid.staticPreview?.importsFromCompiledTypeScript;
-
-    if (isUndefined(importsFromCompiledTypeScriptSettings)) {
-      return {};
-    }
-
+    const settingsActualForCurrentProjectBuildingMode: MarkupProcessingSettings__FromFile__RawValid.
+        EntryPointsGroup.BuildingModeDependent =
+            entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode];
 
     return {
 
-      compiledTypeScriptImporting: {
+      ...entryPointsGroupGenericSettings__normalized,
 
-        typeScriptConfigurationFileAbsolutePath:
-            ImprovedPath.joinPathSegments(
-              [
-                this.consumingProjectRootDirectoryAbsolutePath,
-                isNotUndefined(importsFromCompiledTypeScriptSettings.typeScriptConfigurationFileRelativePath) ?
-                    ImprovedPath.addFileNameExtensionIfNotPresent({
-                      targetFilePath: importsFromCompiledTypeScriptSettings.typeScriptConfigurationFileRelativePath,
-                      fileNameExtension: "json"
-                    }) :
-                    MarkupProcessingSettings__Default.staticPreview.typeScriptConfigurationFileRelativePath
-              ],
-              { forwardSlashOnlySeparators: true }
-            ),
+      outputFormat: entryPointsGroupSettings__rawValid.outputFormat ?? MarkupProcessingSettings__Default.outputFormat,
 
-        files: importsFromCompiledTypeScriptSettings.files.map(
+      HTML_Validation: {
 
-          (
-            importFromCompiledTypescript: MarkupProcessingSettings__FromFile__RawValid.
-                StaticPreview.ImportFromCompiledTypeScript.FileMetadata
-          ): MarkupProcessingSettings__Normalized.StaticPreview.ImportsFromCompiledTypeScript.FileMetadata => {
+        mustExecute: entryPointsGroupSettings__rawValid.HTML_Validation?.disable === true ? false :
+            MarkupProcessingSettings__Default.HTML_Validation.mustExecute,
 
-            const sourceFileAbsolutePath: string = ImprovedPath.joinPathSegments(
-              [ this.consumingProjectRootDirectoryAbsolutePath, importFromCompiledTypescript.sourceFileRelativePath ],
-              { forwardSlashOnlySeparators: true }
-            );
-
-            return {
-              sourceFileAbsolutePath,
-              importedNamespace: importFromCompiledTypescript.importedNamespace,
-              outputDirectoryAbsolutePath: ImprovedPath.joinPathSegments(
-                  [ this.consumingProjectRootDirectoryAbsolutePath, importFromCompiledTypescript.outputDirectoryRelativePath ],
-                  { forwardSlashOnlySeparators: true }
+        ignoring: {
+          filesAbsolutePaths: (entryPointsGroupSettings__rawValid.HTML_Validation?.ignoring?.files ?? []).
+              map(
+                (fileRelativePath: string): string => ImprovedPath.joinPathSegments(
+                  [
+                    this.consumingProjectRootDirectoryAbsolutePath,
+                    fileRelativePath
+                  ],
+                  { alwaysForwardSlashSeparators: true }
+                )
               ),
-              outputFileNameWithoutExtension: importFromCompiledTypescript.customOutputFileNameWithoutLastExtension ??
-                  ImprovedPath.extractFileNameWithoutExtensionFromPath(sourceFileAbsolutePath)
-            };
+          directoriesAbsolutePaths: (entryPointsGroupSettings__rawValid.HTML_Validation?.ignoring?.directories ?? []).
+              map(
+                (directoryRelativePath: string): string => ImprovedPath.joinPathSegments(
+                  [
+                    this.consumingProjectRootDirectoryAbsolutePath,
+                    directoryRelativePath
+                  ],
+                  { alwaysForwardSlashSeparators: true }
+                )
+              )
+        }
 
-          }
+      },
 
-        )
+      accessibilityInspection: {
 
+        mustExecute: entryPointsGroupSettings__rawValid.accessibilityInspection?.disable === true ? false :
+            MarkupProcessingSettings__Default.accessibilityInspection.mustExecute,
+
+        standard: entryPointsGroupSettings__rawValid.accessibilityInspection?.standard ??
+            MarkupProcessingSettings__Default.accessibilityInspection.standard,
+
+        ignoring: {
+          filesAbsolutePaths: (entryPointsGroupSettings__rawValid.HTML_Validation?.ignoring?.files ?? []).
+              map(
+                (fileRelativePath: string): string => ImprovedPath.joinPathSegments(
+                  [
+                    this.consumingProjectRootDirectoryAbsolutePath,
+                    fileRelativePath
+                  ],
+                  { alwaysForwardSlashSeparators: true }
+                )
+              ),
+          directoriesAbsolutePaths: (entryPointsGroupSettings__rawValid.HTML_Validation?.ignoring?.directories ?? []).
+              map(
+                (directoryRelativePath: string): string => ImprovedPath.joinPathSegments(
+                  [
+                    this.consumingProjectRootDirectoryAbsolutePath,
+                    directoryRelativePath
+                  ],
+                  { alwaysForwardSlashSeparators: true }
+                )
+              )
+        }
+
+      },
+
+      outputCodeFormatting: {
+        mustExecute: settingsActualForCurrentProjectBuildingMode.outputCodeFormatting?.disable === true ? false :
+          MarkupProcessingSettings__Default.outputCodeFormatting.mustExecute(this.consumingProjectBuildingMode)
       }
 
     };
@@ -476,43 +548,50 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
   private normalizeLoggingSettings(): MarkupProcessingSettings__Normalized.Logging {
     return {
-      filesPaths: this.markupProcessingSettings__fromFile__rawValid.logging?.filesPaths ??
+
+      filesPaths:
+          this.markupProcessingSettings__fromFile__rawValid.logging?.filesPaths ??
           MarkupProcessingSettings__Default.logging.filesPaths,
-      filesCount: this.markupProcessingSettings__fromFile__rawValid.logging?.filesCount ??
+      filesCount:
+          this.markupProcessingSettings__fromFile__rawValid.logging?.filesCount ??
           MarkupProcessingSettings__Default.logging.filesCount,
-      partialFilesAndParentEntryPointsCorrespondence: this.markupProcessingSettings__fromFile__rawValid.
-          logging?.partialFilesAndParentEntryPointsCorrespondence ??
-          MarkupProcessingSettings__Default.logging.partialFilesAndParentEntryPointsCorrespondence
-    };
-  }
+      partialFilesAndParentEntryPointsCorrespondence:
+          this.markupProcessingSettings__fromFile__rawValid.logging?.partialFilesAndParentEntryPointsCorrespondence ??
+          MarkupProcessingSettings__Default.logging.partialFilesAndParentEntryPointsCorrespondence,
+      filesWatcherEvents:
+          this.markupProcessingSettings__fromFile__rawValid.logging?.filesWatcherEvents ??
+          MarkupProcessingSettings__Default.logging.filesWatcherEvents,
 
-
-  private static completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilMarkupEntryPointsGroupNormalizedSettings(
-    entryPointsGroupGenericSettings__normalized: ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings,
-    entryPointsGroupSettings__rawValid: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup
-  ): MarkupProcessingSettings__Normalized.EntryPointsGroup {
-
-    return {
-
-      ...entryPointsGroupGenericSettings__normalized,
+      linting: {
+        starting:
+            this.markupProcessingSettings__fromFile__rawValid.logging?.linting.starting ??
+            MarkupProcessingSettings__Default.logging.linting.starting,
+        completionWithoutIssues:
+            this.markupProcessingSettings__fromFile__rawValid.logging?.linting.completionWithoutIssues ??
+            MarkupProcessingSettings__Default.logging.linting.completionWithoutIssues
+      },
 
       HTML_Validation: {
-        mustExecute: entryPointsGroupSettings__rawValid.HTML_Validation?.disable === true ? false :
-            MarkupProcessingSettings__Default.HTML_Validation.mustExecute
+        starting:
+            this.markupProcessingSettings__fromFile__rawValid.logging?.HTML_Validation?.starting ??
+            MarkupProcessingSettings__Default.logging.HTML_Validation.starting,
+        completionWithoutIssues:
+            this.markupProcessingSettings__fromFile__rawValid.logging?.HTML_Validation?.completionWithoutIssues ??
+            MarkupProcessingSettings__Default.logging.HTML_Validation.completionWithoutIssues
       },
 
-      accessibilityInspection: {
-        mustExecute: entryPointsGroupSettings__rawValid.accessibilityInspection?.disable === true ? false :
-            MarkupProcessingSettings__Default.accessibilityInspection.mustExecute,
-        standard: entryPointsGroupSettings__rawValid.accessibilityInspection?.standard ??
-            MarkupProcessingSettings__Default.accessibilityInspection.standard
-      },
+      accessibilityChecking: {
+        starting:
+            this.markupProcessingSettings__fromFile__rawValid.logging?.accessibilityChecking?.starting ??
+            MarkupProcessingSettings__Default.logging.accessibilityChecking.starting,
+        completionWithoutIssues:
+            this.markupProcessingSettings__fromFile__rawValid.logging?.accessibilityChecking?.completionWithoutIssues ??
+            MarkupProcessingSettings__Default.logging.accessibilityChecking.completionWithoutIssues
+      }
 
-      mustConvertToHandlebarsOnNonStaticPreviewModes: entryPointsGroupSettings__rawValid.
-          convertToHandlebarsOnNonStaticPreviewModes ?? false
     };
-
   }
+
 }
 
 
@@ -525,34 +604,35 @@ namespace MarkupProcessingRawSettingsNormalizer {
 
     generateUnableToResolveResourcesReferencesToAbsolutePathLog:
         (
-          namedParameters: Localization.UnableToResolveResourcesReferencesToAbsolutePathLog.NamedParameters
+          templateVariables: Localization.UnableToResolveResourcesReferencesToAbsolutePathLog.TemplateVariables
         ) => Localization.UnableToResolveResourcesReferencesToAbsolutePathLog;
 
     generateStaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedMessage:
         (
-          namedParameters: Localization.StaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedLog.
-              NamedParameters
+          templateVariables: Localization.
+              StaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedLog.TemplateVariables
         ) => string;
 
     generateStaticPreviewStateDependentPagesVariationsSpecificationIsNotTheObjectErrorLog:
         (
-          namedParameters: Localization.StaticPreviewStateDependentPagesVariationsSpecificationIsInvalidLog.NamedParameters
+          templateVariables: Localization.
+              StaticPreviewStateDependentPagesVariationsSpecificationIsInvalidLog.TemplateVariables
         ) => Localization.StaticPreviewStateDependentPagesVariationsSpecificationIsInvalidLog;
 
     generateInvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayMessage:
         (
-          namedParameters: Localization.InvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayLog.
-              NamedParameters
+          templateVariables: Localization.
+              InvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayLog.TemplateVariables
         ) => string;
 
     generateInvalidPageStateVariableNameMessage:
-        (namedParameters: Localization.InvalidPageStateVariableNameLog.NamedParameters) => string;
+        (templateVariables: Localization.InvalidPageStateVariableNameLog.TemplateVariables) => string;
 
     generateInvalidPageStateDependentVariationsSpecificationMessage:
-        (namedParameters: Localization.InvalidPageStateDependentVariationsSpecificationLog.NamedParameters) => string;
+        (templateVariables: Localization.InvalidPageStateDependentVariationsSpecificationLog.TemplateVariables) => string;
 
     generateInvalidPageStateVariableMessage:
-        (namedParameters: Localization.InvalidPageStateVariableLog.NamedParameters) => string;
+        (templateVariables: Localization.InvalidPageStateVariableLog.TemplateVariables) => string;
 
   }>;
 
@@ -566,14 +646,14 @@ namespace MarkupProcessingRawSettingsNormalizer {
         Pick<WarningLog, "title" | "description">;
 
     export namespace UnableToResolveResourcesReferencesToAbsolutePathLog {
-      export type NamedParameters = Readonly<{
-        consumingProjectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+      export type TemplateVariables = Readonly<{
+        consumingProjectBuildingMode: ConsumingProjectBuildingModes;
       }>;
     }
 
 
     export namespace StaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedLog {
-      export type NamedParameters = Readonly<
+      export type TemplateVariables = Readonly<
         { staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath: string; }
       >;
     }
@@ -584,7 +664,7 @@ namespace MarkupProcessingRawSettingsNormalizer {
     >;
 
     export namespace StaticPreviewStateDependentPagesVariationsSpecificationIsInvalidLog {
-      export type NamedParameters = Readonly<{
+      export type TemplateVariables = Readonly<{
         staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath: string;
         stringifiedRawData: string;
         rawDataActualType: string;
@@ -593,7 +673,7 @@ namespace MarkupProcessingRawSettingsNormalizer {
     }
 
     export namespace InvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayLog {
-      export type NamedParameters = Readonly<{
+      export type TemplateVariables = Readonly<{
         staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath: string;
         invalidEntryKey: string;
         invalidEntryStringifiedValue: string;
@@ -602,7 +682,7 @@ namespace MarkupProcessingRawSettingsNormalizer {
     }
 
     export namespace InvalidPageStateVariableNameLog {
-      export type NamedParameters = Readonly<{
+      export type TemplateVariables = Readonly<{
         targetMarkupFileRelativePath: string;
         specifiedTypeOfVariableNameProperty: string;
         stringifiedValueOfSpecifiedVariableNameProperty: string;
@@ -610,7 +690,7 @@ namespace MarkupProcessingRawSettingsNormalizer {
     }
 
     export namespace InvalidPageStateDependentVariationsSpecificationLog {
-      export type NamedParameters = Readonly<{
+      export type TemplateVariables = Readonly<{
         targetMarkupFileRelativePath: string;
         actualType: string;
         actualStringifiedValue: string;
@@ -618,7 +698,7 @@ namespace MarkupProcessingRawSettingsNormalizer {
     }
 
     export namespace InvalidPageStateVariableLog {
-      export type NamedParameters = Readonly<{
+      export type TemplateVariables = Readonly<{
         targetMarkupFileRelativePath: string;
         actualType: string;
         actualStringifiedValue: string;

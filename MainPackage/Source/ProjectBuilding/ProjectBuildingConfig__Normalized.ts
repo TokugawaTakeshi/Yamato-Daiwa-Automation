@@ -9,6 +9,7 @@ import type FontsProcessingSettings__Normalized from "@FontsProcessing/FontsProc
 import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosProcessingSettings__Normalized";
 import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosProcessingSettings__Normalized";
 import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
+import type FilesWatchingSettings__Normalized from "@ProjectBuilding/FilesWatching/FilesWatchingSettings__Normalized";
 import type BrowserLiveReloadingSettings__Normalized from "@BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
 
 
@@ -27,59 +28,10 @@ type ProjectBuildingConfig__Normalized = Readonly<{
 
   plainCopying?: PlainCopyingSettings__Normalized;
 
+  filesWatching: FilesWatchingSettings__Normalized;
   browserLiveReloading?: BrowserLiveReloadingSettings__Normalized;
 
 }>;
-
-
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
-namespace ProjectBuildingConfig__Normalized {
-
-  export type EntryPointsGroupID = string;
-
-  export type SourceCodeProcessingCommonSettingsGenericProperties = Readonly<{
-    supportedSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
-    supportedOutputFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
-  }>;
-
-  export type EntryPointsGroupGenericSettings = Readonly<{
-    ID: EntryPointsGroupID;
-    sourceFilesTopDirectoryAbsolutePath: string;
-    sourceFilesGlobSelectors: Array<string>;
-    isSingeEntryPointGroup: boolean;
-    outputFilesTopDirectoryAbsolutePath: string;
-  }>;
-
-
-  export type AssetsGroupID = string;
-
-  export type AssetsProcessingCommonSettingsGenericProperties = Readonly<{
-    supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string>;
-  }>;
-
-  export type AssetsGroupSettingsGenericProperties = Readonly<{
-    ID: AssetsGroupID;
-    sourceFilesTopDirectoryAbsolutePath: string;
-    sourceFilesTopDirectoryPathAlias: string;
-    sourceFilesGlobSelector: string;
-    outputFilesTopDirectoryAbsolutePath: string;
-    outputPathTransformations: Readonly<{
-      segmentsWhichMustBeRemoved?: Array<string>;
-      segmentsWhichLastDuplicatesMustBeRemoved?: Array<string>;
-    }>;
-    revisioning: Revisioning;
-  }>;
-
-
-  export type Revisioning = Readonly<{
-    mustExecute: boolean;
-    contentHashPostfixSeparator: string;
-  }>;
-
-}
 
 
 export default ProjectBuildingConfig__Normalized;

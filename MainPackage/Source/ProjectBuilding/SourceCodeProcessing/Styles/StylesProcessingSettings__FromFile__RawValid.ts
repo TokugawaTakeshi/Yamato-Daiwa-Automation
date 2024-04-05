@@ -1,16 +1,18 @@
-/* --- Restrictions ------------------------------------------------------------------------------------------------- */
-import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import type ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* --- Raw valid settings ------------------------------------------------------------------------------------------- */
-import type SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid from
+/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
+import SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid";
 import type ConsumingProjectPreDefinedBuildingModes__Localized from
     "@ProjectBuilding/Common/RawConfig/Enumerations/ConsumingProjectPreDefinedBuildingModes__Localized";
 import type RevisioningSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/RevisioningSettings__FromFile__RawValid";
+import type LintingSettings__FromFile__RawValid from
+    "@ProjectBuilding/Common/RawConfig/Reusables/LintingSettings__FromFile__RawValid";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
 
 
@@ -18,29 +20,24 @@ type StylesProcessingSettings__FromFile__RawValid = Readonly<{
   common?: StylesProcessingSettings__FromFile__RawValid.Common;
   linting?: StylesProcessingSettings__FromFile__RawValid.Linting;
   entryPointsGroups: Readonly<{ [groupID: string]: StylesProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
+  logging?: StylesProcessingSettings__FromFile__RawValid.Logging;
 }>;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
 namespace StylesProcessingSettings__FromFile__RawValid {
 
-  /* === Types ====================================================================================================== */
+  /* ━━━ Types ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Common = Readonly<{ periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number; }>;
 
-  export type Linting = Readonly<{
-    presetFileRelativePath?: string;
-    enable?: boolean;
-  }>;
+
+  export type Linting = LintingSettings__FromFile__RawValid;
+
 
   export type EntryPointsGroup =
       SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
       Readonly<{
-        customReferenceName?: string;
         buildingModeDependent: Readonly<{
-          [projectBuildingMode in ConsumingProjectPreDefinedBuildingModes]: EntryPointsGroup.BuildingModeDependent;
+          [projectBuildingMode in ConsumingProjectBuildingModes]: EntryPointsGroup.BuildingModeDependent;
         }>;
       }>;
 
@@ -53,7 +50,22 @@ namespace StylesProcessingSettings__FromFile__RawValid {
   }
 
 
-  /* === Localization =============================================================================================== */
+  export type Logging = Readonly<{
+
+    filesPaths?: boolean;
+    filesCount?: boolean;
+    partialFilesAndParentEntryPointsCorrespondence?: boolean;
+    filesWatcherEvents?: boolean;
+
+    linting: Readonly<{
+      starting?: boolean;
+      completionWithoutIssues?: boolean;
+    }>;
+
+  }>;
+
+
+  /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Localization = Readonly<{
 
     common: Readonly<{
@@ -67,129 +79,162 @@ namespace StylesProcessingSettings__FromFile__RawValid {
 
       KEY: string;
 
-      customReferenceName: Readonly<{ KEY: string; }>;
-
       buildingModeDependent: Readonly<{
         KEY: string;
         outputTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
         revisioning: Readonly<{ KEY: string; }>;
       }>;
+
     }>;
+
+    logging: Readonly<{
+
+      KEY: string;
+
+      filesPaths: Readonly<{ KEY: string; }>;
+      filesCount: Readonly<{ KEY: string; }>;
+      partialFilesAndParentEntryPointsCorrespondence: Readonly<{ KEY: string; }>;
+      filesWatcherEvents: Readonly<{ KEY: string; }>;
+
+      linting: Readonly<{
+        KEY: string;
+        starting: Readonly<{ KEY: string; }>;
+        completionWithoutIssues: Readonly<{ KEY: string; }>;
+      }>;
+
+    }>;
+
   }>;
 
   export function getLocalizedPropertiesSpecification(
     {
-      stylesProcessingLocalization,
-      sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
-      consumingProjectLocalizedPreDefinedBuildingModes,
-      revisioningPropertiesLocalizedSpecification,
-      lintingCommonSettingsLocalizedPropertiesSpecification
+      stylesProcessingPropertiesLocalization,
+      localizedConsumingProjectLocalizedPreDefinedBuildingModes,
+      lintingSettingsLocalizedPropertiesSpecification,
+      revisioningSettingsLocalizedPropertiesSpecification,
+      sourceCodeProcessingSettingsGenericPropertiesLocalization,
+      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification
     }: Readonly<{
-      stylesProcessingLocalization: Localization;
-      sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification:
-          RawObjectDataProcessor.PropertiesSpecification;
-      consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-      revisioningPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
-      lintingCommonSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.PropertiesSpecification;
+      stylesProcessingPropertiesLocalization: Localization;
+      localizedConsumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
+      lintingSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.PropertiesSpecification;
+      revisioningSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.PropertiesSpecification;
+      sourceCodeProcessingSettingsGenericPropertiesLocalization:
+          SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.Localization;
+      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.
+          PropertiesSpecification;
     }>
   ): RawObjectDataProcessor.PropertiesSpecification {
 
     return {
 
-      [stylesProcessingLocalization.common.KEY]: {
+      [stylesProcessingPropertiesLocalization.common.KEY]: {
 
         newName: "common",
-        preValidationModifications: nullToUndefined,
         type: Object,
         required: false,
+        preValidationModifications: nullToUndefined,
 
         properties: {
-          [stylesProcessingLocalization.common.periodBetweenFileUpdatingAndRebuildingStarting__seconds.KEY]: {
+          [stylesProcessingPropertiesLocalization.common.periodBetweenFileUpdatingAndRebuildingStarting__seconds.KEY]: {
             newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
             type: Number,
             required: false,
             numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
           }
         }
+
       },
 
-      [stylesProcessingLocalization.linting.KEY]: {
+      [stylesProcessingPropertiesLocalization.linting.KEY]: {
         newName: "linting",
-        preValidationModifications: nullToUndefined,
         type: Object,
         required: false,
-        properties: lintingCommonSettingsLocalizedPropertiesSpecification
+        preValidationModifications: nullToUndefined,
+        properties: lintingSettingsLocalizedPropertiesSpecification
       },
 
-      [stylesProcessingLocalization.entryPointsGroups.KEY]: {
-
-        newName: "entryPointsGroups",
-        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-        required: true,
-
-        value: {
-
-          type: Object,
-
-          properties: {
-
-            ...sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
-
-            [stylesProcessingLocalization.entryPointsGroups.customReferenceName.KEY]: {
-              newName: "customReferenceName",
-              type: String,
-              required: false,
-              minimalCharactersCount: 1
-            },
-
-            [stylesProcessingLocalization.entryPointsGroups.buildingModeDependent.KEY]: {
-
-              newName: "buildingModeDependent",
-              preValidationModifications: nullToUndefined,
-              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-              required: true,
-              allowedKeys: Object.values(ConsumingProjectPreDefinedBuildingModes),
-              minimalEntriesCount: 1,
-
-              keysRenamings: {
-                [consumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
-                    ConsumingProjectPreDefinedBuildingModes.staticPreview,
-                [consumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
-                    ConsumingProjectPreDefinedBuildingModes.localDevelopment,
-                [consumingProjectLocalizedPreDefinedBuildingModes.testing]:
-                    ConsumingProjectPreDefinedBuildingModes.testing,
-                [consumingProjectLocalizedPreDefinedBuildingModes.staging]:
-                    ConsumingProjectPreDefinedBuildingModes.staging,
-                [consumingProjectLocalizedPreDefinedBuildingModes.production]:
-                    ConsumingProjectPreDefinedBuildingModes.production
-              },
-
-              value: {
-
-                type: Object,
-
-                properties: {
-
-                  [stylesProcessingLocalization.entryPointsGroups.buildingModeDependent.outputTopDirectoryRelativePath.KEY]: {
-                    newName: "outputTopDirectoryRelativePath",
-                    type: String,
-                    required: true
-                  },
-
-                  [stylesProcessingLocalization.entryPointsGroups.buildingModeDependent.revisioning.KEY]: {
-                    newName: "revisioning",
-                    type: Object,
-                    required: false,
-                    properties: revisioningPropertiesLocalizedSpecification
-                  }
-                }
-              }
-            }
+      ...SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.getLocalizedPropertiesSpecification({
+        sourceCodeProcessingSettingsGenericPropertiesLocalization,
+        localizedConsumingProjectLocalizedPreDefinedBuildingModes,
+        entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
+        entryPointsGroupBuildingModeDependentSpecificSettingsLocalizedPropertiesSpecification: {
+          [stylesProcessingPropertiesLocalization.entryPointsGroups.buildingModeDependent.revisioning.KEY]: {
+            newName: "revisioning",
+            type: Object,
+            required: false,
+            preValidationModifications: nullToUndefined,
+            properties: revisioningSettingsLocalizedPropertiesSpecification
           }
         }
+      }),
+
+      [stylesProcessingPropertiesLocalization.logging.KEY]: {
+
+        newName: "logging",
+        type: Object,
+        required: false,
+        preValidationModifications: nullToUndefined,
+
+        properties: {
+
+          [stylesProcessingPropertiesLocalization.logging.filesPaths.KEY]: {
+            newName: "filesPaths",
+            type: Boolean,
+            required: false
+          },
+
+          [stylesProcessingPropertiesLocalization.logging.filesCount.KEY]: {
+            newName: "filesCount",
+            type: Boolean,
+            required: false
+          },
+
+          [stylesProcessingPropertiesLocalization.logging.partialFilesAndParentEntryPointsCorrespondence.KEY]: {
+            newName: "partialFilesAndParentEntryPointsCorrespondence",
+            type: Boolean,
+            required: false
+          },
+
+          [stylesProcessingPropertiesLocalization.logging.filesWatcherEvents.KEY]: {
+            newName: "filesWatcherEvents",
+            type: Boolean,
+            required: false
+          },
+
+          [stylesProcessingPropertiesLocalization.logging.linting.KEY]: {
+
+            newName: "linting",
+            type: Object,
+            required: false,
+            preValidationModifications: nullToUndefined,
+
+            properties: {
+
+              [stylesProcessingPropertiesLocalization.logging.linting.starting.KEY]: {
+                newName: "starting",
+                type: Boolean,
+                required: false
+              },
+
+              [stylesProcessingPropertiesLocalization.logging.linting.completionWithoutIssues.KEY]: {
+                newName: "completionWithoutIssues",
+                type: Boolean,
+                required: false
+              }
+
+            }
+
+          }
+
+        }
+
       }
+
     };
+
   }
+
 }
 
 

@@ -6,7 +6,7 @@ projectBuilding:
 
       StaticPreview:
 
-        topDirectoryRelativePath: 01-Source/Pages
+        sourceFilesTopDirectoryRelativePath: 01-Source/Pages
 
         buildingModeDependent:
           STATIC_PREVIEW:
@@ -18,7 +18,7 @@ projectBuilding:
 
       Main:
 
-        singleEntryPointRelativePath: 01-Source/SharedAssets/Main.styl
+        singleEntryPointSourceFileRelativePath: 01-Source/SharedAssets/Main.styl
 #        customReferenceName: MainStylesheet
 
         buildingModeDependent:

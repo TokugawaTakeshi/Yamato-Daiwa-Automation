@@ -1,11 +1,13 @@
 export default class StylusPreProcessorSpecialist {
 
-  public static readonly supportedFileNamesExtensionsWithoutPrependedDots: Array<string> = [ "styl", "stylus" ];
-
   /* [ Fiddle ] https://regex101.com/r/KDM184/3 */
   public static readonly partialFilesIncludingDeclarationPatterns: Array<RegExp> = [
-    /^ *@(?:import|require) +['"](?<filePath>(?:\w|-|\.|\/)+?)['"] *;? *$/gmu
+    /* eslint-disable-next-line prefer-named-capture-group --
+   * No simple way to know the capturing group name outside of this file. */
+    /^ *@(?:import|require) +['"]((?:\w|-|\.|\/)+?)['"] *;? *$/gmu
   ];
 
-  public static readonly implicitFileNamesExtensionsWithoutPrependedDotsOfPartials: Array<string> = [ "styl", "stylus", "css" ];
+  public static readonly implicitFilesNamesExtensionsWithoutLeadingDotsOfPartials: Array<string> =
+      [ "styl", "stylus", "css" ];
+
 }

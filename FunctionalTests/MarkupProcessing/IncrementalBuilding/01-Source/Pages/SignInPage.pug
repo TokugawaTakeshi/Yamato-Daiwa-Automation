@@ -1,0 +1,13 @@
+extends ../Layouts/MainLayout.pug
+
+
+block append Requirements
+
+  include ../Components/SignInForm.pug
+
+
+block prepend SpecificContent
+
+  h1 Sign in
+
+  +SignInForm

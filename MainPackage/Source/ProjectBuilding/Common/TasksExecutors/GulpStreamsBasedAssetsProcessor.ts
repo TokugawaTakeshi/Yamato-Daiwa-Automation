@@ -1,112 +1,123 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
-import AssetsProcessingCommonSettingsGenericProperties = ProjectBuildingConfig__Normalized.
-    AssetsProcessingCommonSettingsGenericProperties;
-import AssetsGroupSettingsGenericProperties = ProjectBuildingConfig__Normalized.AssetsGroupSettingsGenericProperties;
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+import type AssetsProcessingSettingsGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
-import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type AssetsProcessingSettingsRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/AssetsProcessingSettingsRepresentative";
 
-/* --- Task executors ----------------------------------------------------------------------------------------------- */
+/* ─── Task Executors ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import GulpStreamsBasedTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
-import Gulp from "gulp";
-import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/Chokidar/ChokidarSpecialist";
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import type VinylFile from "vinyl";
+import AssetVinylFile from "@ProjectBuilding/Common/VinylFiles/AssetVinylFile";
+import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
-import Timeout = NodeJS.Timeout;
-import {
-  Logger,
-  isNotNull,
-  secondsToMilliseconds
-} from "@yamato-daiwa/es-extensions";
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import { isNotNull, secondsToMilliseconds } from "@yamato-daiwa/es-extensions";
 
 
 export default abstract class GulpStreamsBasedAssetsProcessor<
-  AssetsManagerCommonSettings__Normalized extends AssetsProcessingCommonSettingsGenericProperties,
-  AssetsGroupSettings__Normalized extends AssetsGroupSettingsGenericProperties,
+  AssetsManagerCommonSettings__Normalized extends AssetsProcessingSettingsGenericProperties__Normalized.Common,
+  AssetsGroupSettings__Normalized extends AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup,
   CertainAssetsManagerConfigRepresentative extends AssetsProcessingSettingsRepresentative<
     AssetsManagerCommonSettings__Normalized, AssetsGroupSettings__Normalized
   >
 > extends GulpStreamsBasedTaskExecutor {
 
-  private static readonly WAITING_FOR_OTHER_FILES_WILL_BE_SAVED_PERIOD__SECONDS: number = 1;
+  protected readonly absolutePathOfFilesWaitingForReProcessing: Set<string> = new Set<string>();
+  protected readonly WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS: number;
 
-  protected readonly abstract SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string;
+  protected associatedAssetsProcessingSettingsRepresentative: CertainAssetsManagerConfigRepresentative;
+  protected subsequentFilesStateChangeTimeout: NodeJS.Timeout | null = null;
 
-  protected associatedAssetsProcessingConfigRepresentative: CertainAssetsManagerConfigRepresentative;
-
-  private readonly filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing: Set<string> = new Set();
-  private waitingForOtherFilesWillBeSavedDuration: Timeout | null = null;
+  protected logging: GulpStreamsBasedTaskExecutor.Logging;
 
 
   protected constructor(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
-    certainAssetsManagementConfigRepresentative: CertainAssetsManagerConfigRepresentative
+    constructorParameter:
+        GulpStreamsBasedTaskExecutor.ConstructorParameter &
+        Readonly<{
+          associatedAssetsProcessingSettingsRepresentative: CertainAssetsManagerConfigRepresentative;
+          waitingForSubsequentFilesWillSavedPeriod__seconds: number;
+        }>
   ) {
-    super(masterConfigRepresentative);
-    this.associatedAssetsProcessingConfigRepresentative = certainAssetsManagementConfigRepresentative;
+
+    super(constructorParameter);
+
+    this.associatedAssetsProcessingSettingsRepresentative = constructorParameter.
+        associatedAssetsProcessingSettingsRepresentative;
+    this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS = constructorParameter.
+        waitingForSubsequentFilesWillSavedPeriod__seconds;
+
+    this.logging = {
+      pathsOfFilesWillBeProcessed: this.associatedAssetsProcessingSettingsRepresentative.loggingSettings.filesPaths,
+      quantityOfFilesWillBeProcessed: this.associatedAssetsProcessingSettingsRepresentative.loggingSettings.filesCount
+    };
+
   }
 
 
   protected abstract processAssets(sourceFilesAbsolutePathsOrGlobs: Array<string>): () => NodeJS.ReadWriteStream;
 
 
-  protected initializeOrUpdateSourceFilesWatcherIfMust(): void {
+  /* ━━━ Pipeline methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  protected async replacePlainVinylFileWithAssetVinylFile(
+    plainVinylFile: VinylFile, addNewFileToStream: GulpStreamModifier.NewFilesAdder
+  ): Promise<GulpStreamModifier.CompletionSignals> {
 
-    if (
-      !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
-      !this.masterConfigRepresentative.isLocalDevelopmentBuildingMode
-    ) {
-      return;
+    addNewFileToStream(
+      new AssetVinylFile({
+        initialPlainVinylFile: plainVinylFile,
+        actualAssetsGroupSettings: this.associatedAssetsProcessingSettingsRepresentative.
+            getAssetsNormalizedSettingsActualForTargetSourceFile(plainVinylFile.path)
+      })
+    );
+
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.REMOVING_FILE_FROM_STREAM);
+
+  }
+
+  protected static async addContentHashPostfixToFileNameIfMust(
+    processedAssetFile: AssetVinylFile
+  ): Promise<GulpStreamModifier.CompletionSignals> {
+
+    if (processedAssetFile.actualAssetsGroupSettings.revisioning.mustExecute) {
+      FileNameRevisionPostfixer.appendPostfixIfPossible(
+        processedAssetFile,
+        { contentHashPostfixSeparator: processedAssetFile.actualAssetsGroupSettings.revisioning.contentHashPostfixSeparator }
+      );
+    }
+
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+  }
+
+
+  /* ━━━ Rebuilding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* eslint-disable-next-line @typescript-eslint/member-ordering --
+  * `addContentHashPostfixToFileNameIfMust`を静的にすると、`@typescript-eslint/class-methods-use-this`が発生するが、メソッドが論理的な
+  *   順番通り整理してある。  */
+  protected onSourceFilesWatcherEmittedFileAddingOrUpdatingEvent(targetFileAbsolutePath: string): void {
+
+    this.absolutePathOfFilesWaitingForReProcessing.add(targetFileAbsolutePath);
+
+    if (isNotNull(this.subsequentFilesStateChangeTimeout)) {
+      clearTimeout(this.subsequentFilesStateChangeTimeout);
     }
 
 
-    Gulp.watch(this.associatedAssetsProcessingConfigRepresentative.relevantSourceFilesGlobSelectors).
-        on("all", (eventName: string, fileOrDirectoryPath: string): void => {
-
-          Logger.logInfo({
-            title: `${ this.SOURCE_FILES_TYPE_LABEL_FOR_LOGGING } files watcher`,
-            description:
-                `          Event : ${ ChokidarSpecialist.getEventNameInterpretation(eventName) }` +
-                `\n        Path : ${ fileOrDirectoryPath }`
-          });
-
-          if (
-            eventName === ChokidarSpecialist.EventsNames.directoryAdded ||
-            eventName === ChokidarSpecialist.EventsNames.directoryDeleted ||
-            eventName === ChokidarSpecialist.EventsNames.fileDeleted
-          ) {
-            return;
-          }
-
-
-          if (isNotNull(this.waitingForOtherFilesWillBeSavedDuration)) {
-            clearTimeout(this.waitingForOtherFilesWillBeSavedDuration);
-          }
-
-          Logger.logInfo({
-            title: `${ this.SOURCE_FILES_TYPE_LABEL_FOR_LOGGING } files watcher`,
-            description: "Waiting for the saving of same type files..."
-          });
-
-          this.filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing.add(fileOrDirectoryPath);
-
-          this.waitingForOtherFilesWillBeSavedDuration = setTimeout((): void => {
-
-            if (this.filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing.size > 0) {
-              this.processAssets(Array.from(this.filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing))();
-            }
-
-            this.filesWhichStatusHasBeenChangedAbsolutePathsQueueToProcessing.clear();
-
-          }, secondsToMilliseconds(GulpStreamsBasedAssetsProcessor.WAITING_FOR_OTHER_FILES_WILL_BE_SAVED_PERIOD__SECONDS));
-
-        });
+    this.subsequentFilesStateChangeTimeout = setTimeout(
+      (): void => {
+        this.processAssets(Array.from(this.absolutePathOfFilesWaitingForReProcessing))();
+        this.absolutePathOfFilesWaitingForReProcessing.clear();
+      },
+      secondsToMilliseconds(this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS)
+    );
 
   }
+
 
 }

@@ -1,3 +1,3 @@
 export default {
-  supportedSourceFileNameExtensionsWithoutLeadingDots: [ "jpg", "png", "gif", "svg", "ico", "webp" ]
+  supportedSourceFilesNamesExtensionsWithoutLeadingDots: [ "jpg", "png", "gif", "svg", "ico", "webp" ]
 };

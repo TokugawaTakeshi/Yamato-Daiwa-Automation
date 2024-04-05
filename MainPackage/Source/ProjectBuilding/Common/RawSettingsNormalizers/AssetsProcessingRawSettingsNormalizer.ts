@@ -1,56 +1,68 @@
-/* --- Default settings --------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import type ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
+import PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX from
+    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX";
+
+/* ─── Default Settings ───────────────────────────────────────────────────────────────────────────────────────────── */
 import AssetsProcessingGenericSettings__Default from
     "@ProjectBuilding/Common/Defaults/AssetsProcessingGenericSettings__Default";
 
-/* --- Raw valid settings ------------------------------------------------------------------------------------------- */
+/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
 import type AssetsProcessingSettingsGenericProperties__FromFile__RawValid from
-      "@ProjectBuilding:Common/RawConfig/AssetsProcessingSettingsGenericProperties__FromFile__RawValid";
+    "@ProjectBuilding:Common/RawConfig/AssetsProcessingSettingsGenericProperties__FromFile__RawValid";
 
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
-import AssetsGroupID = ProjectBuildingConfig__Normalized.AssetsGroupID;
+/* ─── Normalized settings ─────────────────────────────────────────────────────────────────────────────────────────── */
+import type AssetsProcessingSettingsGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
 
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
-import {
-  isNonEmptyArray,
-  isUndefined,
-  undefinedToEmptyArray
-} from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
-import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
+/* ─── Settings normalizers ───────────────────────────────────────────────────────────────────────────────────────── */
+import OutputPathTransformationsSettingsNormalizer from
+    "@ProjectBuilding/Common/RawSettingsNormalizers/Reusables/OutputPathTransformationsSettingsNormalizer";
+import RevisioningSettingsNormalizer from
+    "@ProjectBuilding/Common/RawSettingsNormalizers/Reusables/RevisioningSettingsNormalizer";
+
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+import { isUndefined } from "@yamato-daiwa/es-extensions";
+import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 abstract class AssetsProcessingRawSettingsNormalizer {
 
-  protected abstract supportedEntryPointsSourceFilenameExtensionsWithoutLeadingDots: Array<string>;
-
-  protected consumingProjectRootDirectoryAbsolutePath: string;
-  protected consumingProjectBuildingMode: string;
-
   protected readonly assetsGroupsIDsSelection: ReadonlyArray<string>;
+  protected readonly supportedEntryPointsSourceFilenameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+  protected readonly consumingProjectRootDirectoryAbsolutePath: string;
+  protected readonly consumingProjectBuildingMode: ConsumingProjectBuildingModes;
 
 
-  protected constructor(namedParameters: AssetsProcessingRawSettingsNormalizer.ConstructorParameters) {
-    this.consumingProjectRootDirectoryAbsolutePath = namedParameters.consumingProjectRootDirectoryAbsolutePath;
-    this.consumingProjectBuildingMode = namedParameters.consumingProjectBuildingMode;
-    this.assetsGroupsIDsSelection = namedParameters.assetsGroupsIDsSelection ?? [];
+  protected constructor(compoundParameter: AssetsProcessingRawSettingsNormalizer.CompoundParameter) {
+
+    this.assetsGroupsIDsSelection = compoundParameter.assetsGroupsIDsSelection ?? [];
+
+    this.supportedEntryPointsSourceFilenameExtensionsWithoutLeadingDots = compoundParameter.
+        supportedSourceFilesNamesExtensionsWithoutLeadingDots;
+
+    this.consumingProjectRootDirectoryAbsolutePath = compoundParameter.consumingProjectRootDirectoryAbsolutePath;
+    this.consumingProjectBuildingMode = compoundParameter.consumingProjectBuildingMode;
+
   }
 
 
   protected createNormalizedAssetsGroupsSettings<
     AssetsGroupSettings__RawValid extends AssetsProcessingSettingsGenericProperties__FromFile__RawValid.AssetsGroup,
-    AssetsGroupSettings__Normalized extends ProjectBuildingConfig__Normalized.AssetsGroupSettingsGenericProperties
+    AssetsGroupSettings__Normalized extends AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup
   >(
     assetsGroupsSettings__rawValid: { [ID: string]: AssetsGroupSettings__RawValid; } | undefined,
     completeAssetsGroupNormalizedSettingsGeneralPropertiesUntilCertainAssetsGroupNormalizedSettings:
         (
-          assetsGroupSettings__normalized: ProjectBuildingConfig__Normalized.AssetsGroupSettingsGenericProperties,
+          assetsGroupSettings__normalized: AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup,
           assetsGroupSettings__rawValid: AssetsGroupSettings__RawValid
         ) => AssetsGroupSettings__Normalized
-  ): Map<AssetsGroupID, AssetsGroupSettings__Normalized> {
+  ): ReadonlyMap<AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID, AssetsGroupSettings__Normalized> {
 
-    const assetsGroupsNormalizedSettings: Map<AssetsGroupID, AssetsGroupSettings__Normalized> =
-        new Map<AssetsGroupID, AssetsGroupSettings__Normalized>();
+    const assetsGroupsNormalizedSettings: Map<
+      AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID, AssetsGroupSettings__Normalized
+    > = new Map<AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID, AssetsGroupSettings__Normalized>();
 
     if (isUndefined(assetsGroupsSettings__rawValid)) {
       return assetsGroupsNormalizedSettings;
@@ -67,19 +79,26 @@ abstract class AssetsProcessingRawSettingsNormalizer {
         continue;
       }
 
+
       const currentAssetsGroupSourceFilesDirectoryAbsolutePath: string =
-          ImprovedPath.extractDirectoryFromFilePath(
-            ImprovedPath.joinPathSegments(
+          ImprovedPath.extractDirectoryFromFilePath({
+            targetPath: ImprovedPath.joinPathSegments(
               [
                 this.consumingProjectRootDirectoryAbsolutePath,
                 assetsGroupSettings__rawValid.sourceFilesTopDirectoryRelativePath
               ],
-              { forwardSlashOnlySeparators: true }
-            )
-          );
+              { alwaysForwardSlashSeparators: true }
+            ),
+            ambiguitiesResolution: {
+              mustConsiderLastSegmentStartingWithDotAsDirectory: true,
+              mustConsiderLastSegmentWithNonLeadingDotAsDirectory: true,
+              mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: false
+            },
+            alwaysForwardSlashSeparators: true
+          });
 
-      const aliasForPathsResolution: string =
-        assetsGroupSettings__rawValid.sourceFilesTopDirectoryPathAliasForReferencingFromHTML ?? `@${ groupID }`;
+      const aliasForPathsResolution: string = PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX +
+          (assetsGroupSettings__rawValid.referenceCustomAliasName ?? groupID);
 
       const outputFilesBaseDirectoryAbsolutePathActualForCurrentProjectBuildingMode: string =
           ImprovedPath.joinPathSegments(
@@ -87,11 +106,13 @@ abstract class AssetsProcessingRawSettingsNormalizer {
               this.consumingProjectRootDirectoryAbsolutePath,
               assetsGroupSettings__buildingModeDependent__rawValid.outputTopDirectoryRelativePath
             ],
-            { forwardSlashOnlySeparators: true }
+            { alwaysForwardSlashSeparators: true }
           );
 
+
       const assetsManagementGroupNormalizedSettingsGenericProperties:
-          ProjectBuildingConfig__Normalized.AssetsGroupSettingsGenericProperties =
+          AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup =
+
           {
             ID: groupID,
             sourceFilesTopDirectoryAbsolutePath: currentAssetsGroupSourceFilesDirectoryAbsolutePath,
@@ -99,35 +120,20 @@ abstract class AssetsProcessingRawSettingsNormalizer {
               basicDirectoryPath: currentAssetsGroupSourceFilesDirectoryAbsolutePath,
               fileNamesExtensions: this.supportedEntryPointsSourceFilenameExtensionsWithoutLeadingDots
             }),
-            sourceFilesTopDirectoryPathAlias: aliasForPathsResolution,
+            sourceFilesTopDirectoryPathAliasName: aliasForPathsResolution,
             outputFilesTopDirectoryAbsolutePath: outputFilesBaseDirectoryAbsolutePathActualForCurrentProjectBuildingMode,
-            outputPathTransformations: {
-              ...isNonEmptyArray(
-                assetsGroupSettings__buildingModeDependent__rawValid.outputPathTransformations?.segmentsWhichMustBeRemoved
-              ) ? {
-                segmentsWhichMustBeRemoved: undefinedToEmptyArray(
-                   assetsGroupSettings__buildingModeDependent__rawValid.outputPathTransformations?.segmentsWhichMustBeRemoved
-                 )
-               } : {},
-              ...isNonEmptyArray(
-                assetsGroupSettings__buildingModeDependent__rawValid.
-                    outputPathTransformations?.segmentsWhichLastDuplicatesMustBeRemoved
-              ) ? {
-                segmentsWhichLastDuplicatesMustBeRemoved: undefinedToEmptyArray(
-                  assetsGroupSettings__buildingModeDependent__rawValid.
-                     outputPathTransformations?.segmentsWhichLastDuplicatesMustBeRemoved
-                )
-             } : {}
-            },
-            revisioning: {
+            outputPathTransformations: OutputPathTransformationsSettingsNormalizer.
+                normalize(assetsGroupSettings__buildingModeDependent__rawValid.outputPathTransformations),
 
-              mustExecute:
-                  assetsGroupSettings__buildingModeDependent__rawValid.revisioning?.disable === true ? false :
-                      AssetsProcessingGenericSettings__Default.revisioning.mustExecute(this.consumingProjectBuildingMode),
-              contentHashPostfixSeparator:
-                  assetsGroupSettings__buildingModeDependent__rawValid.revisioning?.contentHashPostfixSeparator ??
-                  AssetsProcessingGenericSettings__Default.revisioning.contentHashPostfixSeparator
-            }
+            revisioning: RevisioningSettingsNormalizer.normalize({
+              revisioningSettings__rawValid: assetsGroupSettings__buildingModeDependent__rawValid.revisioning,
+              revisioningSettings__default: {
+                mustExecute: AssetsProcessingGenericSettings__Default.revisioning.mustExecute,
+                contentHashPostfixSeparator: AssetsProcessingGenericSettings__Default.revisioning.contentHashPostfixSeparator
+              },
+              consumingProjectBuildingMode: this.consumingProjectBuildingMode
+            })
+
           };
 
       assetsGroupsNormalizedSettings.set(
@@ -145,11 +151,12 @@ abstract class AssetsProcessingRawSettingsNormalizer {
 
 
 namespace AssetsProcessingRawSettingsNormalizer {
-  export type ConstructorParameters = {
-    readonly consumingProjectRootDirectoryAbsolutePath: string;
-    readonly consumingProjectBuildingMode: string;
-    readonly assetsGroupsIDsSelection?: ReadonlyArray<string>;
-  };
+  export type CompoundParameter = Readonly<{
+    consumingProjectRootDirectoryAbsolutePath: string;
+    consumingProjectBuildingMode: ConsumingProjectBuildingModes;
+    assetsGroupsIDsSelection?: ReadonlyArray<string>;
+    supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+  }>;
 }
 
 
