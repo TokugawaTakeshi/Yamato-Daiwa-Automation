@@ -1,4 +1,10 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX from
+    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX";
+import PLAIN_COPIED_FILES_ALIAS_PREFIX from
+    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PLAIN_COPIED_FILES_ALIAS_PREFIX";
+
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 import type StylesProcessingSettings__Normalized from "@StylesProcessing/StylesProcessingSettings__Normalized";
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
@@ -7,7 +13,7 @@ import type ImagesProcessingSettings__Normalized from "@ImagesProcessing/ImagesP
 import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosProcessingSettings__Normalized";
 import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosProcessingSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 import type StylesProcessingSettingsRepresentative from "@StylesProcessing/StylesProcessingSettingsRepresentative";
@@ -16,23 +22,28 @@ import type ECMA_ScriptLogicProcessingSettingsRepresentative from
 import type ImagesProcessingSettingsRepresentative from "@ImagesProcessing/ImagesProcessingSettingsRepresentative";
 import type VideosProcessingSettingsRepresentative from "@VideosProcessing/VideosProcessingSettingsRepresentative";
 import type AudiosProcessingSettingsRepresentative from "@AudiosProcessing/AudiosProcessingSettingsRepresentative";
+import type PlainCopyingSettingsRepresentative from "@ProjectBuilding/PlainCopying/PlainCopyingSettingsRepresentative";
 
-/* --- Tasks executor ----------------------------------------------------------------------------------------------- */
-import type MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
+/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import MarkupProcessingSharedState from "@MarkupProcessing/MarkupProcessingSharedState";
+import StylesProcessingSharedState from "@StylesProcessing/StylesProcessingSharedState";
+import ECMA_ScriptLogicProcessingSharedState from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSharedState";
+import ImagesProcessingSharedState from "@ImagesProcessing/ImagesProcessingSharedState";
+import VideosProcessingSharedState from "@VideosProcessing/VideosProcessingSharedState";
+import AudiosProcessingSharedState from "@AudiosProcessing/AudiosProcessingSharedState";
 
-/* --- Assets ------------------------------------------------------------------------------------------------------- */
-import AssetsPathsAliasesResolverForHTML_Localization__English from
+/* ─── Assets ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
+import assetsPathsAliasesResolverForHTML_Localization__english from
     "@MarkupProcessing/Plugins/ResourcesReferencesResolverForHTML/ResourcesReferencesResolverForHTML.english";
 
-/* --- Applied auxiliaries ------------------------------------------------------------------------------------------ */
-import cheerio from "cheerio";
-import extractStringifiedContentFromVinylFile from "@Utils/extractStringifiedContentFromVinylFile";
-
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+import type { HTMLElement as HTML_Element } from "node-html-parser";
 import {
   Logger,
   stringifyAndFormatArbitraryValue,
+  replaceMatchesWithRegularExpressionToDynamicValue,
   createMapBasedOnOtherMap,
+  extractLastExtensionOfFileName,
   filterMap,
   appendLastFileNameExtension,
   getURI_PartWithoutFragment,
@@ -40,87 +51,109 @@ import {
   appendFragmentToURI,
   isNonEmptyString,
   isUndefined,
+  isNotUndefined,
   isNull,
   isNotNull
 } from "@yamato-daiwa/es-extensions";
-import type { WarningLog } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import type { ReplacingOfMatchesWithRegularExpressionToDynamicValue, WarningLog } from "@yamato-daiwa/es-extensions";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 class ResourcesReferencesResolverForHTML {
 
   public static localization: ResourcesReferencesResolverForHTML.Localization =
-      AssetsPathsAliasesResolverForHTML_Localization__English;
-
-  private readonly compiledHTML_File: MarkupProcessor.MarkupVinylFile;
-  private readonly HTML_FileContentCheerioCapturing: cheerio.Root;
-
-  private readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
-  private readonly actualPublicDirectoryAbsolutePath: string | null;
+      assetsPathsAliasesResolverForHTML_Localization__english;
 
 
-  public static resolve(
-    compiledHTML_File: MarkupProcessor.MarkupVinylFile,
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
-  ): string {
+  private static readonly aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap:
+      ResourcesReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesReferencesResolverForHTML.AliasedURI, ResourcesReferencesResolverForHTML.OutputFileAbsolutePath>();
+  private static markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
+      new Map<string, string>();
 
-      return new ResourcesReferencesResolverForHTML(compiledHTML_File, masterConfigRepresentative).
+  private static readonly aliasedURIsAndOutputStylesFilesAbsolutePathsCorrespondenceMap:
+      ResourcesReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesReferencesResolverForHTML.AliasedURI, ResourcesReferencesResolverForHTML.OutputFileAbsolutePath>();
+  private static stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
+      new Map<string, string>();
 
-          resolveInternalLinks().
-          resolveStylesheetsPathsAliases().
-          resoleScriptsPathsAliases().
-          resolveImagesPathsAliases().
-          resolveVideosPathsAliases().
-          resolveAudiosPathsAliases().
+  private static readonly aliasedURIsAndOutputScriptsFilesAbsolutePathsCorrespondenceMap:
+      ResourcesReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesReferencesResolverForHTML.AliasedURI, ResourcesReferencesResolverForHTML.OutputFileAbsolutePath>();
+  private static scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
+      new Map<string, string>();
 
-          /* [ Theory ] Without '{ decodeEntities: false }' all ideographic characters will be converted to entities
-           * like '&#x6587;' what could cause some troubles during post-processing of HTML code. */
-          HTML_FileContentCheerioCapturing.
-          html({ decodeEntities: false });
+  private static readonly aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap:
+      ResourcesReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesReferencesResolverForHTML.AliasedURI, ResourcesReferencesResolverForHTML.OutputFileAbsolutePath>();
+  private static imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
+      new Map<string, string>();
+
+  private static readonly aliasedURIsAndOutputVideosFilesAbsolutePathsCorrespondenceMap:
+      ResourcesReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesReferencesResolverForHTML.AliasedURI, ResourcesReferencesResolverForHTML.OutputFileAbsolutePath>();
+  private static videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
+      new Map<string, string>();
+
+  private static readonly aliasedURIsAndOutputAudiosFilesAbsolutePathsCorrespondenceMap:
+      ResourcesReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesReferencesResolverForHTML.AliasedURI, ResourcesReferencesResolverForHTML.OutputFileAbsolutePath>();
+  private static audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
+      new Map<string, string>();
+
+
+  private readonly rootHTML_Element: HTML_Element;
+  private readonly projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+  private readonly markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
+
+  private readonly contextHTML_FileOutputDirectoryAbsolutePath: string;
+  private readonly publicDirectoryAbsolutePath?: string;
+
+  private readonly plainCopyingSettingsRepresentative?: PlainCopyingSettingsRepresentative;
+
+
+  public static resolve(sourceData: ResourcesReferencesResolverForHTML.SourceData): HTML_Element {
+
+    return new ResourcesReferencesResolverForHTML(sourceData).
+
+        resolveInternalLinks().
+        resolveStylesheetsAliasedPaths().
+        resolveScriptsPathsAliases().
+
+        resolveImagesAliasedPaths().
+        resolveVideosAliasedPaths().
+        resolveAudiosAliasedPaths().
+
+        rootHTML_Element;
 
   }
 
 
   private constructor(
-    compiledHTML_File: MarkupProcessor.MarkupVinylFile,
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    {
+      rootHTML_Element,
+      projectBuildingMasterConfigRepresentative,
+      markupProcessingSettingsRepresentative,
+      absolutePathOfOutputDirectoryForTargetHTML_File
+    }: ResourcesReferencesResolverForHTML.SourceData
   ) {
 
-    this.compiledHTML_File = compiledHTML_File;
-    this.HTML_FileContentCheerioCapturing = cheerio.load(extractStringifiedContentFromVinylFile(compiledHTML_File));
-    this.masterConfigRepresentative = masterConfigRepresentative;
-    this.actualPublicDirectoryAbsolutePath = masterConfigRepresentative.markupProcessingSettingsRepresentative?.
-        getAbsolutePublicPathIfMustToResolveReferencesToAbsolutePath() ?? null;
+    this.rootHTML_Element = rootHTML_Element;
+    this.projectBuildingMasterConfigRepresentative = projectBuildingMasterConfigRepresentative;
+    this.markupProcessingSettingsRepresentative = markupProcessingSettingsRepresentative;
 
-  }
+    this.contextHTML_FileOutputDirectoryAbsolutePath = absolutePathOfOutputDirectoryForTargetHTML_File;
 
-
-  private resolveInternalLinks(): this {
-
-    if (isUndefined(this.masterConfigRepresentative.markupProcessingSettingsRepresentative)) {
-      return this;
+    if (isNotNull(this.projectBuildingMasterConfigRepresentative.actualPublicDirectoryAbsolutePath)) {
+      this.publicDirectoryAbsolutePath = this.projectBuildingMasterConfigRepresentative.actualPublicDirectoryAbsolutePath;
     }
 
+    this.plainCopyingSettingsRepresentative = projectBuildingMasterConfigRepresentative.plainCopyingSettingsRepresentative;
 
-    const markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative =
-        this.masterConfigRepresentative.markupProcessingSettingsRepresentative;
-
-    for (const anchorElement of Array.from(this.HTML_FileContentCheerioCapturing("a"))) {
-
-      const anchorCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(anchorElement);
-      const hrefAttributeValue: string | undefined = anchorCheerioElement.attr("href");
-
-      if (!isNonEmptyString(hrefAttributeValue)) {
-        continue;
-      }
-
-
-      const resolvedURI: string | null = this.resolveOutputResourceFileAbsolutePathIfPossible({
-        pickedPathOfTargetResourceFile: hrefAttributeValue,
-        prefixOfAliasOfTopDirectoryOfResourcesGroup: markupProcessingSettingsRepresentative.prefixOfEntryPointsGroupReference,
-
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-            markupProcessingSettingsRepresentative.entryPointsGroupsNormalizedSettingsMappedByReferences,
+    if (ResourcesReferencesResolverForHTML.markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+      ResourcesReferencesResolverForHTML.markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+          createMapBasedOnOtherMap(
+            this.markupProcessingSettingsRepresentative.entryPointsGroupsNormalizedSettingsMappedByReferences,
             (
               pathAlias: string, markupEntryPointsGroupNormalizedSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup
             ): [ string, string ] => [
@@ -129,21 +162,101 @@ class ResourcesReferencesResolverForHTML {
                   markupEntryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
                   markupEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
             ]
-        ),
-        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: markupProcessingSettingsRepresentative.
-            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-            markupProcessingSettingsRepresentative.sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
-        fileTypeForLogging__singularForm: markupProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
-        fileTypeForLogging__pluralForm: markupProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+        );
+    }
+
+    if (ResourcesReferencesResolverForHTML.stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+      ResourcesReferencesResolverForHTML.stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+          createMapBasedOnOtherMap(
+            projectBuildingMasterConfigRepresentative.stylesProcessingSettingsRepresentative?.
+                entryPointsGroupsNormalizedSettingsMappedByReferences ?? new Map(),
+            (
+              pathAlias: string, stylesEntryPointsGroupNormalizedSettings: StylesProcessingSettings__Normalized.EntryPointsGroup
+            ): [ string, string ] => [
+              pathAlias,
+              stylesEntryPointsGroupNormalizedSettings.isSingeEntryPointGroup ?
+                  stylesEntryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
+                  stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
+            ]
+          );
+    }
+
+    if (
+      ResourcesReferencesResolverForHTML.scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0
+    ) {
+      ResourcesReferencesResolverForHTML.scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+          createMapBasedOnOtherMap(
+            projectBuildingMasterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative?.
+                entryPointsGroupsNormalizedSettingsMappedByReferences ?? new Map(),
+            (
+              pathAlias: string,
+              entryPointsGroupNormalizedSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
+            ): [ string, string ] => [
+              pathAlias,
+              entryPointsGroupNormalizedSettings.isSingeEntryPointGroup ?
+                  entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
+                  entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
+            ]
+          );
+    }
+
+    if (ResourcesReferencesResolverForHTML.imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+      ResourcesReferencesResolverForHTML.imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+          createMapBasedOnOtherMap(
+            projectBuildingMasterConfigRepresentative.imagesProcessingSettingsRepresentative?.
+                relevantAssetsGroupsSettingsMappedBySourceFilesTopDirectoryAliasName ?? new Map(),
+            (
+              pathAlias: string, stylesEntryPointsGroupNormalizedSettings: ImagesProcessingSettings__Normalized.AssetsGroup
+            ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
+          );
+    }
+
+
+    if (ResourcesReferencesResolverForHTML.videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+      ResourcesReferencesResolverForHTML.videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+          createMapBasedOnOtherMap(
+            projectBuildingMasterConfigRepresentative.fontsProcessingSettingsRepresentative?.
+                relevantAssetsGroupsSettingsMappedBySourceFilesTopDirectoryAliasName ?? new Map(),
+            (
+              pathAlias: string, stylesEntryPointsGroupNormalizedSettings: VideosProcessingSettings__Normalized.AssetsGroup
+            ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
+          );
+    }
+
+    if (ResourcesReferencesResolverForHTML.audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+
+      ResourcesReferencesResolverForHTML.audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+          createMapBasedOnOtherMap(
+            projectBuildingMasterConfigRepresentative.audiosProcessingSettingsRepresentative?.
+                relevantAssetsGroupsSettingsMappedBySourceFilesTopDirectoryAliasName ?? new Map(),
+            (
+              pathAlias: string, stylesEntryPointsGroupNormalizedSettings: AudiosProcessingSettings__Normalized.AssetsGroup
+            ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
+          );
+    }
+
+  }
+
+
+  /* ━━━ By files type ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ─── HTML Files ──────────────────────────────────────────────────────────────────────────────────────────────── */
+  private resolveInternalLinks(): this {
+
+    for (const anchorElement of this.rootHTML_Element.querySelectorAll("a")) {
+
+      this.resolveInternalLink({
+        targetHTML_Element: anchorElement,
+        targetHTML_ElementAttributeName: "href"
       });
 
-      if (isNull(resolvedURI)) {
-        continue;
-      }
+    }
 
+    for (const iFrameElement of this.rootHTML_Element.querySelectorAll("iframe")) {
 
-      anchorCheerioElement.attr("href", this.buildResourceFileFinalPath(resolvedURI));
+      this.resolveInternalLink({
+        targetHTML_Element: iFrameElement,
+        targetHTML_ElementAttributeName: "src"
+      });
 
     }
 
@@ -151,429 +264,761 @@ class ResourcesReferencesResolverForHTML {
 
   }
 
-  private resolveStylesheetsPathsAliases(): this {
+  private resolveInternalLink(
+    {
+      targetHTML_Element,
+      targetHTML_ElementAttributeName
+    }: Readonly<{
+      targetHTML_Element: HTML_Element;
+      targetHTML_ElementAttributeName: string;
+    }>
+  ): void {
 
-    if (isUndefined(this.masterConfigRepresentative.stylesProcessingSettingsRepresentative)) {
+    const attributeValueContainingAliasedURI: string | undefined = targetHTML_Element.
+        getAttribute(targetHTML_ElementAttributeName);
+
+    if (!isNonEmptyString(attributeValueContainingAliasedURI)) {
+      return;
+    }
+
+
+    let resolvedAbsolutePath: string | null = ResourcesReferencesResolverForHTML.
+        aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap.
+        get(attributeValueContainingAliasedURI) ??
+        null;
+
+    if (isNotNull(resolvedAbsolutePath)) {
+      targetHTML_Element.setAttribute(targetHTML_ElementAttributeName, this.buildResourceFileFinalPath(resolvedAbsolutePath));
+      return;
+    }
+
+
+    const segmentsOfPickedPath: Array<string> = ImprovedPath.explodePathToSegments(attributeValueContainingAliasedURI);
+    const firstSegmentOfPickedPath: string | undefined = segmentsOfPickedPath[0];
+
+    if (!isNonEmptyString(firstSegmentOfPickedPath)) {
+      return;
+    }
+
+
+    if (
+      isNotUndefined(this.plainCopyingSettingsRepresentative) &&
+          firstSegmentOfPickedPath.startsWith(PLAIN_COPIED_FILES_ALIAS_PREFIX)
+    ) {
+
+      resolvedAbsolutePath = this.plainCopyingSettingsRepresentative.
+          getSourceFileAbsolutePathByAliasedPath(segmentsOfPickedPath);
+
+      if (isNull(resolvedAbsolutePath)) {
+        return;
+      }
+
+
+      ResourcesReferencesResolverForHTML.aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap.
+          set(attributeValueContainingAliasedURI, resolvedAbsolutePath);
+
+      targetHTML_Element.setAttribute(targetHTML_ElementAttributeName, this.buildResourceFileFinalPath(resolvedAbsolutePath));
+
+      return;
+
+    }
+
+
+    resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
+      pickedPathOfTargetResourceFile: attributeValueContainingAliasedURI,
+      sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap:
+          ResourcesReferencesResolverForHTML.markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
+      supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: this.markupProcessingSettingsRepresentative.
+          supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+      sourceAndOutputFilesAbsolutePathsCorrespondenceMap: MarkupProcessingSharedState.
+          entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap,
+      fileTypeForLogging__singularForm: this.markupProcessingSettingsRepresentative.
+          TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
+      fileTypeForLogging__pluralForm: this.markupProcessingSettingsRepresentative.
+          TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+    });
+
+    if (isNull(resolvedAbsolutePath)) {
+      return;
+    }
+
+
+    ResourcesReferencesResolverForHTML.aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap.
+        set(attributeValueContainingAliasedURI, resolvedAbsolutePath);
+
+    targetHTML_Element.setAttribute(targetHTML_ElementAttributeName, this.buildResourceFileFinalPath(resolvedAbsolutePath));
+
+  }
+
+
+  /* ─── Stylesheets ──────────────────────────────────────────────────────────────────────────────────────────────── */
+  private resolveStylesheetsAliasedPaths(): this {
+
+    const stylesProcessingSettingsRepresentative: StylesProcessingSettingsRepresentative | undefined =
+        this.projectBuildingMasterConfigRepresentative.stylesProcessingSettingsRepresentative;
+
+    if (isUndefined(this.plainCopyingSettingsRepresentative) && isUndefined(stylesProcessingSettingsRepresentative)) {
       return this;
     }
 
 
-    const stylesProcessingSettingsRepresentative: StylesProcessingSettingsRepresentative =
-        this.masterConfigRepresentative.stylesProcessingSettingsRepresentative;
+    for (const linkElement of this.rootHTML_Element.querySelectorAll("link[rel='stylesheet']")) {
 
-    for (const linkElement of Array.from(this.HTML_FileContentCheerioCapturing("link[rel='stylesheet']"))) {
-
-      const linkCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(linkElement);
-      const hrefAttributeValue: string | undefined = linkCheerioElement.attr("href");
+      const hrefAttributeValue: string | undefined = linkElement.getAttribute("href");
 
       if (!isNonEmptyString(hrefAttributeValue)) {
         continue;
       }
 
 
-      const resolvedOutputAbsolutePathOfStylesheet: string | null = this.resolveOutputResourceFileAbsolutePathIfPossible({
-        pickedPathOfTargetResourceFile: hrefAttributeValue,
-        prefixOfAliasOfTopDirectoryOfResourcesGroup: stylesProcessingSettingsRepresentative.
-            prefixOfAliasOfTopDirectoryOfEntryPointsGroup,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          stylesProcessingSettingsRepresentative.entryPointsGroupsNormalizedSettingsMappedByPathAliases,
-          (
-            pathAlias: string, stylesEntryPointsGroupNormalizedSettings: StylesProcessingSettings__Normalized.EntryPointsGroup
-          ): [ string, string ] => [
-            pathAlias,
-            stylesEntryPointsGroupNormalizedSettings.isSingeEntryPointGroup ?
-                stylesEntryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
-                stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
-          ]
-        ),
-        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: stylesProcessingSettingsRepresentative.
-            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-            stylesProcessingSettingsRepresentative.sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
-        fileTypeForLogging__singularForm: stylesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
-        fileTypeForLogging__pluralForm: stylesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
-      });
+      let resolvedAbsolutePath: string | null = ResourcesReferencesResolverForHTML.
+          aliasedURIsAndOutputStylesFilesAbsolutePathsCorrespondenceMap.
+          get(hrefAttributeValue) ??
+          null;
 
-      if (isNull(resolvedOutputAbsolutePathOfStylesheet)) {
+      if (isNotNull(resolvedAbsolutePath)) {
+        linkElement.setAttribute("href", this.buildResourceFileFinalPath(resolvedAbsolutePath));
         continue;
       }
 
 
-      linkCheerioElement.attr("href", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfStylesheet));
+      const segmentsOfPickedPath: Array<string> = ImprovedPath.explodePathToSegments(hrefAttributeValue);
+      const firstSegmentOfPickedPath: string | undefined = segmentsOfPickedPath[0];
+
+      if (!isNonEmptyString(firstSegmentOfPickedPath)) {
+        continue;
+      }
+
+
+      if (
+        isNotUndefined(this.plainCopyingSettingsRepresentative) &&
+            firstSegmentOfPickedPath.startsWith(PLAIN_COPIED_FILES_ALIAS_PREFIX)
+      ) {
+
+        resolvedAbsolutePath = this.plainCopyingSettingsRepresentative.
+            getSourceFileAbsolutePathByAliasedPath(segmentsOfPickedPath);
+
+        if (isNull(resolvedAbsolutePath)) {
+          continue;
+        }
+
+
+        ResourcesReferencesResolverForHTML.
+            aliasedURIsAndOutputStylesFilesAbsolutePathsCorrespondenceMap.
+            set(hrefAttributeValue, resolvedAbsolutePath);
+
+        linkElement.setAttribute("href", this.buildResourceFileFinalPath(resolvedAbsolutePath));
+
+        continue;
+
+      }
+
+
+      if (isUndefined(stylesProcessingSettingsRepresentative)) {
+        continue;
+      }
+
+
+      resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
+        pickedPathOfTargetResourceFile: hrefAttributeValue,
+        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap:
+            ResourcesReferencesResolverForHTML.stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
+        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: stylesProcessingSettingsRepresentative.
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+        sourceAndOutputFilesAbsolutePathsCorrespondenceMap: StylesProcessingSharedState.
+            entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap,
+        fileTypeForLogging__singularForm: stylesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
+        fileTypeForLogging__pluralForm: stylesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+      });
+
+      if (isNull(resolvedAbsolutePath)) {
+        continue;
+      }
+
+
+      ResourcesReferencesResolverForHTML.
+          aliasedURIsAndOutputStylesFilesAbsolutePathsCorrespondenceMap.
+          set(hrefAttributeValue, resolvedAbsolutePath);
+
+      linkElement.setAttribute("href", this.buildResourceFileFinalPath(resolvedAbsolutePath));
 
     }
 
-
     return this;
+
   }
 
-  private resoleScriptsPathsAliases(): this {
 
-    if (isUndefined(this.masterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative)) {
+  /* ─── Scripts ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+  private resolveScriptsPathsAliases(): this {
+
+    const ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative | undefined =
+        this.projectBuildingMasterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative;
+
+    if (isUndefined(this.plainCopyingSettingsRepresentative) && isUndefined(ECMA_ScriptLogicProcessingConfigRepresentative)) {
       return this;
     }
 
 
-    const ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative =
-        this.masterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative;
+    for (const scriptElement of this.rootHTML_Element.querySelectorAll("script")) {
 
-    for (const scriptElement of Array.from(this.HTML_FileContentCheerioCapturing("script"))) {
-
-      const scriptCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(scriptElement);
-      const srcAttributeValue: string | undefined = scriptCheerioElement.attr("src");
+      const srcAttributeValue: string | undefined = scriptElement.getAttribute("src");
 
       if (!isNonEmptyString(srcAttributeValue)) {
         continue;
       }
 
 
-      const resolvedOutputAbsolutePathOfScript: string | null = this.resolveOutputResourceFileAbsolutePathIfPossible({
+      let resolvedAbsolutePath: string | null = ResourcesReferencesResolverForHTML.
+          aliasedURIsAndOutputScriptsFilesAbsolutePathsCorrespondenceMap.
+          get(srcAttributeValue) ??
+          null;
+
+      if (isNotNull(resolvedAbsolutePath)) {
+        scriptElement.setAttribute("src", this.buildResourceFileFinalPath(resolvedAbsolutePath));
+        continue;
+      }
+
+
+      const segmentsOfPickedPath: Array<string> = ImprovedPath.explodePathToSegments(srcAttributeValue);
+      const firstSegmentOfPickedPath: string | undefined = segmentsOfPickedPath[0];
+
+      if (!isNonEmptyString(firstSegmentOfPickedPath)) {
+        continue;
+      }
+
+
+      if (
+        isNotUndefined(this.plainCopyingSettingsRepresentative) &&
+            firstSegmentOfPickedPath.startsWith(PLAIN_COPIED_FILES_ALIAS_PREFIX)
+      ) {
+
+        resolvedAbsolutePath = this.plainCopyingSettingsRepresentative.
+            getSourceFileAbsolutePathByAliasedPath(segmentsOfPickedPath);
+
+        if (isNull(resolvedAbsolutePath)) {
+          continue;
+        }
+
+
+        ResourcesReferencesResolverForHTML.
+            aliasedURIsAndOutputScriptsFilesAbsolutePathsCorrespondenceMap.
+            set(srcAttributeValue, resolvedAbsolutePath);
+
+        scriptElement.setAttribute("src", this.buildResourceFileFinalPath(resolvedAbsolutePath));
+
+        continue;
+
+      }
+
+
+      if (isUndefined(ECMA_ScriptLogicProcessingConfigRepresentative)) {
+        continue;
+      }
+
+
+      resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
         pickedPathOfTargetResourceFile: srcAttributeValue,
-        prefixOfAliasOfTopDirectoryOfResourcesGroup: ECMA_ScriptLogicProcessingConfigRepresentative.
-            prefixOfAliasOfTopDirectoryOfEntryPointsGroup,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          ECMA_ScriptLogicProcessingConfigRepresentative.entryPointsGroupsNormalizedSettingsMappedByPathAliases,
-          (
-            pathAlias: string,
-            entryPointsGroupNormalizedSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
-          ): [ string, string ] => [
-            pathAlias,
-            entryPointsGroupNormalizedSettings.isSingeEntryPointGroup ?
-                entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors[0] :
-                entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
-          ]
-        ),
+        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesReferencesResolverForHTML.
+            scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
         supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
             ECMA_ScriptLogicProcessingConfigRepresentative.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
         sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-            ECMA_ScriptLogicProcessingConfigRepresentative.entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+            ECMA_ScriptLogicProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
         fileTypeForLogging__singularForm: ECMA_ScriptLogicProcessingConfigRepresentative.
             TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
         fileTypeForLogging__pluralForm: ECMA_ScriptLogicProcessingConfigRepresentative.
             TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
       });
 
-      if (isNull(resolvedOutputAbsolutePathOfScript)) {
+      if (isNull(resolvedAbsolutePath)) {
         continue;
       }
 
 
-      scriptCheerioElement.attr("src", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfScript));
+      ResourcesReferencesResolverForHTML.
+          aliasedURIsAndOutputScriptsFilesAbsolutePathsCorrespondenceMap.
+          set(srcAttributeValue, resolvedAbsolutePath);
+
+      scriptElement.setAttribute("src", this.buildResourceFileFinalPath(resolvedAbsolutePath));
 
     }
 
-
     return this;
+
   }
 
-  private resolveImagesPathsAliases(): this {
 
-    if (isUndefined(this.masterConfigRepresentative.imagesProcessingSettingsRepresentative)) {
+  /* ─── Images ───────────────────────────────────────────────────────────────────────────────────────────────────── */
+  private resolveImagesAliasedPaths(): this {
+
+    const imagesProcessingSettingsRepresentative: ImagesProcessingSettingsRepresentative | undefined =
+        this.projectBuildingMasterConfigRepresentative.imagesProcessingSettingsRepresentative;
+
+    if (isUndefined(this.plainCopyingSettingsRepresentative) && isUndefined(imagesProcessingSettingsRepresentative)) {
       return this;
     }
 
 
-    const imagesProcessingConfigRepresentative: ImagesProcessingSettingsRepresentative =
-        this.masterConfigRepresentative.imagesProcessingSettingsRepresentative;
+    for (const imgElement of this.rootHTML_Element.querySelectorAll("img")) {
 
-    for (const imageElement of Array.from(this.HTML_FileContentCheerioCapturing("img"))) {
-
-      const imageCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(imageElement);
-      const srcAttributeValue: string | undefined = imageCheerioElement.attr("src");
-
-      if (!isNonEmptyString(srcAttributeValue)) {
-        continue;
-      }
-
-
-      const resolvedOutputAbsolutePathOfImage: string | null = this.resolveOutputImageFileAbsolutePathIfPossible({
-        pickedPathOfTargetResourceFile: srcAttributeValue, imagesProcessingConfigRepresentative
+      this.resoleAliasedPathForImageLikeElement({
+        targetHTML_Element: imgElement,
+        targetHTML_ElementAttributeName: "src"
       });
-
-      if (isNull(resolvedOutputAbsolutePathOfImage)) {
-        continue;
-      }
-
-
-      imageCheerioElement.attr("src", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfImage));
 
     }
 
-    for (const sourceElement of Array.from(this.HTML_FileContentCheerioCapturing("picture>source"))) {
+    for (const sourceElement of this.rootHTML_Element.querySelectorAll("picture > source")) {
 
-      const sourceCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(sourceElement);
-      const srcsetAttributeValue: string | undefined = sourceCheerioElement.attr("srcset");
-
-      if (!isNonEmptyString(srcsetAttributeValue)) {
-        continue;
-      }
-
-
-      const resolvedOutputAbsolutePathOfImage: string | null = this.resolveOutputImageFileAbsolutePathIfPossible({
-        pickedPathOfTargetResourceFile: srcsetAttributeValue, imagesProcessingConfigRepresentative
+      this.resoleAliasedPathForImageLikeElement({
+        targetHTML_Element: sourceElement,
+        targetHTML_ElementAttributeName: "srcset"
       });
-
-      if (isNull(resolvedOutputAbsolutePathOfImage)) {
-        continue;
-      }
-
-
-      sourceCheerioElement.attr("srcset", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfImage));
 
     }
 
-    for (const linkElement of Array.from(this.HTML_FileContentCheerioCapturing("link[type='image/x-icon']"))) {
+    for (const linkElement of this.rootHTML_Element.querySelectorAll("link[type='image/x-icon']")) {
 
-      const linkCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(linkElement);
-      const hrefAttributeValue: string | undefined = linkCheerioElement.attr("href");
-
-      if (isUndefined(hrefAttributeValue)) {
-        continue;
-      }
-
-
-      const imageResolvedOutputAbsolutePath: string | null = this.resolveOutputImageFileAbsolutePathIfPossible({
-        pickedPathOfTargetResourceFile: hrefAttributeValue, imagesProcessingConfigRepresentative
+      this.resoleAliasedPathForImageLikeElement({
+        targetHTML_Element: linkElement,
+        targetHTML_ElementAttributeName: "href"
       });
 
-      if (isNull(imageResolvedOutputAbsolutePath)) {
-        continue;
-      }
+    }
+
+    /* [ Theory ] Because CSS regular expression has limited functionality it is impossible to specify the optional
+    *    whitespace after `background:` or `background-image:`. https://stackoverflow.com/a/78140136/4818123 */
+    for (
+      const variadicElement of
+          this.rootHTML_Element.querySelectorAll("[style*=\"background: url(\"]").
+            concat(this.rootHTML_Element.querySelectorAll("[style*=\"background:url(\"]")).
+            concat(this.rootHTML_Element.querySelectorAll("[style*=\"background-image: url(\"]")).
+            concat(this.rootHTML_Element.querySelectorAll("[style*=\"background-image:url(\"]"))
+    ) {
+
+      const updatedStyleAttributeValue: string = replaceMatchesWithRegularExpressionToDynamicValue({
+        targetString: variadicElement.getAttribute("style") ?? "",
+        regularExpressionWithCapturingGroups: /url\(["']?(?<possiblyAliasedPath>.+?)["']?\);?/gu,
+        replacer: (
+          matching: ReplacingOfMatchesWithRegularExpressionToDynamicValue.Matching<
+            Readonly<{ possiblyAliasedPath: string; }>,
+            Readonly<{ [1]: string; }>
+          >
+        ): string | null => {
+
+          const possiblyAliasedPath: string = matching.namedCapturingGroups.possiblyAliasedPath;
+
+          let resolvedAbsolutePath: string | null = ResourcesReferencesResolverForHTML.
+              aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
+              get(possiblyAliasedPath) ??
+              null;
+
+          if (isNotNull(resolvedAbsolutePath)) {
+            return `url("${ this.buildResourceFileFinalPath(resolvedAbsolutePath) }");`;
+          }
 
 
-      linkCheerioElement.attr("href", this.buildResourceFileFinalPath(imageResolvedOutputAbsolutePath));
+          const segmentsOfPickedPath: Array<string> = ImprovedPath.explodePathToSegments(possiblyAliasedPath);
+          const firstSegmentOfPickedPath: string | undefined = segmentsOfPickedPath[0];
+
+          if (!isNonEmptyString(firstSegmentOfPickedPath)) {
+            return null;
+          }
+
+
+          if (
+            isNotUndefined(this.plainCopyingSettingsRepresentative) &&
+                firstSegmentOfPickedPath.startsWith(PLAIN_COPIED_FILES_ALIAS_PREFIX)
+          ) {
+
+            resolvedAbsolutePath = this.plainCopyingSettingsRepresentative.
+                getSourceFileAbsolutePathByAliasedPath(segmentsOfPickedPath);
+
+            if (isNull(resolvedAbsolutePath)) {
+              return null;
+            }
+
+
+            ResourcesReferencesResolverForHTML.
+                aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
+                set(possiblyAliasedPath, resolvedAbsolutePath);
+
+            return `url("${ this.buildResourceFileFinalPath(resolvedAbsolutePath) }");`;
+
+          }
+
+
+          if (isUndefined(imagesProcessingSettingsRepresentative)) {
+            return null;
+          }
+
+
+          resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
+            pickedPathOfTargetResourceFile: possiblyAliasedPath,
+            sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesReferencesResolverForHTML.
+                imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
+                imagesProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+            sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+                ImagesProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+            fileTypeForLogging__singularForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
+            fileTypeForLogging__pluralForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+          });
+
+
+          if (isNull(resolvedAbsolutePath)) {
+            return null;
+          }
+
+
+          ResourcesReferencesResolverForHTML.
+              aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
+              set(possiblyAliasedPath, resolvedAbsolutePath);
+
+          return `url("${ this.buildResourceFileFinalPath(resolvedAbsolutePath) }");`;
+
+        }
+      });
+
+      variadicElement.setAttribute("style", updatedStyleAttributeValue);
 
     }
+
 
     return this;
+
   }
 
-  private resolveOutputImageFileAbsolutePathIfPossible(
+  private resoleAliasedPathForImageLikeElement(
     {
-      pickedPathOfTargetResourceFile,
-      imagesProcessingConfigRepresentative
-    }: {
-      pickedPathOfTargetResourceFile: string;
-      imagesProcessingConfigRepresentative: ImagesProcessingSettingsRepresentative;
+      targetHTML_Element,
+      targetHTML_ElementAttributeName
+    }: Readonly<{
+      targetHTML_Element: HTML_Element;
+      targetHTML_ElementAttributeName: string;
+    }>
+  ): void {
+
+    const targetHTML_ElementAttributeValue: string | undefined = targetHTML_Element.
+        getAttribute(targetHTML_ElementAttributeName);
+
+    if (!isNonEmptyString(targetHTML_ElementAttributeValue)) {
+      return;
     }
-  ): string | null {
-    return this.resolveOutputResourceFileAbsolutePathIfPossible({
-      pickedPathOfTargetResourceFile,
-      prefixOfAliasOfTopDirectoryOfResourcesGroup: imagesProcessingConfigRepresentative.
-          prefixOfAliasOfTopDirectoryOfEntryPointsGroup,
-      sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          imagesProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
-          (
-              pathAlias: string, stylesEntryPointsGroupNormalizedSettings: ImagesProcessingSettings__Normalized.AssetsGroup
-          ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
-      ),
+
+
+    let resolvedAbsolutePath: string | null = ResourcesReferencesResolverForHTML.
+        aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
+        get(targetHTML_ElementAttributeName) ??
+        null;
+
+    if (isNotNull(resolvedAbsolutePath)) {
+      targetHTML_Element.setAttribute(targetHTML_ElementAttributeName, this.buildResourceFileFinalPath(resolvedAbsolutePath));
+      return;
+    }
+
+    const segmentsOfPickedPath: Array<string> = ImprovedPath.explodePathToSegments(targetHTML_ElementAttributeValue);
+    const firstSegmentOfPickedPath: string | undefined = segmentsOfPickedPath[0];
+
+    if (!isNonEmptyString(firstSegmentOfPickedPath)) {
+      return;
+    }
+
+
+    if (
+      isNotUndefined(this.plainCopyingSettingsRepresentative) &&
+          firstSegmentOfPickedPath.startsWith(PLAIN_COPIED_FILES_ALIAS_PREFIX)
+    ) {
+
+      resolvedAbsolutePath = this.plainCopyingSettingsRepresentative.
+          getSourceFileAbsolutePathByAliasedPath(segmentsOfPickedPath);
+
+      if (isNull(resolvedAbsolutePath)) {
+        return;
+      }
+
+
+      ResourcesReferencesResolverForHTML.
+          aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
+          set(targetHTML_ElementAttributeValue, resolvedAbsolutePath);
+
+      targetHTML_Element.setAttribute(targetHTML_ElementAttributeName, this.buildResourceFileFinalPath(resolvedAbsolutePath));
+
+      return;
+
+    }
+
+
+    const imagesProcessingSettingsRepresentative: ImagesProcessingSettingsRepresentative | undefined =
+        this.projectBuildingMasterConfigRepresentative.imagesProcessingSettingsRepresentative;
+
+    if (isUndefined(imagesProcessingSettingsRepresentative)) {
+      return;
+    }
+
+
+    resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
+      pickedPathOfTargetResourceFile: targetHTML_ElementAttributeValue,
+      sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesReferencesResolverForHTML.
+          imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
-      imagesProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+          imagesProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-      imagesProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-      fileTypeForLogging__singularForm: imagesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
-      fileTypeForLogging__pluralForm: imagesProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+          ImagesProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+      fileTypeForLogging__singularForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
+      fileTypeForLogging__pluralForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
     });
+
+    if (isNull(resolvedAbsolutePath)) {
+      return;
+    }
+
+
+    ResourcesReferencesResolverForHTML.
+        aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
+        set(targetHTML_ElementAttributeValue, resolvedAbsolutePath);
+
+    targetHTML_Element.setAttribute(targetHTML_ElementAttributeName, this.buildResourceFileFinalPath(resolvedAbsolutePath));
+
   }
 
-  private resolveVideosPathsAliases(): this {
+  /* ─── Videos ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+  private resolveVideosAliasedPaths(): this {
 
-    if (isUndefined(this.masterConfigRepresentative.videosProcessingSettingsRepresentative)) {
+    const videosProcessingSettingsRepresentative: VideosProcessingSettingsRepresentative | undefined =
+        this.projectBuildingMasterConfigRepresentative.videosProcessingSettingsRepresentative;
+
+    if (isUndefined(this.plainCopyingSettingsRepresentative) && isUndefined(videosProcessingSettingsRepresentative)) {
       return this;
     }
 
 
-    const videosProcessingConfigRepresentative: VideosProcessingSettingsRepresentative =
-        this.masterConfigRepresentative.videosProcessingSettingsRepresentative;
+    for (const sourceElement of this.rootHTML_Element.querySelectorAll("video > source")) {
 
-    for (const sourceElement of Array.from(this.HTML_FileContentCheerioCapturing("video > source"))) {
-
-      const sourceCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(sourceElement);
-      const srcAttributeValue: string | undefined = sourceCheerioElement.attr("src");
+      const srcAttributeValue: string | undefined = sourceElement.getAttribute("src");
 
       if (!isNonEmptyString(srcAttributeValue)) {
         continue;
       }
 
 
-      const resolvedOutputAbsolutePathOfVideo: string | null = this.resolveOutputResourceFileAbsolutePathIfPossible({
-        pickedPathOfTargetResourceFile: srcAttributeValue,
-        prefixOfAliasOfTopDirectoryOfResourcesGroup: videosProcessingConfigRepresentative.
-            prefixOfAliasOfTopDirectoryOfEntryPointsGroup,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          videosProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
-          (
-            pathAlias: string, stylesEntryPointsGroupNormalizedSettings: VideosProcessingSettings__Normalized.AssetsGroup
-          ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
-        ),
-        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
-            videosProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-            videosProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-        fileTypeForLogging__singularForm: videosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM,
-        fileTypeForLogging__pluralForm: videosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
-      });
+      let resolvedAbsolutePath: string | null = ResourcesReferencesResolverForHTML.
+          aliasedURIsAndOutputVideosFilesAbsolutePathsCorrespondenceMap.
+          get(srcAttributeValue) ??
+          null;
 
-      if (isNull(resolvedOutputAbsolutePathOfVideo)) {
+      if (isNotNull(resolvedAbsolutePath)) {
+        sourceElement.setAttribute("src", this.buildResourceFileFinalPath(resolvedAbsolutePath));
         continue;
       }
 
 
-      sourceCheerioElement.attr("src", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfVideo));
+      const segmentsOfPickedPath: Array<string> = ImprovedPath.explodePathToSegments(srcAttributeValue);
+      const firstSegmentOfPickedPath: string | undefined = segmentsOfPickedPath[0];
+
+      if (!isNonEmptyString(firstSegmentOfPickedPath)) {
+        continue;
+      }
+
+
+      if (
+        isNotUndefined(this.plainCopyingSettingsRepresentative) &&
+            firstSegmentOfPickedPath.startsWith(PLAIN_COPIED_FILES_ALIAS_PREFIX)
+      ) {
+
+        resolvedAbsolutePath = this.plainCopyingSettingsRepresentative.
+            getSourceFileAbsolutePathByAliasedPath(segmentsOfPickedPath);
+
+        if (isNull(resolvedAbsolutePath)) {
+          continue;
+        }
+
+
+        ResourcesReferencesResolverForHTML.
+            aliasedURIsAndOutputVideosFilesAbsolutePathsCorrespondenceMap.
+            set(srcAttributeValue, resolvedAbsolutePath);
+
+        sourceElement.setAttribute("src", this.buildResourceFileFinalPath(resolvedAbsolutePath));
+
+        continue;
+
+      }
+
+
+      if (isUndefined(videosProcessingSettingsRepresentative)) {
+        continue;
+      }
+
+      resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
+        pickedPathOfTargetResourceFile: srcAttributeValue,
+        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesReferencesResolverForHTML.
+            videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
+        supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
+            videosProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+        sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+            VideosProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+        fileTypeForLogging__singularForm: videosProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM,
+        fileTypeForLogging__pluralForm: videosProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+      });
+
+      if (isNull(resolvedAbsolutePath)) {
+        continue;
+      }
+
+
+      ResourcesReferencesResolverForHTML.
+          aliasedURIsAndOutputVideosFilesAbsolutePathsCorrespondenceMap.
+          set(srcAttributeValue, resolvedAbsolutePath);
+
+      sourceElement.setAttribute("src", this.buildResourceFileFinalPath(resolvedAbsolutePath));
 
     }
 
     return this;
+
   }
 
-  private resolveAudiosPathsAliases(): this {
+  /* ─── Audios ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+  private resolveAudiosAliasedPaths(): this {
 
-    if (isUndefined(this.masterConfigRepresentative.audiosProcessingSettingsRepresentative)) {
+    const audiosProcessingSettingsRepresentative: AudiosProcessingSettingsRepresentative | undefined =
+        this.projectBuildingMasterConfigRepresentative.audiosProcessingSettingsRepresentative;
+
+    if (isUndefined(this.plainCopyingSettingsRepresentative) && isUndefined(audiosProcessingSettingsRepresentative)) {
       return this;
     }
 
 
-    const audiosProcessingConfigRepresentative: AudiosProcessingSettingsRepresentative =
-        this.masterConfigRepresentative.audiosProcessingSettingsRepresentative;
+    for (const sourceElement of this.rootHTML_Element.querySelectorAll("audio > source")) {
 
-    for (const sourceElement of Array.from(this.HTML_FileContentCheerioCapturing("audio > source"))) {
+      const srcAttributeValue: string | undefined = sourceElement.getAttribute("src");
 
-      const sourceCheerioElement: cheerio.Cheerio = this.HTML_FileContentCheerioCapturing(sourceElement);
-      const srcAttributeValue: string | undefined = sourceCheerioElement.attr("src");
-
-      if (isUndefined(srcAttributeValue)) {
+      if (!isNonEmptyString(srcAttributeValue)) {
         continue;
       }
 
 
-      const resolvedOutputAbsolutePathOfVideo: string | null = this.resolveOutputResourceFileAbsolutePathIfPossible({
+      let resolvedAbsolutePath: string | null = ResourcesReferencesResolverForHTML.
+          aliasedURIsAndOutputAudiosFilesAbsolutePathsCorrespondenceMap.
+          get(srcAttributeValue) ??
+          null;
+
+      if (isNotNull(resolvedAbsolutePath)) {
+        sourceElement.setAttribute("src", this.buildResourceFileFinalPath(resolvedAbsolutePath));
+      }
+
+
+      const segmentsOfPickedPath: Array<string> = ImprovedPath.explodePathToSegments(srcAttributeValue);
+      const firstSegmentOfPickedPath: string | undefined = segmentsOfPickedPath[0];
+
+      if (!isNonEmptyString(firstSegmentOfPickedPath)) {
+        continue;
+      }
+
+      if (
+        isNotUndefined(this.plainCopyingSettingsRepresentative) &&
+            firstSegmentOfPickedPath.startsWith(PLAIN_COPIED_FILES_ALIAS_PREFIX)
+      ) {
+
+        resolvedAbsolutePath = this.plainCopyingSettingsRepresentative.
+            getSourceFileAbsolutePathByAliasedPath(segmentsOfPickedPath);
+
+        if (isNull(resolvedAbsolutePath)) {
+          continue;
+        }
+
+
+        ResourcesReferencesResolverForHTML.
+            aliasedURIsAndOutputAudiosFilesAbsolutePathsCorrespondenceMap.
+            set(srcAttributeValue, resolvedAbsolutePath);
+
+        sourceElement.setAttribute("src", this.buildResourceFileFinalPath(resolvedAbsolutePath));
+
+        continue;
+
+      }
+
+
+      if (isUndefined(audiosProcessingSettingsRepresentative)) {
+        continue;
+      }
+
+
+      resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
         pickedPathOfTargetResourceFile: srcAttributeValue,
-        prefixOfAliasOfTopDirectoryOfResourcesGroup: audiosProcessingConfigRepresentative.
-            prefixOfAliasOfTopDirectoryOfEntryPointsGroup,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: createMapBasedOnOtherMap(
-          audiosProcessingConfigRepresentative.assetsGroupsNormalizedSettingsMappedByAssetAliases,
-          (
-              pathAlias: string, stylesEntryPointsGroupNormalizedSettings: AudiosProcessingSettings__Normalized.AssetsGroup
-          ): [ string, string ] => [ pathAlias, stylesEntryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
-        ),
+        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesReferencesResolverForHTML.
+            audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
         supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
-        audiosProcessingConfigRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+            audiosProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
         sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
-        audiosProcessingConfigRepresentative.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-        fileTypeForLogging__singularForm: audiosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
-        fileTypeForLogging__pluralForm: audiosProcessingConfigRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+            AudiosProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+        fileTypeForLogging__singularForm: audiosProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
+        fileTypeForLogging__pluralForm: audiosProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
       });
 
-      if (isNull(resolvedOutputAbsolutePathOfVideo)) {
+      if (isNull(resolvedAbsolutePath)) {
         continue;
       }
 
 
-      sourceCheerioElement.attr("src", this.buildResourceFileFinalPath(resolvedOutputAbsolutePathOfVideo));
+      ResourcesReferencesResolverForHTML.
+          aliasedURIsAndOutputAudiosFilesAbsolutePathsCorrespondenceMap.
+          set(srcAttributeValue, resolvedAbsolutePath);
+
+      sourceElement.setAttribute("src", this.buildResourceFileFinalPath(resolvedAbsolutePath));
 
     }
 
     return this;
+
   }
 
 
-  /* --- Helpers ---------------------------------------------------------------------------------------------------- */
-  /* eslint-disable-next-line class-methods-use-this --
-  * The method is being used before non-static "buildResourceFileFinalPath", so in this case it has been declared first. */
+  /* ━━━ Routines ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* eslint-disable-next-line @typescript-eslint/class-methods-use-this --
+   * The method is being used before non-static "buildResourceFileFinalPath", so in this case it has been declared first. */
   private resolveOutputResourceFileAbsolutePathIfPossible(
     {
       pickedPathOfTargetResourceFile,
-      prefixOfAliasOfTopDirectoryOfResourcesGroup,
       sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
       fileTypeForLogging__pluralForm
     }: Readonly<{
       pickedPathOfTargetResourceFile: string;
-      prefixOfAliasOfTopDirectoryOfResourcesGroup: string;
-      sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: Map<string, string>;
+      sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string>;
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
-      sourceAndOutputFilesAbsolutePathsCorrespondenceMap: Map<string, string>;
+      sourceAndOutputFilesAbsolutePathsCorrespondenceMap: ReadonlyMap<string, string>;
       fileTypeForLogging__singularForm: string;
       fileTypeForLogging__pluralForm: string;
     }>
   ): string | null {
 
-    const segmentsOfPickedPath: Array<string> = ImprovedPath.splitPathToSegments(pickedPathOfTargetResourceFile);
+    const segmentsOfPickedPath: Array<string> = ImprovedPath.explodePathToSegments(pickedPathOfTargetResourceFile);
     const firstSegmentOfPickedPath: string | undefined = segmentsOfPickedPath[0];
 
-    if (
-      isUndefined(firstSegmentOfPickedPath) ||
-      !firstSegmentOfPickedPath.startsWith(prefixOfAliasOfTopDirectoryOfResourcesGroup)
-    ) {
+    if (isUndefined(firstSegmentOfPickedPath)) {
       return null;
     }
 
 
-    const sourceFilesTopDirectoryAbsolutePathOfCurrentAlias: string | undefined =
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.get(firstSegmentOfPickedPath);
+    if (firstSegmentOfPickedPath.startsWith(PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX)) {
 
-    if (isUndefined(sourceFilesTopDirectoryAbsolutePathOfCurrentAlias)) {
+      const sourceFilesTopDirectoryAbsolutePathOfCurrentAlias: string | undefined =
+          sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.get(firstSegmentOfPickedPath);
 
-      Logger.logWarning(
-        ResourcesReferencesResolverForHTML.localization.generateUnknownResourceGroupReferenceWarningLog({
-          fileType__pluralForm: fileTypeForLogging__pluralForm,
-          firstPathSegment: firstSegmentOfPickedPath,
-          pickedPathOfTargetResourceFile,
-          formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: stringifyAndFormatArbitraryValue(
-            Array.from(sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.entries())
-          )
-        })
-      );
-
-      return null;
-
-    }
-
-
-    const sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension: string = ImprovedPath.joinPathSegments(
-      [ sourceFilesTopDirectoryAbsolutePathOfCurrentAlias, ...segmentsOfPickedPath.slice(1) ],
-      { forwardSlashOnlySeparators: true }
-    );
-
-    const explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile: string | null = ImprovedPath.
-        extractLastFilenameExtensionWithoutFirstDot(sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension);
-
-    if (
-      isNull(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile) ||
-      !supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.
-          includes(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile)
-    ) {
-
-      const possibleAbsolutePathsOfTargetSourceFileWithoutFragment: Array<string> =
-          supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.map(
-            (supportedStylesheetFileNameExtensionWithoutLeadingDot: string): string =>
-                getURI_PartWithoutFragment(
-                  appendLastFileNameExtension({
-                    targetPath: sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension,
-                    targetFileNameExtensionWithOrWithoutLeadingDot: supportedStylesheetFileNameExtensionWithoutLeadingDot,
-                    mustAppendDuplicateEvenIfTargetLastFileNameExtensionAlreadyPresentsAtSpecifiedPath: false
-                  })
-                )
-          );
-
-      const searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> = filterMap(
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
-        (sourceFileAbsolutePath: string): boolean =>
-            possibleAbsolutePathsOfTargetSourceFileWithoutFragment.includes(sourceFileAbsolutePath)
-      );
-
-      if (searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.size === 0) {
+      if (isUndefined(sourceFilesTopDirectoryAbsolutePathOfCurrentAlias)) {
 
         Logger.logWarning(
-          ResourcesReferencesResolverForHTML.localization.
-              generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog({
-                pickedPathOfTargetResourceFile,
-                fileType__singularForm: fileTypeForLogging__pluralForm,
-                checkedAbsolutePaths__formatted: stringifyAndFormatArbitraryValue(
-                  possibleAbsolutePathsOfTargetSourceFileWithoutFragment
-                )
-              })
+          ResourcesReferencesResolverForHTML.localization.generateUnknownResourceGroupReferenceWarningLog({
+            fileType__pluralForm: fileTypeForLogging__pluralForm,
+            firstPathSegment: firstSegmentOfPickedPath,
+            pickedPathOfTargetResourceFile,
+            formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: stringifyAndFormatArbitraryValue(
+                Array.from(sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.entries())
+            )
+          })
         );
 
         return null;
@@ -581,49 +1026,110 @@ class ResourcesReferencesResolverForHTML {
       }
 
 
-      return appendFragmentToURI({
-        targetURI: Array.from(searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.values())[0],
-        targetFragmentWithOrWithoutLeadingHash: getURI_Fragment({
-          targetURI: sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension,
-          withLeadingHash: false
-        }),
-        mustReplaceFragmentIfThereIsOneAlready: false
-      });
-
-    }
-
-
-    const resolvedFileOutputAbsolutePath: string | undefined = sourceAndOutputFilesAbsolutePathsCorrespondenceMap.
-        get(sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension);
-
-    if (isUndefined(resolvedFileOutputAbsolutePath)) {
-
-      Logger.logWarning(
-        ResourcesReferencesResolverForHTML.localization.generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog({
-          pickedPathOfTargetResourceFile,
-          fileType__singularForm: fileTypeForLogging__pluralForm
-        })
+      const sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension: string = ImprovedPath.joinPathSegments(
+        [ sourceFilesTopDirectoryAbsolutePathOfCurrentAlias, ...segmentsOfPickedPath.slice(1) ],
+        { alwaysForwardSlashSeparators: true }
       );
 
-      return null;
+      const explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile: string | null =
+          extractLastExtensionOfFileName({
+            targetPath: sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension,
+            withLeadingDot: false
+          });
+
+      if (
+        isNull(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile) ||
+        !supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.
+            includes(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile)
+      ) {
+
+        const possibleAbsolutePathsOfTargetSourceFileWithoutFragment: Array<string> =
+            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.map(
+              (supportedStylesheetFileNameExtensionWithoutLeadingDot: string): string =>
+                  getURI_PartWithoutFragment(
+                    appendLastFileNameExtension({
+                      targetPath: sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension,
+                      targetFileNameExtensionWithOrWithoutLeadingDot: supportedStylesheetFileNameExtensionWithoutLeadingDot,
+                      mustAppendDuplicateEvenIfTargetLastFileNameExtensionAlreadyPresentsAtSpecifiedPath: false
+                    })
+                  )
+            );
+
+        const searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> = filterMap(
+          sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
+          (sourceFileAbsolutePath: string): boolean =>
+              possibleAbsolutePathsOfTargetSourceFileWithoutFragment.includes(sourceFileAbsolutePath)
+        );
+
+        if (searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.size === 0) {
+
+          Logger.logWarning(
+            ResourcesReferencesResolverForHTML.localization.
+                generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog({
+                  pickedPathOfTargetResourceFile,
+                  fileType__singularForm: fileTypeForLogging__pluralForm,
+                  checkedAbsolutePaths__formatted: stringifyAndFormatArbitraryValue(
+                    possibleAbsolutePathsOfTargetSourceFileWithoutFragment
+                  )
+                })
+          );
+
+          return null;
+
+        }
+
+
+        return appendFragmentToURI({
+          targetURI: Array.from(searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.values())[0],
+          targetFragmentWithOrWithoutLeadingHash: getURI_Fragment({
+            targetURI: sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension,
+            withLeadingHash: false
+          }),
+          mustReplaceFragmentIfThereIsOneAlready: false
+        });
+
+      }
+
+
+      const resolvedFileOutputAbsolutePath: string | undefined = sourceAndOutputFilesAbsolutePathsCorrespondenceMap.
+          get(sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension);
+
+      if (isUndefined(resolvedFileOutputAbsolutePath)) {
+
+        Logger.logWarning(
+          ResourcesReferencesResolverForHTML.localization.generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog({
+            pickedPathOfTargetResourceFile,
+            fileType__singularForm: fileTypeForLogging__pluralForm
+          })
+        );
+
+        return null;
+
+      }
+
+
+      return resolvedFileOutputAbsolutePath;
 
     }
 
 
-    return resolvedFileOutputAbsolutePath;
+    return null;
 
   }
 
-
   private buildResourceFileFinalPath(resolvedOutputAbsolutePathOfResourceFile: string): string {
-    return isNotNull(this.actualPublicDirectoryAbsolutePath) ?
-        `/${ ImprovedPath.computeRelativePath({
-          basePath: this.actualPublicDirectoryAbsolutePath,
-          comparedPath: resolvedOutputAbsolutePathOfResourceFile
-        }) }` :
+    return isNotUndefined(this.publicDirectoryAbsolutePath) ?
+        `/${ 
+          ImprovedPath.computeRelativePath({
+            basePath: this.publicDirectoryAbsolutePath,
+            comparedPath: resolvedOutputAbsolutePathOfResourceFile,
+            alwaysForwardSlashSeparators: true
+          })
+        }` :
         ImprovedPath.computeRelativePath({
-          basePath: this.compiledHTML_File.outputDirectoryAbsolutePath,
-          comparedPath: resolvedOutputAbsolutePathOfResourceFile
+          basePath: this.contextHTML_FileOutputDirectoryAbsolutePath,
+          comparedPath: resolvedOutputAbsolutePathOfResourceFile,
+          alwaysForwardSlashSeparators: true
         });
   }
 
@@ -632,18 +1138,32 @@ class ResourcesReferencesResolverForHTML {
 
 namespace ResourcesReferencesResolverForHTML {
 
+  export type SourceData = Readonly<{
+    rootHTML_Element: HTML_Element;
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+    markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
+    absolutePathOfOutputDirectoryForTargetHTML_File: string;
+  }>;
+
+
+  export type AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap = Map<AliasedURI, OutputFileAbsolutePath>;
+
+  export type AliasedURI = string;
+  export type OutputFileAbsolutePath = string;
+
+
   export type Localization = Readonly<{
 
     generateUnknownResourceGroupReferenceWarningLog: (
-      namedParameters: Localization.UnknownResourceGroupReferenceWarningLog.TemplateNamedParameters
+      templateVariables: Localization.UnknownResourceGroupReferenceWarningLog.TemplateVariables
     ) => Localization.UnknownResourceGroupReferenceWarningLog;
 
     generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog: (
-      namedParameters: Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog.TemplateNamedParameters
+      templateVariables: Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog.TemplateVariables
     ) => Localization.NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog;
 
     generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog: (
-      namedParameters: Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog.TemplateNamedParameters
+      templateVariables: Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog.TemplateVariables
     ) => Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog;
   }>;
 
@@ -652,7 +1172,7 @@ namespace ResourcesReferencesResolverForHTML {
     export type UnknownResourceGroupReferenceWarningLog = Readonly<Pick<WarningLog, "title" | "description">>;
 
     export namespace UnknownResourceGroupReferenceWarningLog {
-      export type TemplateNamedParameters = Readonly<{
+      export type TemplateVariables = Readonly<{
         fileType__pluralForm: string;
         pickedPathOfTargetResourceFile: string;
         firstPathSegment: string;
@@ -665,7 +1185,7 @@ namespace ResourcesReferencesResolverForHTML {
         Readonly<Pick<WarningLog, "title" | "description">>;
 
     export namespace NoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog {
-      export type TemplateNamedParameters = Readonly<{
+      export type TemplateVariables = Readonly<{
         fileType__singularForm: string;
         pickedPathOfTargetResourceFile: string;
         checkedAbsolutePaths__formatted: string;
@@ -676,16 +1196,18 @@ namespace ResourcesReferencesResolverForHTML {
     export type NoOutputFileExistingForSpecifiedSourceFilePathWarningLog = Readonly<Pick<WarningLog, "title" | "description">>;
 
     export namespace NoOutputFileExistingForSpecifiedSourceFilePathWarningLog {
-      export type TemplateNamedParameters = Readonly<{
+      export type TemplateVariables = Readonly<{
         fileType__singularForm: string;
         pickedPathOfTargetResourceFile: string;
       }>;
     }
   }
+
 }
 
 
 export default ResourcesReferencesResolverForHTML;
+
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars --
  * It is the only way to extract the child namespace (no need to expose whole ResourcesReferencesResolverForHTML for the

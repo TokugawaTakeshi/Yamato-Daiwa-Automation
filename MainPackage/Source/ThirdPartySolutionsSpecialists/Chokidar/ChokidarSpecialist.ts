@@ -9,6 +9,8 @@ class ChokidarSpecialist {
 
   public static getEventNameInterpretation(eventName: string): string {
 
+    /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison --
+    * The enum has been created according to documentation. */
     switch (eventName) {
 
       case ChokidarSpecialist.EventsNames.fileAdded:
@@ -32,9 +34,12 @@ class ChokidarSpecialist {
       case ChokidarSpecialist.EventsNames.initialScanComplete:
         return ChokidarSpecialist.localization.eventsNamesInterpretations.initialScanComplete;
 
+      /* eslint-enable @typescript-eslint/no-unsafe-enum-comparison */
+
       default: return eventName;
 
     }
+
   }
 
 

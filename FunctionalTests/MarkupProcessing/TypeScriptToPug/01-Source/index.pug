@@ -1,0 +1,38 @@
+doctype html
+
+
+html(lang="en")
+
+  head
+
+    title Top page
+
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+
+
+  body
+
+    h1 Top page
+
+    h2 Products list
+
+    - const products = IMPORTS_FROM_TYPESCRIPT.mockData.products;
+
+    ul
+
+      each product in products
+
+        li
+
+          span= product.name
+
+          if product.description
+
+            p= product.description
+
+          span= product.category.name
+
+          span
+            span= product.price__dollars__excludingTax
+            span $

@@ -1,0 +1,36 @@
+projectBuilding:
+
+  commonSettings:
+
+    publicDirectoriesRelativePaths:
+
+      PRODUCTION: 02-ProductionBuilding
+
+
+  ECMA_ScriptLogicProcessing:
+
+    entryPointsGroups:
+
+      ClientPoint:
+
+        singleEntryPointSourceFileRelativePath: 01-Source/ClientEntryPoint.ts
+
+        targetRuntime:
+          type: BROWSER
+
+        buildingModeDependent:
+          PRODUCTION:
+            outputTopDirectoryRelativePath: 02-ProductionBuild/public
+
+      FrontServerEntryPoint:
+
+        singleEntryPointSourceFileRelativePath: 01-Source/FrontServerEntryPoint.ts
+
+        targetRuntime:
+          type: NODEJS
+          minimalVersion:
+            major: 16
+
+        buildingModeDependent:
+          PRODUCTION:
+            outputTopDirectoryRelativePath: 02-ProductionBuild

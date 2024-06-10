@@ -40,7 +40,7 @@ export default abstract class EntryPoint {
 
     const parsedConsoleCommand: ConsoleCommandsParser.
         ParsedCommand<ApplicationConsoleLineInterface.SupportedCommandsAndParametersCombinations> =
-            ConsoleCommandsParser.parse(rawConsoleCommand, ApplicationConsoleLineInterface.specification);
+            ConsoleCommandsParser.parse(ApplicationConsoleLineInterface.specification, rawConsoleCommand);
 
     const consumingProjectRootDirectoryAbsolutePath: string = process.cwd();
     DotYDA_DirectoryManager.unrollDotYDA_Directory(consumingProjectRootDirectoryAbsolutePath);
@@ -58,7 +58,10 @@ export default abstract class EntryPoint {
 
         try {
 
-          rawConfigFromFile = ObjectDataFilesProcessor.processFile({ filePath: rawConfigFileAbsolutePath });
+          rawConfigFromFile = ObjectDataFilesProcessor.processFile({
+            filePath: rawConfigFileAbsolutePath,
+            synchronously: true
+          });
 
         } catch (error: unknown) {
 
@@ -68,7 +71,7 @@ export default abstract class EntryPoint {
             }),
             title: FileReadingFailedError.localization.defaultTitle,
             occurrenceLocation: "EntryPoint.interpretAndExecuteConsoleCommand()",
-            wrappableError: error
+            innerError: error
           });
         }
 

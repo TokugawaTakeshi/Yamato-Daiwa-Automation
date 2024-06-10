@@ -1,0 +1,24 @@
+include _HTML_PageMetadata.pug
+include _generateLocalizedRouting.pug
+include _generateSharedExternalLinks.pug
+
+include Localizations/Russian/RoutingLocalization.russian.pug
+include Localizations/Russian/SharedExternalLinksLocalization.russian.pug
+
+include ThirdPartyEmbeddableScripts/GoogleAnalyticsScript.pug
+
+
+-
+
+  const localizedRouting = generateLocalizedRouting(routingRussianLocalization);
+  let generatePageTableOfContents;
+
+
+include ../../Pages/Terminology/TableOfContents/Terminology.toc.russian.pug
+
+
+-
+
+  RoutingEmulator.initialize(localizedRouting);
+
+  const sharedExternalLinks = generateSharedExternalLinks(sharedExternalLinksRussianLocalization);

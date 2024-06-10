@@ -1,15 +1,15 @@
-import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+import ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 
 const StylesProcessingSettings__Default: Readonly<{
 
   periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
 
-  entryPointsGroupReferencePrefix: string;
-
   revisioning: Readonly<{
-    mustExecute: (namedParameters: Readonly<{ consumingProjectBuildingMode: string; }>) => boolean;
+    mustExecute: (
+      compoundParameter: Readonly<{ consumingProjectBuildingMode: ConsumingProjectBuildingModes; }>
+    ) => boolean;
     contentHashPostfixSeparator: string;
   }>;
 
@@ -17,21 +17,49 @@ const StylesProcessingSettings__Default: Readonly<{
     mustExecute: boolean;
   }>;
 
+  logging: Readonly<{
+
+    filesPaths: boolean;
+    filesCount: boolean;
+    partialFilesAndParentEntryPointsCorrespondence: boolean;
+    filesWatcherEvents: boolean;
+
+    linting: Readonly<{
+      starting: boolean;
+      completionWithoutIssues: boolean;
+    }>;
+
+  }>;
+
 }> = {
 
   periodBetweenFileUpdatingAndRebuildingStarting__seconds: 1,
 
-  entryPointsGroupReferencePrefix: "@",
-
   revisioning: {
-    mustExecute: (namedParameters: Readonly<{ consumingProjectBuildingMode: string; }>): boolean =>
-        namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.staticPreview &&
-        namedParameters.consumingProjectBuildingMode !== ConsumingProjectPreDefinedBuildingModes.localDevelopment,
+    mustExecute: (
+      compoundParameter: Readonly<{ consumingProjectBuildingMode: ConsumingProjectBuildingModes; }>
+    ): boolean =>
+        compoundParameter.consumingProjectBuildingMode !== ConsumingProjectBuildingModes.staticPreview &&
+        compoundParameter.consumingProjectBuildingMode !== ConsumingProjectBuildingModes.localDevelopment,
     contentHashPostfixSeparator: "--"
   },
 
   linting: {
     mustExecute: true
+  },
+
+  logging: {
+
+    filesPaths: true,
+    filesCount: false,
+    partialFilesAndParentEntryPointsCorrespondence: false,
+    filesWatcherEvents: true,
+
+    linting: {
+      starting: true,
+      completionWithoutIssues: true
+    }
+
   }
 
 };

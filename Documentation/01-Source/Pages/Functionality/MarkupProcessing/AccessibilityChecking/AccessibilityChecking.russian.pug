@@ -1,0 +1,91 @@
+extends ../../../../../node_modules/@yamato-daiwa/programming_documentation/Layouts/TwoColumns/TwoColumnsLayout.pug
+
+
+block append Requirements
+
+  include ../../../../SharedAssets/Markup/SharedAssets.russian.pug
+  include ../../../../SharedComponents/SharedComponents.russian.pug
+
+
+block append Metadata
+
+  -
+
+    HTML_PAGE_LANGUAGE = "ru";
+    HTML_PAGE_TITLE = buildHTML_PageTitle("Проверка доступности HTML-кода");
+    HTML_PageMetaData = {
+      description:
+        "Node.js-утилита для сборки проектов (клиентских веб-приложений, серверных приложений, консольных утилит, " +
+          "библиотек) «Yamato Daiwa Automation» (сокращённо: «YDA», читается: «Уай-Ди-Эй») выполняет автоматически " +
+          "инспекцию выходного HTML-кода на доступность. " +
+        "Проверка на доступность реализована на основе утилиты «pa11y», однако в отличие от аналогов имеет хорошую " +
+          "оптимизацию производительности, например минимизацию отправки запросов на сервис инспекции доступности за счёт" +
+          "кэширования.",
+      author: HTML_PAGE_AUTHOR
+    };
+
+    FAVICON_URI = "@MustBeInPublicRoot/favicon";
+
+    styleSheetsURIs = [
+      "$CommonStyles",
+      "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+      "$PreMadesStyles",
+      "@CustomizedExternalComponents"
+    ];
+
+    scriptsURIs.endOfBody = [ "$CommonLogic" ];
+
+    RoutingEmulator.setCurrentRoute("functionality.children.markupProcessing.children.basicPugToHTML_Transpiling");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: "./BasicPugToHTML_Transpiling.english.html",
+      japanese: "./BasicPugToHTML_Transpiling.japanese.html",
+    });
+
+
+block append HeadScriptsLinks
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  article
+
+    h1.Article-Heading1 Проверка на доступность HTML-кода
+
+    p.Article-Paragraph.
+      Современные требования к качеству веб-разработки подразумевают доступность HTML-кода — ....
+      Будучи предназначенным для высококачественной веб-разработки, YDA включает в себя средства для проверки на доступность
+        наравне с валидацией HTML-кода.
+
+
+    h2.Article-Heading2 Что было до YDA
+
+    p.Article-Paragraph.
+      Node.js-yтилиты для валидации HTML-кода, конечно же, существовали до YDA, например ... и их адаптации для Gulp.
+      Многие они работают по одинаковому принципу: читают HTML-файл, отправляют содержимое в сервис валидации
+        а затем выводят результаты в консоль или в файлы.
+
+    p.Article-Paragraph.
+      Очень похоже на валидацию HTML, однако в случае с проверкой на доступность проблем гораздо больше.
+      Во-первых, нет утилит для проверки на доступность (во всяком случае...), работающих с HTML-кодом, а не с путями файлов.
+      Что интересно: чтение файлов требуется, а требует утилиты всё равно путь.
+      Однако удобно было бы так, что отномпилированный HTML-код до зависи на файл сразу проходит валдиация ...
+      Суть Gulp-а в том и заключается, чтобы уйти от временных файлов, как это было в Grunt, и засчёт этого выигарть
+      в производительности.
+
+    p.Article-Paragraph.
+      Немало проблем у gulp-плагина access-sniff.
+      Во-первых он уже давно не поддерживается (конкретнее) и имеет множество уязвимостей.
+      Возможность работы с HTML-кодом так не заясвлено, однако до определённой степени он с ним работает, но как
+        только кода станет много (что неизбежно, если мы верстает что-то больше чем страницу 404 не найдено),
+        то он просто выведет ошибку "Pattern too long" без всяких объяснений.
+
+    p.Article-Paragraph.
+
+    p.Article-Paragraph.
+      Но наибольшая проблема — оптимизация.
+      ...

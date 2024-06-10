@@ -1,72 +1,121 @@
-/* --- Enumerations ----------------------------------------------------------------------------------------------- */
-import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* --- Raw valid config --------------------------------------------------------------------------------------------- */
+/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
+import type ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid from
+    "@ProjectBuilding/Common/RawConfig/Reusables/ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid";
 import type ConsumingProjectPreDefinedBuildingModes__Localized from
     "@ProjectBuilding/Common/RawConfig/Enumerations/ConsumingProjectPreDefinedBuildingModes__Localized";
 import type RevisioningSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/RevisioningSettings__FromFile__RawValid";
 
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
 
 
 namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
 
-  /* === Types ====================================================================================================== */
+  /* ━━━ Types ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export type Common = Readonly<{
+    periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number;
+  }>;
+
   export type AssetsGroup = Readonly<{
     sourceFilesTopDirectoryRelativePath: string;
-    sourceFilesTopDirectoryPathAliasForReferencingFromHTML?: string;
+    referenceCustomAliasName?: string;
     buildingModeDependent: Readonly<{
-      [projectBuildingMode: string]: AssetsGroup.BuildingModeDependent | undefined;
+      [projectBuildingMode in ConsumingProjectBuildingModes]: AssetsGroup.BuildingModeDependent;
     }>;
   }>;
 
   export namespace AssetsGroup {
-    export type BuildingModeDependent = Readonly<{
-      outputTopDirectoryRelativePath: string;
-      revisioning?: RevisioningSettings__FromFile__RawValid;
-      outputPathTransformations?: Readonly<{
-        segmentsWhichMustBeRemoved?: Array<string>;
-        segmentsWhichLastDuplicatesMustBeRemoved?: Array<string>;
-      }>;
-    }>;
+
+    export type BuildingModeDependent =
+        ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid &
+        Readonly<{ revisioning?: RevisioningSettings__FromFile__RawValid; }>;
+
   }
 
 
-  /* === Localization =============================================================================================== */
+  export type Logging = Readonly<{
+    filesPaths?: boolean;
+    filesCount?: boolean;
+    filesWatcherEvents?: boolean;
+  }>;
+
+
+  /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Localization = {
-    assetsGroups: Readonly<{
+
+    common: Readonly<{
       KEY: string;
-      sourceFilesTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
-      sourceFilesTopDirectoryPathAliasForReferencingFromHTML: Readonly<{ KEY: string; }>;
-      buildingModeDependent: Readonly<{
-        KEY: string;
-        outputTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
-        revisioning: Readonly<{ KEY: string; }>;
-        outputPathTransformations: Readonly<{
-          KEY: string;
-          segmentsWhichMustBeRemoved: Readonly<{ KEY: string; }>;
-          segmentsWhichLastDuplicatesMustBeRemoved: Readonly<{ KEY: string; }>;
-        }>;
-      }>;
+      periodBetweenFileUpdatingAndRebuildingStarting__seconds: Readonly<{ KEY: string; }>;
     }>;
+
+    assetsGroups: Readonly<{
+
+      KEY: string;
+
+      sourceFilesTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
+      referenceCustomAliasName: Readonly<{ KEY: string; }>;
+
+      buildingModeDependent:
+          ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid.Localization &
+          Readonly<{
+            revisioning: Readonly<{ KEY: string; }>;
+          }>;
+
+    }>;
+
+    logging: Readonly<{
+      KEY: string;
+      filesPaths: Readonly<{ KEY: string; }>;
+      filesCount: Readonly<{ KEY: string; }>;
+      filesWatcherEvents: Readonly<{ KEY: string; }>;
+    }>;
+
   };
 
-  export function getLocalizedSpecification(
+  export function getLocalizedPropertiesSpecification(
     {
       assetsProcessingSettingsGenericPropertiesLocalization,
       revisioningPropertiesLocalizedSpecification,
+      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
       consumingProjectLocalizedPreDefinedBuildingModes
     }: Readonly<{
       assetsProcessingSettingsGenericPropertiesLocalization: Localization;
       revisioningPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
+      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.
+          PropertiesSpecification;
       consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
     }>
   ): RawObjectDataProcessor.PropertiesSpecification {
 
     return {
+
+      [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.KEY]: {
+
+        newName: "common",
+        preValidationModifications: nullToUndefined,
+        type: Object,
+        required: true,
+
+        properties: {
+
+          [
+            assetsProcessingSettingsGenericPropertiesLocalization.common.
+                periodBetweenFileUpdatingAndRebuildingStarting__seconds.KEY
+          ]: {
+            newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
+            type: Number,
+            required: false,
+            numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+          }
+
+        }
+
+      },
 
       [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.KEY]: {
 
@@ -87,10 +136,7 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
               minimalCharactersCount: 1
             },
 
-            [
-              assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.
-                  sourceFilesTopDirectoryPathAliasForReferencingFromHTML.KEY
-            ]: {
+            [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.referenceCustomAliasName.KEY]: {
               newName: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML",
               type: String,
               required: false,
@@ -106,15 +152,15 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
 
               keysRenamings: {
                 [consumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
-                    ConsumingProjectPreDefinedBuildingModes.staticPreview,
+                    ConsumingProjectBuildingModes.staticPreview,
                 [consumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
-                    ConsumingProjectPreDefinedBuildingModes.localDevelopment,
+                    ConsumingProjectBuildingModes.localDevelopment,
                 [consumingProjectLocalizedPreDefinedBuildingModes.testing]:
-                    ConsumingProjectPreDefinedBuildingModes.testing,
+                    ConsumingProjectBuildingModes.testing,
                 [consumingProjectLocalizedPreDefinedBuildingModes.staging]:
-                    ConsumingProjectPreDefinedBuildingModes.staging,
+                    ConsumingProjectBuildingModes.staging,
                 [consumingProjectLocalizedPreDefinedBuildingModes.production]:
-                    ConsumingProjectPreDefinedBuildingModes.production
+                    ConsumingProjectBuildingModes.production
               },
 
               value: {
@@ -122,14 +168,7 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
                 type: Object,
                 properties: {
 
-                  [
-                    assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.
-                        buildingModeDependent.outputTopDirectoryRelativePath.KEY
-                  ]: {
-                    newName: "outputTopDirectoryRelativePath",
-                    type: String,
-                    required: true
-                  },
+                  ...entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
 
                   [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.buildingModeDependent.revisioning.KEY]: {
                     newName: "revisioning",
@@ -137,53 +176,55 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
                     required: false,
                     preValidationModifications: nullToUndefined,
                     properties: revisioningPropertiesLocalizedSpecification
-                  },
-
-                  [
-                    assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.
-                        buildingModeDependent.outputPathTransformations.KEY
-                  ]: {
-
-                    newName: "outputPathTransformations",
-                    type: Object,
-                    required: false,
-                    properties: {
-
-                      [
-                        assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.
-                            buildingModeDependent.outputPathTransformations.segmentsWhichMustBeRemoved.KEY
-                      ]: {
-                        newName: "segmentsWhichMustBeRemoved",
-                        type: Array,
-                        required: false,
-                        element: {
-                          type: String,
-                          minimalCharactersCount: 1
-                        }
-                      },
-
-                      [
-                        assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.
-                            buildingModeDependent.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved.KEY
-                      ]: {
-                        newName: "segmentsWhichLastDuplicatesMustBeRemoved",
-                        type: Array,
-                        required: false,
-                        element: {
-                          type: String,
-                          minimalCharactersCount: 1
-                        }
-                      }
-                    }
                   }
+
                 }
+
               }
+
             }
+
           }
+
         }
+
+      },
+
+      [assetsProcessingSettingsGenericPropertiesLocalization.logging.KEY]: {
+
+        newName: "logging",
+        type: Object,
+        required: false,
+        preValidationModifications: nullToUndefined,
+
+        properties: {
+
+          [assetsProcessingSettingsGenericPropertiesLocalization.logging.filesPaths.KEY]: {
+            newName: "filesPaths",
+            type: Boolean,
+            required: false
+          },
+
+          [assetsProcessingSettingsGenericPropertiesLocalization.logging.filesCount.KEY]: {
+            newName: "filesCount",
+            type: Boolean,
+            required: false
+          },
+
+          [assetsProcessingSettingsGenericPropertiesLocalization.logging.filesWatcherEvents.KEY]: {
+            newName: "filesWatcherEvents",
+            type: Boolean,
+            required: false
+          }
+
+        }
+
       }
+
     };
+
   }
+
 }
 
 

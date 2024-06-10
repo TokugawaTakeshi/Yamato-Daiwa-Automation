@@ -1,0 +1,17 @@
+mixin GoogleAnalyticsScript
+
+  script(
+    src="https://www.googletagmanager.com/gtag/js?id=G-Z0XY1S89E0"
+    async
+  )
+
+  script.
+
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag(){
+      dataLayer.push(arguments);
+    }
+
+    gtag("js", new Date());
+    gtag("config", "G-Z0XY1S89E0");

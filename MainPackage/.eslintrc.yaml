@@ -1,10 +1,12 @@
 extends: ./node_modules/@yamato-daiwa/style_guides/ECMAScript.js
 
+
 overrides:
 
   - files:
 
     - "**Settings__FromFile__RawValid.ts"
+    - "ProjectBuildingConfig__FromFile__RawValid.ts"
     - "**Settings__Normalized.ts"
 
     rules:

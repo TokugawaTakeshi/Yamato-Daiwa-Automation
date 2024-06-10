@@ -12,8 +12,7 @@ import {
   AlgorithmMismatchError,
   stringifyAndFormatArbitraryValue
 } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
-import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
+import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator {
@@ -33,14 +32,14 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
         entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors
       );
 
-
       for (const sourceFileAbsolutePath of sourceFilesAbsolutePaths) {
         entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.set(
-          sourceFileAbsolutePath,
+          ImprovedPath.replacePathSeparatorsToForwardSlashes(sourceFileAbsolutePath),
           ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator.
               getEntryPointsOutputFileActualAbsolutePath(sourceFileAbsolutePath, entryPointsGroupNormalizedSettings)
         );
       }
+
     }
 
     return entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap;
@@ -62,11 +61,24 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
             entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
             ImprovedPath.computeRelativePath({
               basePath: entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath,
-              comparedPath: ImprovedPath.extractDirectoryFromFilePath(sourceFileAbsolutePath)
+              comparedPath: ImprovedPath.extractDirectoryFromFilePath({
+                targetPath: sourceFileAbsolutePath,
+                ambiguitiesResolution: {
+                  mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+                  mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
+                  mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                },
+                alwaysForwardSlashSeparators: true
+              })
             }),
-          `${ ImprovedPath.extractFileNameWithoutExtensionFromPath(sourceFileAbsolutePath) }**.js`
+          `${ 
+            ImprovedPath.extractFileNameWithoutExtensionFromPath({
+              targetPath: sourceFileAbsolutePath,
+              mustThrowErrorIfLastPathSegmentHasNoDots: true
+            }) 
+          }**.js`
         ],
-        { forwardSlashOnlySeparators: true }
+        { alwaysForwardSlashSeparators: true }
       );
 
       const targetOutputFileSearchResults: Array<string> = ImprovedGlob.getFilesAbsolutePathsSynchronously(
@@ -103,12 +115,25 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
         [
           entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
           ImprovedPath.computeRelativePath({
-            comparedPath: ImprovedPath.extractDirectoryFromFilePath(sourceFileAbsolutePath),
+            comparedPath: ImprovedPath.extractDirectoryFromFilePath({
+              targetPath: sourceFileAbsolutePath,
+              ambiguitiesResolution: {
+                mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+                mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
+                mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+              },
+              alwaysForwardSlashSeparators: true
+            }),
             basePath: entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
           }),
-          `${ ImprovedPath.extractFileNameWithoutExtensionFromPath(sourceFileAbsolutePath) }.js`
+          `${ 
+            ImprovedPath.extractFileNameWithoutExtensionFromPath({
+              targetPath: sourceFileAbsolutePath,
+              mustThrowErrorIfLastPathSegmentHasNoDots: true
+            })
+          }.js`
         ],
-        { forwardSlashOnlySeparators: true }
+        { alwaysForwardSlashSeparators: true }
       );
     }
 

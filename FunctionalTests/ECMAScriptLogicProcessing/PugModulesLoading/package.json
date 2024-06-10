@@ -1,0 +1,18 @@
+{
+  "name": "@yamato-daiwa/automation-functional_testing-es_logic_processing_minimal",
+  "private": true,
+  "scripts": {
+    "Local Development Building": "rimraf 02-LocalDevelopmentBuild & yda build --mode LOCAL_DEVELOPMENT",
+    "Production Building": "rimraf 02-LocalDevelopmentBuild & yda build --mode PRODUCTION"
+  },
+  "dependencies": {
+    "@yamato-daiwa/automation": "../../../MainPackage",
+    "@yamato-daiwa/frontend": "2.0.0-alpha.4",
+    "vue": "3.4.27",
+    "vue-facing-decorator": "3.0.4"
+  },
+  "devDependencies": {
+    "@yamato-daiwa/style_guides": "0.2.5",
+    "rimraf": "5.0.7"
+  }
+}

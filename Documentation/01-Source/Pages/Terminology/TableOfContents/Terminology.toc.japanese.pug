@@ -1,0 +1,35 @@
+include Terminology.toc.pug
+
+
+-
+
+  localizedRouting.terminology.$sectioning =
+
+      generatePageTableOfContents(
+        (() => {
+
+          /* [ Maintainability ] Keep this constant to make able the copying of qualified names in IntelliJ IDEA IDEs. */
+          const localizedStrings = {
+
+            project: {
+              $heading: "プロジェクト",
+              building: { $heading: "プロジェクトの構成" }
+            },
+
+            task: { $heading: "Task" },
+            scenario: { $heading: "Scenario" },
+            projectBuildingMode: { $heading: "Режим сборки проекта (Project building mode)" },
+
+            entryPointsAndChildrenFiles: {
+              $heading: "Точки входа и контекстно-зависимые файлы",
+              markup: { $heading: "Разметка" },
+              styles: { $heading: "Стили" },
+              ECMA_ScriptLogic: { $heading: "ECMAScript-логика" }
+            }
+
+          };
+
+          return localizedStrings;
+
+        })()
+      );

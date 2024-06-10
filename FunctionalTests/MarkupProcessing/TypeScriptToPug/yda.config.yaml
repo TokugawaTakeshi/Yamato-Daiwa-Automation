@@ -1,0 +1,27 @@
+projectBuilding:
+
+  commonSettings:
+
+    publicDirectoriesRelativePaths:
+
+      PRODUCTION: 02-ProductionBuilding
+
+
+  markupProcessing:
+
+    importingFromTypeScript:
+      importedNamespace: IMPORTS_FROM_TYPESCRIPT
+      sourceFileRelativePath: 01-Source/ExportsForPug.ts
+      nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected: Requirements
+
+    entryPointsGroups:
+
+      All:
+        sourceFilesTopDirectoryRelativePath: 01-Source
+        partialsRecognition:
+          excludeSubdirectoriesWithPrefixes: "_"
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT:
+            outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild
+          PRODUCTION:
+            outputTopDirectoryRelativePath: 03-ProductionBuilding

@@ -1,0 +1,24 @@
+include _HTML_PageMetadata.pug
+include _generateLocalizedRouting.pug
+include _generateSharedExternalLinks.pug
+
+include Localizations/Japanese/RoutingLocalization.japanese.pug
+include Localizations/Japanese/SharedExternalLinksLocalization.japanese.pug
+
+include ThirdPartyEmbeddableScripts/GoogleAnalyticsScript.pug
+
+
+-
+
+  const localizedRouting = generateLocalizedRouting(routingJapaneseLocalization);
+  let generatePageTableOfContents;
+
+
+include ../../Pages/Terminology/TableOfContents/Terminology.toc.japanese.pug
+
+
+-
+
+  RoutingEmulator.initialize(localizedRouting);
+
+  const sharedExternalLinks = generateSharedExternalLinks(sharedExternalLinksJapaneseLocalization);

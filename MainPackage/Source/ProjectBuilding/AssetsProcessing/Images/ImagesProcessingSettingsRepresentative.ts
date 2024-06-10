@@ -1,9 +1,9 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ImagesProcessingSettings__Normalized from "@ImagesProcessing/ImagesProcessingSettings__Normalized";
-import ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
-import AssetsGroupID = ProjectBuildingConfig__Normalized.AssetsGroupID;
+import type AssetsProcessingSettingsGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
 
-/* --- Settings representatives --------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import AssetsProcessingSettingsRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/AssetsProcessingSettingsRepresentative";
@@ -13,27 +13,38 @@ export default class ImagesProcessingSettingsRepresentative extends AssetsProces
   ImagesProcessingSettings__Normalized.Common, ImagesProcessingSettings__Normalized.AssetsGroup
 > {
 
+  public readonly relevantSourceFilesGlobSelectors: ReadonlyArray<string>;
+
+  public readonly assetsProcessingCommonSettings: ImagesProcessingSettings__Normalized.Common;
+  public readonly relevantAssetsGroupsSettingsMappedByGroupID: ReadonlyMap<
+    AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID,
+    ImagesProcessingSettings__Normalized.AssetsGroup
+  >;
+
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Image";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Images";
-  public readonly relevantSourceFilesGlobSelectors: Array<string>;
-
-  protected readonly assetsProcessingCommonSettings: ImagesProcessingSettings__Normalized.Common;
-  protected readonly actualAssetsGroupsSettings: Map<AssetsGroupID, ImagesProcessingSettings__Normalized.AssetsGroup>;
 
 
   public constructor(
     imagesManagementSettings: ImagesProcessingSettings__Normalized,
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
 
-    super(masterConfigRepresentative);
+    super({
+      assetsProcessingCommonSettings: imagesManagementSettings.common,
+      projectBuildingMasterConfigRepresentative,
+      loggingSettings: imagesManagementSettings.logging,
+      relevantAssetsGroupsSettingsMappedByGroupID: imagesManagementSettings.assetsGroups
+    });
 
     this.assetsProcessingCommonSettings = imagesManagementSettings.common;
-    this.actualAssetsGroupsSettings = imagesManagementSettings.assetsGroups;
+    this.relevantAssetsGroupsSettingsMappedByGroupID = imagesManagementSettings.assetsGroups;
 
-    this.relevantSourceFilesGlobSelectors = Array.from(this.actualAssetsGroupsSettings.values()).map(
+    this.relevantSourceFilesGlobSelectors = Array.from(this.relevantAssetsGroupsSettingsMappedByGroupID.values()).map(
       (imagesGroupSettings: ImagesProcessingSettings__Normalized.AssetsGroup): string =>
           imagesGroupSettings.sourceFilesGlobSelector
     );
+
   }
+
 }

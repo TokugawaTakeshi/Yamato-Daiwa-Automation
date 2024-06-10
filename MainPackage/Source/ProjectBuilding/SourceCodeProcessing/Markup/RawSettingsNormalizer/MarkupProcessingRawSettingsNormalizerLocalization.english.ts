@@ -2,7 +2,7 @@ import type MarkupProcessingRawSettingsNormalizer from
     "@MarkupProcessing/RawSettingsNormalizer/MarkupProcessingRawSettingsNormalizer";
 
 
-const MarkupProcessingRawSettingsNormalizerLocalization__English: MarkupProcessingRawSettingsNormalizer.Localization = {
+const markupProcessingRawSettingsNormalizerLocalization__english: MarkupProcessingRawSettingsNormalizer.Localization = {
 
   noNeedToSetResourcesReferencesResolvingToRelativePathsOnStaticPreviewModeLog: {
     title: "Redundant configuration detected",
@@ -15,7 +15,8 @@ const MarkupProcessingRawSettingsNormalizerLocalization__English: MarkupProcessi
       (
         {
           consumingProjectBuildingMode
-        }: MarkupProcessingRawSettingsNormalizer.Localization.UnableToResolveResourcesReferencesToAbsolutePathLog.NamedParameters
+        }: MarkupProcessingRawSettingsNormalizer.Localization.UnableToResolveResourcesReferencesToAbsolutePathLog.
+            TemplateVariables
       ): MarkupProcessingRawSettingsNormalizer.Localization.UnableToResolveResourcesReferencesToAbsolutePathLog =>
           ({
             title: "Unable to resolve the resources references to absolute paths",
@@ -30,69 +31,69 @@ const MarkupProcessingRawSettingsNormalizerLocalization__English: MarkupProcessi
 
   generateStaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedMessage:
       (
-        namedParameters: MarkupProcessingRawSettingsNormalizer.Localization.
-            StaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedLog.NamedParameters
+        templateVariables: MarkupProcessingRawSettingsNormalizer.Localization.
+            StaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedLog.TemplateVariables
       ): string => "Failed to read the static preview state dependent pages variations specification file at " +
-          `'${ namedParameters.staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath }'.`,
+          `'${ templateVariables.staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath }'.`,
 
   generateStaticPreviewStateDependentPagesVariationsSpecificationIsNotTheObjectErrorLog:
       (
-        namedParameters: MarkupProcessingRawSettingsNormalizer.Localization.
-            StaticPreviewStateDependentPagesVariationsSpecificationIsInvalidLog.NamedParameters
+        templateVariables: MarkupProcessingRawSettingsNormalizer.Localization.
+            StaticPreviewStateDependentPagesVariationsSpecificationIsInvalidLog.TemplateVariables
       ): MarkupProcessingRawSettingsNormalizer.Localization.StaticPreviewStateDependentPagesVariationsSpecificationIsInvalidLog =>
           ({
             technicalDetails: "The parsed YAML from static preview state dependent pages variations specification file " +
                 "'[ ProjectDirectory ]" +
-                `${ namedParameters.staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath }'` +
-                `is not an ECMAScript 'object' and actually has type '${ namedParameters.rawDataActualType }' and value:` +
-                `${ namedParameters.stringifiedRawData }\n This data will be ignored.`,
+                `${ templateVariables.staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath }'` +
+                `is not an ECMAScript 'object' and actually has type '${ templateVariables.rawDataActualType }' and value:` +
+                `${ templateVariables.stringifiedRawData }\n This data will be ignored.`,
             politeExplanation: "Reading and parsing of static preview state dependent pages variations specification file, " +
                 "we are expected it will has the object type as parsed YAML, the superset of JSON. Contrary to expectations, " +
-                `it has the '${ namedParameters.stringifiedRawData }' type. We need to investigate it. ` +
+                `it has the '${ templateVariables.stringifiedRawData }' type. We need to investigate it. ` +
                 "We will keep the YDA running however we are sorry, but currently we are unable to inject above data " +
                 "to Pug files."
           }),
 
   generateInvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayMessage:
       (
-        namedParameters: MarkupProcessingRawSettingsNormalizer.Localization.
-            InvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayLog.NamedParameters
+        templateVariables: MarkupProcessingRawSettingsNormalizer.Localization.
+            InvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayLog.TemplateVariables
       ): string =>
           "The static preview state dependent pages variations specification file " +
-          `${ namedParameters.staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath }` +
+          templateVariables.staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath +
           "is including the associative array with invalid value. The value respective to key " +
-          `'${ namedParameters.invalidEntryKey }' must be the object with 'stateObjectTypeVariableName' and 'variations' ` +
-          `properties while actually has type ${ namedParameters.invalidEntryValueType } ` +
-          `and value ${ namedParameters.invalidEntryStringifiedValue }`,
+          `'${ templateVariables.invalidEntryKey }' must be the object with 'stateObjectTypeVariableName' and 'variations' ` +
+          `properties while actually has type ${ templateVariables.invalidEntryValueType } ` +
+          `and value ${ templateVariables.invalidEntryStringifiedValue }`,
 
   generateInvalidPageStateVariableNameMessage:
       (
-        namedParameters: MarkupProcessingRawSettingsNormalizer.Localization.InvalidPageStateVariableNameLog.NamedParameters
+        templateVariables: MarkupProcessingRawSettingsNormalizer.Localization.InvalidPageStateVariableNameLog.TemplateVariables
       ): string =>
           "Invalid page state variable name ('stateObjectTypeVariableName') has been specified for the markup file " +
-          `'${ namedParameters.targetMarkupFileRelativePath }' in static preview state dependent pages variations ` +
+          `'${ templateVariables.targetMarkupFileRelativePath }' in static preview state dependent pages variations ` +
           "specification file. This variable name must the non-empty string while actually has type " +
-          `'${ namedParameters.specifiedTypeOfVariableNameProperty }' and value:\n ` +
-          `${ namedParameters.stringifiedValueOfSpecifiedVariableNameProperty }`,
+          `'${ templateVariables.specifiedTypeOfVariableNameProperty }' and value:\n ` +
+          templateVariables.stringifiedValueOfSpecifiedVariableNameProperty,
 
   generateInvalidPageStateDependentVariationsSpecificationMessage:
       (
-        namedParameters: MarkupProcessingRawSettingsNormalizer.Localization.
-            InvalidPageStateDependentVariationsSpecificationLog.NamedParameters
+        templateVariables: MarkupProcessingRawSettingsNormalizer.Localization.
+            InvalidPageStateDependentVariationsSpecificationLog.TemplateVariables
       ): string =>
           "Invalid state dependent page variations has been specified for the markup file " +
-          `'${ namedParameters.targetMarkupFileRelativePath }'. It must be the associative array like object while ` +
-          `actually has type '${ namedParameters.actualType }' and value: ${ namedParameters.actualStringifiedValue }`,
+          `'${ templateVariables.targetMarkupFileRelativePath }'. It must be the associative array like object while ` +
+          `actually has type '${ templateVariables.actualType }' and value: ${ templateVariables.actualStringifiedValue }`,
 
   generateInvalidPageStateVariableMessage:
       (
-        namedParameters: MarkupProcessingRawSettingsNormalizer.Localization.InvalidPageStateVariableLog.NamedParameters
+        templateVariables: MarkupProcessingRawSettingsNormalizer.Localization.InvalidPageStateVariableLog.TemplateVariables
       ): string =>
           "Invalid page state variable has been specified for the markup file " +
-          `'${ namedParameters.targetMarkupFileRelativePath }'. It must be the object while actually has type ` +
-          `'${ namedParameters.actualType }' and value: ${ namedParameters.actualStringifiedValue }`
+          `'${ templateVariables.targetMarkupFileRelativePath }'. It must be the object while actually has type ` +
+          `'${ templateVariables.actualType }' and value: ${ templateVariables.actualStringifiedValue }`
 
 };
 
 
-export default MarkupProcessingRawSettingsNormalizerLocalization__English;
+export default markupProcessingRawSettingsNormalizerLocalization__english;

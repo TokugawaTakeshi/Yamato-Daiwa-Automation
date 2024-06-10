@@ -1,74 +1,82 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX from
+    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX";
+
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Normalized";
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+import type SourceCodeProcessingGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import SourceCodeProcessingConfigRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/SourceCodeProcessingConfigRepresentative";
 
-/* --- Utils -------------------------------------------------------------------------------------------------------- */
-import { Logger } from "@yamato-daiwa/es-extensions";
-
 
 export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends SourceCodeProcessingConfigRepresentative<
-  ECMA_ScriptLogicProcessingSettings__Normalized.Common,
-  ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
+  ECMA_ScriptLogicProcessingSettings__Normalized.Common, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
 > {
 
+  /* [ Theory ] Below two fields could be even or not. */
   public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
-  public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Script";
-  public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Scripts";
-  public readonly prefixOfAliasOfTopDirectoryOfEntryPointsGroup: string = "@";
+  public readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "ECMAScript logic";
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "ECMAScript logic";
+  public readonly TASK_NAME_FOR_LOGGING: string = "ECMAScript logic processing";
+
+  public readonly entryPointsGroupsNormalizedSettingsMappedByReferences: ReadonlyMap<
+    string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
+  >;
 
   public readonly relevantEntryPointsGroupsSettings: ReadonlyMap<
-    ProjectBuildingConfig__Normalized.EntryPointsGroupID, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
+    SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
+    ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
   >;
-  public readonly entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap: Map<string, string> =
-      new Map<string, string>();
+  public readonly loggingSettings: ECMA_ScriptLogicProcessingSettings__Normalized.Logging;
+  public readonly localDevelopmentServerOrchestrationSettings?:
+      ECMA_ScriptLogicProcessingSettings__Normalized.LocalDevelopmentServerOrchestration;
 
   protected readonly sourceCodeProcessingCommonSettings: ECMA_ScriptLogicProcessingSettings__Normalized.Common;
 
 
   public constructor(
-    ECMA_ScriptLogicProcessingSettings__normalized: ECMA_ScriptLogicProcessingSettings__Normalized,
+    normalizedECMA_ScriptLogicProcessingSettings: ECMA_ScriptLogicProcessingSettings__Normalized,
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
 
     super(projectBuildingMasterConfigRepresentative);
 
-    this.sourceCodeProcessingCommonSettings = ECMA_ScriptLogicProcessingSettings__normalized.common;
-    this.relevantEntryPointsGroupsSettings = ECMA_ScriptLogicProcessingSettings__normalized.relevantEntryPointsGroups;
+    this.sourceCodeProcessingCommonSettings = normalizedECMA_ScriptLogicProcessingSettings.common;
+    this.relevantEntryPointsGroupsSettings = normalizedECMA_ScriptLogicProcessingSettings.relevantEntryPointsGroups;
+    this.loggingSettings = normalizedECMA_ScriptLogicProcessingSettings.logging;
+    this.localDevelopmentServerOrchestrationSettings = normalizedECMA_ScriptLogicProcessingSettings.
+        localDevelopmentServerOrchestration;
 
-    if (this.relevantEntryPointsGroupsSettings.size === 0) {
-      Logger.logWarning({
-        title: "The ECMAScript logic processing will not be executed",
-        description: "No files has been found for project building mode " +
-            `"${ projectBuildingMasterConfigRepresentative.consumingProjectBuildingMode }" `,
-        occurrenceLocation: "ECMA_ScriptLogicProcessingSettingsRepresentative.constructor(...parameters)"
-      });
-    }
-
-    this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = ECMA_ScriptLogicProcessingSettings__normalized.common.
+    this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = normalizedECMA_ScriptLogicProcessingSettings.common.
         supportedSourceFileNameExtensionsWithoutLeadingDots;
+    this.actualFileNameExtensionsWithoutLeadingDots = normalizedECMA_ScriptLogicProcessingSettings.common.
+        supportedSourceFileNameExtensionsWithoutLeadingDots;
+
+    this.entryPointsGroupsNormalizedSettingsMappedByReferences = new Map<
+      string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
+    >(
+      Array.from(this.relevantEntryPointsGroupsSettings.values()).map(
+        (entryPointsGroupSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup):
+            [string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup] =>
+                [
+                  `${ PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX }${ entryPointsGroupSettings.ID }`,
+                  entryPointsGroupSettings
+                ]
+      )
+    );
 
   }
 
-
-  public get entryPointsGroupsNormalizedSettingsMappedByPathAliases():
-      Map<string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup> {
-
-    return new Map<string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup>(
-        Array.from(this.relevantEntryPointsGroupsSettings.values()).map(
-          (entryPointsGroupSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup):
-          [string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup] =>
-              [
-                `${ entryPointsGroupSettings.entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML }`,
-                entryPointsGroupSettings
-              ]
-        )
-    );
+  /* ━━━ Logging ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  public get mustLogSourceFilesWatcherEvents(): boolean {
+    return this.loggingSettings.filesWatcherEvents;
   }
 
 }

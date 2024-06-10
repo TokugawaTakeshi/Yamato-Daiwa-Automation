@@ -1,74 +1,97 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosProcessingSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import VideosProcessingSettingsRepresentative from "@VideosProcessing/VideosProcessingSettingsRepresentative";
+import type VideosProcessingSettingsRepresentative from "@VideosProcessing/VideosProcessingSettingsRepresentative";
 
-/* --- Tasks executor ----------------------------------------------------------------------------------------------- */
+/* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
+import VideosSourceFilesWatcher from "@VideosProcessing/VideosSourceFilesWatcher";
+
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
 import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-import type GulpStreamsBasedTaskExecutor from
-    "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import VideosProcessingSharedState from "@VideosProcessing/VideosProcessingSharedState";
+
+/* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
-import gulpIntercept from "gulp-intercept";
 import type VinylFile from "vinyl";
-import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
-import { PassThrough } from "stream";
-import { isUndefined } from "@yamato-daiwa/es-extensions";
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
+import AssetVinylFile from "@ProjectBuilding/Common/VinylFiles/AssetVinylFile";
+
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import { isUndefined, readonlyArrayToMutableOne } from "@yamato-daiwa/es-extensions";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
+export default class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
   VideosProcessingSettings__Normalized.Common,
   VideosProcessingSettings__Normalized.AssetsGroup,
   VideosProcessingSettingsRepresentative
 > {
 
-  protected readonly TASK_NAME_FOR_LOGGING: string = "画像管理";
-  protected readonly SOURCE_FILES_TYPE_LABEL_FOR_LOGGING: string = "画像";
-
-  private readonly videosProcessingConfigRepresentative: VideosProcessingSettingsRepresentative;
-
-
   public static provideVideosProcessingIfMust(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): () => NodeJS.ReadWriteStream {
 
     const videosProcessingSettingsRepresentative: VideosProcessingSettingsRepresentative | undefined =
-        masterConfigRepresentative.videosProcessingSettingsRepresentative;
+        projectBuildingMasterConfigRepresentative.videosProcessingSettingsRepresentative;
 
     if (isUndefined(videosProcessingSettingsRepresentative)) {
-      return (): NodeJS.ReadWriteStream => new PassThrough().end();
+      return createImmediatelyEndingEmptyStream();
     }
 
 
     const dataHoldingSelfInstance: VideosProcessor = new VideosProcessor(
-      masterConfigRepresentative, videosProcessingSettingsRepresentative
+      projectBuildingMasterConfigRepresentative, videosProcessingSettingsRepresentative
     );
 
-    dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcherIfMust();
+    if (projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
 
-    const assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode: Array<string> =
-        videosProcessingSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths;
+      VideosSourceFilesWatcher.
+          initializeIfRequiredAndGetInstance({
+            videosProcessingSettingsRepresentative,
+            projectBuildingMasterConfigRepresentative
+          }).
+          addOnFileAddedEventHandler({
+            handlerID: "ON_VIDEO_FILE_ADDED--BY_VIDEOS_PROCESSOR",
+            handler: dataHoldingSelfInstance.onSourceFilesWatcherEmittedFileAddingOrUpdatingEvent.bind(dataHoldingSelfInstance)
+          }).
+          addFileUpdatedEventHandler({
+            handlerID: "ON_VIDEO_FILE_UPDATED--BY_VIDEOS_PROCESSOR",
+            handler: dataHoldingSelfInstance.onSourceFilesWatcherEmittedFileAddingOrUpdatingEvent.bind(dataHoldingSelfInstance)
+          }).
+          addOnFileDeletedEventHandler({
+            handlerID: "ON_VIDEO_FILE_DELETED--BY_VIDEOS_PROCESSOR",
+            handler: dataHoldingSelfInstance.onVideoFileDeleted.bind(dataHoldingSelfInstance)
+          });
 
-    return dataHoldingSelfInstance.processAssets(assetsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode);
+    }
+
+    return dataHoldingSelfInstance.processAssets(videosProcessingSettingsRepresentative.actualAssetsSourceFilesAbsolutePaths);
+
   }
 
 
   private constructor(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
     videosProcessingConfigRepresentative: VideosProcessingSettingsRepresentative
   ) {
-    super(masterConfigRepresentative, videosProcessingConfigRepresentative);
-    this.videosProcessingConfigRepresentative = videosProcessingConfigRepresentative;
+    super({
+      projectBuildingMasterConfigRepresentative,
+      associatedAssetsProcessingSettingsRepresentative: videosProcessingConfigRepresentative,
+      taskTitleForLogging: "Videos processing",
+      waitingForSubsequentFilesWillSavedPeriod__seconds: videosProcessingConfigRepresentative.assetsProcessingCommonSettings.
+          periodBetweenFileUpdatingAndRebuildingStarting__seconds
+    });
   }
 
 
-  protected processAssets(sourceFilesAbsolutePaths: Array<string>): () => NodeJS.ReadWriteStream {
+  protected processAssets(sourceFilesAbsolutePaths: ReadonlyArray<string>): () => NodeJS.ReadWriteStream {
 
     /* [ Theory ] If to pass the empty array to 'Gulp.src(".")' error will occur but the cause will not be told clearly.
      *    However, the empty array is usual scenario (for example when user declared the configuration but has not added
@@ -78,82 +101,65 @@ class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
     }
 
 
-    return (): NodeJS.ReadWriteStream => Gulp.src(sourceFilesAbsolutePaths).
+    return (): NodeJS.ReadWriteStream => Gulp.
 
-        pipe(super.printProcessedFilesPathsAndQuantity()).
+        src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
+
         pipe(super.handleErrorIfItWillOccur()).
-
-        pipe(gulpIntercept(this.addActualSourceCodeProcessingSettingsToVinylFile.bind(this))).
-
-        pipe(gulpIntercept(this.postProcess.bind(this))).
+        pipe(super.logProcessedFilesIfMust()).
 
         pipe(
-          Gulp.dest((targetFileInFinalState: VinylFile): string =>
-              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-               * No known simple solution; will be fixed at 2nd generation of VideosProcessor.  */
-              (targetFileInFinalState as VideosProcessor.VideoVinylFile).outputDirectoryAbsolutePath)
-        );
+          GulpStreamModifier.modify({
+            onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
+          })
+        ).
 
-  }
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ AssetVinylFile, GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust ]
+            ])
+          })
+        ).
 
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ AssetVinylFile, VideosProcessor.postProcessFile ]
+            ])
+          })
+        ).
 
-  private addActualSourceCodeProcessingSettingsToVinylFile(fileInInitialState: VinylFile): VideosProcessor.VideoVinylFile {
-
-    const normalizedVideosGroupSettingsActualForCurrentFile: VideosProcessingSettings__Normalized.AssetsGroup =
-        this.videosProcessingConfigRepresentative.
-            getAssetsNormalizedSettingsActualForTargetSourceFile(fileInInitialState.path);
-
-
-    fileInInitialState.processingSettings = normalizedVideosGroupSettingsActualForCurrentFile;
-
-    /* [ Theory ] The value of 'path' could change during file processing. */
-    fileInInitialState.sourceAbsolutePath = fileInInitialState.path;
-    fileInInitialState.outputDirectoryAbsolutePath = VideosProcessingSettingsRepresentative.
-        computeActualOutputDirectoryAbsolutePathForTargetSourceFile({
-          targetSourceFileAbsolutePath: fileInInitialState.path,
-          respectiveAssetsGroupNormalizedSettings: normalizedVideosGroupSettingsActualForCurrentFile
-        });
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of VideosProcessor.  */
-    return fileInInitialState as VideosProcessor.VideoVinylFile;
-  }
-
-  private postProcess(_processedVideoFile: VinylFile): VinylFile {
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of VideosProcessor.  */
-    const processedVideoFile: VideosProcessor.VideoVinylFile = _processedVideoFile as VideosProcessor.VideoVinylFile;
-
-    if (processedVideoFile.processingSettings.revisioning.mustExecute) {
-      FileNameRevisionPostfixer.appendPostfixIfPossible(
-        processedVideoFile,
-        { contentHashPostfixSeparator: processedVideoFile.processingSettings.revisioning.contentHashPostfixSeparator }
-      );
-    }
-
-    this.videosProcessingConfigRepresentative.
-        sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.
-        set(
-          ImprovedPath.replacePathSeparatorsToForwardSlashes(processedVideoFile.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(
-            [ processedVideoFile.outputDirectoryAbsolutePath, processedVideoFile.basename ],
-            { forwardSlashOnlySeparators: true }
+        pipe(
+          Gulp.dest(
+            (targetFileInFinalState: VinylFile): string =>
+                AssetVinylFile.getOutputDirectoryAbsolutePathOfExpectedToBeSelfInstance(targetFileInFinalState)
           )
         );
 
-    return processedVideoFile;
   }
+
+
+  /* ━━━ Files watcher handlers ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private onVideoFileDeleted(targetVideoFileAbsolutePath: string): void {
+    this.absolutePathOfFilesWaitingForReProcessing.delete(targetVideoFileAbsolutePath);
+    VideosProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.delete(targetVideoFileAbsolutePath);
+  }
+
+
+  /* ━━━ Pipeline methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private static async postProcessFile(processedVideoFile: AssetVinylFile): Promise<GulpStreamModifier.CompletionSignals> {
+
+    VideosProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.set(
+      ImprovedPath.replacePathSeparatorsToForwardSlashes(processedVideoFile.sourceAbsolutePath),
+        ImprovedPath.joinPathSegments(
+          [ processedVideoFile.outputDirectoryAbsolutePath, processedVideoFile.basename ],
+          { alwaysForwardSlashSeparators: true }
+        )
+    );
+
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+  }
+
 }
-
-
-namespace VideosProcessor {
-  export type VideoVinylFile =
-      GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      Readonly<{
-        processingSettings: VideosProcessingSettings__Normalized.AssetsGroup;
-      }>;
-}
-
-
-export default VideosProcessor;

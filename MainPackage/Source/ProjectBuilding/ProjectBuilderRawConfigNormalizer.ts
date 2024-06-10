@@ -1,6 +1,6 @@
 /* --- Restrictions---- --------------------------------------------------------------------------------------------- */
-import type ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+import type ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 /* --- Raw valid config --------------------------------------------------------------------------------------------- */
 import { ProjectBuildingTasksIDsForConfigFile } from
@@ -28,7 +28,7 @@ import type PlainCopyingSettings__FromFile__RawValid from
 import type BrowserLiveReloadingSettings__FromFile__RawValid from
     "./BrowserLiveReloading/BrowserLiveReloadingSettings__FromFile__RawValid";
 
-/* --- Normalized config -------------------------------------------------------------------------------------------- */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingConfig__Normalized from "./ProjectBuildingConfig__Normalized";
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
@@ -52,6 +52,7 @@ import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosP
 import AudiosProcessingRawSettingsNormalizer from "@AudiosProcessing/AudiosProcessingRawSettingsNormalizer";
 import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
 import PlainCopyingRawSettingsNormalizer from "@ProjectBuilding/PlainCopying/PlainCopyingRawSettingsNormalizer";
+import FilesWatchingSettingsNormalizer from "@ProjectBuilding/FilesWatching/FilesWatchingSettingsNormalizer";
 import type BrowserLiveReloadingSettings__Normalized from
     "@BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
 import BrowserLiveReloadingSettingsNormalizer from
@@ -83,7 +84,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
       projectBuildingConfig__fromFile__rawValid: ProjectBuildingConfig__FromFile__RawValid;
       projectBuildingConfig__fromConsole: {
         selectiveExecutionID?: string;
-        projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+        projectBuildingMode: ConsumingProjectBuildingModes;
       };
     }>
   ): ProjectBuildingConfig__Normalized {
@@ -102,6 +103,8 @@ abstract class ProjectBuilderRawConfigNormalizer {
           commonSettings__fromFile__rawValid,
           consumingProjectRootDirectoryAbsolutePath,
           projectBuildingMode: projectBuildingConfig__fromConsole.projectBuildingMode,
+          ...isNotUndefined(projectBuildingConfig__fromConsole.selectiveExecutionID) ?
+              { actualSelectiveExecutionID: projectBuildingConfig__fromConsole.selectiveExecutionID } : null,
           actualSelectiveExecution
         });
 
@@ -318,8 +321,8 @@ abstract class ProjectBuilderRawConfigNormalizer {
 
 
         if (
-            isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) &&
-            isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection.plainCopying)
+          isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) &&
+          isUndefined(commonSettings__normalized.tasksAndSourceFilesSelection.plainCopying)
         ) {
           return {};
         }
@@ -334,6 +337,13 @@ abstract class ProjectBuilderRawConfigNormalizer {
         };
 
       })(),
+
+
+      filesWatching: FilesWatchingSettingsNormalizer.normalize({
+        filesWatchingSettings__fromFile__rawValid:
+            projectBuildingConfig__fromFile__rawValid[ProjectBuildingTasksIDsForConfigFile.filesWatching],
+        projectBuilderCommonSettings__normalized: commonSettings__normalized
+      }),
 
       ...((): { browserLiveReloading?: BrowserLiveReloadingSettings__Normalized; } => {
 
@@ -355,6 +365,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
             ...isNotUndefined(selectedBrowserLiveReloadingSetupID) ? { selectedBrowserLiveReloadingSetupID } : {}
           })
         };
+
       })()
 
     };

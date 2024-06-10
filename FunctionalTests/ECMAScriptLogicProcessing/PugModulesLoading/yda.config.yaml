@@ -1,0 +1,50 @@
+projectBuilding:
+
+  commonSettings:
+
+    publicDirectoriesRelativePaths:
+
+      LOCAL_DEVELOPMENT: 02-LocalDevelopmentBuild
+      PRODUCTION: 03-ProductionBuild
+
+
+  markupProcessing:
+
+    entryPointsGroups:
+
+      SingleEntryPoint:
+
+        singleEntryPointSourceFileRelativePath: 01-Source/EntryPoint.pug
+
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: "02-LocalDevelopmentBuild" }
+          PRODUCTION: { outputTopDirectoryRelativePath: "03-ProductionBuild" }
+
+
+  ECMA_ScriptLogicProcessing:
+
+    entryPointsGroups:
+
+      SingleEntryPoint:
+
+        singleEntryPointSourceFileRelativePath: 01-Source/EntryPoint.ts
+
+        targetRuntime:
+          type: BROWSER
+
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: "02-LocalDevelopmentBuild" }
+          PRODUCTION: { outputTopDirectoryRelativePath: "03-ProductionBuild" }
+
+  browserLiveReloading:
+
+    setups:
+
+      Main:
+
+        localServer:
+
+          rootDirectoryRelativePath: 02-LocalDevelopmentBuild
+          customStartingFileNameWithExtension: EntryPoint.html
+
+        openInBrowsers: chrome

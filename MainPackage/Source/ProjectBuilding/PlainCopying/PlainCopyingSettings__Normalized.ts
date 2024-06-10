@@ -5,20 +5,31 @@ type PlainCopyingSettings__Normalized = Readonly<{
 
 namespace PlainCopyingSettings__Normalized {
 
-  export type FilesGroup =
-      Readonly<
-        (
-          { sourceFileAbsolutePath: string; } |
-          { sourceDirectoryAbsolutePath: string; }
-        ) &
-        {
-          referenceName?: string;
-          outputTopDirectoryAbsolutePath: string;
-        }
-      >;
+  export type FilesGroup = FilesGroup.Singular | FilesGroup.Plural;
 
   export namespace FilesGroup {
+
     export type ID = string;
+
+    export type CommonProperties = Readonly<{
+      aliasName: string;
+    }>;
+
+    export type Singular =
+        CommonProperties &
+        Readonly<{
+          sourceFileAbsolutePath: string;
+          outputFileAbsolutePath: string;
+        }>;
+
+    export type Plural =
+        CommonProperties &
+        Readonly<{
+          sourceTopDirectoryAbsolutePath: string;
+          outputTopDirectoryAbsolutePath: string;
+          sourceAndOutputFilesAbsolutePathsCorrespondenceMap: ReadonlyMap<string, string>;
+        }>;
+
   }
 
 }

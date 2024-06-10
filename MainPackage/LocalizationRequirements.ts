@@ -21,7 +21,7 @@ export { HTML_ValidatorLocalization } from "@MarkupProcessing/Plugins/HTML_Valid
 /* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
  * The namespace, not just type must me re-exported.  */
 export { ResourcesReferencesResolverForHTML_Localization } from
-  "@MarkupProcessing/Plugins/ResourcesReferencesResolverForHTML/ResourcesReferencesResolverForHTML";
+    "@MarkupProcessing/Plugins/ResourcesReferencesResolverForHTML/ResourcesReferencesResolverForHTML";
 
 /* eslint-disable-next-line @typescript-eslint/consistent-type-exports --
  * The namespace, not just type must me re-exported.  */

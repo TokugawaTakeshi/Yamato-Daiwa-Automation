@@ -5,7 +5,7 @@
 ```typescript
 namespace PlainCopyingSettings__FromFile__RawValid {
 
-  export type Group =
+  export type FilesGroup =
       Readonly<
         (
           { sourceFileRelativePath: string; } |
@@ -14,10 +14,20 @@ namespace PlainCopyingSettings__FromFile__RawValid {
         {
           referenceName?: string;
           buildingModeDependent: Readonly<{
-            [projectBuildingMode in ConsumingProjectPreDefinedBuildingModes]: Group.BuildingModeDependent | undefined;
+            [projectBuildingMode in ConsumingProjectPreDefinedBuildingModes]: FilesGroup.BuildingModeDependent | undefined;
           }>;
         }
       >;
+
+  export namespace FilesGroup {
+
+    export type BuildingModeDependent = Readonly<{
+      outputTopDirectoryRelativePath: string | undefined;
+      newFileNameWithExtension
+    }>;
+
+  }
+  
 }
 ```
 

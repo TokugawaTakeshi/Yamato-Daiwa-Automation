@@ -20,17 +20,17 @@ import {
   isUndefined,
   isNotUndefined
 } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 /* --- Localization ------------------------------------------------------------------------------------------------- */
-import BrowserLiveReloadingSettingsNormalizerLocalization__English from
+import browserLiveReloadingSettingsNormalizerLocalization__english from
     "@BrowserLiveReloading/RawSettingsNormalizer/BrowserLiveReloadingSettingsNormalizerLocalization.english";
 
 
 class BrowserLiveReloadingSettingsNormalizer {
 
   public static localization: BrowserLiveReloadingSettingsNormalizer.Localization =
-      BrowserLiveReloadingSettingsNormalizerLocalization__English;
+      browserLiveReloadingSettingsNormalizerLocalization__english;
 
   public static normalize(
     {
@@ -92,7 +92,7 @@ class BrowserLiveReloadingSettingsNormalizer {
                 projectBuilderCommonSettings__normalized.projectRootDirectoryAbsolutePath,
                 actualBrowserLiveReloadingSetup__rawValid.localServer.rootDirectoryRelativePath
               ],
-              { forwardSlashOnlySeparators: true }
+              { alwaysForwardSlashSeparators: true }
           ),
 
           ignoredFilesAndDirectoriesRelativePaths: ((): ReadonlyArray<string> => {
@@ -119,9 +119,26 @@ class BrowserLiveReloadingSettingsNormalizer {
               actualBrowserLiveReloadingSetup__rawValid.localServer.customStartingFileNameWithExtension ??
               BrowserLiveReloadingSettings__Default.setup.localServer.startingFileNameWithExtension,
 
-          mustUseHTTPS:
-              actualBrowserLiveReloadingSetup__rawValid.localServer.useHTTPS === true ?
-                  true : BrowserLiveReloadingSettings__Default.setup.localServer.HTTPS_Usage,
+          ...isNotUndefined(actualBrowserLiveReloadingSetup__rawValid.localServer.HTTPS) ? {
+
+            HTTPS: {
+              keyAbsolutePath: ImprovedPath.joinPathSegments(
+                [
+                  projectBuilderCommonSettings__normalized.projectRootDirectoryAbsolutePath,
+                  actualBrowserLiveReloadingSetup__rawValid.localServer.HTTPS.SSL_KeyRelativePath
+                ],
+                { alwaysForwardSlashSeparators: true }
+              ),
+              certificateAbsolutePath: ImprovedPath.joinPathSegments(
+                [
+                  projectBuilderCommonSettings__normalized.projectRootDirectoryAbsolutePath,
+                  actualBrowserLiveReloadingSetup__rawValid.localServer.HTTPS.SSL_CertificateRelativePath
+                ],
+                { alwaysForwardSlashSeparators: true }
+              )
+            }
+
+          } : null,
 
           mustUseCORS:
               actualBrowserLiveReloadingSetup__rawValid.localServer.useCORS === true ?

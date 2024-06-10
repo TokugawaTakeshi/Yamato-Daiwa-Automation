@@ -32,14 +32,23 @@ namespace BrowserLiveReloadingSettings__FromFile__RawValid {
       ignoredFilesAndDirectoriesRelativePaths?: ReadonlyArray<string>;
       customPort?: number;
       customStartingFileNameWithExtension?: string;
-      useHTTPS?: boolean;
+      HTTPS?: LocalServer.HTTPS;
       useCORS?: boolean;
     }>;
+
+    export namespace LocalServer {
+      export type HTTPS = Readonly<{
+        SSL_KeyRelativePath: string;
+        SSL_CertificateRelativePath: string;
+      }>;
+    }
+
 
     export type BrowserSyncUserInterface = Readonly<{
       customPort?: number;
       disable?: boolean;
     }>;
+
   }
 
 
@@ -63,7 +72,11 @@ namespace BrowserLiveReloadingSettings__FromFile__RawValid {
         ignoredFilesAndDirectoriesRelativePaths: Readonly<{ KEY: string; }>;
         customPort: Readonly<{ KEY: string; }>;
         customStartingFileNameWithExtension: Readonly<{ KEY: string; }>;
-        useHTTPS: Readonly<{ KEY: string; }>;
+        HTTPS: Readonly<{
+          KEY: string;
+          SSL_KeyRelativePath: Readonly<{ KEY: string; }>;
+          SSL_CertificateRelativePath: Readonly<{ KEY: string; }>;
+        }>;
         useCORS: Readonly<{ KEY: string; }>;
       }>;
 
@@ -147,10 +160,29 @@ namespace BrowserLiveReloadingSettings__FromFile__RawValid {
                   minimalCharactersCount: 1
                 },
 
-                [browserLiveReloadingSettingsLocalization.setups.localServer.useHTTPS.KEY]: {
-                  newName: "useHTTPS",
-                  type: Boolean,
-                  required: false
+                [browserLiveReloadingSettingsLocalization.setups.localServer.HTTPS.KEY]: {
+
+                  newName: "HTTPS",
+                  type: Object,
+                  required: false,
+                  preValidationModifications: nullToUndefined,
+
+                  properties: {
+
+                    [browserLiveReloadingSettingsLocalization.setups.localServer.HTTPS.SSL_KeyRelativePath.KEY]: {
+                      type: String,
+                      required: true,
+                      minimalCharactersCount: 1
+                    },
+
+                    [browserLiveReloadingSettingsLocalization.setups.localServer.HTTPS.SSL_CertificateRelativePath.KEY]: {
+                      type: String,
+                      required: true,
+                      minimalCharactersCount: 1
+                    }
+
+                  }
+
                 },
 
                 [browserLiveReloadingSettingsLocalization.setups.localServer.useCORS.KEY]: {

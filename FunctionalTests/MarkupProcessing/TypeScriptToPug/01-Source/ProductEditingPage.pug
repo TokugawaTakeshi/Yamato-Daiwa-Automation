@@ -1,0 +1,42 @@
+extends _Layouts/MainLayout.pug
+
+
+block append Metadata
+
+  - const HTML_PAGE_TITLE = "Products editing";
+
+
+block append SpecificContent
+
+  form
+
+    h1 Product editing
+
+    -
+
+      const { Product } = IMPORTS_FROM_TYPESCRIPT;
+      const targetProduct = IMPORTS_FROM_TYPESCRIPT.mockData.products[0];
+
+
+    label(
+      for="PRODUCT_NAME--TEXT_BOX"
+    )
+    input#PRODUCT_NAME--TEXT_BOX(
+      type="text"
+      value=targetProduct.name
+      required=Product.Name.REQUIRED
+      minlength=Product.Name.MINIMAL_CHARACTERS_COUNT
+    )
+
+    label(
+      for="PRODUCT_DESCRIPTION--TEXT_AREA"
+    )
+    textarea#PRODUCT_DESCRIPTION--TEXT_AREA(
+      required=Product.Description.REQUIRED
+      minlength=Product.Description.MINIMAL_CHARACTERS_COUNT
+      maxlength=Product.Description.MAXIMAL_CHARACTERS_COUNT
+    )= targetProduct.description
+
+    button(
+      type="submit"
+    ) Update

@@ -1,9 +1,9 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosProcessingSettings__Normalized";
-import ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
-import AssetsGroupID = ProjectBuildingConfig__Normalized.AssetsGroupID;
+import type AssetsProcessingSettingsGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import AssetsProcessingSettingsRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/AssetsProcessingSettingsRepresentative";
@@ -13,27 +13,38 @@ export default class VideosProcessingSettingsRepresentative extends AssetsProces
   VideosProcessingSettings__Normalized.Common, VideosProcessingSettings__Normalized.AssetsGroup
 > {
 
+  public readonly relevantSourceFilesGlobSelectors: ReadonlyArray<string>;
+
+  public readonly assetsProcessingCommonSettings: VideosProcessingSettings__Normalized.Common;
+  public readonly relevantAssetsGroupsSettingsMappedByGroupID: ReadonlyMap<
+    AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID,
+    VideosProcessingSettings__Normalized.AssetsGroup
+  >;
+
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Video";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Videos";
-  public readonly relevantSourceFilesGlobSelectors: Array<string>;
-
-  protected readonly assetsProcessingCommonSettings: VideosProcessingSettings__Normalized.Common;
-  protected readonly actualAssetsGroupsSettings: Map<AssetsGroupID, VideosProcessingSettings__Normalized.AssetsGroup>;
 
 
   public constructor(
     videosManagementSettings: VideosProcessingSettings__Normalized,
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
 
-    super(masterConfigRepresentative);
+    super({
+      assetsProcessingCommonSettings: videosManagementSettings.common,
+      projectBuildingMasterConfigRepresentative,
+      loggingSettings: videosManagementSettings.logging,
+      relevantAssetsGroupsSettingsMappedByGroupID: videosManagementSettings.assetsGroups
+    });
 
     this.assetsProcessingCommonSettings = videosManagementSettings.common;
-    this.actualAssetsGroupsSettings = videosManagementSettings.assetsGroups;
+    this.relevantAssetsGroupsSettingsMappedByGroupID = videosManagementSettings.assetsGroups;
 
-    this.relevantSourceFilesGlobSelectors = Array.from(this.actualAssetsGroupsSettings.values()).map(
-      (imagesGroupSettings: VideosProcessingSettings__Normalized.AssetsGroup): string =>
-          imagesGroupSettings.sourceFilesGlobSelector
+    this.relevantSourceFilesGlobSelectors = Array.from(this.relevantAssetsGroupsSettingsMappedByGroupID.values()).map(
+      (videosGroupSettings: VideosProcessingSettings__Normalized.AssetsGroup): string =>
+          videosGroupSettings.sourceFilesGlobSelector
     );
+
   }
+
 }

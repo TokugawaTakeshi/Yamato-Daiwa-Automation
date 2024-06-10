@@ -1,28 +1,32 @@
-/* --- Restrictions ------------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRestrictions";
 import SupportedECMA_ScriptRuntimesTypes = ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes;
+import ConsumingProjectBuildingModes from "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* --- Default settings --------------------------------------------------------------------------------------------- */
+/* ─── Default Settings ───────────────────────────────────────────────────────────────────────────────────────────── */
 import ECMA_ScriptLogicProcessingSettings__Default from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Default";
 
-/* --- Raw valid settings ------------------------------------------------------------------------------------------- */
+/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
 import type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__FromFile__RawValid";
 
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+import type SourceCodeProcessingGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Normalized";
 
-/* --- Settings normalizers ----------------------------------------------------------------------------------------- */
+/* ─── Settings normalizers ───────────────────────────────────────────────────────────────────────────────────────── */
 import SourceCodeProcessingRawSettingsNormalizer from
     "@ProjectBuilding:Common/RawSettingsNormalizers/SourceCodeProcessingRawSettingsNormalizer";
+import RevisioningSettingsNormalizer from
+    "@ProjectBuilding/Common/RawSettingsNormalizers/Reusables/RevisioningSettingsNormalizer";
 
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
-import { isNotUndefined } from "@yamato-daiwa/es-extensions";
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+import { isUndefined, isNotUndefined } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
@@ -49,6 +53,17 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
             entryPointsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.ECMA_ScriptLogicProcessing
           } : null
         });
+
+    const relevantEntryPointsGroups: ReadonlyMap<
+      SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
+      ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
+    > = dataHoldingSelfInstance.createNormalizedEntryPointsGroupsSettings(
+      ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.entryPointsGroups,
+      dataHoldingSelfInstance.
+          /* eslint-disable-next-line max-len -- Unable to split this line to multiple. */
+          completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilECMA_ScriptLogicEntryPointsGroupNormalizedSettings.
+          bind(dataHoldingSelfInstance)
+    );
 
     const lintingSettings__fromFile__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Linting =
         ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.linting ?? {};
@@ -83,21 +98,52 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
       },
 
-      relevantEntryPointsGroups:
-          dataHoldingSelfInstance.createNormalizedEntryPointsGroupsSettings(
-            ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.entryPointsGroups,
-            dataHoldingSelfInstance.
-                /* eslint-disable-next-line max-len -- Unable to split this line to multiple. */
-                completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilECMA_ScriptLogicEntryPointsGroupNormalizedSettings.
-                bind(dataHoldingSelfInstance)
-          )
+      relevantEntryPointsGroups,
+
+      ...dataHoldingSelfInstance.normalizeLocalDevelopmentServerOrchestrationSettingsIfAny(
+        relevantEntryPointsGroups,
+        ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.localDevelopmentServerOrchestration
+      ),
+
+      logging: {
+
+        filesPaths:
+            ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.logging?.filesPaths ??
+            ECMA_ScriptLogicProcessingSettings__Default.logging.filesPaths,
+
+        filesCount:
+            ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.logging?.filesCount ??
+            ECMA_ScriptLogicProcessingSettings__Default.logging.filesCount,
+
+        partialFilesAndParentEntryPointsCorrespondence:
+            ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.logging?.filesWatcherEvents ??
+            ECMA_ScriptLogicProcessingSettings__Default.logging.partialFilesAndParentEntryPointsCorrespondence,
+
+        filesWatcherEvents:
+            ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.logging?.filesWatcherEvents ??
+            ECMA_ScriptLogicProcessingSettings__Default.logging.filesWatcherEvents,
+
+        linting: {
+
+          starting:
+              ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.logging?.linting.starting ??
+              ECMA_ScriptLogicProcessingSettings__Default.logging.linting.starting,
+
+          completionWithoutIssues:
+              ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.logging?.linting.completionWithoutIssues ??
+              ECMA_ScriptLogicProcessingSettings__Default.logging.linting.completionWithoutIssues
+
+        }
+
+      }
+
     };
 
   }
 
 
   private completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilECMA_ScriptLogicEntryPointsGroupNormalizedSettings(
-    entryPointsGroupGenericSettings__normalized: ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings,
+    entryPointsGroupGenericSettings__normalized: SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup,
     entryPointsGroupSettings__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup
   ): ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup {
 
@@ -145,18 +191,14 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
       })(),
 
-      entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML:
-          `${ ECMA_ScriptLogicProcessingSettings__Default.entryPointsGroupReferencePrefix }` +
-          `${ entryPointsGroupSettings__rawValid.customReferenceName ?? entryPointsGroupGenericSettings__normalized.ID }`,
-
       ...isNotUndefined(
         entryPointsGroupSettings__rawValid.
-            associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer
+            associatedMarkupEntryPointsGroupID_ForDynamicModulesLoadingWithoutDevelopmentServer
       ) ?
           {
-            associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer:
+            associatedMarkupEntryPointsGroupID_ForDynamicModulesLoadingWithoutDevelopmentServer:
                 entryPointsGroupSettings__rawValid.
-                    associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer
+                    associatedMarkupEntryPointsGroupID_ForDynamicModulesLoadingWithoutDevelopmentServer
           } : null,
 
       typeScriptConfigurationFileAbsolutePath: ImprovedPath.joinPathSegments(
@@ -168,19 +210,21 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
         { alwaysForwardSlashSeparators: true }
       ),
 
-      revisioning: {
-        mustExecute:
-            entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
-                revisioning?.disable === true ?
-                false : ECMA_ScriptLogicProcessingSettings__Default.revisioning.mustExecute({
-                  consumingProjectBuildingMode: this.consumingProjectBuildingMode,
-                  targetRuntimeType: entryPointsGroupSettings__rawValid.targetRuntime.type
-                }),
-        contentHashPostfixSeparator:
-            entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].
-                revisioning?.contentHashPostfixSeparator ??
-            ECMA_ScriptLogicProcessingSettings__Default.revisioning.contentHashPostfixSeparator
-      },
+      revisioning: RevisioningSettingsNormalizer.normalize({
+        revisioningSettings__rawValid: entryPointsGroupSettings__rawValid.
+            buildingModeDependent[this.consumingProjectBuildingMode].revisioning,
+        revisioningSettings__default: {
+          mustExecute: (
+            { consumingProjectBuildingMode }: Readonly<{ consumingProjectBuildingMode: ConsumingProjectBuildingModes; }>
+          ): boolean =>
+              ECMA_ScriptLogicProcessingSettings__Default.revisioning.mustExecute({
+                consumingProjectBuildingMode,
+                targetRuntimeType: entryPointsGroupSettings__rawValid.targetRuntime.type
+              }),
+          contentHashPostfixSeparator: ECMA_ScriptLogicProcessingSettings__Default.revisioning.contentHashPostfixSeparator
+        },
+        consumingProjectBuildingMode: this.consumingProjectBuildingMode
+      }),
 
       ...isNotUndefined(distributingSettings__rawValid) ? {
 
@@ -189,8 +233,12 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
           exposingOfExportsFromEntryPoints: {
             mustExpose: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.mustExpose ??
                 ECMA_ScriptLogicProcessingSettings__Default.distributing.exposingOfExportsFromEntryPoints.mustExpose,
-            namespace: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.namespace
+            namespace: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.namespace,
+            mustAssignToWindowObject: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.mustAssignToWindowObject ??
+                ECMA_ScriptLogicProcessingSettings__Default.distributing.exposingOfExportsFromEntryPoints.mustAssignToWindowObject
           },
+
+          externalizingDependencies: distributingSettings__rawValid.externalizingDependencies ?? [],
 
           typeScriptTypesDeclarations: {
             mustGenerate: distributingSettings__rawValid.typeScriptTypesDeclarations?.mustGenerate ??
@@ -201,6 +249,50 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
         }
 
       } : null
+
+    };
+
+  }
+
+  private normalizeLocalDevelopmentServerOrchestrationSettingsIfAny(
+    relevantEntryPointsGroups: ReadonlyMap<
+      SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
+      ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
+    >,
+    localDevelopmentServerOrchestrationSettings__rawValid?:
+        ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.LocalDevelopmentServerOrchestration
+  ): {
+    localDevelopmentServerOrchestration: ECMA_ScriptLogicProcessingSettings__Normalized.LocalDevelopmentServerOrchestration;
+  } | null {
+
+    if (
+      this.projectBuildingCommonSettings__normalized.projectBuildingMode !== ConsumingProjectBuildingModes.localDevelopment ||
+      isUndefined(localDevelopmentServerOrchestrationSettings__rawValid)
+    ) {
+      return null;
+    }
+
+
+    const targetEntryPointsGroup: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup | undefined =
+        relevantEntryPointsGroups.get(localDevelopmentServerOrchestrationSettings__rawValid.targetSingularEntryPointsGroupID);
+
+    if (isUndefined(targetEntryPointsGroup) || !targetEntryPointsGroup.isSingeEntryPointGroup) {
+      return null;
+    }
+
+
+    return {
+
+      localDevelopmentServerOrchestration: {
+
+        targetSourceFileAbsolutePath: targetEntryPointsGroup.sourceFilesGlobSelectors[0],
+
+        arguments: localDevelopmentServerOrchestrationSettings__rawValid.arguments ?? [],
+
+        environmentVariables: localDevelopmentServerOrchestrationSettings__rawValid.environmentVariables ?? {}
+
+      }
+
     };
 
   }

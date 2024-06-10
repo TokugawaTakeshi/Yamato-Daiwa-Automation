@@ -1,67 +1,113 @@
-/* --- Config representative ---------------------------------------------------------------------------------------- */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import type VinylFile from "vinyl";
-import printProcessedFilesPathsAndQuantity from "gulp-debug";
 import preventGulpPipelineBreaking from "gulp-plumber";
+import GulpStreamModifier from "@Utils/GulpStreamModifier";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
-import { insertSubstring, Logger } from "@yamato-daiwa/es-extensions";
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import type Stream from "stream";
+import { Logger, nullToUndefined, secondsToMilliseconds } from "@yamato-daiwa/es-extensions";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 import NodeNotifier from "node-notifier";
 
 
 abstract class GulpStreamsBasedTaskExecutor {
 
-  protected abstract readonly TASK_NAME_FOR_LOGGING: string;
+  private static readonly SUBSEQUENT_ERROR_TOAST_NOTIFICATION_PROHIBITION_PERIOD__SECONDS: number = 5;
 
-  protected readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+  protected abstract readonly logging: GulpStreamsBasedTaskExecutor.Logging;
+
+  protected readonly projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+  protected readonly TASK_TITLE_FOR_LOGGING: string;
+
+  protected processedFilesCountDuringCurrentRun: number = 0;
+
+  private waitingForErrorToastNotificationsWillBePermittedAgain: NodeJS.Timeout | null = null;
+  private isErrorToastNotificationPermitted: boolean = true;
 
 
-  protected constructor(masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative) {
-    this.masterConfigRepresentative = masterConfigRepresentative;
+  protected constructor(
+    {
+      projectBuildingMasterConfigRepresentative,
+      taskTitleForLogging
+    }: GulpStreamsBasedTaskExecutor.ConstructorParameter
+  ) {
+    this.projectBuildingMasterConfigRepresentative = projectBuildingMasterConfigRepresentative;
+    this.TASK_TITLE_FOR_LOGGING = taskTitleForLogging;
   }
 
 
-  protected printProcessedFilesPathsAndQuantity(
-    namedParameters: Readonly<{ subtaskName?: string; }> = {}
-  ): NodeJS.ReadWriteStream {
-    return printProcessedFilesPathsAndQuantity({
-      title: `Task '${ this.TASK_NAME_FOR_LOGGING }` +
-          `${ 
-            insertSubstring(
-              namedParameters.subtaskName, 
-              { modifier: (subtaskName: string): string => ` / ${ subtaskName }` }
-            )
-          }':`
-    });
-  }
-
-  protected handleErrorIfItWillOccur(
-    namedParameters: Readonly<{ subtaskName?: string; }> = {}
-  ): NodeJS.ReadWriteStream {
+  protected handleErrorIfItWillOccur(): NodeJS.ReadWriteStream {
     return preventGulpPipelineBreaking({
 
       errorHandler: (error: Error): void => {
 
-        const ERROR_MESSAGE_TITLE: string = `Task '${ this.TASK_NAME_FOR_LOGGING }` +
-            `${
-              insertSubstring(
-                namedParameters.subtaskName,
-                { modifier: (subtaskName: string): string => ` / ${ subtaskName }` }
-              )
-            }', error occurred`;
+        const ERROR_MESSAGE_TITLE: string = `Task "${ this.TASK_TITLE_FOR_LOGGING }", error occurred`;
 
         Logger.logErrorLikeMessage({
           title: ERROR_MESSAGE_TITLE,
           description: error.message
         });
 
-        NodeNotifier.notify({
-          title: ERROR_MESSAGE_TITLE,
-          message: "Please check your terminal for the details."
-        });
+        clearTimeout(nullToUndefined(this.waitingForErrorToastNotificationsWillBePermittedAgain));
+
+        if (this.isErrorToastNotificationPermitted) {
+          NodeNotifier.notify({
+            title: ERROR_MESSAGE_TITLE,
+            message: "Please check your terminal for the details."
+          });
+        }
+
+        this.waitingForErrorToastNotificationsWillBePermittedAgain = setTimeout(
+          (): void => { this.isErrorToastNotificationPermitted = true; },
+          secondsToMilliseconds(GulpStreamsBasedTaskExecutor.SUBSEQUENT_ERROR_TOAST_NOTIFICATION_PROHIBITION_PERIOD__SECONDS)
+        );
+
       }
+
+    });
+  }
+
+  protected logProcessedFilesIfMust(): Stream.Transform {
+    return GulpStreamModifier.modify({
+
+      onStreamStartedEventCommonHandler: async (file: VinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
+
+        Logger.logGeneric({
+          mustOutputIf: this.logging.pathsOfFilesWillBeProcessed,
+          badge: false,
+          title: `[ ${ this.TASK_TITLE_FOR_LOGGING } ]`,
+          description: ImprovedPath.computeRelativePath({
+            basePath: this.projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
+            comparedPath: file.path,
+            alwaysForwardSlashSeparators: true
+          }),
+          compactLayout: true
+        });
+
+        this.processedFilesCountDuringCurrentRun++;
+
+        return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+      },
+
+      onStreamEndedEventHandler: async (): Promise<void> => {
+
+        Logger.logGeneric({
+          mustOutputIf: this.logging.quantityOfFilesWillBeProcessed,
+          badge: false,
+          title: this.TASK_TITLE_FOR_LOGGING,
+          description: `Files will be processed: ${ this.processedFilesCountDuringCurrentRun }`,
+          compactLayout: true
+        });
+
+        this.processedFilesCountDuringCurrentRun = 0;
+
+        return Promise.resolve();
+
+      }
+
     });
   }
 
@@ -69,12 +115,17 @@ abstract class GulpStreamsBasedTaskExecutor {
 
 
 namespace GulpStreamsBasedTaskExecutor {
-  export type VinylFileWithCachedNormalizedSettings =
-      VinylFile &
-      Readonly<{
-        sourceAbsolutePath: string;
-        outputDirectoryAbsolutePath: string;
-      }>;
+
+  export type ConstructorParameter = Readonly<{
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+    taskTitleForLogging: string;
+  }>;
+
+  export type Logging = Readonly<{
+    pathsOfFilesWillBeProcessed: boolean;
+    quantityOfFilesWillBeProcessed: boolean;
+  }>;
+
 }
 
 

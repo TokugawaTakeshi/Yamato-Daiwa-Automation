@@ -1,37 +1,37 @@
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+import type SourceCodeProcessingGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
+import type LintingSettings__Normalized from "@ProjectBuilding/Common/NormalizedConfig/LintingSettings__Normalized";
+import type RevisioningSettings__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/Reusables/RevisioningSettings__Normalized";
 
 
 type StylesProcessingSettings__Normalized = Readonly<{
   common: StylesProcessingSettings__Normalized.Common;
   linting: StylesProcessingSettings__Normalized.Linting;
-  entryPointsGroupsActualForCurrentProjectBuildingMode: ReadonlyMap<
-    ProjectBuildingConfig__Normalized.EntryPointsGroupID, StylesProcessingSettings__Normalized.EntryPointsGroup
+  relevantEntryPointsGroups: ReadonlyMap<
+    SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
+    StylesProcessingSettings__Normalized.EntryPointsGroup
   >;
+  logging: StylesProcessingSettings__Normalized.Logging;
 }>;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
 namespace StylesProcessingSettings__Normalized {
 
   export type Common =
-      ProjectBuildingConfig__Normalized.SourceCodeProcessingCommonSettingsGenericProperties &
+      SourceCodeProcessingGenericProperties__Normalized.Common &
       Readonly<{
         waitingForSubsequentFilesWillBeSavedPeriod__seconds: number;
       }>;
 
-  export type Linting = Readonly<{
-    presetFileAbsolutePath?: string;
-    isCompletelyDisabled: boolean;
-  }>;
+
+  export type Linting = LintingSettings__Normalized;
+
 
   export type EntryPointsGroup =
-      ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings &
+      SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup &
       Readonly<{
-        entryPointsSourceFilesTopDirectoryOrSingleFilePathAliasForReferencingFromHTML: string;
-        revisioning: ProjectBuildingConfig__Normalized.Revisioning;
+        revisioning: RevisioningSettings__Normalized;
       }>;
 
   export namespace EntryPointsGroup {
@@ -42,7 +42,22 @@ namespace StylesProcessingSettings__Normalized {
     export type Linting = Readonly<{
       mustExecute: boolean;
     }>;
+
   }
+
+  export type Logging = Readonly<{
+
+    filesPaths: boolean;
+    filesCount: boolean;
+    partialFilesAndParentEntryPointsCorrespondence: boolean;
+    filesWatcherEvents: boolean;
+
+    linting: Readonly<{
+      starting: boolean;
+      completionWithoutIssues: boolean;
+    }>;
+
+  }>;
 
 }
 

@@ -1,83 +1,153 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type StylesProcessingSettings__Normalized from "@StylesProcessing/StylesProcessingSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import StylesProcessingSettingsRepresentative from "@StylesProcessing/StylesProcessingSettingsRepresentative";
 
-/* --- Tasks executors ---------------------------------------------------------------------------------------------- */
-import GulpStreamsBasedSourceCodeProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedSourceCodeProcessor";
-import type GulpStreamsBasedTaskExecutor from
+/* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
+import StylesSourceFilesWatcher from "@StylesProcessing/StylesSourceFilesWatcher";
+
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+import GulpStreamsBasedTaskExecutor from
     "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
-/* --- Gulp plugins ------------------------------------------------------------------------------------------------- */
+/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import StylesProcessingSharedState from "@StylesProcessing/StylesProcessingSharedState";
+
+/* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
 import type VinylFile from "vinyl";
 import gulpIf from "gulp-if";
-import gulpIntercept from "gulp-intercept";
 import gulpSourcemaps from "gulp-sourcemaps";
 import gulpStylus from "gulp-stylus";
 import gulpPostCSS from "gulp-postcss";
 import Autoprefixer from "autoprefixer";
 import CSS_Nano from "cssnano";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
-import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
+/* ─── Third-party Solutions Specialises ──────────────────────────────────────────────────────────────────────────── */
+import StylusPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/StylusPreProcessorSpecialist";
+
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
+import SourceCodeSelectiveReprocessingHelper from "@Utils/SourceCodeSelectiveReprocessingHelper";
+import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
+import StylesEntryPointVinylFile from "@StylesProcessing/StylesEntryPointVinylFile";
+import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
 import ContainerQueriesSyntaxNormalizerForStylus from
-    "@StylesProcessing/Plugins/ContainerQueriesSyntaxNormalizerForStylus/ContainerQueriesSyntaxNormalizerForStylus";
+      "@StylesProcessing/Plugins/ContainerQueriesSyntaxNormalizerForStylus/ContainerQueriesSyntaxNormalizerForStylus";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
-import { PassThrough } from "stream";
-import { isUndefined } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import {
+  extractFileNameWithoutLastExtension,
+  isNotNull,
+  isUndefined,
+  secondsToMilliseconds
+} from "@yamato-daiwa/es-extensions";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
-  StylesProcessingSettings__Normalized.Common,
-  StylesProcessingSettings__Normalized.EntryPointsGroup,
-  StylesProcessingSettingsRepresentative
-> {
+export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
 
-  protected readonly TASK_NAME_FOR_LOGGING: string = "Styles processing";
+  private static readonly ENTRY_POINTS_AND_PARTIAL_FILES_MAPPING_CACHE_FILE_NAME_WITH_EXTENSION: string =
+      "StylusEntryPointsAndAffiliatedFilesMappingCache.json";
+
+  protected readonly logging: GulpStreamsBasedTaskExecutor.Logging;
 
   private readonly stylesProcessingConfigRepresentative: StylesProcessingSettingsRepresentative;
 
+  private readonly absolutePathOfFilesWaitingForReProcessing: Set<string> = new Set<string>();
+  private sourceCodeSelectiveReprocessingHelper: SourceCodeSelectiveReprocessingHelper | null = null;
+
+  private subsequentFilesStateChangeTimeout: NodeJS.Timeout | null = null;
+
 
   public static provideStylesProcessingIfMust(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): () => NodeJS.ReadWriteStream {
 
     const stylesProcessingSettingsRepresentative: StylesProcessingSettingsRepresentative | undefined =
-        masterConfigRepresentative.stylesProcessingSettingsRepresentative;
+        projectBuildingMasterConfigRepresentative.stylesProcessingSettingsRepresentative;
 
     if (isUndefined(stylesProcessingSettingsRepresentative)) {
-      return (): NodeJS.ReadWriteStream => new PassThrough().end();
+      return createImmediatelyEndingEmptyStream();
     }
 
 
     const dataHoldingSelfInstance: StylesProcessor = new StylesProcessor(
-      masterConfigRepresentative, stylesProcessingSettingsRepresentative
+      stylesProcessingSettingsRepresentative, projectBuildingMasterConfigRepresentative
     );
 
-    if (masterConfigRepresentative.isStaticPreviewBuildingMode || masterConfigRepresentative.isLocalDevelopmentBuildingMode) {
-      dataHoldingSelfInstance.initializeSourceFilesDirectoriesWhichAlwaysWillBeBeingWatchedGlobSelectors();
-      dataHoldingSelfInstance.initializeOrUpdateWatchedSourceFilesGlobSelectors();
-      dataHoldingSelfInstance.initializeOrUpdateSourceFilesWatcher();
+    if (projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
+
+      dataHoldingSelfInstance.sourceCodeSelectiveReprocessingHelper = new SourceCodeSelectiveReprocessingHelper({
+        initialEntryPointsSourceFilesAbsolutePaths: stylesProcessingSettingsRepresentative.
+            initialRelevantEntryPointsSourceFilesAbsolutePaths,
+        affiliatedFilesResolutionRules: {
+          affiliatedFilesIncludingDeclarationsPatterns: StylusPreProcessorSpecialist.partialFilesIncludingDeclarationPatterns,
+          implicitFilesNamesExtensionsWithoutLeadingDotsOfAffiliatedFiles: StylusPreProcessorSpecialist.
+              implicitFilesNamesExtensionsWithoutLeadingDotsOfPartials
+        },
+        isEntryPoint: stylesProcessingSettingsRepresentative.isEntryPoint.bind(stylesProcessingSettingsRepresentative),
+        logging: {
+          mustEnable: stylesProcessingSettingsRepresentative.loggingSettings.partialFilesAndParentEntryPointsCorrespondence,
+          targetFilesTypeInSingularForm: stylesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM
+        },
+        consumingProjectRootDirectoryAbsolutePath: projectBuildingMasterConfigRepresentative.
+            consumingProjectRootDirectoryAbsolutePath,
+        cacheFileAbsolutePath: ImprovedPath.joinPathSegments(
+          [
+            DotYDA_DirectoryManager.OPTIMIZATION_FILES_DIRECTORY_ABSOLUTE_PATH,
+            StylesProcessor.ENTRY_POINTS_AND_PARTIAL_FILES_MAPPING_CACHE_FILE_NAME_WITH_EXTENSION
+          ]
+        )
+      });
+
+      StylesSourceFilesWatcher.
+          initializeIfRequiredAndGetInstance({
+            stylesProcessingSettingsRepresentative,
+            projectBuildingMasterConfigRepresentative
+          }).
+          addOnAnyEventRelatedWithActualFilesHandler({
+            handlerID: "ON_ANY_EVENT_WITH_STYLES_SOURCE_CODE_FILE--BY_STYLED_PROCESSOR",
+            handler: dataHoldingSelfInstance.onSourceFilesWatcherEmitsAnyEvent.bind(dataHoldingSelfInstance)
+          }).
+          addOnEntryPointFileAddedEventHandler({
+            handlerID: "ON_STYLES_ENTRY_POINT_FILE_ADDED--BY_STYLES_PROCESSOR",
+            handler: dataHoldingSelfInstance.onEntryPointFileAdded.bind(dataHoldingSelfInstance)
+          }).
+          addOnEntryPointFileDeletedEventHandler({
+            handlerID: "ON_STYLES_ENTRY_POINT_FILE_DELETED--BY_STYLES_PROCESSOR",
+            handler: StylesProcessor.onEntryPointFileDeleted
+          });
+
     }
 
     return dataHoldingSelfInstance.processEntryPoints(
-      stylesProcessingSettingsRepresentative.relevantEntryPointsSourceFilesAbsolutePaths
+      stylesProcessingSettingsRepresentative.initialRelevantEntryPointsSourceFilesAbsolutePaths
     );
+
   }
 
 
   private constructor(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
-    stylesProcessingConfigRepresentative: StylesProcessingSettingsRepresentative
+    stylesProcessingSettingsRepresentative: StylesProcessingSettingsRepresentative,
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
-    super(masterConfigRepresentative, stylesProcessingConfigRepresentative);
-    this.stylesProcessingConfigRepresentative = stylesProcessingConfigRepresentative;
+
+    super({
+      projectBuildingMasterConfigRepresentative,
+      taskTitleForLogging: "Styles processing"
+    });
+
+    this.logging = {
+      pathsOfFilesWillBeProcessed: stylesProcessingSettingsRepresentative.loggingSettings.filesPaths,
+      quantityOfFilesWillBeProcessed: stylesProcessingSettingsRepresentative.loggingSettings.filesCount
+    };
+
+    this.stylesProcessingConfigRepresentative = stylesProcessingSettingsRepresentative;
+
   }
 
 
@@ -87,132 +157,199 @@ export class StylesProcessor extends GulpStreamsBasedSourceCodeProcessor<
      *    However, the empty array is usual scenario (for example when user declared the configuration but has not added
      *    files of specific entry points group yet).  */
     if (entryPointsSourceFilesAbsolutePaths.length === 0) {
-      return (): NodeJS.ReadWriteStream => new PassThrough().end();
+      return createImmediatelyEndingEmptyStream();
     }
 
 
-    return (): NodeJS.ReadWriteStream => Gulp.src(entryPointsSourceFilesAbsolutePaths).
+    return (): NodeJS.ReadWriteStream => Gulp.
 
-        pipe(super.printProcessedFilesPathsAndQuantity()).
-        pipe(super.handleErrorIfItWillOccur()).
+        src(entryPointsSourceFilesAbsolutePaths).
 
-        pipe(gulpIntercept(this.addActualSourceCodeProcessingSettingsToVinylFile.bind(this))).
+        pipe(this.handleErrorIfItWillOccur()).
 
-        pipe(gulpIf(
-          this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-                this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithStylesEntryPointVinylFile.bind(this)
+          })
+        ).
+
+        pipe(
+          gulpIf(
+            this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode ||
+                this.projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
             gulpSourcemaps.init()
-        )).
-        pipe(gulpIf(
-        /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-         * No known simple solution; will be fixed at 2nd generation of StylesProcessor.  */
-          (file: VinylFile): boolean => (file as StylesProcessor.StylesVinylFile).mustBeProcessedByStylus,
+          )
+        ).
+
+        pipe(this.logProcessedFilesIfMust()).
+
+        pipe(
           gulpStylus({
 
             /* [ Theory ] Allows to "@include XXX.css" which is critical for third-party libraries' usage. */
             "include css": true
+
           })
-        )).
-        pipe(gulpPostCSS((): { plugins: Array<unknown>; } => ({
-          plugins: [
-            Autoprefixer,
-            CSS_Nano({
-              preset: [
-                "default",
-                {
-                  normalizeWhitespace: !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
-                      !this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
-                  discardComments: !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
-                      !this.masterConfigRepresentative.isLocalDevelopmentBuildingMode
-                }
-              ]
-            })
-          ]
-        }))).
-
-        pipe(GulpStreamModifier.modify({
-          async onStreamStartedEventCommonHandler(stylesheet: VinylFile): Promise<GulpStreamModifier.CompletionSignals> {
-            ContainerQueriesSyntaxNormalizerForStylus.normalizeSyntax(stylesheet);
-            return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-          }
-        })).
-
-        pipe(gulpIf(
-          this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-                this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
-            gulpSourcemaps.write()
-        )).
-
-        pipe(gulpIntercept(this.onPostProcessedCode.bind(this))).
+        ).
 
         pipe(
-          Gulp.dest((targetFileInFinalState: VinylFile): string =>
-              /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-               * No known simple solution; will be fixed at 2nd generation of StylesProcessor.  */
-              (targetFileInFinalState as StylesProcessor.StylesVinylFile).outputDirectoryAbsolutePath)
-        );
-  }
+          GulpStreamModifier.modify({
+            async onStreamStartedEventCommonHandler(stylesheet: VinylFile): Promise<GulpStreamModifier.CompletionSignals> {
+              ContainerQueriesSyntaxNormalizerForStylus.normalizeSyntax(stylesheet);
+              return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+            }
+          })
+        ).
 
-  private addActualSourceCodeProcessingSettingsToVinylFile(fileInInitialState: VinylFile): StylesProcessor.StylesVinylFile {
+        pipe(
+          gulpPostCSS(
+            (): { plugins: Array<unknown>; } => ({
+              plugins: [
+                Autoprefixer,
+                CSS_Nano({
+                  preset: [
+                    "default",
+                    {
+                      normalizeWhitespace: !this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode &&
+                          !this.projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
+                      discardComments: !this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode &&
+                          !this.projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode
+                    }
+                  ]
+                })
+              ]
+            })
+          )
+        ).
 
-    const normalizedStylesEntryPointsGroupSettingsActualForCurrentFile: StylesProcessingSettings__Normalized.EntryPointsGroup =
-        this.stylesProcessingConfigRepresentative.
-            getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(fileInInitialState.path);
+        pipe(
+          gulpIf(
+            this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode ||
+                this.projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
+            gulpSourcemaps.write()
+          )
+        ).
 
+        pipe(
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ StylesEntryPointVinylFile, StylesProcessor.onOutputCSS_FileReady ]
+            ])
+          })
+        ).
 
-    fileInInitialState.processingSettings = normalizedStylesEntryPointsGroupSettingsActualForCurrentFile;
-
-    /* [ Theory ] The value of 'path' could change during file processing. */
-    fileInInitialState.sourceAbsolutePath = ImprovedPath.replacePathSeparatorsToForwardSlashes(fileInInitialState.path);
-    fileInInitialState.outputDirectoryAbsolutePath = StylesProcessingSettingsRepresentative.
-        computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
-          fileInInitialState.path, normalizedStylesEntryPointsGroupSettingsActualForCurrentFile
-        );
-
-    fileInInitialState.mustBeProcessedByStylus = StylesProcessingSettingsRepresentative.
-        mustFileBeProcessedByStylus(fileInInitialState.path);
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of StylesProcessor.  */
-    return fileInInitialState as StylesProcessor.StylesVinylFile;
-  }
-
-
-  private onPostProcessedCode(_compiledStylesheet: VinylFile): VinylFile {
-
-    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-     * No known simple solution; will be fixed at 2nd generation of StylesProcessor.  */
-    const compiledStylesheet: StylesProcessor.StylesVinylFile = _compiledStylesheet as StylesProcessor.StylesVinylFile;
-
-    if (compiledStylesheet.processingSettings.revisioning.mustExecute) {
-      FileNameRevisionPostfixer.appendPostfixIfPossible(compiledStylesheet, {
-        contentHashPostfixSeparator: compiledStylesheet.processingSettings.revisioning.contentHashPostfixSeparator
-      });
-    }
-
-    this.stylesProcessingConfigRepresentative.
-        sourceAndOutputFilesAbsolutePathsCorrespondenceMap.
-        set(
-          ImprovedPath.replacePathSeparatorsToForwardSlashes(compiledStylesheet.sourceAbsolutePath),
-          ImprovedPath.joinPathSegments(
-            [ compiledStylesheet.outputDirectoryAbsolutePath, compiledStylesheet.basename ],
-            { forwardSlashOnlySeparators: true }
+        pipe(
+          Gulp.dest(
+            (targetFile: VinylFile): string =>
+                StylesEntryPointVinylFile.getOutputDirectoryAbsolutePathOfExpectedToBeSelfInstance(targetFile)
           )
         );
 
-    return compiledStylesheet;
   }
+
+
+  /* ━━━ Rebuilding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private onSourceFilesWatcherEmitsAnyEvent(targetFileAbsolutePath: string): void {
+
+    this.absolutePathOfFilesWaitingForReProcessing.add(targetFileAbsolutePath);
+
+    if (isNotNull(this.subsequentFilesStateChangeTimeout)) {
+      clearTimeout(this.subsequentFilesStateChangeTimeout);
+    }
+
+
+    this.subsequentFilesStateChangeTimeout = setTimeout(
+      (): void => {
+
+        this.processEntryPoints(
+          this.sourceCodeSelectiveReprocessingHelper?.getAbsolutePathsOfEntryPointsWhichMustBeProcessed(
+            this.absolutePathOfFilesWaitingForReProcessing
+          ) ?? []
+        )();
+
+        this.absolutePathOfFilesWaitingForReProcessing.clear();
+
+      },
+      secondsToMilliseconds(this.stylesProcessingConfigRepresentative.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS)
+    );
+
+  }
+
+  private onEntryPointFileAdded(targetEntryPointFileAbsolutePath: string): void {
+
+    const stylesEntryPointsGroupSettingsActualForCurrentFile: StylesProcessingSettings__Normalized.EntryPointsGroup = this.
+        stylesProcessingConfigRepresentative.
+        getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(targetEntryPointFileAbsolutePath);
+
+    StylesProcessingSharedState.
+        entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
+        set(
+          targetEntryPointFileAbsolutePath,
+          ImprovedPath.joinPathSegments(
+            [
+              StylesProcessingSettingsRepresentative.computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
+                targetEntryPointFileAbsolutePath, stylesEntryPointsGroupSettingsActualForCurrentFile
+              ),
+              `${ extractFileNameWithoutLastExtension(targetEntryPointFileAbsolutePath) }.css`
+            ],
+            { alwaysForwardSlashSeparators: true }
+          )
+        );
+
+  }
+
+  private static onEntryPointFileDeleted(targetEntryPointFileAbsolutePath: string): void {
+    StylesProcessingSharedState.
+        entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
+        delete(targetEntryPointFileAbsolutePath);
+  }
+
+
+  /* ━━━ Pipeline methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* eslint-disable-next-line @typescript-eslint/member-ordering --
+  * メソッドに依って「this」が必要に成ったり不要に成ったりしているが、メソッドは論理的な順番通り並べてある */
+  private async replacePlainVinylFileWithStylesEntryPointVinylFile(
+    plainVinylFile: VinylFile, addNewFileToStream: GulpStreamModifier.NewFilesAdder
+  ): Promise<GulpStreamModifier.CompletionSignals> {
+
+    addNewFileToStream(
+      new StylesEntryPointVinylFile({
+        initialPlainVinylFile: plainVinylFile,
+        actualEntryPointsGroupSettings: this.stylesProcessingConfigRepresentative.
+            getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(plainVinylFile.path)
+      })
+    );
+
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.REMOVING_FILE_FROM_STREAM);
+
+  }
+
+  private static async onOutputCSS_FileReady(
+    processedEntryPointVinylFile: StylesEntryPointVinylFile
+  ): Promise<GulpStreamModifier.CompletionSignals> {
+
+    if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.revisioning.mustExecute) {
+      FileNameRevisionPostfixer.appendPostfixIfPossible(
+        processedEntryPointVinylFile,
+        {
+          contentHashPostfixSeparator: processedEntryPointVinylFile.actualEntryPointsGroupSettings.revisioning.
+              contentHashPostfixSeparator
+        }
+      );
+    }
+
+    StylesProcessingSharedState.
+        entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
+        set(
+          processedEntryPointVinylFile.sourceAbsolutePath,
+          ImprovedPath.joinPathSegments(
+            [ processedEntryPointVinylFile.outputDirectoryAbsolutePath, processedEntryPointVinylFile.basename ],
+            { alwaysForwardSlashSeparators: true }
+          )
+        );
+
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+  }
+
 }
-
-
-export namespace StylesProcessor {
-  export type StylesVinylFile =
-      GulpStreamsBasedTaskExecutor.VinylFileWithCachedNormalizedSettings &
-      Readonly<{
-        processingSettings: StylesProcessingSettings__Normalized.EntryPointsGroup;
-        mustBeProcessedByStylus: boolean;
-      }>;
-}
-
-
-export default StylesProcessor;

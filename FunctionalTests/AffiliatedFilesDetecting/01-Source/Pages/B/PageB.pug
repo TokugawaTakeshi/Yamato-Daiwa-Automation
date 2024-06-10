@@ -1,0 +1,19 @@
+extends ../../Layouts/Main/MainLayout.pug
+
+block append Requirements
+
+  include ../../SharedComponents/SharedComponents.pug
+
+
+block append Metadata
+
+  - const PAGE_TITLE = "Page B";
+
+
+block append DynamicContent
+
+  article.PageB-Article
+
+    h1= PAGE_TITLE
+
+    include Partials/PageB-Partial.pug

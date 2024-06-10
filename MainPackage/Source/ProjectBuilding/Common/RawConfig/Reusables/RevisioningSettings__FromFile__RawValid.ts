@@ -1,22 +1,18 @@
 import type { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
 
 
-type RevisioningSettings__FromFile__RawValid = {
-  readonly disable?: boolean;
-  readonly contentHashPostfixSeparator?: string;
-};
+type RevisioningSettings__FromFile__RawValid = Readonly<{
+  disable?: boolean;
+  contentHashPostfixSeparator?: string;
+}>;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
 namespace RevisioningSettings__FromFile__RawValid {
 
-  export type Localization = {
-    readonly disable: { readonly KEY: string; };
-    readonly contentHashPostfixSeparator: { readonly KEY: string; };
-  };
+  export type Localization = Readonly<{
+    disable: Readonly<{ KEY: string; }>;
+    contentHashPostfixSeparator: Readonly<{ KEY: string; }>;
+  }>;
 
   export function getLocalizedPropertiesSpecification(
     revisioningLocalization: Localization
@@ -36,8 +32,11 @@ namespace RevisioningSettings__FromFile__RawValid {
         required: false,
         minimalCharactersCount: 1
       }
+
     };
+
   }
+
 }
 
 

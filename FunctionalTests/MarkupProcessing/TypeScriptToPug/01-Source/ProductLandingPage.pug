@@ -1,0 +1,23 @@
+extends _Layouts/MainLayout.pug
+
+
+block append Requirements
+
+  //- [ Testing ] Check will the transpiled TypeScript be appended to this block
+  - const SAMPLE_CONTANT = "SAMPLE";
+
+
+block append Metadata
+
+  - const HTML_PAGE_TITLE = "Product landing page";
+
+
+block append SpecificContent
+
+  - const targetProduct = IMPORTS_FROM_TYPESCRIPT.mockData.products[0];
+
+  main
+
+    h1= targetProduct.name
+
+    p= targetProduct.description

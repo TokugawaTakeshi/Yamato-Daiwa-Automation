@@ -1,4 +1,4 @@
-/* --- Raw valid config ---------------------------------------------------------------------------------------------- */
+/* ─── Raw Valid Config ───────────────────────────────────────────────────────────────────────────────────────────── */
 import type {
   ProjectBuildingTasksIDsForConfigFile,
   ProjectBuildingTasksIDsForConfigFile__Localized
@@ -9,12 +9,16 @@ import type ConsumingProjectPreDefinedBuildingModes__Localized from
 
 import ProjectBuildingCommonSettings__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/ProjectBuildingCommonSettings__FromFile__RawValid";
-import SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid from
+import type SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid";
+import ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid from
+    "@ProjectBuilding/Common/RawConfig/Reusables/ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid";
 import RevisioningSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/RevisioningSettings__FromFile__RawValid";
-import LintingCommonSettings__FromFile__RawValid from
-    "@ProjectBuilding/Common/RawConfig/Reusables/LintingCommonSettings__FromFile__RawValid";
+import LintingSettings__FromFile__RawValid from
+    "@ProjectBuilding/Common/RawConfig/Reusables/LintingSettings__FromFile__RawValid";
+import OutputDirectoryPathTransformationsSettings__FromFile__RawValid from
+    "@ProjectBuilding/Common/RawConfig/Reusables/OutputDirectoryPathTransformationsSettings__FromFile__RawValid";
 import MarkupProcessingSettings__FromFile__RawValid from
     "@MarkupProcessing/MarkupProcessingSettings__FromFile__RawValid";
 import StylesProcessingSettings__FromFile__RawValid from
@@ -31,10 +35,12 @@ import AudiosProcessingSettings__FromFile__RawValid from
     "@AudiosProcessing/AudiosProcessingSettings__FromFile__RawValid";
 import PlainCopyingSettings__FromFile__RawValid from
     "@ProjectBuilding/PlainCopying/PlainCopyingSettings__FromFile__RawValid";
+import FilesWatchingSettings__FromFile__RawValid from
+    "@ProjectBuilding/FilesWatching/FilesWatchingSettings__FromFile__RawValid";
 import BrowserLiveReloadingSettings__FromFile__RawValid from
     "@BrowserLiveReloading/BrowserLiveReloadingSettings__FromFile__RawValid";
 
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
 
 
@@ -53,15 +59,12 @@ type ProjectBuildingConfig__FromFile__RawValid = {
 
   [ProjectBuildingTasksIDsForConfigFile.plainCopying]?: PlainCopyingSettings__FromFile__RawValid;
 
+  [ProjectBuildingTasksIDsForConfigFile.filesWatching]?: FilesWatchingSettings__FromFile__RawValid;
   [ProjectBuildingTasksIDsForConfigFile.browserLiveReloading]?: BrowserLiveReloadingSettings__FromFile__RawValid;
 
 };
 
 
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
 namespace ProjectBuildingConfig__FromFile__RawValid {
 
   export type Localization = Readonly<{
@@ -76,8 +79,11 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
     reusables: Readonly<{
       sourceCodeProcessingGenericProperties:
           SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.Localization;
+      resourceFilesGroupBuildingModeDependentOutputGenericSettings:
+          ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid.Localization;
       revisioning: RevisioningSettings__FromFile__RawValid.Localization;
-      lintingCommonSettings: LintingCommonSettings__FromFile__RawValid.Localization;
+      lintingCommonSettings: LintingSettings__FromFile__RawValid.Localization;
+      outputPathTransformationsSettings: OutputDirectoryPathTransformationsSettings__FromFile__RawValid.Localization;
     }>;
 
     commonSettings: Readonly<{
@@ -94,6 +100,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
       videosProcessing: VideosProcessingSettings__FromFile__RawValid.Localization;
       audiosProcessing: AudiosProcessingSettings__FromFile__RawValid.Localization;
       plainCopying: PlainCopyingSettings__FromFile__RawValid.Localization;
+      filesWatching: FilesWatchingSettings__FromFile__RawValid.Localization;
       browserLiveReloading: BrowserLiveReloadingSettings__FromFile__RawValid.Localization;
     }>;
 
@@ -104,9 +111,18 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
         the property as optional. */
   export function getLocalizedSpecification(localization: Localization): RawObjectDataProcessor.ObjectDataSpecification {
 
-    const sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification =
-        SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.
-            getLocalizedPropertiesSpecification(localization.reusables.sourceCodeProcessingGenericProperties);
+    const outputDirectoryPathTransformationsPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification =
+        OutputDirectoryPathTransformationsSettings__FromFile__RawValid.getLocalizedPropertiesSpecification(
+            localization.reusables.outputPathTransformationsSettings
+        );
+
+    const entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification:
+        RawObjectDataProcessor.PropertiesSpecification =
+            ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
+              resourceFileOutputBuildingModeDependentSettingsLocalization:
+                  localization.reusables.resourceFilesGroupBuildingModeDependentOutputGenericSettings,
+              outputDirectoryPathTransformationsPropertiesLocalizedSpecification
+            });
 
     const consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized =
         localization.enumerations.consumingProjectPreDefinedBuildingModes;
@@ -115,7 +131,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
         RevisioningSettings__FromFile__RawValid.getLocalizedPropertiesSpecification(localization.reusables.revisioning);
 
     const lintingCommonSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.PropertiesSpecification =
-        LintingCommonSettings__FromFile__RawValid.
+        LintingSettings__FromFile__RawValid.
             getLocalizedPropertiesSpecification(localization.reusables.lintingCommonSettings);
 
     return {
@@ -151,10 +167,12 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               type: Object,
               required: false,
               properties: MarkupProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
-                markupProcessingLocalization: localization.tasks.markupProcessing,
-                sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
-                consumingProjectLocalizedPreDefinedBuildingModes,
-                lintingCommonSettingsLocalizedPropertiesSpecification
+                markupProcessingPropertiesLocalization: localization.tasks.markupProcessing,
+                localizedConsumingProjectLocalizedPreDefinedBuildingModes: consumingProjectLocalizedPreDefinedBuildingModes,
+                lintingSettingsLocalizedPropertiesSpecification: lintingCommonSettingsLocalizedPropertiesSpecification,
+                sourceCodeProcessingSettingsGenericPropertiesLocalization: localization.reusables.
+                    sourceCodeProcessingGenericProperties,
+                entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification
               })
             },
 
@@ -164,11 +182,13 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               type: Object,
               required: false,
               properties: StylesProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
-                stylesProcessingLocalization: localization.tasks.stylesProcessing,
-                sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
-                consumingProjectLocalizedPreDefinedBuildingModes,
-                revisioningPropertiesLocalizedSpecification,
-                lintingCommonSettingsLocalizedPropertiesSpecification
+                stylesProcessingPropertiesLocalization: localization.tasks.stylesProcessing,
+                localizedConsumingProjectLocalizedPreDefinedBuildingModes: consumingProjectLocalizedPreDefinedBuildingModes,
+                lintingSettingsLocalizedPropertiesSpecification: lintingCommonSettingsLocalizedPropertiesSpecification,
+                sourceCodeProcessingSettingsGenericPropertiesLocalization: localization.reusables.
+                    sourceCodeProcessingGenericProperties,
+                entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
+                revisioningSettingsLocalizedPropertiesSpecification: revisioningPropertiesLocalizedSpecification
               })
             },
 
@@ -178,11 +198,13 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               type: Object,
               required: false,
               properties: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
-                ECMA_ScriptProcessingLocalization: localization.tasks.ECMA_ScriptLogicProcessing,
-                sourceCodeProcessingSettingsGenericPropertiesLocalizedSpecification,
-                consumingProjectLocalizedPreDefinedBuildingModes,
-                revisioningPropertiesLocalizedSpecification,
-                lintingCommonSettingsLocalizedPropertiesSpecification
+                ECMA_ScriptProcessingPropertiesLocalization: localization.tasks.ECMA_ScriptLogicProcessing,
+                localizedConsumingProjectLocalizedPreDefinedBuildingModes: consumingProjectLocalizedPreDefinedBuildingModes,
+                lintingSettingsLocalizedPropertiesSpecification: lintingCommonSettingsLocalizedPropertiesSpecification,
+                sourceCodeProcessingSettingsGenericPropertiesLocalization: localization.reusables.
+                    sourceCodeProcessingGenericProperties,
+                entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
+                revisioningSettingsLocalizedPropertiesSpecification: revisioningPropertiesLocalizedSpecification
               })
             },
 
@@ -193,6 +215,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               preValidationModifications: nullToUndefined,
               properties: ImagesProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
                 imagesProcessingLocalization: localization.tasks.imagesProcessing,
+                entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
                 revisioningPropertiesLocalizedSpecification,
                 consumingProjectLocalizedPreDefinedBuildingModes
               })
@@ -205,6 +228,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               preValidationModifications: nullToUndefined,
               properties: FontsProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
                 fontsProcessingLocalization: localization.tasks.fontsProcessing,
+                entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
                 revisioningPropertiesLocalizedSpecification,
                 consumingProjectLocalizedPreDefinedBuildingModes
               })
@@ -217,6 +241,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               preValidationModifications: nullToUndefined,
               properties: VideosProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
                 videosProcessingLocalization: localization.tasks.videosProcessing,
+                entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
                 revisioningPropertiesLocalizedSpecification,
                 consumingProjectLocalizedPreDefinedBuildingModes
               })
@@ -229,6 +254,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               preValidationModifications: nullToUndefined,
               properties: AudiosProcessingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
                 audiosProcessingLocalization: localization.tasks.audiosProcessing,
+                entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
                 revisioningPropertiesLocalizedSpecification,
                 consumingProjectLocalizedPreDefinedBuildingModes
               })
@@ -241,8 +267,19 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               preValidationModifications: nullToUndefined,
               properties: PlainCopyingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
                 plainCopyingLocalization: localization.tasks.plainCopying,
-                consumingProjectLocalizedPreDefinedBuildingModes
+                consumingProjectLocalizedPreDefinedBuildingModes,
+                outputDirectoryPathTransformationsPropertiesLocalizedSpecification
               })
+            },
+
+            [localization.enumerations.tasksIDs.filesWatching]: {
+              newName: "filesWatching",
+              type: Object,
+              required: false,
+              preValidationModifications: nullToUndefined,
+              properties: FilesWatchingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification(
+                localization.tasks.filesWatching
+              )
             },
 
             [localization.enumerations.tasksIDs.browserLiveReloading]: {
@@ -253,11 +290,17 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               properties: BrowserLiveReloadingSettings__FromFile__RawValid.
                   getLocalizedPropertiesSpecification(localization.tasks.browserLiveReloading)
             }
+
           }
+
         }
+
       }
+
     };
+
   }
+
 }
 
 

@@ -1,3 +1,3 @@
 export default {
-  supportedSourceFileNameExtensionsWithoutLeadingDots: [ "avi", "mov", "mkv", "mp4", "avchd", "flw", "swf" ]
+  supportedSourceFilesNamesExtensionsWithoutLeadingDots: [ "avi", "mov", "mkv", "mp4", "avchd", "flw", "swf" ]
 };

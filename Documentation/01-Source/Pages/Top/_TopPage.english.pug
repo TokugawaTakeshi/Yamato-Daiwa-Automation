@@ -1,0 +1,61 @@
+extends ../../../node_modules/@yamato-daiwa/programming_documentation/Layouts/Minimal/MinimalLayout.pug
+
+
+block append Requirements
+
+  include ../../SharedAssets/Markup/SharedAssets.english.pug
+  include ../../SharedComponents/SharedComponents.english.pug
+
+
+block append Metadata
+
+  -
+
+    HTML_PAGE_LANGUAGE = "en";
+    HTML_PAGE_TITLE = buildHTML_PageTitle("Top page");
+    HTML_PageMetaData = {
+      description:
+          "Node.js utility &quot;Yamato Daiwa Automation&quot; (abbreviation: &quot;YDA&quot;) in the high-level project " +
+            "building tool such as client and server applications, console applications, the libraries for browser JavaScript" +
+            "or Node.js." +
+          "Designed for the high quality development that is strict default configuration or rejection to build the " +
+            "project on production-like modes if certain violations were committed." +
+          "YDA is the compromise solution between low-lever utilities with declarative configuration as Gulp or Webpack, " +
+            "and ultra high level tool with minimal cofiguration like Lalavel Exilir." +
+          "The YDA configuration is being described in declarative format (YAML) herewith this project building tool " +
+            "does not force the specific project structure.",
+      author: HTML_PAGE_AUTHOR
+    };
+
+    FAVICON_URI = "@MustBeInPublicRoot/favicon.ico";
+
+    styleSheetsURIs = [
+      "$CommonStyles",
+      "$LayoutsStyles/Minimal/MinimalLayout.css",
+      "$PreMadesStyles",
+      "@CustomizedExternalComponents",
+      "@Pages/Top/TopPage"
+    ];
+
+    scriptsURIs.endOfBody = [ "$CommonLogic" ];
+
+    RoutingEmulator.setCurrentRoute("top");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      japanese: "./Top/TopPage.japanese.html",
+      russian: "./Top/TopPage.russian.html"
+    });
+
+
+block append HeadScriptsLinks
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  main.TopPage
+
+    +CompactTableOfContents--YDF_DK(localizedRouting).TopPage-TableOfContents

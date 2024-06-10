@@ -32,8 +32,8 @@ export default class BrowserLiveReloadingSettingsRepresentative {
     return [ ...this.browserLiveReloadingSettings.setup.localServer.ignoredFilesAndDirectoriesRelativePaths ];
   }
 
-  public get mustUseHTTPS(): boolean {
-    return this.browserLiveReloadingSettings.setup.localServer.mustUseHTTPS;
+  public get HTTPS(): BrowserLiveReloadingSettings__Normalized.Setup.LocalServer.HTTPS | null {
+    return this.browserLiveReloadingSettings.setup.localServer.HTTPS ?? null;
   }
 
   public get mustUseCORS(): boolean {

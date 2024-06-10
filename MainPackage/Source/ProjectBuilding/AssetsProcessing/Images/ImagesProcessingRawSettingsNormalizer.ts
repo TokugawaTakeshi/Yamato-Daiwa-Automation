@@ -1,25 +1,28 @@
-/* --- Restrictions ------------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import ImagesProcessingRestrictions from "@ImagesProcessing/ImagesProcessingRestrictions";
 
-/* --- Raw settings ------------------------------------------------------------------------------------------------- */
+/* ─── Default Settings ───────────────────────────────────────────────────────────────────────────────────────────── */
+import ImagesProcessingSettings__Default from "@ImagesProcessing/ImagesProcessingSettings__Default";
+
+/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
 import type ImagesProcessingSettings__FromFile__RawValid from "@ImagesProcessing/ImagesProcessingSettings__FromFile__RawValid";
 
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 import type ImagesProcessingSettings__Normalized from "@ImagesProcessing/ImagesProcessingSettings__Normalized";
-import AssetsProcessingRawSettingsNormalizer from
-    "@ProjectBuilding/Common/RawSettingsNormalizers/AssetsProcessingRawSettingsNormalizer";
+import type AssetsProcessingSettingsGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
 
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+import AssetsProcessingRawSettingsNormalizer from
+      "@ProjectBuilding/Common/RawSettingsNormalizers/AssetsProcessingRawSettingsNormalizer";
+
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import { isNotUndefined } from "@yamato-daiwa/es-extensions";
 
 
 export default class ImagesProcessingRawSettingsNormalizer extends AssetsProcessingRawSettingsNormalizer {
-
-  protected readonly supportedEntryPointsSourceFilenameExtensionsWithoutLeadingDots: Array<string> =
-      ImagesProcessingRestrictions.supportedSourceFileNameExtensionsWithoutLeadingDots;
 
   private readonly imagesProcessingSettings__fromFile__rawValid: ImagesProcessingSettings__FromFile__RawValid;
 
@@ -28,50 +31,81 @@ export default class ImagesProcessingRawSettingsNormalizer extends AssetsProcess
     {
       imagesProcessingSettings__fromFile__rawValid,
       commonSettings__normalized
-    }: {
+    }: Readonly<{
       imagesProcessingSettings__fromFile__rawValid: ImagesProcessingSettings__FromFile__RawValid;
       commonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
-    }
+    }>
   ): ImagesProcessingSettings__Normalized {
 
     const dataHoldingSelfInstance: ImagesProcessingRawSettingsNormalizer =
         new ImagesProcessingRawSettingsNormalizer({
-          imagesProcessingSettings__fromFile__rawValid,
-          consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
-          consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+
           ...isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) ? {
             assetsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.imagesProcessing
-          } : {}
+          } : null,
+
+          supportedSourceFilesNamesExtensionsWithoutLeadingDots: ImagesProcessingRestrictions.
+              supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+
+          imagesProcessingSettings__fromFile__rawValid,
+
+          consumingProjectBuildingMode: commonSettings__normalized.projectBuildingMode,
+          consumingProjectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath
+
         });
 
     return {
+
       common: {
         supportedSourceFilesNamesExtensionsWithoutLeadingDots: ImagesProcessingRestrictions.
-            supportedSourceFileNameExtensionsWithoutLeadingDots
+            supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+        periodBetweenFileUpdatingAndRebuildingStarting__seconds:
+            imagesProcessingSettings__fromFile__rawValid.common?.periodBetweenFileUpdatingAndRebuildingStarting__seconds ??
+            ImagesProcessingSettings__Default.periodBetweenFileUpdatingAndRebuildingStarting__seconds
       },
+
       assetsGroups: dataHoldingSelfInstance.createNormalizedAssetsGroupsSettings(
-          dataHoldingSelfInstance.imagesProcessingSettings__fromFile__rawValid.assetsGroups,
-          ImagesProcessingRawSettingsNormalizer.
-              completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings
-      )
+        dataHoldingSelfInstance.imagesProcessingSettings__fromFile__rawValid.assetsGroups,
+        ImagesProcessingRawSettingsNormalizer.
+            completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings
+      ),
+
+      logging: {
+
+        filesPaths:
+            imagesProcessingSettings__fromFile__rawValid.logging?.filesPaths ??
+            ImagesProcessingSettings__Default.logging.filesPaths,
+
+        filesCount:
+            imagesProcessingSettings__fromFile__rawValid.logging?.filesCount ??
+            ImagesProcessingSettings__Default.logging.filesCount,
+
+        filesWatcherEvents:
+            imagesProcessingSettings__fromFile__rawValid.logging?.filesWatcherEvents ??
+            ImagesProcessingSettings__Default.logging.filesWatcherEvents
+
+      }
+
     };
+
   }
 
 
   private constructor(
-    namedParameters:
-        AssetsProcessingRawSettingsNormalizer.ConstructorParameters & {
+    compoundParameter:
+        AssetsProcessingRawSettingsNormalizer.CompoundParameter & {
           imagesProcessingSettings__fromFile__rawValid: ImagesProcessingSettings__FromFile__RawValid;
         }
   ) {
-    super(namedParameters);
-    this.imagesProcessingSettings__fromFile__rawValid = namedParameters.imagesProcessingSettings__fromFile__rawValid;
+    super(compoundParameter);
+    this.imagesProcessingSettings__fromFile__rawValid = compoundParameter.imagesProcessingSettings__fromFile__rawValid;
   }
 
 
   private static completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings(
-    imagesGroupSettings__generalProperties__normalized: ProjectBuildingConfig__Normalized.AssetsGroupSettingsGenericProperties
+    imagesGroupSettings__generalProperties__normalized: AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup
   ): ImagesProcessingSettings__Normalized.AssetsGroup {
     return { ...imagesGroupSettings__generalProperties__normalized };
   }
+
 }

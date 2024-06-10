@@ -1,19 +1,25 @@
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+import type AssetsProcessingSettingsGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
 
 
-type ImagesProcessingSettings__Normalized = {
-  readonly common: ImagesProcessingSettings__Normalized.Common;
-  readonly assetsGroups: Map<ProjectBuildingConfig__Normalized.AssetsGroupID, ImagesProcessingSettings__Normalized.AssetsGroup>;
-};
+type ImagesProcessingSettings__Normalized = Readonly<{
+  common: ImagesProcessingSettings__Normalized.Common;
+  assetsGroups: ReadonlyMap<
+    AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID,
+    AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup
+  >;
+  logging: AssetsProcessingSettingsGenericProperties__Normalized.Logging;
+}>;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
 namespace ImagesProcessingSettings__Normalized {
-  export type Common = ProjectBuildingConfig__Normalized.AssetsProcessingCommonSettingsGenericProperties;
-  export type AssetsGroup = ProjectBuildingConfig__Normalized.AssetsGroupSettingsGenericProperties;
+
+  export type Common = AssetsProcessingSettingsGenericProperties__Normalized.Common;
+
+  export type AssetsGroup = AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup;
+
+  export type Logging = AssetsProcessingSettingsGenericProperties__Normalized.Logging;
+
 }
 
 

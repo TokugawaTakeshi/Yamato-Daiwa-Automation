@@ -1,29 +1,21 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
-
-/* --- Settings representative -------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import type PlainCopyingSettingsRepresentative from "@ProjectBuilding/PlainCopying/PlainCopyingSettingsRepresentative";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import PlainCopyingSharedState from "@ProjectBuilding/PlainCopying/PlainCopyingSharedState";
+
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
 import GulpStreamModifier from "@Utils/GulpStreamModifier";
 import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
 import type VinylFile from "vinyl";
-import PlainCopiedVinylFile from "@ProjectBuilding/PlainCopying/PlainCopiedVinylFile";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
-import { isUndefined } from "@yamato-daiwa/es-extensions";
-import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
-import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import { isUndefined, replaceDoubleBackslashesWithForwardSlashes } from "@yamato-daiwa/es-extensions";
+import Path from "path";
 
 
-export default class PlainCopier {
-
-  private readonly sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondence: {
-    [sourceFileAbsolutePath: string]: PlainCopyingSettings__Normalized.FilesGroup;
-  };
-
+export default abstract class PlainCopier {
 
   public static providePlainCopierIfMust(
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
@@ -37,69 +29,44 @@ export default class PlainCopier {
     }
 
 
-    return new PlainCopier(masterConfigRepresentative.plainCopyingSettingsRepresentative).copyFiles();
+    const targetSourceFilesAbsolutePaths: Array<string> = Array.from(
+      PlainCopyingSharedState.sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondenceMap.keys()
+    );
 
-  }
-
-
-  private constructor(plainCopyingSettingsRepresentative: PlainCopyingSettingsRepresentative) {
-
-    const sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondence: {
-      [sourceFileAbsolutePath: string]: PlainCopyingSettings__Normalized.FilesGroup;
-    } = {};
-
-    for (const filesGroupSettings of Object.values(plainCopyingSettingsRepresentative.filesGroups)) {
-
-      const absolutePathsOfFilesOfTargetGroup: ReadonlyArray<string> = "sourceFileAbsolutePath" in filesGroupSettings ?
-          [ filesGroupSettings.sourceFileAbsolutePath ] :
-          ImprovedGlob.getFilesAbsolutePathsSynchronously([
-            ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
-              basicDirectoryPath: filesGroupSettings.sourceDirectoryAbsolutePath
-            })
-          ]);
-
-      for (const fileAbsolutePath of absolutePathsOfFilesOfTargetGroup) {
-        sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondence[fileAbsolutePath] = filesGroupSettings;
-      }
-
+    if (targetSourceFilesAbsolutePaths.length === 0) {
+      return createImmediatelyEndingEmptyStream();
     }
 
-    this.sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondence =
-        sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondence;
-
-  }
-
-
-  private copyFiles(): () => NodeJS.ReadWriteStream {
 
     return (): NodeJS.ReadWriteStream =>
 
-        Gulp.src(Object.keys(this.sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondence)).
+        Gulp.src(targetSourceFilesAbsolutePaths).
 
-            pipe(GulpStreamModifier.modify({
-              onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithPlainCopiedVinylFile.bind(this)
-            })).
+            pipe(
+              GulpStreamModifier.modify({
+                async onStreamStartedEventCommonHandler(vinylFile: VinylFile): Promise<GulpStreamModifier.CompletionSignals> {
 
-            pipe(Gulp.dest(PlainCopiedVinylFile.outputDirectoryCalculatorForSpecificFile));
+                  const outputAbsolutePathForTargetFile: string | undefined = PlainCopyingSharedState.
+                      sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondenceMap.
+                      get(replaceDoubleBackslashesWithForwardSlashes(vinylFile.path));
 
-  }
+                  if (isUndefined(outputAbsolutePathForTargetFile)) {
+                    return Promise.resolve(GulpStreamModifier.CompletionSignals.REMOVING_FILE_FROM_STREAM);
+                  }
 
 
-  /* === Pipeline methods =========================================================================================== */
-  private async replacePlainVinylFileWithPlainCopiedVinylFile(
-    plainVinylFile: VinylFile, addNewFileToStream: GulpStreamModifier.NewFilesAdder
-  ): Promise<GulpStreamModifier.CompletionSignals> {
+                  vinylFile.path = outputAbsolutePathForTargetFile;
+                  vinylFile.base = Path.dirname(outputAbsolutePathForTargetFile);
 
-    addNewFileToStream(
-      new PlainCopiedVinylFile(
-        plainVinylFile,
-        this.sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondence[
-          ImprovedPath.replacePathSeparatorsToForwardSlashes(plainVinylFile.path)
-        ]
-      )
-    );
+                  return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
 
-    return Promise.resolve(GulpStreamModifier.CompletionSignals.REMOVING_FILE_FROM_STREAM);
+                }
+              })
+            ).
+
+            pipe(
+              Gulp.dest((vinylFile: VinylFile): string => vinylFile.base)
+            );
 
   }
 

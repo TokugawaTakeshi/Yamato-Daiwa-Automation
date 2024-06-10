@@ -1,0 +1,8 @@
+/02-StaticPreviewBuild/
+
+/node_modules/
+
+**/.DS_Store
+
+# Temporary
+.yda/

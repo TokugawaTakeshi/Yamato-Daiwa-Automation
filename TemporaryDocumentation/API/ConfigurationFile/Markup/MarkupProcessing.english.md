@@ -81,6 +81,7 @@ type MarkupProcessingSettings__FromFile__RawValid = {
         buildingModeDependent: {
           [projectBuildingMode: string]: {
             outputTopDirectoryRelativePath: string;
+            outputCodeFormatting?: { enabled?: boolean }
           }
         };
         
@@ -878,6 +879,21 @@ According [w3c.org](https://www.w3.org), many organizations strive to meet Level
 Disabling the accessibility inspection only for current entry points group.
 
 
+### `convertToHandlebarsOnNonStaticPreviewModes`
+
+<dl>
+
+  <dt>Type</dt>
+  <dd>Boolean</dd>
+
+  <dt>Default value</dt>
+  <dd><code>false</code></dd>
+
+</dl>
+
+Changes the output file name extension from ".html" to ".hbs" on each mode <i>except</i> <b>static preview</b> one.
+
+
 ### `buildingModeDependent` - The entry points groups settings dependent on project building mode
 #### `outputTopDirectoryRelativePath`
 
@@ -900,6 +916,45 @@ The "top" means that path of target entry point relative to `topDirectoryRelativ
 For example, if `topDirectoryRelativePath` is `Pages` and file is `Top/TopPage.pug`, 
   the compiled `TopPage.html` will be put to `[outputBaseDirectoryRelativePath]/Top`, 
   not to root `[outputBaseDirectoryRelativePath]`.
+
+#### `outputCodeFormatting`
+
+<dl>
+
+  <dt>Type</dt>
+  <dd>Object</dd>
+
+  <dt>Is required</dt>
+  <dd>No</dd>
+
+  <dt>Schema<dt>
+  <dd><pre><code>
+{
+  enable?: string;
+}
+  </code></pre></dd>
+
+</dl>
+
+The formatting of output HTML code.
+
+
+#### `enable`
+
+<dl>
+
+  <dt>Type</dt>
+  <dd>Boolean</dd>
+
+  <dt>Default value</dt>
+  <dd>
+    <ul>
+      <li><code>true</code> for <b>static preview</b> and <b>local development</b> building modes.</li>
+      <li><code>false</code> for all other modes.</li>
+    </ul>
+  </dd>
+
+</dl>
 
 
 ### `logging` - Logging

@@ -1,3 +1,3 @@
 export default {
-  supportedSourceFileNameExtensionsWithoutLeadingDots: [ "mp3", "ogg", "wma", "wav", "flac" ]
+  supportedSourceFilesNamesExtensionsWithoutLeadingDots: [ "mp3", "ogg", "wma", "wav", "flac" ]
 };

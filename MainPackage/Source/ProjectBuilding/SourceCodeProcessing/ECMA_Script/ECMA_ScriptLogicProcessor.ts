@@ -1,17 +1,20 @@
-/* --- Settings representatives --------------------------------------------------------------------------------------- */
+import ECMA_ScriptLogicProcessingSharedState from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSharedState";
+
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type ECMA_ScriptLogicProcessingSettingsRepresentative from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettingsRepresentative";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------- */
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import Webpack from "webpack";
+import type { Configuration as WebpackConfiguration } from "webpack";
 import WebpackConfigGenerator from "@ECMA_ScriptProcessing/Utils/WebpackConfigGenerator";
 import ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator from
     "@ECMA_ScriptProcessing/Utils/ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator";
-import Webpack from "webpack";
-import type { Configuration as WebpackConfiguration } from "webpack";
+import ECMA_ScriptSourceFilesWatcher from "@ECMA_ScriptProcessing/ECMA_ScriptSourceFilesWatcher";
 import NodeNotifier from "node-notifier";
 
-/* --- General Utils ------------------------------------------------------------------------------------------------ */
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
   Logger,
   UnexpectedEventError,
@@ -32,29 +35,32 @@ export default class ECMA_ScriptLogicProcessor {
 
 
   public static provideLogicProcessingIfMust(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): (callback: (error?: Error) => void) => void {
 
-    if (isUndefined(masterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative)) {
+    const ecmaScriptLogicProcessingSettingsRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative | undefined =
+        projectBuildingMasterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative;
+
+    if (isUndefined(ecmaScriptLogicProcessingSettingsRepresentative)) {
       return (callback: () => void): void => { callback(); };
     }
 
 
     const dataHoldingSelfInstance: ECMA_ScriptLogicProcessor = new ECMA_ScriptLogicProcessor(
-      masterConfigRepresentative, masterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative
+      ecmaScriptLogicProcessingSettingsRepresentative, projectBuildingMasterConfigRepresentative
     );
+
 
     const webpackConfigurationSets: ReadonlyArray<WebpackConfiguration> = WebpackConfigGenerator.
         generateWebpackConfigurationForEachEntryPointsGroup(
-          masterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative,
-          masterConfigRepresentative
+          ecmaScriptLogicProcessingSettingsRepresentative, projectBuildingMasterConfigRepresentative
         );
 
     return (callback: (error?: Error) => void): void => {
 
       try {
 
-        /* [ Webpack theory ] Although there is no 'null' hardError is type definitions, the 'hardError' could be null. */
+        /* [ Webpack theory ] Although there is no `null` hardError is type definitions, the `hardError` could be null. */
         Webpack(webpackConfigurationSets, (
           hardError?: Error | null, statistics?: Webpack.MultiStats
         ): void => {
@@ -80,7 +86,7 @@ export default class ECMA_ScriptLogicProcessor {
               errorType: "ECMA_ScriptLogicProcessingError",
               title: "ECMAScript logic processing error",
               description: finalErrorMessageDynamicPart,
-              occurrenceLocation: "ECMA_ScriptLogicProcessor.provideLogicProcessing(masterConfigRepresentative)"
+              occurrenceLocation: "ECMA_ScriptLogicProcessor.provideLogicProcessing(projectBuildingMasterConfigRepresentative)"
             });
 
             NodeNotifier.notify({
@@ -90,12 +96,17 @@ export default class ECMA_ScriptLogicProcessor {
 
           }
 
+          if (dataHoldingSelfInstance.masterConfigRepresentative.mustProvideIncrementalBuilding) {
+            ECMA_ScriptSourceFilesWatcher.initializeIfRequiredAndGetInstance({
+              ecmaScriptLogicProcessingSettingsRepresentative: dataHoldingSelfInstance.
+                  ECMA_ScriptLogicProcessingConfigRepresentative,
+              projectBuildingMasterConfigRepresentative: dataHoldingSelfInstance.masterConfigRepresentative
+            });
+          }
+
           /** 〔 納品版のみ理由 〕　開発版で同じ事をすれば、gulpが落ちる */
           if (
-            (
-              dataHoldingSelfInstance.masterConfigRepresentative.isStagingBuildingMode ||
-              dataHoldingSelfInstance.masterConfigRepresentative.isProductionBuildingMode
-            ) &&
+            !dataHoldingSelfInstance.masterConfigRepresentative.mustProvideIncrementalBuilding &&
             isNotUndefined(finalErrorMessageDynamicPart)
           ) {
 
@@ -103,7 +114,7 @@ export default class ECMA_ScriptLogicProcessor {
               errorType: "ECMA_ScriptLogicProcessingError",
               title: "ECMAScript logic processing error",
               description: "Unable to production build.",
-              occurrenceLocation: "ECMA_ScriptLogicProcessor.provideLogicProcessing(masterConfigRepresentative)"
+              occurrenceLocation: "ECMA_ScriptLogicProcessor.provideLogicProcessing(projectBuildingMasterConfigRepresentative)"
             });
 
             callback(new Error(finalErrorMessageDynamicPart));
@@ -111,15 +122,16 @@ export default class ECMA_ScriptLogicProcessor {
           } else {
 
             addMultiplePairsToMap(
-              dataHoldingSelfInstance.ECMA_ScriptLogicProcessingConfigRepresentative.
-                  entryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+              ECMA_ScriptLogicProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
               ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator.generate(
-                  dataHoldingSelfInstance.ECMA_ScriptLogicProcessingConfigRepresentative
+                dataHoldingSelfInstance.ECMA_ScriptLogicProcessingConfigRepresentative
               )
             );
 
             callback();
+
           }
+
         });
 
       } catch (error: unknown) {
@@ -130,21 +142,22 @@ export default class ECMA_ScriptLogicProcessor {
           title: UnexpectedEventError.localization.defaultTitle,
           description: "依存性の'Webpack'の実行中エラーが発生した。'webpack'関数の呼び出しを'try/catch'に包めなければいけない事に就いて説明書" +
             "(https://webpack.js.org/api/node/)に書いてはないが、今は'catch'に当たった状態だ。'Gulp'課題鎖が崩れない様に、エラーを再投擲無しで捕まえた。",
-          occurrenceLocation: "ECMA_ScriptLogicProcessor.provideLogicProcessing(masterConfigRepresentative)",
+          occurrenceLocation: "ECMA_ScriptLogicProcessor.provideLogicProcessing(projectBuildingMasterConfigRepresentative)",
           caughtError: error
         });
 
       }
+
     };
   }
 
 
   public constructor(
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative,
-    ecmaScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative
+    ecmaScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative,
+    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
-    this.masterConfigRepresentative = masterConfigRepresentative;
     this.ECMA_ScriptLogicProcessingConfigRepresentative = ecmaScriptLogicProcessingConfigRepresentative;
+    this.masterConfigRepresentative = masterConfigRepresentative;
   }
 
 }

@@ -1,5 +1,5 @@
-import ConsumingProjectPreDefinedBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectPreDefinedBuildingModes";
+import ConsumingProjectBuildingModes from
+    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 import { ConsoleCommandsParser } from "@yamato-daiwa/es-extensions-nodejs";
 
 
@@ -12,24 +12,33 @@ namespace ApplicationConsoleLineInterface {
 
   export const specification: ConsoleCommandsParser.CommandLineInterfaceSpecification = {
     applicationName: "Yamato Daiwa Automation",
+    applicationDescription: "The project building tool.",
     commandPhrases: {
       [CommandPhrases.buildProject]: {
-        mode: {
-          newName: "projectBuildingMode",
-          type: ConsoleCommandsParser.ParametersTypes.string,
-          required: true,
-          shortcut: "m",
-          allowedAlternatives: Object.values(ConsumingProjectPreDefinedBuildingModes)
-        },
-        configurationFile: {
-          newName: "customConfigurationFileName__possiblyWithoutExtension",
-          type: ConsoleCommandsParser.ParametersTypes.string,
-          required: false
-        },
-        selectiveExecution: {
-          newName: "selectiveExecutionID",
-          type: ConsoleCommandsParser.ParametersTypes.string,
-          required: false
+        description: "Builds the projects according to configuration file (\"yda.config.yaml\" as default).",
+        options: {
+          mode: {
+            newName: "projectBuildingMode",
+            description: "The project building mode; affects to presence or absence of incremental building, " +
+                "browser reloading, code minification etc.",
+            type: ConsoleCommandsParser.ParametersTypes.string,
+            required: true,
+            shortcut: "m",
+            allowedAlternatives: Object.values(ConsumingProjectBuildingModes)
+          },
+          configurationFile: {
+            description: "Custom name of the configuration file (\"yda.config.yaml\" is the default)",
+            newName: "customConfigurationFileName__possiblyWithoutExtension",
+            type: ConsoleCommandsParser.ParametersTypes.string,
+            required: false
+          },
+          selectiveExecution: {
+            newName: "selectiveExecutionID",
+            description: "Allows to specify the selection of tasks, entry points groups, etc., herewith the " +
+                "specified selection execution ID must be preliminarily defined in the configuration file.",
+            type: ConsoleCommandsParser.ParametersTypes.string,
+            required: false
+          }
         }
       }
     }
@@ -39,7 +48,7 @@ namespace ApplicationConsoleLineInterface {
 
   export type BuildProjectConsoleCommand = {
     phrase: CommandPhrases.buildProject;
-    projectBuildingMode: ConsumingProjectPreDefinedBuildingModes;
+    projectBuildingMode: ConsumingProjectBuildingModes;
     customConfigurationFileName__possiblyWithoutExtension?: string;
     selectiveExecutionID?: string;
   };

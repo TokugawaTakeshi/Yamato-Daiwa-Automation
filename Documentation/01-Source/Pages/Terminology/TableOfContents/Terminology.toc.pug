@@ -1,0 +1,86 @@
+-
+
+  generatePageTableOfContents = localizedStrings => {
+
+    const PAGE_URI = localizedRouting.terminology.$URI;
+
+    const pageTableOfContents = {
+
+      YDA: {
+        $heading: "YDA",
+        $anchor: "YDA",
+        get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; }
+      },
+
+      project: {
+
+        $heading: localizedStrings.project.$heading,
+        $anchor: "PROJECT",
+        get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; },
+
+        $children: {
+
+          building: {
+            $heading: localizedStrings.project.building.$heading,
+            $anchor: "PROJECT_BUILDING",
+            get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; }
+          }
+
+        }
+
+      },
+
+      task: {
+        $heading: localizedStrings.task.$heading,
+        $anchor: "TASK",
+        get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; }
+      },
+
+      scenario: {
+        $heading: localizedStrings.scenario.$heading,
+        $anchor: "SCENARIO",
+        get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; }
+      },
+
+      projectBuildingMode: {
+        $heading: localizedStrings.projectBuildingMode.$heading,
+        $anchor: "PROJECT_BUILDING_MODE",
+        get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; }
+      },
+
+      entryPointsAndChildrenFiles: {
+
+        $heading: localizedStrings.entryPointsAndChildrenFiles.$heading,
+        $anchor: "ENTRY_POINTS_AND_CONTEXT_DEPENDENT_FILES",
+        get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; },
+
+        $children: {
+
+          markup: {
+            $heading: localizedStrings.entryPointsAndChildrenFiles.markup.$heading,
+            $anchor: "ENTRY_POINTS_AND_CONTEXT_DEPENDENT_FILES-MARKUP",
+            get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; }
+          },
+
+          styles: {
+            $heading: localizedStrings.entryPointsAndChildrenFiles.styles.$heading,
+            $anchor: "ENTRY_POINTS_AND_CONTEXT_DEPENDENT_FILES-STYLES",
+            get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; }
+          },
+
+          ECMA_ScriptLogic: {
+            $heading: localizedStrings.entryPointsAndChildrenFiles.ECMA_ScriptLogic.$heading,
+            $anchor: "ENTRY_POINTS_AND_CONTEXT_DEPENDENT_FILES-ECMA_SCRIPT",
+            get $URI() { return `${ PAGE_URI }#${ this.$anchor }`; }
+          }
+
+        }
+
+
+      }
+
+    };
+
+    return pageTableOfContents;
+
+  };

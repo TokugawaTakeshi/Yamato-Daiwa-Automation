@@ -1,102 +1,120 @@
 import SourceCodeProcessingConfigRepresentative from "./SourceCodeProcessingConfigRepresentative";
-import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
-import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+import type SourceCodeProcessingGenericProperties__Normalized from
+    "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
 
-/* --- Utils -------------------------------------------------------------------------------------------------------- */
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
-  addMultiplePairsToMap,
-  isUndefined,
   Logger,
-  UnexpectedEventError
+  UnexpectedEventError,
+  removeSpecificSegmentsFromURI_Path,
+  explodeURI_PathToSegments,
+  isUndefined,
+  isNonEmptyArray,
+  getIndexesOfArrayElementsWhichSatisfiesThePredicate,
+  removeArrayElementsByIndexes,
+  isNumber
 } from "@yamato-daiwa/es-extensions";
-import ImprovedPath from "@UtilsIncubator/ImprovedPath/ImprovedPath";
-import ImprovedGlob from "@UtilsIncubator/ImprovedGlob";
-import PartialsFilesMapper from "@Utils/PartialsFilesMapper";
+import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
-  SourceCodeProcessorsCommonNormalizedSettings extends ProjectBuildingConfig__Normalized.
-      SourceCodeProcessingCommonSettingsGenericProperties,
-  EntryPointsGroupNormalizedSettings extends ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings
+export default abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
+  SourceCodeProcessorsCommonNormalizedSettings extends SourceCodeProcessingGenericProperties__Normalized.Common,
+  EntryPointsGroupNormalizedSettings extends SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup
 > extends SourceCodeProcessingConfigRepresentative<
   SourceCodeProcessorsCommonNormalizedSettings,
   EntryPointsGroupNormalizedSettings
 > {
 
-  static #localization: GulpStreamBasedSourceCodeProcessingConfigRepresentative.Localization =
-      GulpStreamBasedSourceCodeProcessingConfigRepresentative.getDefaultLocalization();
+
+  public abstract readonly WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS: number;
 
 
-  public abstract readonly waitingForTheOtherFilesWillBeSavedPeriod__seconds: number;
-
-
-  public readonly partialFilesAndEntryPointsRelationsMap: PartialsFilesMapper.
-      PartialFilesAndParentEntryPointsRelationsMap = new Map();
-  public readonly mustLogPartialFilesAndEntryPointsRelationsMap: boolean;
-
-
-  /* === Static helpers ============================================================================================= */
+  /* ━━━ Static Helpers ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   public static computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile<
-    EntryPointsGroupNormalizedSettings extends ProjectBuildingConfig__Normalized.EntryPointsGroupGenericSettings
+    EntryPointsGroupNormalizedSettings extends SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup
   >(
     targetSourceFileAbsolutePath: string,
-    respectiveEntryPointsGroupSettings: EntryPointsGroupNormalizedSettings
+    relevantEntryPointsGroupSettings: EntryPointsGroupNormalizedSettings
   ): string {
 
-    if (respectiveEntryPointsGroupSettings.isSingeEntryPointGroup) {
-      return respectiveEntryPointsGroupSettings.outputFilesTopDirectoryAbsolutePath;
+    let outputDirectoryAbsolutePathForTargetSourceFile: string =
+        relevantEntryPointsGroupSettings.isSingeEntryPointGroup ?
+            relevantEntryPointsGroupSettings.outputFilesTopDirectoryAbsolutePath :
+            ImprovedPath.joinPathSegments(
+              [
+                relevantEntryPointsGroupSettings.outputFilesTopDirectoryAbsolutePath,
+                ImprovedPath.computeRelativePath({
+                  basePath: relevantEntryPointsGroupSettings.sourceFilesTopDirectoryAbsolutePath,
+                  comparedPath: ImprovedPath.extractDirectoryFromFilePath({
+                    targetPath: targetSourceFileAbsolutePath,
+                    ambiguitiesResolution: {
+                      mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
+                      mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+                      mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                    },
+                    alwaysForwardSlashSeparators: true
+                  })
+                })
+              ],
+              { alwaysForwardSlashSeparators: true }
+            );
+
+    if (isNonEmptyArray(relevantEntryPointsGroupSettings.outputPathTransformations.segmentsWhichMustBeRemoved)) {
+      outputDirectoryAbsolutePathForTargetSourceFile = removeSpecificSegmentsFromURI_Path({
+        targetPath: outputDirectoryAbsolutePathForTargetSourceFile,
+        targetSegments: relevantEntryPointsGroupSettings.outputPathTransformations.segmentsWhichMustBeRemoved,
+        mustOutputAlwaysWithForwardSlashesPathSeparators: true
+      });
     }
 
+    if (isNonEmptyArray(relevantEntryPointsGroupSettings.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved)) {
 
-    return ImprovedPath.joinPathSegments(
-      [
-        respectiveEntryPointsGroupSettings.outputFilesTopDirectoryAbsolutePath,
-        ImprovedPath.computeRelativePath({
-          basePath: respectiveEntryPointsGroupSettings.sourceFilesTopDirectoryAbsolutePath,
-          comparedPath: ImprovedPath.extractDirectoryFromFilePath(targetSourceFileAbsolutePath)
-        })
-      ],
-      { forwardSlashOnlySeparators: true }
-    );
-  }
+      const outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile: Array<string> =
+          explodeURI_PathToSegments(outputDirectoryAbsolutePathForTargetSourceFile);
 
-  public static setLocalization(newLocalization: GulpStreamBasedSourceCodeProcessingConfigRepresentative.Localization): void {
-    this.#localization = newLocalization;
-  }
+      for (
+        const pathSegmentWhichLastDuplicateMustBeRemoved of
+            relevantEntryPointsGroupSettings.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved
+      ) {
 
-
-  protected constructor(namedParameters: GulpStreamBasedSourceCodeProcessingConfigRepresentative.ConstructorNamedParameters) {
-    super(namedParameters.masterConfigRepresentative);
-    this.mustLogPartialFilesAndEntryPointsRelationsMap = namedParameters.mustLogPartialFilesAndEntryPointsRelationsMap;
-  }
-
-
-  public get hasAtLeastOneRelevantEntryPointsGroup(): boolean {
-    return this.relevantEntryPointsGroupsSettings.size > 0;
-  }
-
-  public get relevantEntryPointsSourceFilesAbsolutePaths(): Array<string> {
-
-    const entryPointsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode: Array<string> = [];
-
-    this.relevantEntryPointsGroupsSettings.forEach(
-      (entryPointsGroupNormalizedSettings: EntryPointsGroupNormalizedSettings): void => {
-        entryPointsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode.push(
-          ...ImprovedGlob.getFilesAbsolutePathsSynchronously(entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors)
+        const indexesOfDuplicatesOfTargetPathSegment: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
+            outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile,
+            (outputDirectoryAbsolutePathSegment: string): boolean =>
+                outputDirectoryAbsolutePathSegment === pathSegmentWhichLastDuplicateMustBeRemoved
         );
+
+        removeArrayElementsByIndexes({
+          targetArray: outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile,
+          indexes: indexesOfDuplicatesOfTargetPathSegment[indexesOfDuplicatesOfTargetPathSegment.length - 1],
+          mutably: true
+        });
+
+        outputDirectoryAbsolutePathForTargetSourceFile =
+            outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile.join("/");
+
       }
-    );
 
-    return entryPointsSourceFilesAbsolutePathsRelevantForCurrentProjectBuildingMode;
-  }
+    }
 
-  public get relevantEntryPointsSourceDirectoriesAbsolutePaths(): Array<string> {
-    return Array.from(this.relevantEntryPointsGroupsSettings.values()).map(
-      (entryPointsGroupNormalizedSettings: EntryPointsGroupNormalizedSettings): string =>
-          entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
-    );
+    if (
+      isNumber(
+        relevantEntryPointsGroupSettings.outputPathTransformations.segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved
+      )
+    ) {
+      outputDirectoryAbsolutePathForTargetSourceFile =
+          explodeURI_PathToSegments(outputDirectoryAbsolutePathForTargetSourceFile).
+          slice(
+            0,
+            -relevantEntryPointsGroupSettings.outputPathTransformations.
+                segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved
+          ).
+          join("/");
+    }
+
+    return outputDirectoryAbsolutePathForTargetSourceFile;
+
   }
 
   public getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(
@@ -107,7 +125,7 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
 
     for (const entryPointsGroupNormalizedSettings of this.relevantEntryPointsGroupsSettings.values()) {
       if (
-        ImprovedGlob.isFileMatchingWithAllGlobSelectors({
+        ImprovedGlob.isFilePathMatchingWithAllGlobSelectors({
           filePath: targetSourceFileAbsolutePath,
           globSelectors: entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors
         })
@@ -121,10 +139,7 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
     if (isUndefined(entryPointsGroupsNormalizedSettingsRelevantForTargetSourceFile)) {
       Logger.throwErrorAndLog({
         errorInstance: new UnexpectedEventError(
-          GulpStreamBasedSourceCodeProcessingConfigRepresentative.
-              #localization.generateEntryPointsGroupNormalizedSettingsNotFoundForSpecifiedFilePath({
-                targetSourceFileAbsolutePath
-              })
+          `No output entry points group has been fond for file of the path:\n${ targetSourceFileAbsolutePath }`
         ),
         title: UnexpectedEventError.localization.defaultTitle,
         occurrenceLocation: "GulpStreamBasedSourceCodeProcessingConfigRepresentative(Inheritor)." +
@@ -136,48 +151,12 @@ abstract class GulpStreamBasedSourceCodeProcessingConfigRepresentative<
   }
 
 
-  /* === Partial files and entry points relations map  =============================================================  */
-  public initializeOrUpdatePartialFilesAndEntryPointsRelationsMap(): void {
-
-    this.partialFilesAndEntryPointsRelationsMap.clear();
-
-    addMultiplePairsToMap(
-      this.partialFilesAndEntryPointsRelationsMap,
-      PartialsFilesMapper.getPartialFilesAndParentEntryPointsRelationsMap({
-        targetEntryPointsFilesAbsolutePaths: this.relevantEntryPointsSourceFilesAbsolutePaths,
-        sourceFilesTypeLabelForLogging: this.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM,
-        masterConfigRepresentative: this.masterConfigRepresentative,
-        loggingIsEnabled: this.mustLogPartialFilesAndEntryPointsRelationsMap
-      })
-    );
+  /* ━━━ Getters ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* [ Theory ] Below getters could not be made to field because `relevantEntryPointsGroupsSettings` could not be accessed
+  *    is abstract constructor. Also, `relevantEntryPointsGroupsSettings` could be made non-abstract in the parent class
+  *    and passed via constructor, however it will be some problems with typing. */
+  public get hasAtLeastOneRelevantEntryPointsGroup(): boolean {
+    return this.relevantEntryPointsGroupsSettings.size > 0;
   }
 
-
-  /* === Localization =============================================================================================== */
-  private static getDefaultLocalization(): GulpStreamBasedSourceCodeProcessingConfigRepresentative.Localization {
-    return {
-      generateEntryPointsGroupNormalizedSettingsNotFoundForSpecifiedFilePath: (
-        { targetSourceFileAbsolutePath }: { targetSourceFileAbsolutePath: string; }
-      ): string => `No normalized config found for file '${ targetSourceFileAbsolutePath }'.'`
-    };
-  }
 }
-
-
-namespace GulpStreamBasedSourceCodeProcessingConfigRepresentative {
-
-  export type ConstructorNamedParameters = Readonly<{
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
-    mustLogPartialFilesAndEntryPointsRelationsMap: boolean;
-  }>;
-
-  export type Localization = Readonly<{
-    generateEntryPointsGroupNormalizedSettingsNotFoundForSpecifiedFilePath: (
-      parametersObject: { targetSourceFileAbsolutePath: string; }
-    ) => string;
-  }>;
-
-}
-
-
-export default GulpStreamBasedSourceCodeProcessingConfigRepresentative;
