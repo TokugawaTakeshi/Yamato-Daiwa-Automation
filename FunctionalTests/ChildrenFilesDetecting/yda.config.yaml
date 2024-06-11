@@ -1,0 +1,68 @@
+projectBuilding:
+
+  markupProcessing:
+
+    common:
+
+      buildingModeDependent:
+        LOCAL_DEVELOPMENT: { mustResolveResourceReferencesToRelativePaths: true }
+        PRODUCTION: { mustResolveResourceReferencesToRelativePaths: true }
+
+
+    entryPointsGroups:
+
+      Pages:
+
+        sourceFilesTopDirectoryRelativePath: 01-Source/Implementation/Elements/Client/Pages
+        partialsRecognition:
+          excludeSubdirectoriesWithNames: [ Partials ]
+
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild/public }
+          PRODUCTION: { outputTopDirectoryRelativePath: 03-ProductionBuild/public }
+
+  stylesProcessing:
+
+    entryPointsGroups:
+
+      Pages:
+
+        sourceFilesTopDirectoryRelativePath: 01-Source/Implementation/Elements/Client/Pages
+        partialsRecognition:
+          excludeSubdirectoriesWithNames: [ Partials ]
+
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild/public }
+          PRODUCTION: { outputTopDirectoryRelativePath: 03-ProductionBuild/public }
+
+  ECMA_ScriptLogicProcessing:
+
+    entryPointsGroups:
+
+      FrontServer:
+
+        sourceFilesTopDirectoryRelativePath: 01-Source/Implementation/Elements/Client/Pages
+
+        partialsRecognition:
+          excludeSubdirectoriesWithNames: [ Partials ]
+
+        targetRuntime:
+          type: BROWSER
+
+        associatedMarkupEntryPointsGroupID_ForModulesDynamicLoadingWithoutDevelopmentServer: All
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild/public }
+          PRODUCTION: { outputTopDirectoryRelativePath: 03-ProductionBuild/public }
+
+      FrontServerEntryPoint:
+
+        singleEntryPointSourceFileRelativePath: 01-Source/Implementation/Elements/FrontServer/FrontServerEntryPoint.ts
+
+        targetRuntime:
+          type: NODEJS
+          minimalVersion:
+            major: 16
+
+        buildingModeDependent:
+          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: 03-LocalDevelopmentBuild }
+          PRODUCTION: { outputTopDirectoryRelativePath: 03-ProductionBuild }

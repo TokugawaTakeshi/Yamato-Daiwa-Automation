@@ -39,6 +39,8 @@ import FilesWatchingSettings__FromFile__RawValid from
     "@ProjectBuilding/FilesWatching/FilesWatchingSettings__FromFile__RawValid";
 import BrowserLiveReloadingSettings__FromFile__RawValid from
     "@BrowserLiveReloading/BrowserLiveReloadingSettings__FromFile__RawValid";
+import OutputPackageJSON_GeneratingSettings__FromFile__RawValid from
+    "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettings__FromFile__RawValid";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
@@ -61,6 +63,8 @@ type ProjectBuildingConfig__FromFile__RawValid = {
 
   [ProjectBuildingTasksIDsForConfigFile.filesWatching]?: FilesWatchingSettings__FromFile__RawValid;
   [ProjectBuildingTasksIDsForConfigFile.browserLiveReloading]?: BrowserLiveReloadingSettings__FromFile__RawValid;
+
+  [ProjectBuildingTasksIDsForConfigFile.outputPackageJSON_Generating]?: OutputPackageJSON_GeneratingSettings__FromFile__RawValid;
 
 };
 
@@ -102,6 +106,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
       plainCopying: PlainCopyingSettings__FromFile__RawValid.Localization;
       filesWatching: FilesWatchingSettings__FromFile__RawValid.Localization;
       browserLiveReloading: BrowserLiveReloadingSettings__FromFile__RawValid.Localization;
+      outputPackageJSON_Generating: OutputPackageJSON_GeneratingSettings__FromFile__RawValid.Localization;
     }>;
 
   }>;
@@ -289,6 +294,17 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               preValidationModifications: nullToUndefined,
               properties: BrowserLiveReloadingSettings__FromFile__RawValid.
                   getLocalizedPropertiesSpecification(localization.tasks.browserLiveReloading)
+            },
+
+            [localization.enumerations.tasksIDs.outputPackageJSON_Generating]: {
+              newName: "outputPackageJSON_Generating",
+              type: Object,
+              required: false,
+              preValidationModifications: nullToUndefined,
+              properties: OutputPackageJSON_GeneratingSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
+                outputPackageJSON_GeneratingSettingsLocalization: localization.tasks.outputPackageJSON_Generating,
+                consumingProjectLocalizedPreDefinedBuildingModes
+              })
             }
 
           }

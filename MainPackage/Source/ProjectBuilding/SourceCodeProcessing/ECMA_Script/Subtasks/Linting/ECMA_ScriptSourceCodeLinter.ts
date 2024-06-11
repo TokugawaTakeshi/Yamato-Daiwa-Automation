@@ -12,7 +12,7 @@ import LinterLikeTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpS
 /* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import type VinylFile from "vinyl";
 
-/* ─── Third-party Solutions Specialises ──────────────────────────────────────────────────────────────────────────── */
+/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import ESLintLinterSpecialist from "@ThirdPartySolutionsSpecialists/ESLintLinterSpecialist";
 
 /* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -361,38 +361,42 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
         targetArray: replaceArrayElementsByIndexesImmutably({
           targetArray: sourceCodeExplodedToLines,
           replacements: [
-            ...rawIssue.line === rawIssue.endLine ? [
-              {
-                index: rawIssue.line - 1,
-                newElement: cropString({
-                  targetString: sourceCodeExplodedToLines[rawIssue.line - 1],
-                  startingCharacterNumber__numerationFrom1: rawIssue.column,
-                  endingCharacterNumber__numerationFrom1: rawIssue.column === rawIssue.endColumn ?
-                      rawIssue.endColumn : rawIssue.endColumn - 1,
-                  mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
-                })
-              }
-            ] : [
-              {
-                index: rawIssue.line - 1,
-                newElement: cropString({
-                  targetString: sourceCodeExplodedToLines[rawIssue.line - 1],
-                  startingCharacterNumber__numerationFrom1: rawIssue.column,
-                  untilEnd: true,
-                  mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
-                })
-              },
-              {
-                index: rawIssue.endLine - 1,
-                newElement: cropString({
-                  targetString: sourceCodeExplodedToLines[rawIssue.endLine - 1],
-                  fromStart: true,
-                  endingCharacterNumber__numerationFrom1: rawIssue.column === rawIssue.endColumn ?
-                      rawIssue.endColumn : rawIssue.endColumn - 1,
-                  mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
-                })
-              }
-            ]
+            ...rawIssue.line === rawIssue.endLine ?
+              [
+                {
+                  index: rawIssue.line - 1,
+                  newElement: cropString({
+                    targetString: sourceCodeExplodedToLines[rawIssue.line - 1],
+                    startingCharacterNumber__numerationFrom1: rawIssue.column,
+                    endingCharacterNumber__numerationFrom1: rawIssue.column === rawIssue.endColumn ?
+                        rawIssue.endColumn : rawIssue.endColumn - 1,
+                    mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
+                  })
+                }
+              ] : [
+                {
+                  index: rawIssue.line - 1,
+                  newElement: cropString({
+                    targetString: sourceCodeExplodedToLines[rawIssue.line - 1],
+                    startingCharacterNumber__numerationFrom1: rawIssue.column,
+                    untilEnd: true,
+                    mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
+                  })
+                },
+                ...rawIssue.endColumn > 1 ?
+                    [
+                      {
+                        index: rawIssue.endLine - 1,
+                        newElement: cropString({
+                          targetString: sourceCodeExplodedToLines[rawIssue.endLine - 1],
+                          fromStart: true,
+                          endingCharacterNumber__numerationFrom1: rawIssue.column === rawIssue.endColumn ?
+                              rawIssue.endColumn : rawIssue.endColumn - 1,
+                          mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
+                        })
+                      }
+                    ] : []
+              ]
           ]
         }),
         startingElementNumber__numerationFrom1: rawIssue.line,

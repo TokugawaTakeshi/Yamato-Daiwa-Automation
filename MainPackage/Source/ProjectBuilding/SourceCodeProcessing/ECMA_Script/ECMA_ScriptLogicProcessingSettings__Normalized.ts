@@ -1,12 +1,15 @@
 /* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import type ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRestrictions";
 
-/* ─── Normalized config ──────────────────────────────────────────────────────────────────────────────────────────── */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type SourceCodeProcessingGenericProperties__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
 import type LintingSettings__Normalized from "@ProjectBuilding/Common/NormalizedConfig/LintingSettings__Normalized";
 import type RevisioningSettings__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/Reusables/RevisioningSettings__Normalized";
+
+/* ─── Third-party tools ──────────────────────────────────────────────────────────────────────────────────────────── */
+import type TypeScript from "typescript";
 
 
 type ECMA_ScriptLogicProcessingSettings__Normalized = Readonly<{
@@ -35,6 +38,8 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
         targetRuntime: EntryPointsGroup.Runtime;
         associatedMarkupEntryPointsGroupID_ForDynamicModulesLoadingWithoutDevelopmentServer?: string;
         typeScriptConfigurationFileAbsolutePath: string;
+        typeScriptCompilerOptions: Readonly<TypeScript.CompilerOptions>;
+        directoriesAliasesAndCorrespondingAbsolutePathsMap: ReadonlyMap<string, ReadonlyArray<string>>;
         revisioning: RevisioningSettings__Normalized;
         distributing?: EntryPointsGroup.Distributing;
       }>;

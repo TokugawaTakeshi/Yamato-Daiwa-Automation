@@ -9,6 +9,8 @@ import {
   addMultipleElementsToSet,
   createSetBasedOnOtherSet,
   stringifyAndFormatArbitraryValue,
+  replaceArrayElementsByIndexesImmutably,
+  isString,
   isNonEmptyString,
   isUndefined,
   isNotUndefined,
@@ -22,14 +24,9 @@ import {
   isErrnoException
 } from "@yamato-daiwa/es-extensions-nodejs";
 import FileSystem from "fs";
+import Path from "path";
 
 
-/* [ Theory ]
- * With plain Gulp, we don't know the relations of entry points and affiliated files thus must to re-process all entry
- * points on any file changed. When files number is large, the performance impact will be tangible even for the local
- * development mode when the speed is negligible to certain extent. To optimize this, we need to know the parents entry
- * points of each file, herewith the hierarchy could be arbitrary large. Also, we need to avoid of the reading of same
- * file twice while its content not changed. */
 class SourceCodeSelectiveReprocessingHelper {
 
   private static readonly DEBUGGING_MODE: boolean = false;
@@ -49,7 +46,7 @@ class SourceCodeSelectiveReprocessingHelper {
                 type: String,
                 required: true
               },
-              directAffiliatedFilesRelativePaths: {
+              directChildrenFilesRelativePaths: {
                 type: Array,
                 required: true,
                 element: { type: String }
@@ -57,7 +54,7 @@ class SourceCodeSelectiveReprocessingHelper {
             }
           }
         },
-        affiliatedFiles: {
+        childrenFiles: {
           type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
           required: true,
           value: {
@@ -67,7 +64,7 @@ class SourceCodeSelectiveReprocessingHelper {
                 type: String,
                 required: true
               },
-              directAffiliatedFilesRelativePaths: {
+              directChildrenFilesRelativePaths: {
                 type: Array,
                 required: true,
                 element: { type: String }
@@ -86,26 +83,34 @@ class SourceCodeSelectiveReprocessingHelper {
   private readonly entryPointsMetadata: SourceCodeSelectiveReprocessingHelper.EntryPointsMetadata = new Map();
   private readonly isEntryPoint: (targetFileAbsolutePath: string) => boolean;
 
-  private readonly affiliatedFilesMetadata: SourceCodeSelectiveReprocessingHelper.AffiliatedFilesMetadata = new Map();
-  private readonly affiliatedFilesResolutionRules: SourceCodeSelectiveReprocessingHelper.AffiliatedFilesResolutionRules;
-  private readonly absolutePathsOfAffiliatedFilesWhichHasBeenScannedDuringCurrentPass: Set<string> = new Set();
+  private readonly childrenFilesMetadata: SourceCodeSelectiveReprocessingHelper.ChildrenFilesMetadata = new Map();
+  private readonly resolvedAliasedPaths: Map<string, string> = new Map<string, string>();
+  private readonly childrenFilesResolutionRules: SourceCodeSelectiveReprocessingHelper.ChildrenFilesResolutionRules;
+  private readonly absolutePathsOfChildrenFilesWhichHasBeenScannedDuringCurrentPass: Set<string> = new Set();
+  private readonly directoriesAliasesAndTheirAbsolutePatsMap: ReadonlyMap<string, ReadonlySet<string>>;
 
   private readonly CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH: string;
   private readonly CACHED_METADATA_FILE_ABSOLUTE_PATH: string;
   private readonly TARGET_FILES_TYPE_IN_SINGULAR_FORM: string;
 
 
+  /* ━━━ Constructor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   public constructor(initializationProperties: SourceCodeSelectiveReprocessingHelper.InitializationProperties) {
 
     this.isEntryPoint = initializationProperties.isEntryPoint;
 
-    this.affiliatedFilesResolutionRules = initializationProperties.affiliatedFilesResolutionRules;
+    this.childrenFilesResolutionRules = initializationProperties.childrenFilesResolutionRules;
+    this.directoriesAliasesAndTheirAbsolutePatsMap =
+        initializationProperties.directoriesAliasesAndTheirAbsolutePatsMap ?? new Map();
 
     this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH = initializationProperties.consumingProjectRootDirectoryAbsolutePath;
     this.CACHED_METADATA_FILE_ABSOLUTE_PATH = initializationProperties.cacheFileAbsolutePath;
     this.TARGET_FILES_TYPE_IN_SINGULAR_FORM = initializationProperties.logging.targetFilesTypeInSingularForm;
 
-    this.generateInitialMetadataMaps(
+    /* [ Theory ] The cached metadata from previous YDA launches could be. */
+    this.retrieveCacheFromFileAndApplyIfItExists();
+
+    this.scanFilesHierarchyTreeForEntryPoints(
       new Set(
         initializationProperties.initialEntryPointsSourceFilesAbsolutePaths.map(
           (entryPointFileAbsolutePath__potentiallyWithOperationingSystemDependentPathSeparators: string): string =>
@@ -117,209 +122,88 @@ class SourceCodeSelectiveReprocessingHelper {
     );
 
     if (initializationProperties.logging.mustEnable) {
-      this.logAffiliatedFilesAndEntryPointsRelationships();
+      this.logChildrenFilesAndEntryPointsRelationships();
     }
 
-    this.cacheFilesMetadataMapsToFile();
+    this.saveCachedFilesMetadataMapsToFile();
 
   }
 
 
+  /* ━━━ Public Methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   public getAbsolutePathsOfEntryPointsWhichMustBeProcessed(
-    absolutePathsOfFilesWithChangesStatus: ReadonlySet<string>
+    absolutePathsOfFilesWithChangedStatus__forwardSlashSeparators: ReadonlySet<string>
   ): Array<string> {
 
-    const absolutePathsOfEntryPointsWhichMustBeProcessed: Set<string> = new Set<string>();
+    const absolutePathsOfEntryPointsWhichMustBeProcessed__forwardSlashSeparators: Set<string> = new Set();
+    const absolutePathsOfChildrenFilesWhichParentEntryPointsMustBeProcessed__forwardSlashSeparators: Set<string> = new Set();
 
-    for (const absolutePathOfFileWithChangesStatus of absolutePathsOfFilesWithChangesStatus) {
+    for (
+      const absolutePathOfFileWithChangedStatus__forwardSlashSeparators of
+          absolutePathsOfFilesWithChangedStatus__forwardSlashSeparators
+    ) {
 
-      if (this.isEntryPoint(absolutePathOfFileWithChangesStatus)) {
+      const pathRelativeRelativeToConsumingProjectRootDirectoryOfFileWithChangedStatus__forwardSlashSeparators: string =
+          ImprovedPath.computeRelativePath({
+            basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+            comparedPath: absolutePathOfFileWithChangedStatus__forwardSlashSeparators,
+            alwaysForwardSlashSeparators: true
+          });
 
-        if (FileSystem.existsSync(absolutePathOfFileWithChangesStatus)) {
-          absolutePathsOfEntryPointsWhichMustBeProcessed.add(absolutePathOfFileWithChangesStatus);
+      if (FileSystem.existsSync(absolutePathOfFileWithChangedStatus__forwardSlashSeparators)) {
+
+        if (this.isEntryPoint(absolutePathOfFileWithChangedStatus__forwardSlashSeparators)) {
+          absolutePathsOfEntryPointsWhichMustBeProcessed__forwardSlashSeparators.
+              add(absolutePathOfFileWithChangedStatus__forwardSlashSeparators);
         } else {
-          this.entryPointsMetadata.delete(
-            ImprovedPath.computeRelativePath({
-              basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
-              comparedPath: absolutePathOfFileWithChangesStatus,
-              alwaysForwardSlashSeparators: true
-            })
-          );
+          absolutePathsOfChildrenFilesWhichParentEntryPointsMustBeProcessed__forwardSlashSeparators.
+              add(absolutePathOfFileWithChangedStatus__forwardSlashSeparators);
         }
 
       } else {
-
-        const targetAffiliatedFileRelativePath: string = ImprovedPath.computeRelativePath({
-          basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
-          comparedPath: absolutePathOfFileWithChangesStatus,
-          alwaysForwardSlashSeparators: true
-        });
-
-        if (FileSystem.existsSync(absolutePathOfFileWithChangesStatus)) {
-
-          addMultipleElementsToSet(
-            absolutePathsOfEntryPointsWhichMustBeProcessed,
-            Array.from(this.affiliatedFilesMetadata.get(targetAffiliatedFileRelativePath)?.parentEntryPointsAbsolutePaths ?? [])
-          );
-
-        } else {
-
-          this.affiliatedFilesMetadata.delete(targetAffiliatedFileRelativePath);
-
-        }
-
-      }
-
-    }
-
-    return Array.from(absolutePathsOfEntryPointsWhichMustBeProcessed);
-
-  }
-
-
-  /* ━━━ First Mapping Since Last YDA Launch ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  /* [ Theory ] The cached metadata from previous YDA launches could be. */
-  private generateInitialMetadataMaps(initialEntryPointsAbsolutePaths: ReadonlySet<string>): void {
-
-    this.extractCacheFromFileAndApplyIfItExists();
-
-    for (const entryPointFileAbsolutePath of initialEntryPointsAbsolutePaths) {
-
-      const entryPointDirectoryAbsolutePath: string = ImprovedPath.extractDirectoryFromFilePath({
-        targetPath: entryPointFileAbsolutePath,
-        alwaysForwardSlashSeparators: true,
-        ambiguitiesResolution: {
-          mustConsiderLastSegmentStartingWithDotAsDirectory: false,
-          mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-          mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
-        }
-      });
-
-      const entryPointFilePathRelativeToConsumingProjectRootDirectory: string = ImprovedPath.computeRelativePath({
-        basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
-        comparedPath: entryPointFileAbsolutePath,
-        alwaysForwardSlashSeparators: true
-      });
-
-      let entryPointModificationDateTime__ISO8601: string;
-
-      try {
-
-        entryPointModificationDateTime__ISO8601 = FileSystem.statSync(entryPointFileAbsolutePath).mtime.toISOString();
-
-      } catch (error: unknown) {
-
-        if (isErrnoException(error) && error.code === "ENOENT") {
-          this.entryPointsMetadata.delete(entryPointFilePathRelativeToConsumingProjectRootDirectory);
-          continue;
-        }
-
-
-        Logger.logError({
-          mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
-          errorType: "FileStatisticsRetrievingFailedError",
-          title: "File Statistics Retrieving Failed Error",
-          description:
-              `Unable to retrieve the statistics of file "${ entryPointFilePathRelativeToConsumingProjectRootDirectory }". ` +
-              "This file will not be mapped.",
-          occurrenceLocation: "sourceCodeSelectiveReprocessingHelper.generateInitialMetadataMaps()",
-          caughtError: error
-        });
-
-        continue;
-
-      }
-
-
-      const cachedMetadataOfCurrentEntryPoint: SourceCodeSelectiveReprocessingHelper.EntryPointFileMetadata | undefined =
-          this.entryPointsMetadata.get(entryPointFilePathRelativeToConsumingProjectRootDirectory);
-
-      let absolutePathsOfDirectExistingAffiliatedFilesOfCurrentEntryPoint: Set<string>;
-
-      if (cachedMetadataOfCurrentEntryPoint?.modificationDate__ISO8601 === entryPointModificationDateTime__ISO8601) {
-
-        /* [ Theory ] Although the entry point file is existing and has not changed since last mapping, its affiliated
-         *   files could be added or deleted. */
-        absolutePathsOfDirectExistingAffiliatedFilesOfCurrentEntryPoint = new Set<string>();
-
-        for (
-          const relativePathOfAffiliatedFileOfCurrentEntryPoint of
-              cachedMetadataOfCurrentEntryPoint.directAffiliatedFilesRelativePaths
-        ) {
-
-          const absolutePathOfAffiliatedFileOfCurrentEntryPoint: string = ImprovedPath.joinPathSegments(
-            [ this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH, relativePathOfAffiliatedFileOfCurrentEntryPoint ],
-            { alwaysForwardSlashSeparators: true }
-          );
-
-          if (!FileSystem.existsSync(absolutePathOfAffiliatedFileOfCurrentEntryPoint)) {
-            cachedMetadataOfCurrentEntryPoint.directAffiliatedFilesRelativePaths.
-                delete(relativePathOfAffiliatedFileOfCurrentEntryPoint);
-          }
-
-          absolutePathsOfDirectExistingAffiliatedFilesOfCurrentEntryPoint = new Set(
-            Array.from(cachedMetadataOfCurrentEntryPoint.directAffiliatedFilesRelativePaths)
-          );
-
-        }
-
-      } else {
-
-        absolutePathsOfDirectExistingAffiliatedFilesOfCurrentEntryPoint = this.
-            getAbsolutePathsOfExistingAffiliatedFilesOfExistingUpdatedTargetOne({
-              targetFileAbsolutePath: entryPointFileAbsolutePath,
-              targetFileDirectoryAbsolutePath: entryPointDirectoryAbsolutePath
-            });
-
-        this.entryPointsMetadata.set(
-          entryPointFilePathRelativeToConsumingProjectRootDirectory,
-          {
-            modificationDate__ISO8601: entryPointModificationDateTime__ISO8601,
-            directAffiliatedFilesRelativePaths: createSetBasedOnOtherSet(
-              absolutePathsOfDirectExistingAffiliatedFilesOfCurrentEntryPoint,
-              (absolutePathOfExistingAffiliatedFileOfCurrentEntryPoint: string): string =>
-                  ImprovedPath.computeRelativePath({
-                    basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
-                    comparedPath: absolutePathOfExistingAffiliatedFileOfCurrentEntryPoint,
-                    alwaysForwardSlashSeparators: true
-                  })
-            )
-          }
+        this.clearFileMetadataPathFromCache(
+          pathRelativeRelativeToConsumingProjectRootDirectoryOfFileWithChangedStatus__forwardSlashSeparators
         );
-
-      }
-
-      Logger.logGeneric({
-        mustOutputIf: SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
-        badge: { customText: "Debug" },
-        title: "SourceCodeSelectiveReprocessingHelper, entry point has been analyzed.",
-        description:
-            `The metadata of entry point "${ entryPointFilePathRelativeToConsumingProjectRootDirectory }" ` +
-            `has been is:\n${ stringifyAndFormatArbitraryValue(this.entryPointsMetadata) }\n`
-      });
-
-      for (
-        const absolutePathOfDirectExistingAffiliatedFileOfCurrentEntryPoint of
-            absolutePathsOfDirectExistingAffiliatedFilesOfCurrentEntryPoint
-      ) {
-
-        this.updateMetadataMapForExistingAffiliatedFile({
-          targetAffiliatedFileAbsolutePath: absolutePathOfDirectExistingAffiliatedFileOfCurrentEntryPoint,
-          parentEntryPointAbsolutePath: entryPointFileAbsolutePath
-        });
-
-        this.absolutePathsOfAffiliatedFilesWhichHasBeenScannedDuringCurrentPass.
-            add(absolutePathOfDirectExistingAffiliatedFileOfCurrentEntryPoint);
-
       }
 
     }
 
-    this.absolutePathsOfAffiliatedFilesWhichHasBeenScannedDuringCurrentPass.clear();
+    this.scanFilesHierarchyTreeForEntryPoints(absolutePathsOfEntryPointsWhichMustBeProcessed__forwardSlashSeparators);
+
+    this.saveCachedFilesMetadataMapsToFile();
+
+    for (
+      const absolutePathOfChildFile__forwardSlashSeparators of
+          absolutePathsOfChildrenFilesWhichParentEntryPointsMustBeProcessed__forwardSlashSeparators
+    ) {
+
+      const pathOfChildFileRelativeToConsumingProjectRootDirectory__forwardSlashSeparators: string = ImprovedPath.
+          computeRelativePath({
+            basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+            comparedPath: absolutePathOfChildFile__forwardSlashSeparators,
+            alwaysForwardSlashSeparators: true
+          });
+
+      addMultipleElementsToSet(
+        absolutePathsOfEntryPointsWhichMustBeProcessed__forwardSlashSeparators,
+        Array.from(
+          this.childrenFilesMetadata.get(
+            pathOfChildFileRelativeToConsumingProjectRootDirectory__forwardSlashSeparators
+          )?.parentEntryPointsAbsolutePaths ??
+          new Set()
+        )
+      );
+
+    }
+
+    return Array.from(absolutePathsOfEntryPointsWhichMustBeProcessed__forwardSlashSeparators);
 
   }
 
-  private extractCacheFromFileAndApplyIfItExists(): void {
+
+  /* ━━━ Private Methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ─── Initial Pass ─────────────────────────────────────────────────────────────────────────────────────────────── */
+  private retrieveCacheFromFileAndApplyIfItExists(): void {
 
     let cachedRawMetadata: SourceCodeSelectiveReprocessingHelper.CachedRawMetadata;
 
@@ -337,10 +221,10 @@ class SourceCodeSelectiveReprocessingHelper {
 
         Logger.logError({
           mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
-          errorType: "CachedDataRetrievingFailure",
-          title: "Cached Data Retrieving Failure",
-          description: `Unable to read the existing cache file "${ this.CACHED_METADATA_FILE_ABSOLUTE_PATH }".`,
-          occurrenceLocation: "sourceCodeSelectiveReprocessingHelper.extractCacheFromFileAndApplyIfItExists()",
+          errorType: "CachedDataRetrievingFailedError",
+          title: "Cached Data Retrieving Failed",
+          description: `Unable to read the existing cache file at "${ this.CACHED_METADATA_FILE_ABSOLUTE_PATH }".`,
+          occurrenceLocation: "sourceCodeSelectiveReprocessingHelper.retrieveCacheFromFileAndApplyIfItExists()",
           caughtError: error
         });
 
@@ -359,22 +243,22 @@ class SourceCodeSelectiveReprocessingHelper {
         entryPointPathRelativeToConsumingProjectRootDirectory,
         {
           modificationDate__ISO8601: entryPointRawMetadata.modificationDate__ISO8601,
-          directAffiliatedFilesRelativePaths: new Set(entryPointRawMetadata.directAffiliatedFilesRelativePaths)
+          directChildrenFilesRelativePaths: new Set(entryPointRawMetadata.directChildrenFilesRelativePaths)
         }
       );
     }
 
     for (
-      const [ affiliatedFilePathRelativeToConsumingProjectRootDirectory, affiliatedFileMetadata ] of
-          Object.entries(cachedRawMetadata.affiliatedFiles)
+      const [ childFilePathRelativeToConsumingProjectRootDirectory, childFileMetadata ] of
+          Object.entries(cachedRawMetadata.childrenFiles)
     ) {
-      this.affiliatedFilesMetadata.set(
-        affiliatedFilePathRelativeToConsumingProjectRootDirectory,
+      this.childrenFilesMetadata.set(
+        childFilePathRelativeToConsumingProjectRootDirectory,
         {
-          modificationDateTime__ISO8601: affiliatedFileMetadata.modificationDate__ISO8601,
-          directAffiliatedFilesRelativePaths: new Set(affiliatedFileMetadata.directAffiliatedFilesRelativePaths),
+          modificationDateTime__ISO8601: childFileMetadata.modificationDate__ISO8601,
+          directChildrenFilesRelativePaths: new Set(childFileMetadata.directChildrenFilesRelativePaths),
           parentEntryPointsAbsolutePaths: new Set(
-            affiliatedFileMetadata.parentEntryPointsRelativePaths.map(
+            childFileMetadata.parentEntryPointsRelativePaths.map(
               (parentEntryPointsRelativePath: string): string => ImprovedPath.joinPathSegments(
                 [ this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH, parentEntryPointsRelativePath ],
                 { alwaysForwardSlashSeparators: true }
@@ -387,23 +271,180 @@ class SourceCodeSelectiveReprocessingHelper {
 
   }
 
-  private getAbsolutePathsOfExistingAffiliatedFilesOfExistingUpdatedTargetOne(
+
+  /* ─── All Passes ───────────────────────────────────────────────────────────────────────────────────────────────── */
+  private scanFilesHierarchyTreeForEntryPoints(
+    targetEntryPointsAbsolutePaths__forwardSlashSeparators: ReadonlySet<string>
+  ): void {
+
+    for (const entryPointAbsolutePath__forwardSlashSeparators of targetEntryPointsAbsolutePaths__forwardSlashSeparators) {
+
+      const entryPointDirectoryAbsolutePath__forwardSlashSeparators: string = ImprovedPath.extractDirectoryFromFilePath({
+        targetPath: entryPointAbsolutePath__forwardSlashSeparators,
+        ambiguitiesResolution: {
+          mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+          mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
+          mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+        },
+        alwaysForwardSlashSeparators: true
+      });
+
+      const entryPointPathRelativeToConsumingProjectRootDirectory__forwardSlashSeparators: string = ImprovedPath.
+          computeRelativePath({
+            basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+            comparedPath: entryPointAbsolutePath__forwardSlashSeparators,
+            alwaysForwardSlashSeparators: true
+          });
+
+      let entryPointLastModificationDateTime__ISO8601: string;
+
+      try {
+
+        entryPointLastModificationDateTime__ISO8601 = FileSystem.statSync(entryPointAbsolutePath__forwardSlashSeparators).
+            mtime.
+            toISOString();
+
+      } catch (error: unknown) {
+
+        if (isErrnoException(error) && error.code === "ENOENT") {
+          this.entryPointsMetadata.delete(entryPointPathRelativeToConsumingProjectRootDirectory__forwardSlashSeparators);
+          continue;
+        }
+
+
+        Logger.logError({
+          mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
+          errorType: "FileStatisticsRetrievingFailedError",
+          title: "File Statistics Retrieving Failed Error",
+          description:
+              "Unable to retrieve the statistics of file " +
+                `"${ entryPointPathRelativeToConsumingProjectRootDirectory__forwardSlashSeparators }". ` +
+              "This file will not be mapped.",
+          occurrenceLocation: "sourceCodeSelectiveReprocessingHelper." +
+              "scanFilesHierarchyTreeForEntryPoints(targetEntryPointsAbsolutePaths__forwardSlashSeparators)",
+          caughtError: error
+        });
+
+        continue;
+
+      }
+
+
+      let cachedMetadataOfCurrentEntryPoint: SourceCodeSelectiveReprocessingHelper.EntryPointFileMetadata | undefined =
+          this.entryPointsMetadata.get(entryPointPathRelativeToConsumingProjectRootDirectory__forwardSlashSeparators);
+
+      let absolutePathsOfExistingDirectChildrenFilesOfCurrentEntryPoint__forwardSlashSeparators: ReadonlySet<string> =
+          new Set();
+
+      /* [ Theory ] This condition will could be truthy (but not always) only on initial pass. */
+      if (cachedMetadataOfCurrentEntryPoint?.modificationDate__ISO8601 === entryPointLastModificationDateTime__ISO8601) {
+
+        /* [ Theory ]
+         * Although the entry point file is existing and has not changed since last scan, its children files could
+         *  be added or deleted. */
+        for (
+          const pathRelativeToConsumingProjectRootDirectoryOfChildFileOfCurrentEntryPoint__forwardSlashSeparators of
+              cachedMetadataOfCurrentEntryPoint.directChildrenFilesRelativePaths
+        ) {
+
+          const absolutePathOfChildFileOfCurrentEntryPoint__forwardSlashSeparators: string = ImprovedPath.joinPathSegments(
+            [
+              this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+              pathRelativeToConsumingProjectRootDirectoryOfChildFileOfCurrentEntryPoint__forwardSlashSeparators
+            ],
+            { alwaysForwardSlashSeparators: true }
+          );
+
+          if (!FileSystem.existsSync(absolutePathOfChildFileOfCurrentEntryPoint__forwardSlashSeparators)) {
+            this.clearFileMetadataPathFromCache(
+              pathRelativeToConsumingProjectRootDirectoryOfChildFileOfCurrentEntryPoint__forwardSlashSeparators
+            );
+          }
+
+          absolutePathsOfExistingDirectChildrenFilesOfCurrentEntryPoint__forwardSlashSeparators = new Set(
+            Array.from(cachedMetadataOfCurrentEntryPoint.directChildrenFilesRelativePaths)
+          );
+
+        }
+
+      } else {
+
+        /* [ Maintainability ]　Keep this variable for debugging. */
+        absolutePathsOfExistingDirectChildrenFilesOfCurrentEntryPoint__forwardSlashSeparators = this.
+            getAbsolutePathsOfExistingChildrenFilesOfExistingTargetFile__forwardSlashSeparators({
+              targetFileAbsolutePath__forwardSlashSeparators: entryPointAbsolutePath__forwardSlashSeparators,
+              preComputedTargetFileDirectoryAbsolutePath__forwardSlashSeparators:
+                  entryPointDirectoryAbsolutePath__forwardSlashSeparators
+            });
+
+        cachedMetadataOfCurrentEntryPoint = {
+          modificationDate__ISO8601: entryPointLastModificationDateTime__ISO8601,
+          directChildrenFilesRelativePaths: createSetBasedOnOtherSet(
+            absolutePathsOfExistingDirectChildrenFilesOfCurrentEntryPoint__forwardSlashSeparators,
+            (absolutePathOfExistingDirectChildFileOfCurrentEntryPoint__forwardSlashSeparators: string): string =>
+                ImprovedPath.computeRelativePath({
+                  basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+                  comparedPath: absolutePathOfExistingDirectChildFileOfCurrentEntryPoint__forwardSlashSeparators,
+                  alwaysForwardSlashSeparators: true
+                })
+          )
+        };
+
+        this.entryPointsMetadata.set(
+          entryPointPathRelativeToConsumingProjectRootDirectory__forwardSlashSeparators,
+          cachedMetadataOfCurrentEntryPoint
+        );
+
+      }
+
+      Logger.logGeneric({
+        mustOutputIf: SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
+        badge: { customText: "Debug" },
+        title: "SourceCodeSelectiveReprocessingHelper, Entry Point Analysis Complete.",
+        description: entryPointPathRelativeToConsumingProjectRootDirectory__forwardSlashSeparators,
+        additionalData: cachedMetadataOfCurrentEntryPoint
+      });
+
+      for (
+        const absolutePathOfDirectExistingChildFileOfCurrentEntryPoint__forwardSlashSeparators of
+            absolutePathsOfExistingDirectChildrenFilesOfCurrentEntryPoint__forwardSlashSeparators
+      ) {
+
+        this.updateMetadataForExistingChildFile({
+          targetChildFileAbsolutePath__forwardSlashSeparators:
+              absolutePathOfDirectExistingChildFileOfCurrentEntryPoint__forwardSlashSeparators,
+          parentEntryPointAbsolutePath__forwardSlashSeparators: entryPointAbsolutePath__forwardSlashSeparators
+        });
+
+        this.absolutePathsOfChildrenFilesWhichHasBeenScannedDuringCurrentPass.
+            add(absolutePathOfDirectExistingChildFileOfCurrentEntryPoint__forwardSlashSeparators);
+
+      }
+
+    }
+
+    this.absolutePathsOfChildrenFilesWhichHasBeenScannedDuringCurrentPass.clear();
+
+  }
+
+  /* [ Approach ] The target file could be either entry point or not. */
+  private getAbsolutePathsOfExistingChildrenFilesOfExistingTargetFile__forwardSlashSeparators(
     {
-      targetFileAbsolutePath,
-      targetFileDirectoryAbsolutePath
+      targetFileAbsolutePath__forwardSlashSeparators,
+      preComputedTargetFileDirectoryAbsolutePath__forwardSlashSeparators
     }: Readonly<{
-      targetFileAbsolutePath: string;
-      targetFileDirectoryAbsolutePath: string;
+      targetFileAbsolutePath__forwardSlashSeparators: string;
+      preComputedTargetFileDirectoryAbsolutePath__forwardSlashSeparators?: string;
     }>
   ): Set<string> {
 
-    const absolutePathsOfExistingAffiliatedFilesOfTargetOne: Set<string> = new Set();
+    const absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators: Set<string> = new Set();
 
     let fileContent: string;
 
     try {
 
-      fileContent = FileSystem.readFileSync(targetFileAbsolutePath, "utf-8");
+      fileContent = FileSystem.readFileSync(targetFileAbsolutePath__forwardSlashSeparators, "utf-8");
 
     } catch (error: unknown) {
 
@@ -413,14 +454,15 @@ class SourceCodeSelectiveReprocessingHelper {
           mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
           errorType: UnexpectedEventError.NAME,
           title: UnexpectedEventError.localization.defaultTitle,
-          description: `The existence of the file "${ targetFileAbsolutePath }" has been confirmed one moment ago ` +
-              "but suddenly disappeared during reading. Skipping this file.",
+          description:
+              `Contrary to expectations, "${ targetFileAbsolutePath__forwardSlashSeparators }" file does not exist. ` +
+              "Skipping this file.",
           occurrenceLocation: "sourceCodeSelectiveReprocessingHelper." +
-              "getAbsolutePathsOfExistingAffiliatedFilesOfExistingUpdatedTargetOne(compoundParameter)",
+              "getAbsolutePathsOfExistingChildrenFilesOfExistingTargetFile__forwardSlashSeparators(compoundParameter)",
           caughtError: error
         });
 
-        return absolutePathsOfExistingAffiliatedFilesOfTargetOne;
+        return absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators;
 
       }
 
@@ -429,270 +471,208 @@ class SourceCodeSelectiveReprocessingHelper {
         mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
         errorType: FileReadingFailedError.NAME,
         title: FileReadingFailedError.localization.defaultTitle,
-        description: FileReadingFailedError.localization.generateDescription({ filePath: targetFileAbsolutePath }),
+        description: FileReadingFailedError.localization.
+            generateDescription({ filePath: targetFileAbsolutePath__forwardSlashSeparators }),
         occurrenceLocation: "sourceCodeSelectiveReprocessingHelper." +
-            "getAbsolutePathsOfExistingAffiliatedFilesOfExistingUpdatedTargetOne(compoundParameter)",
+            "getAbsolutePathsOfExistingChildrenFilesOfExistingTargetFile__forwardSlashSeparators(compoundParameter)",
         caughtError: error
       });
 
-      return absolutePathsOfExistingAffiliatedFilesOfTargetOne;
+      return absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators;
 
     }
 
 
     for (
       const fileIncludingDeclarationPattern of
-          this.affiliatedFilesResolutionRules.affiliatedFilesIncludingDeclarationsPatterns
+          this.childrenFilesResolutionRules.childrenFilesIncludingDeclarationsPatterns
     ) {
 
       /* [ Theory ] Same file could be included for the multiple times.
        *   Occasionally it is even meaningful, but we are not need the duplicated here. */
-      const affiliatedFilesRawPaths: Set<string> = new Set<string>(
+      const childrenFilesRawPaths: Set<string> = new Set<string>(
         Array.from(fileContent.matchAll(fileIncludingDeclarationPattern)).
             map((regularExpressionMatchingData: RegExpMatchArray): string | undefined => regularExpressionMatchingData[1]).
             filter<string>(
-              (affiliatedFileRawPath: string | undefined): affiliatedFileRawPath is string =>
-                  isNonEmptyString(affiliatedFileRawPath)
+              (childFileRawPath: string | undefined): childFileRawPath is string => isNonEmptyString(childFileRawPath)
             )
       );
 
-      for (const affiliatedFileRawPath of affiliatedFilesRawPaths) {
-
-        const affiliatedFileNormalizedPath: string | null = this.computeAbsolutePathOfAffiliatedFileIfItExists({
-          affiliatedFileRawPath,
-          parentFileDirectoryAbsolutePath: targetFileDirectoryAbsolutePath
-        });
-
-        if (isNotNull(affiliatedFileNormalizedPath)) {
-          absolutePathsOfExistingAffiliatedFilesOfTargetOne.add(affiliatedFileNormalizedPath);
-        }
-
-      }
-
-    }
-
-    return absolutePathsOfExistingAffiliatedFilesOfTargetOne;
-
-  }
-
-  private updateMetadataMapForExistingAffiliatedFile(
-    {
-      targetAffiliatedFileAbsolutePath,
-      parentEntryPointAbsolutePath
-    }: Readonly<{
-      targetAffiliatedFileAbsolutePath: string;
-      parentEntryPointAbsolutePath: string;
-    }>
-  ): void {
-
-    const targetAffiliatedFileRelativePath: string = ImprovedPath.computeRelativePath({
-      basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
-      comparedPath: targetAffiliatedFileAbsolutePath,
-      alwaysForwardSlashSeparators: true
-    });
-
-    const cachedMetadataOfCurrentAffiliatedFile: SourceCodeSelectiveReprocessingHelper.AffiliatedFileMetadata | undefined =
-        this.affiliatedFilesMetadata.get(targetAffiliatedFileRelativePath);
-
-    Logger.logGeneric({
-      mustOutputIf: SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
-      badge: { customText: "Debug" },
-      title: "SourceCodeSelectiveReprocessingHelper, updating of affiliated files metadata map.",
-      description: `The metadata of affiliated file "${ targetAffiliatedFileRelativePath }" .\n`,
-      additionalData: {
-        absolutePathsOfAffiliatedFilesWhichHasBeenScannedDuringCurrentPass:
-            this.absolutePathsOfAffiliatedFilesWhichHasBeenScannedDuringCurrentPass
-      }
-    });
-
-    /* [ Approach ] If the file has been scanned it must be in the cache however for the TypeScript type checking
-    *   the non-undefined check of "cachedMetadataOfCurrentAffiliatedFile" additionally required. */
-    if (
-      this.absolutePathsOfAffiliatedFilesWhichHasBeenScannedDuringCurrentPass.has(targetAffiliatedFileRelativePath) &&
-      isNotUndefined(cachedMetadataOfCurrentAffiliatedFile)
-    ) {
-
-      cachedMetadataOfCurrentAffiliatedFile.parentEntryPointsAbsolutePaths.add(parentEntryPointAbsolutePath);
-
-      this.registerEntryPointAsParentTo({
-        cachedMetadataOfCurrentAffiliatedFile,
-        parentEntryPointAbsolutePath
-      });
-
-      return;
-
-    }
-
-
-    let targetAffiliatedFileModificationDateTime__ISO8601: string;
-
-    try {
-
-      targetAffiliatedFileModificationDateTime__ISO8601 = FileSystem.
-          statSync(targetAffiliatedFileAbsolutePath).mtime.toISOString();
-
-    } catch (error: unknown) {
-
-      Logger.logError({
-        errorType: "FileStatisticsRetrievingFailedError",
-        title: "File statistics retrieving failed error",
-        description: `Unable to retrieve the statistics of file "${ targetAffiliatedFileAbsolutePath }". ` +
-            "This file will not be mapped.",
-        occurrenceLocation: "sourceCodeSelectiveReprocessingHelper." +
-            "updateMetadataMapForExistingAffiliatedFile(propertiesObject)",
-        caughtError: error
-      });
-
-      return;
-
-    }
-
-
-    let absolutePathsOfExistingAffiliatedFilesOfTargetOne: Set<string>;
-
-    if (
-      isNotUndefined(cachedMetadataOfCurrentAffiliatedFile) &&
-      cachedMetadataOfCurrentAffiliatedFile.modificationDateTime__ISO8601 === targetAffiliatedFileModificationDateTime__ISO8601
-    ) {
-
-      absolutePathsOfExistingAffiliatedFilesOfTargetOne = new Set<string>();
-
-      /* [ Theory ] Although the affiliated file is existing and has not changed since last mapping, its affiliated
-       *   files could be added or deleted. */
-      for (
-        const relativePathOfAffiliatedFileOfCurrentOne of
-            cachedMetadataOfCurrentAffiliatedFile.directAffiliatedFilesRelativePaths
-      ) {
-
-        const absolutePathOfAffiliatedFileOfCurrentOne: string = ImprovedPath.joinPathSegments(
-          [ this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH, relativePathOfAffiliatedFileOfCurrentOne ],
-          { alwaysForwardSlashSeparators: true }
-        );
-
-        if (!FileSystem.existsSync(absolutePathOfAffiliatedFileOfCurrentOne)) {
-          cachedMetadataOfCurrentAffiliatedFile.directAffiliatedFilesRelativePaths.
-              delete(relativePathOfAffiliatedFileOfCurrentOne);
-        }
-
-        absolutePathsOfExistingAffiliatedFilesOfTargetOne = new Set(
-          Array.from(cachedMetadataOfCurrentAffiliatedFile.directAffiliatedFilesRelativePaths)
-        );
-
-      }
-
-      cachedMetadataOfCurrentAffiliatedFile.parentEntryPointsAbsolutePaths.add(parentEntryPointAbsolutePath);
-
-    } else {
-
-      absolutePathsOfExistingAffiliatedFilesOfTargetOne = this.
-          getAbsolutePathsOfExistingAffiliatedFilesOfExistingUpdatedTargetOne({
-            targetFileAbsolutePath: targetAffiliatedFileAbsolutePath,
-            targetFileDirectoryAbsolutePath: ImprovedPath.extractDirectoryFromFilePath({
-              targetPath: targetAffiliatedFileAbsolutePath,
-              alwaysForwardSlashSeparators: true,
-              ambiguitiesResolution: {
-                mustConsiderLastSegmentStartingWithDotAsDirectory: false,
-                mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-                mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
-              }
-            })
+      const targetChildFileDirectoryAbsolutePath__forwardSlashSeparators: string =
+          preComputedTargetFileDirectoryAbsolutePath__forwardSlashSeparators ??
+          ImprovedPath.extractDirectoryFromFilePath({
+            targetPath: targetFileAbsolutePath__forwardSlashSeparators,
+            ambiguitiesResolution: {
+              mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+              mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
+              mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+            },
+            alwaysForwardSlashSeparators: true
           });
 
-      this.affiliatedFilesMetadata.set(
-        targetAffiliatedFileRelativePath,
-        {
-          parentEntryPointsAbsolutePaths: new Set<string>([ parentEntryPointAbsolutePath ]),
-          modificationDateTime__ISO8601: targetAffiliatedFileModificationDateTime__ISO8601,
-          directAffiliatedFilesRelativePaths: createSetBasedOnOtherSet(
-              absolutePathsOfExistingAffiliatedFilesOfTargetOne,
-              (absolutePathOfExistingAffiliatedFileOfCurrentOne: string): string =>
-                  ImprovedPath.computeRelativePath({
-                    basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
-                    comparedPath: absolutePathOfExistingAffiliatedFileOfCurrentOne,
-                    alwaysForwardSlashSeparators: true
-                  })
-          )
+      for (const childFileRawPath of childrenFilesRawPaths) {
+
+        const childFileNormalizedPath: string | null = this.computeAbsolutePathOfChildFileIfItExists({
+          childFileRawPath,
+          parentFileDirectoryAbsolutePath__forwardSlashSeparators:
+              targetChildFileDirectoryAbsolutePath__forwardSlashSeparators
+        });
+
+        if (isNotNull(childFileNormalizedPath)) {
+          absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators.add(childFileNormalizedPath);
         }
-      );
+
+      }
 
     }
 
-    this.absolutePathsOfAffiliatedFilesWhichHasBeenScannedDuringCurrentPass.add(targetAffiliatedFileRelativePath);
-
-    if (SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE) {
-      Logger.logInfo({
-        badge: { customText: "Debug" },
-        title: "SourceCodeSelectiveReprocessingHelper, affiliated files scanning complete.",
-        description: `The metadata of affiliated file "${ targetAffiliatedFileRelativePath }"has been updated.\n`,
-        additionalData: {
-          affiliatedFilesMetadata: this.affiliatedFilesMetadata
-        }
-      });
-    }
-
-    for (const absolutePathOfExistingAffiliatedFileOfTargetOne of absolutePathsOfExistingAffiliatedFilesOfTargetOne) {
-      this.updateMetadataMapForExistingAffiliatedFile({
-        targetAffiliatedFileAbsolutePath: absolutePathOfExistingAffiliatedFileOfTargetOne,
-        parentEntryPointAbsolutePath
-      });
-    }
+    return absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators;
 
   }
 
-  private computeAbsolutePathOfAffiliatedFileIfItExists(
+  private computeAbsolutePathOfChildFileIfItExists(
     {
-      affiliatedFileRawPath,
-      parentFileDirectoryAbsolutePath
+      childFileRawPath,
+      parentFileDirectoryAbsolutePath__forwardSlashSeparators
     }: Readonly<{
-      affiliatedFileRawPath: string;
-      parentFileDirectoryAbsolutePath: string;
+      childFileRawPath: string;
+      parentFileDirectoryAbsolutePath__forwardSlashSeparators: string;
     }>
   ): string | null {
 
-    const possibleAbsolutePathsOfTargetAffiliatedFile: Set<string> = new Set();
+    let possibleIntermediatePathsOfChildFileWithResolvedAlias: Set<string> = new Set();
 
-    const explicitlySpecifiedLastFileNameExtensionInAffiliatedFileRawPath: string | null =
-        extractLastExtensionOfFileName({ targetPath: affiliatedFileRawPath, withLeadingDot: false });
+    const segmentsOfChildFileRawPath: ReadonlyArray<string> = ImprovedPath.explodePathToSegments(childFileRawPath);
+    const firstSegmentOfChildFileRawPath: string | undefined = segmentsOfChildFileRawPath[0];
+
+    if (isNonEmptyString(firstSegmentOfChildFileRawPath)) {
+      possibleIntermediatePathsOfChildFileWithResolvedAlias = createSetBasedOnOtherSet(
+        this.directoriesAliasesAndTheirAbsolutePatsMap.get(firstSegmentOfChildFileRawPath) ?? new Set<string>(),
+        (absolutePathOfDirectoryOnWhichAliasedFirstPathSegmentCouldRefer: string): string =>
+            ImprovedPath.joinPathSegments(
+              replaceArrayElementsByIndexesImmutably({
+                targetArray: segmentsOfChildFileRawPath,
+                index: 0,
+                newElement: absolutePathOfDirectoryOnWhichAliasedFirstPathSegmentCouldRefer
+              }),
+              { alwaysForwardSlashSeparators: true }
+            )
+      );
+    }
+
+    let isChildFileRawPathAliased: boolean;
+
+    if (possibleIntermediatePathsOfChildFileWithResolvedAlias.size > 0) {
+
+      const previouslyResolvedPathFromAliasedOne: string | undefined = this.resolvedAliasedPaths.get(childFileRawPath);
+
+      if (isString(previouslyResolvedPathFromAliasedOne)) {
+
+        try {
+
+          if (FileSystem.existsSync(previouslyResolvedPathFromAliasedOne)) {
+            return previouslyResolvedPathFromAliasedOne;
+          }
+
+        } catch (error: unknown) {
+
+          if (__IS_DEVELOPMENT_BUILDING_MODE__) {
+            Logger.logError({
+              errorType: "FileCheckingError",
+              title: "File Checking Error",
+              description:
+                  `The error occurred during the checking of the file ${ previouslyResolvedPathFromAliasedOne }` +
+                  "for existence.",
+              occurrenceLocation: "sourceCodeSelectiveReprocessingHelper." +
+                  "computeAbsolutePathOfChildFileIfItExists(compoundParameter)",
+              caughtError: error
+            });
+          }
+
+        }
+
+        this.resolvedAliasedPaths.delete(childFileRawPath);
+
+      }
+
+      isChildFileRawPathAliased = true;
+
+    } else {
+      isChildFileRawPathAliased = false;
+      possibleIntermediatePathsOfChildFileWithResolvedAlias = new Set([ childFileRawPath ]);
+    }
+
+    const possibleAbsolutePathsOfTargetChildFile__forwardSlashSeparators: Set<string> = new Set();
+
+    const explicitlySpecifiedLastFileNameExtensionInChildrenFileRawPath: string | null =
+        extractLastExtensionOfFileName({ targetPath: childFileRawPath, withLeadingDot: false });
 
     /* [ Approach ]
-    * The second condition is aimed to the processing of paths with multiple files names extensions.
+    * The second condition of if-branch is aimed to the processing of paths with multiple files names extensions.
     * For example, in the Pug preprocessor case, the file "ProductCard.static.pug" could be referred as
     *   `include ProductCard.static`. */
     if (
-      isNull(explicitlySpecifiedLastFileNameExtensionInAffiliatedFileRawPath) ||
-      !this.affiliatedFilesResolutionRules.implicitFilesNamesExtensionsWithoutLeadingDotsOfAffiliatedFiles.
-          includes(explicitlySpecifiedLastFileNameExtensionInAffiliatedFileRawPath)
+      isNull(explicitlySpecifiedLastFileNameExtensionInChildrenFileRawPath) ||
+      !this.childrenFilesResolutionRules.implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles.
+          includes(explicitlySpecifiedLastFileNameExtensionInChildrenFileRawPath)
     ) {
 
-      addMultipleElementsToSet(
-        possibleAbsolutePathsOfTargetAffiliatedFile,
-        this.affiliatedFilesResolutionRules.implicitFilesNamesExtensionsWithoutLeadingDotsOfAffiliatedFiles.map(
-          (affiliatedFileNameImplicitExtension: string): string =>
+      for (
+        const possibleIntermediatePathOfChildFileWithResolvedAlias of
+            possibleIntermediatePathsOfChildFileWithResolvedAlias
+      ) {
+
+        addMultipleElementsToSet(
+          possibleAbsolutePathsOfTargetChildFile__forwardSlashSeparators,
+          this.childrenFilesResolutionRules.implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles.map(
+            (childFileNameImplicitExtension: string): string =>
               ImprovedPath.joinPathSegments(
-                [ parentFileDirectoryAbsolutePath, `${ affiliatedFileRawPath }.${ affiliatedFileNameImplicitExtension }` ],
+                [
+                  ...Path.isAbsolute(possibleIntermediatePathOfChildFileWithResolvedAlias) ?
+                      [] : [ parentFileDirectoryAbsolutePath__forwardSlashSeparators ],
+                  `${ possibleIntermediatePathOfChildFileWithResolvedAlias }.${ childFileNameImplicitExtension }`
+                ],
                 { alwaysForwardSlashSeparators: true }
               )
-        )
-      );
+          )
+        );
+
+      }
 
     } else {
 
-      possibleAbsolutePathsOfTargetAffiliatedFile.add(
-        ImprovedPath.joinPathSegments(
-          [ parentFileDirectoryAbsolutePath, affiliatedFileRawPath ],
-          { alwaysForwardSlashSeparators: true }
-        )
-      );
+      for (
+        const possibleIntermediatePathOfChildFileWithResolvedAlias of
+            possibleIntermediatePathsOfChildFileWithResolvedAlias
+      ) {
+
+        possibleAbsolutePathsOfTargetChildFile__forwardSlashSeparators.add(
+          ImprovedPath.joinPathSegments(
+            [
+              ...Path.isAbsolute(possibleIntermediatePathOfChildFileWithResolvedAlias) ?
+                  [] : [ parentFileDirectoryAbsolutePath__forwardSlashSeparators ],
+              possibleIntermediatePathOfChildFileWithResolvedAlias
+            ],
+            { alwaysForwardSlashSeparators: true }
+          )
+        );
+
+      }
 
     }
 
-
-    for (const possibleAbsolutePathOfTargetAffiliatedFile of possibleAbsolutePathsOfTargetAffiliatedFile) {
+    for (const possibleAbsolutePathOfTargetChildFile of possibleAbsolutePathsOfTargetChildFile__forwardSlashSeparators) {
 
       try {
 
-        if (FileSystem.existsSync(possibleAbsolutePathOfTargetAffiliatedFile)) {
-          return possibleAbsolutePathOfTargetAffiliatedFile;
+        if (FileSystem.existsSync(possibleAbsolutePathOfTargetChildFile)) {
+
+          if (isChildFileRawPathAliased) {
+            this.resolvedAliasedPaths.set(childFileRawPath, possibleAbsolutePathOfTargetChildFile);
+          }
+
+          return possibleAbsolutePathOfTargetChildFile;
+
         }
 
       } catch (error: unknown) {
@@ -700,11 +680,12 @@ class SourceCodeSelectiveReprocessingHelper {
         if (__IS_DEVELOPMENT_BUILDING_MODE__) {
           Logger.logError({
             errorType: "FileCheckingError",
-            title: "File checking error",
-            description: `The error occurred during the checking of the file ${ possibleAbsolutePathOfTargetAffiliatedFile }` +
-                "for existence.",
+            title: "File Checking Error",
+            description:
+                `The error occurred during the checking of the file ${ possibleAbsolutePathOfTargetChildFile }` +
+                  "for existence.",
             occurrenceLocation: "sourceCodeSelectiveReprocessingHelper." +
-                "computeAbsolutePathOfAffiliatedFileIfItExists(compoundParameter)",
+                "computeAbsolutePathOfChildFileIfItExists(compoundParameter)",
             caughtError: error
           });
         }
@@ -719,42 +700,209 @@ class SourceCodeSelectiveReprocessingHelper {
 
   }
 
+  private updateMetadataForExistingChildFile(
+    {
+      targetChildFileAbsolutePath__forwardSlashSeparators,
+      parentEntryPointAbsolutePath__forwardSlashSeparators
+    }: Readonly<{
+      targetChildFileAbsolutePath__forwardSlashSeparators: string;
+      parentEntryPointAbsolutePath__forwardSlashSeparators: string;
+    }>
+  ): void {
+
+    const targetChildFileRelativePath__forwardSlashSeparators: string = ImprovedPath.computeRelativePath({
+      basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+      comparedPath: targetChildFileAbsolutePath__forwardSlashSeparators,
+      alwaysForwardSlashSeparators: true
+    });
+
+    const cachedMetadataOfCurrentChildFile: SourceCodeSelectiveReprocessingHelper.ChildFileMetadata | undefined =
+        this.childrenFilesMetadata.get(targetChildFileRelativePath__forwardSlashSeparators);
+
+    Logger.logGeneric({
+      mustOutputIf: SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
+      badge: { customText: "Debug" },
+      title: "SourceCodeSelectiveReprocessingHelper, Updating of Children Files Metadata",
+      description: targetChildFileRelativePath__forwardSlashSeparators,
+      additionalData: {
+        absolutePathsOfAffiliatedFilesWhichHasBeenScannedDuringCurrentPass:
+            this.absolutePathsOfChildrenFilesWhichHasBeenScannedDuringCurrentPass
+      }
+    });
+
+    /* [ Approach ] If the child file has been scanned it must be in the `childrenFilesMetadata` however for the
+    *    TypeScript type checking the non-undefined check of "cachedMetadataOfCurrentAffiliatedFile" additionally
+    *    required. */
+    if (
+      this.absolutePathsOfChildrenFilesWhichHasBeenScannedDuringCurrentPass.
+          has(targetChildFileRelativePath__forwardSlashSeparators) &&
+      isNotUndefined(cachedMetadataOfCurrentChildFile)
+    ) {
+
+      cachedMetadataOfCurrentChildFile.parentEntryPointsAbsolutePaths.
+          add(parentEntryPointAbsolutePath__forwardSlashSeparators);
+
+      this.registerEntryPointAsParentTo({
+        cachedMetadataOfTargetChildFile: cachedMetadataOfCurrentChildFile,
+        parentEntryPointAbsolutePath__forwardSlashSeparators
+      });
+
+      return;
+
+    }
+
+
+    let targetChildFileModificationDateTime__ISO8601: string;
+
+    try {
+
+      targetChildFileModificationDateTime__ISO8601 = FileSystem.
+          statSync(targetChildFileAbsolutePath__forwardSlashSeparators).mtime.toISOString();
+
+    } catch (error: unknown) {
+
+      Logger.logError({
+        errorType: "FileStatisticsRetrievingFailedError",
+        title: "File Statistics Retrieving Failed Error",
+        description:
+            `Unable to retrieve the statistics of file "${ targetChildFileAbsolutePath__forwardSlashSeparators }". ` +
+            "This file will not be mapped.",
+        occurrenceLocation: "sourceCodeSelectiveReprocessingHelper.updateMetadataForExistingChildFile(compoundParameter)",
+        caughtError: error
+      });
+
+      return;
+
+    }
+
+
+    let absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators: Set<string>;
+
+    if (cachedMetadataOfCurrentChildFile?.modificationDateTime__ISO8601 === targetChildFileModificationDateTime__ISO8601) {
+
+      absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators = new Set<string>();
+
+      /* [ Theory ] Although the children file is existing and has not changed since last mapping, its children
+       *   files could be added or deleted. */
+      for (
+        const relativePathOfChildFileOfCurrentOne of cachedMetadataOfCurrentChildFile.directChildrenFilesRelativePaths
+      ) {
+
+        const absolutePathOfChildFileOfCurrentOne__forwardSlashSeparators: string = ImprovedPath.joinPathSegments(
+          [ this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH, relativePathOfChildFileOfCurrentOne ],
+          { alwaysForwardSlashSeparators: true }
+        );
+
+        if (!FileSystem.existsSync(absolutePathOfChildFileOfCurrentOne__forwardSlashSeparators)) {
+          cachedMetadataOfCurrentChildFile.directChildrenFilesRelativePaths.delete(relativePathOfChildFileOfCurrentOne);
+        }
+
+        absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators = new Set(
+          Array.from(cachedMetadataOfCurrentChildFile.directChildrenFilesRelativePaths)
+        );
+
+      }
+
+      cachedMetadataOfCurrentChildFile.parentEntryPointsAbsolutePaths.
+          add(parentEntryPointAbsolutePath__forwardSlashSeparators);
+
+    } else {
+
+      absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators = this.
+          getAbsolutePathsOfExistingChildrenFilesOfExistingTargetFile__forwardSlashSeparators({
+            targetFileAbsolutePath__forwardSlashSeparators: targetChildFileAbsolutePath__forwardSlashSeparators
+          });
+
+      this.childrenFilesMetadata.set(
+        targetChildFileRelativePath__forwardSlashSeparators,
+        {
+          parentEntryPointsAbsolutePaths: new Set<string>([ parentEntryPointAbsolutePath__forwardSlashSeparators ]),
+          modificationDateTime__ISO8601: targetChildFileModificationDateTime__ISO8601,
+          directChildrenFilesRelativePaths: createSetBasedOnOtherSet(
+              absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators,
+              (absolutePathOfExistingAffiliatedFileOfCurrentOne: string): string =>
+                  ImprovedPath.computeRelativePath({
+                    basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+                    comparedPath: absolutePathOfExistingAffiliatedFileOfCurrentOne,
+                    alwaysForwardSlashSeparators: true
+                  })
+          )
+        }
+      );
+
+    }
+
+    this.absolutePathsOfChildrenFilesWhichHasBeenScannedDuringCurrentPass.
+        add(targetChildFileRelativePath__forwardSlashSeparators);
+
+    for (
+      const absolutePathOfExistingAffiliatedFileOfTargetOne__forwardSlashSeparators of
+            absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators
+    ) {
+      this.updateMetadataForExistingChildFile({
+        targetChildFileAbsolutePath__forwardSlashSeparators:
+            absolutePathOfExistingAffiliatedFileOfTargetOne__forwardSlashSeparators,
+        parentEntryPointAbsolutePath__forwardSlashSeparators
+      });
+    }
+
+  }
+
   private registerEntryPointAsParentTo(
     {
-      cachedMetadataOfCurrentAffiliatedFile,
-      parentEntryPointAbsolutePath
+      cachedMetadataOfTargetChildFile,
+      parentEntryPointAbsolutePath__forwardSlashSeparators
     }: Readonly<{
-      cachedMetadataOfCurrentAffiliatedFile: SourceCodeSelectiveReprocessingHelper.AffiliatedFileMetadata;
-      parentEntryPointAbsolutePath: string;
+      cachedMetadataOfTargetChildFile: SourceCodeSelectiveReprocessingHelper.ChildFileMetadata;
+      parentEntryPointAbsolutePath__forwardSlashSeparators: string;
     }>
   ): void {
 
     for (
-      const relativePathsOfDirectAffiliatedFileOfCurrentOne of
-          cachedMetadataOfCurrentAffiliatedFile.directAffiliatedFilesRelativePaths
+      const relativePathsOfDirectChildFileOfCurrentOne__forwardSlashSeparators of
+          cachedMetadataOfTargetChildFile.directChildrenFilesRelativePaths
     ) {
 
-      const cachedMetadataOfAffiliatedFileOfCurrentOne: SourceCodeSelectiveReprocessingHelper.AffiliatedFileMetadata | undefined =
-          this.affiliatedFilesMetadata.get(relativePathsOfDirectAffiliatedFileOfCurrentOne);
+      const cachedMetadataOfChildFileOfCurrentOne: SourceCodeSelectiveReprocessingHelper.ChildFileMetadata | undefined =
+          this.childrenFilesMetadata.get(relativePathsOfDirectChildFileOfCurrentOne__forwardSlashSeparators);
 
-      if (isUndefined(cachedMetadataOfAffiliatedFileOfCurrentOne)) {
+      if (isUndefined(cachedMetadataOfChildFileOfCurrentOne)) {
         continue;
       }
 
 
-      cachedMetadataOfAffiliatedFileOfCurrentOne.parentEntryPointsAbsolutePaths.add(parentEntryPointAbsolutePath);
+      cachedMetadataOfChildFileOfCurrentOne.parentEntryPointsAbsolutePaths.
+          add(parentEntryPointAbsolutePath__forwardSlashSeparators);
 
       this.registerEntryPointAsParentTo({
-        cachedMetadataOfCurrentAffiliatedFile: cachedMetadataOfAffiliatedFileOfCurrentOne,
-        parentEntryPointAbsolutePath
+        cachedMetadataOfTargetChildFile: cachedMetadataOfChildFileOfCurrentOne,
+        parentEntryPointAbsolutePath__forwardSlashSeparators
       });
 
     }
 
   }
 
-  /* === Cache file ================================================================================================= */
-  private cacheFilesMetadataMapsToFile(): void {
+  private clearFileMetadataPathFromCache(targetFileRelativePath__forwardSlashesPathSeparators: string): void {
+
+    this.entryPointsMetadata.delete(targetFileRelativePath__forwardSlashesPathSeparators);
+
+    for (const entryPointMetadata of this.entryPointsMetadata.values()) {
+      entryPointMetadata.directChildrenFilesRelativePaths.delete(targetFileRelativePath__forwardSlashesPathSeparators);
+    }
+
+    this.childrenFilesMetadata.delete(targetFileRelativePath__forwardSlashesPathSeparators);
+
+    for (const childFileMetadata of this.childrenFilesMetadata.values()) {
+      childFileMetadata.directChildrenFilesRelativePaths.delete(targetFileRelativePath__forwardSlashesPathSeparators);
+      childFileMetadata.parentEntryPointsAbsolutePaths.delete(targetFileRelativePath__forwardSlashesPathSeparators);
+    }
+
+  }
+
+
+  /* ─── Cache File ───────────────────────────────────────────────────────────────────────────────────────────────── */
+  private saveCachedFilesMetadataMapsToFile(): void {
 
     const outputData: SourceCodeSelectiveReprocessingHelper.CachedRawMetadata = {
 
@@ -768,7 +916,7 @@ class SourceCodeSelectiveReprocessingHelper {
 
               entryPointsMetadata[entryPointPathRelativeToConsumingProjectRootDirectory] = {
                 modificationDate__ISO8601: entryPointMetadata.modificationDate__ISO8601,
-                directAffiliatedFilesRelativePaths: Array.from(entryPointMetadata.directAffiliatedFilesRelativePaths)
+                directChildrenFilesRelativePaths: Array.from(entryPointMetadata.directChildrenFilesRelativePaths)
               };
 
               return entryPointsMetadata;
@@ -777,18 +925,18 @@ class SourceCodeSelectiveReprocessingHelper {
             {}
           ),
 
-      affiliatedFiles: Array.from(this.affiliatedFilesMetadata.entries()).
+      childrenFiles: Array.from(this.childrenFilesMetadata.entries()).
           reduce(
             (
-              affiliatedFilesMetadata: SourceCodeSelectiveReprocessingHelper.CachedRawMetadata.AffiliatedFiles,
-              [ affiliatedFilePathRelativeToConsumingProjectRootDirectory, affiliatedFileMetadata ]:
-                  [ string, SourceCodeSelectiveReprocessingHelper.AffiliatedFileMetadata ]
-            ): SourceCodeSelectiveReprocessingHelper.CachedRawMetadata.AffiliatedFiles => {
+              childrenFilesMetadata: SourceCodeSelectiveReprocessingHelper.CachedRawMetadata.ChildrenFiles,
+              [ childFilePathRelativeToConsumingProjectRootDirectory, childFileMetadata ]:
+                  [ string, SourceCodeSelectiveReprocessingHelper.ChildFileMetadata ]
+            ): SourceCodeSelectiveReprocessingHelper.CachedRawMetadata.ChildrenFiles => {
 
-              affiliatedFilesMetadata[affiliatedFilePathRelativeToConsumingProjectRootDirectory] = {
-                modificationDate__ISO8601: affiliatedFileMetadata.modificationDateTime__ISO8601,
-                directAffiliatedFilesRelativePaths: Array.from(affiliatedFileMetadata.directAffiliatedFilesRelativePaths),
-                parentEntryPointsRelativePaths: Array.from(affiliatedFileMetadata.parentEntryPointsAbsolutePaths).
+              childrenFilesMetadata[childFilePathRelativeToConsumingProjectRootDirectory] = {
+                modificationDate__ISO8601: childFileMetadata.modificationDateTime__ISO8601,
+                directChildrenFilesRelativePaths: Array.from(childFileMetadata.directChildrenFilesRelativePaths),
+                parentEntryPointsRelativePaths: Array.from(childFileMetadata.parentEntryPointsAbsolutePaths).
                     map(
                       (parentEntryPointsAbsolutePath: string): string =>
                           ImprovedPath.computeRelativePath({
@@ -799,7 +947,7 @@ class SourceCodeSelectiveReprocessingHelper {
                     )
               };
 
-              return affiliatedFilesMetadata;
+              return childrenFilesMetadata;
 
             },
             {}
@@ -812,19 +960,16 @@ class SourceCodeSelectiveReprocessingHelper {
   }
 
 
-  /* === Incremental remapping ====================================================================================== */
-
-
-  /* ━━━ Logging ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  private logAffiliatedFilesAndEntryPointsRelationships(): void {
+  /* ─── Logging ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+  private logChildrenFilesAndEntryPointsRelationships(): void {
 
     let accumulatingString: string = "";
 
-    for (const [ affiliatedFileRelativePath, affiliatedFileMetadata ] of this.affiliatedFilesMetadata.entries()) {
+    for (const [ childFileRelativePath, childFileMetadata ] of this.childrenFilesMetadata.entries()) {
 
-      accumulatingString = `${ accumulatingString }File: "${ affiliatedFileRelativePath }" has parents:\n`;
+      accumulatingString = `${ accumulatingString }File: "${ childFileRelativePath }" has parents:\n`;
 
-      for (const entryPointFileAbsolutePath of affiliatedFileMetadata.parentEntryPointsAbsolutePaths) {
+      for (const entryPointFileAbsolutePath of childFileMetadata.parentEntryPointsAbsolutePaths) {
         accumulatingString = `${ accumulatingString }  ● ${
           ImprovedPath.computeRelativePath({
             basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
@@ -837,8 +982,8 @@ class SourceCodeSelectiveReprocessingHelper {
     }
 
     Logger.logInfo({
-      title: `${ this.TARGET_FILES_TYPE_IN_SINGULAR_FORM } Affiliated Files and Respective Parent Entry Points Relationships`,
-      description: accumulatingString.length > 0 ? accumulatingString : "No existing affiliated files has been found."
+      title: `${ this.TARGET_FILES_TYPE_IN_SINGULAR_FORM } Children Files and Respective Parent Entry Points Relationships`,
+      description: accumulatingString.length > 0 ? accumulatingString : "No existing children files has been found."
     });
 
   }
@@ -851,7 +996,8 @@ namespace SourceCodeSelectiveReprocessingHelper {
   export type InitializationProperties = Readonly<{
     initialEntryPointsSourceFilesAbsolutePaths: ReadonlyArray<string>;
     isEntryPoint: (targetFileAbsolutePath: string) => boolean;
-    affiliatedFilesResolutionRules: AffiliatedFilesResolutionRules;
+    childrenFilesResolutionRules: ChildrenFilesResolutionRules;
+    directoriesAliasesAndTheirAbsolutePatsMap?: ReadonlyMap<string, ReadonlySet<string>>;
     consumingProjectRootDirectoryAbsolutePath: string;
     cacheFileAbsolutePath: string;
     logging: Readonly<{
@@ -862,43 +1008,43 @@ namespace SourceCodeSelectiveReprocessingHelper {
 
 
   export type EntryPointsMetadata = Map<
-    EntryPointMetadata.EntryPointPathRelativeConsumingProjectRootDirectory, EntryPointFileMetadata
+    EntryPointMetadata.PathRelativeConsumingProjectRootDirectory, EntryPointFileMetadata
   >;
 
   export namespace EntryPointMetadata {
-    export type EntryPointPathRelativeConsumingProjectRootDirectory = string;
+    export type PathRelativeConsumingProjectRootDirectory = string;
   }
 
   export type EntryPointFileMetadata = {
     modificationDate__ISO8601: string;
-    directAffiliatedFilesRelativePaths: Set<string>;
+    directChildrenFilesRelativePaths: Set<string>;
   };
 
 
-  export type AffiliatedFilesMetadata = Map<
-    AffiliatedFilesMetadata.AffiliatedFilePathRelativeToConsumingProjectRootDirectory, AffiliatedFileMetadata
+  export type ChildrenFilesMetadata = Map<
+    ChildrenFilesMetadata.PathRelativeToConsumingProjectRootDirectory, ChildFileMetadata
   >;
 
-  export namespace AffiliatedFilesMetadata {
-    export type AffiliatedFilePathRelativeToConsumingProjectRootDirectory = string;
+  export namespace ChildrenFilesMetadata {
+    export type PathRelativeToConsumingProjectRootDirectory = string;
   }
 
-  export type AffiliatedFileMetadata = {
+  export type ChildFileMetadata = {
     modificationDateTime__ISO8601: string;
-    directAffiliatedFilesRelativePaths: Set<string>;
+    directChildrenFilesRelativePaths: Set<string>;
     parentEntryPointsAbsolutePaths: Set<string>;
   };
 
 
-  export type AffiliatedFilesResolutionRules = Readonly<{
-    implicitFilesNamesExtensionsWithoutLeadingDotsOfAffiliatedFiles: ReadonlyArray<string>;
-    affiliatedFilesIncludingDeclarationsPatterns: ReadonlyArray<RegExp>;
+  export type ChildrenFilesResolutionRules = Readonly<{
+    implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles: ReadonlyArray<string>;
+    childrenFilesIncludingDeclarationsPatterns: ReadonlyArray<RegExp>;
   }>;
 
 
   export type CachedRawMetadata = Readonly<{
     entryPoints: CachedRawMetadata.EntryPoints;
-    affiliatedFiles: CachedRawMetadata.AffiliatedFiles;
+    childrenFiles: CachedRawMetadata.ChildrenFiles;
   }>;
 
   /* [ Theory ] Currently, the "ObjectDataFilesProcessor" does not support the Readonly-types. */
@@ -908,14 +1054,14 @@ namespace SourceCodeSelectiveReprocessingHelper {
 
     export type EntryPoint = {
       modificationDate__ISO8601: string;
-      directAffiliatedFilesRelativePaths: Array<string>;
+      directChildrenFilesRelativePaths: Array<string>;
     };
 
-    export type AffiliatedFiles = { [pathRelativeToConsumingProjectRootDirectory: string]: AffiliatedFile; };
+    export type ChildrenFiles = { [pathRelativeToConsumingProjectRootDirectory: string]: ChildFile; };
 
-    export type AffiliatedFile = {
+    export type ChildFile = {
       modificationDate__ISO8601: string;
-      directAffiliatedFilesRelativePaths: Array<string>;
+      directChildrenFilesRelativePaths: Array<string>;
       parentEntryPointsRelativePaths: Array<string>;
     };
 

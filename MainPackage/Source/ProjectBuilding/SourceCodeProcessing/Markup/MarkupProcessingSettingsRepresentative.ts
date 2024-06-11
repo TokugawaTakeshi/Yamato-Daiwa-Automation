@@ -40,6 +40,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
   public readonly sourceCodeLintingCommonSettings: MarkupProcessingSettings__Normalized.Linting;
   public readonly importingFromTypeScriptSettings?: MarkupProcessingSettings__Normalized.ImportingFromTypeScript;
   public readonly staticPreviewSettings: MarkupProcessingSettings__Normalized.StaticPreview;
+  public readonly routingSettings?: MarkupProcessingSettings__Normalized.Routing;
   public readonly relevantEntryPointsGroupsSettings: ReadonlyMap<
     SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID, MarkupProcessingSettings__Normalized.EntryPointsGroup
   >;
@@ -62,6 +63,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
     this.sourceCodeLintingCommonSettings = normalizedMarkupProcessingSettings.linting;
     this.importingFromTypeScriptSettings = normalizedMarkupProcessingSettings.importingFromTypeScript;
     this.staticPreviewSettings = normalizedMarkupProcessingSettings.staticPreview;
+    this.routingSettings = normalizedMarkupProcessingSettings.routing;
     this.relevantEntryPointsGroupsSettings = normalizedMarkupProcessingSettings.relevantEntryPointsGroups;
     this.loggingSettings = normalizedMarkupProcessingSettings.logging;
 

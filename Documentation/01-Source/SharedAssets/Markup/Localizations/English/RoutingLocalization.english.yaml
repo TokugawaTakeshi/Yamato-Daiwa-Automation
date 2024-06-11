@@ -1,0 +1,52 @@
+fileNameLocalizationExtensions: english
+
+topPage:
+
+  $heading: "Top Page"
+  $URI: @All/index
+
+terminology:
+
+  $heading: "Terminology"
+
+functionality:
+
+  $heading: "Functionality"
+
+  markupProcessing:
+
+    $heading: "Markup Processing"
+
+    basicPugToHTML_Transpiling:
+
+      $heading: "Basic Pug-to-HTML Transpiling"
+
+    resourcesReferencesResolving:
+
+      $heading: "Resources References Resolving"
+
+configuration:
+
+  $heading: "Configuration"
+
+  outputPackageJSON_Generating:
+
+    $heading: "Output package.json Generating"
+
+#      incrementalBuilding: "Incremental building"
+#    },
+#    globalConstants: { $heading: "Global constants" },
+#    pugFilters: { $heading: "Pug filters" },
+#    outputHTML_Formatting: { $heading: "Output HTML code formatting" }
+#  }
+#},
+#
+#configuration: {
+#  markupProcessing: {
+#    $heading: "Markup processing",
+#    staticPreview: {
+#      $heading: "Static preview",
+#      pagesStateDependentVariations: { $heading: "Pages state dependent variations" }
+#    }
+#  },
+#}

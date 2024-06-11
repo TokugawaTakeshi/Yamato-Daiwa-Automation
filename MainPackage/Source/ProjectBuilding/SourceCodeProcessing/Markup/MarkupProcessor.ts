@@ -26,7 +26,7 @@ import gulpData from "gulp-data";
 import gulpPug from "gulp-pug";
 import gulpHTML_Prettify from "gulp-html-prettify";
 
-/* ─── Third-party Solutions Specialises ──────────────────────────────────────────────────────────────────────────── */
+/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import PugPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/PugPreProcessorSpecialist";
 
 /* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -51,8 +51,9 @@ import {
   addElementsToArray,
   getIndexOfArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne,
   isUndefined,
-  isNotNull,
+  isNotUndefined,
   isNull,
+  isNotNull,
   explodeStringToLines,
   getLineSeparatorType,
   extractFileNameWithoutLastExtension
@@ -78,7 +79,6 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
   private readonly absolutePathOfFilesWaitingForReProcessing: Set<string> = new Set<string>();
   private sourceCodeSelectiveReprocessingHelper: SourceCodeSelectiveReprocessingHelper | null = null;
-
   private subsequentFilesStateChangeTimeout: NodeJS.Timeout | null = null;
 
 
@@ -135,9 +135,9 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
       dataHoldingSelfInstance.sourceCodeSelectiveReprocessingHelper = new SourceCodeSelectiveReprocessingHelper({
         initialEntryPointsSourceFilesAbsolutePaths: markupProcessingSettingsRepresentative.
             initialRelevantEntryPointsSourceFilesAbsolutePaths,
-        affiliatedFilesResolutionRules: {
-          affiliatedFilesIncludingDeclarationsPatterns: PugPreProcessorSpecialist.partialFilesIncludingDeclarationPatterns,
-          implicitFilesNamesExtensionsWithoutLeadingDotsOfAffiliatedFiles: PugPreProcessorSpecialist.
+        childrenFilesResolutionRules: {
+          childrenFilesIncludingDeclarationsPatterns: PugPreProcessorSpecialist.partialFilesIncludingDeclarationPatterns,
+          implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles: PugPreProcessorSpecialist.
               implicitFilesNamesExtensionsWithoutLeadingDotsOfPartials
         },
         isEntryPoint: markupProcessingSettingsRepresentative.isEntryPoint.bind(markupProcessingSettingsRepresentative),
@@ -280,7 +280,11 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
               __IS_STAGING_BUILDING_MODE__:
                   this.projectBuildingMasterConfigRepresentative.isStagingBuildingMode,
               __IS_PRODUCTION_BUILDING_MODE__:
-                  this.projectBuildingMasterConfigRepresentative.isProductionBuildingMode
+                  this.projectBuildingMasterConfigRepresentative.isProductionBuildingMode,
+              ...isNotUndefined(this.markupProcessingSettingsRepresentative.routingSettings) ? {
+                  [this.markupProcessingSettingsRepresentative.routingSettings.variable]:
+                      this.markupProcessingSettingsRepresentative.routingSettings.routes
+              } : null
             },
             filters: {
               html_special_characters_to_html_entities: MarkupProcessor.convertApplicableCharactersToHTML_Entities,

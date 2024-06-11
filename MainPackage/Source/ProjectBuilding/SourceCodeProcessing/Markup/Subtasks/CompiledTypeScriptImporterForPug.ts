@@ -27,11 +27,11 @@ import type TypeScript from "typescript";
 import TypeScriptSpecialist from "@ThirdPartySolutionsSpecialists/TypeScriptSpecialist";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+import FileSystem from "fs";
 import {
   Logger,
   isNotUndefined,
   isNeitherUndefinedNorNull,
-  isNull,
   isUndefined
 } from "@yamato-daiwa/es-extensions";
 import { FileNotFoundError, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
@@ -110,28 +110,25 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
               })
           });
 
-    /** @see https://webpack.js.org/configuration/entry-context/#entry */
-    const webpackEntryPointDefinition: Webpack.EntryObject | null =
-        WebpackConfigGenerator.getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
-          {
-            entryPointsGroupID_ForLogging: "IMPORTS_FOR_PUG",
-            sourceFilesGlobSelectors: [ compiledTypeScriptImportingSettings.sourceFileAbsolutePath ],
-            webpackContext: projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
-          }
-        );
-
-    if (isNull(webpackEntryPointDefinition)) {
+    if (!FileSystem.existsSync(compiledTypeScriptImportingSettings.sourceFileAbsolutePath)) {
       Logger.throwErrorAndLog({
         errorInstance: new FileNotFoundError({
           customMessage:
               `The TypeScript file "${ compiledTypeScriptImportingSettings.sourceFileAbsolutePath }" for ` +
-                "the exporting to Pug was not found. " +
+                "the exporting to Pug was found. " +
               "Please create this file and provide some exports from it."
         }),
         title: FileNotFoundError.localization.defaultTitle,
         occurrenceLocation: "compiledInlineTypeScriptImporterForPug.constructor(...parameters)"
       });
     }
+
+    /** @see https://webpack.js.org/configuration/entry-context/#entry */
+    const webpackEntryPointDefinition: Webpack.EntryObject =
+        WebpackConfigGenerator.getWebpackEntryObjectRespectiveToExistingEntryPoints({
+          entryPointsSourceFilesAbsolutePaths: [ compiledTypeScriptImportingSettings.sourceFileAbsolutePath ],
+          webpackContext: projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
+        });
 
     this.webpackConfiguration = CompiledInlineTypeScriptImporterForPug.
         getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings({

@@ -1,0 +1,109 @@
+:code_listing--yda
+  type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
+    common?: MarkupProcessingSettings__FromFile__RawValid.Common;
+    linting?: MarkupProcessingSettings__FromFile__RawValid.Linting;
+    staticPreview?: MarkupProcessingSettings__FromFile__RawValid.StaticPreview;
+    entryPointsGroups: Readonly<{ [groupID: string]: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
+    logging?: MarkupProcessingSettings__FromFile__RawValid.Logging;
+  }>;
+
+  namespace MarkupProcessingSettings__FromFile__RawValid {
+
+    export type Common = Readonly<{
+      periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number;
+      buildingModeDependent?: Readonly<{ [projectBuildingMode: string]: Common.BuildingModeDependent | undefined; }>;
+    }>;
+
+    export namespace Common {
+      export type BuildingModeDependent = Readonly<{
+        mustResolveResourceReferencesToRelativePaths?: boolean;
+      }>;
+    }
+
+
+    export type Linting = Readonly<{
+      presetFileRelativePath?: string;
+      enable?: boolean;
+    }>;
+
+
+    export type StaticPreview = Readonly<{
+      stateDependentPagesVariationsSpecificationFileRelativePath?: string;
+      importsFromStaticDataFiles?: ReadonlyArray<StaticPreview.ImportFromStaticDataFile>;
+      importsFromCompiledTypeScript?: Readonly<StaticPreview.ImportFromCompiledTypeScript>;
+    }>;
+
+    export namespace StaticPreview {
+
+      export type ImportFromStaticDataFile = Readonly<{
+        importedVariableName: string;
+        fileRelativePath: string;
+      }>;
+
+
+      export type ImportFromCompiledTypeScript = Readonly<{
+        typeScriptConfigurationFileRelativePath?: string;
+        files: ReadonlyArray<ImportFromCompiledTypeScript.FileMetadata>;
+      }>;
+
+      export namespace ImportFromCompiledTypeScript {
+
+        export type FileMetadata = Readonly<{
+          importedNamespace: string;
+          sourceFileRelativePath: string;
+          outputDirectoryRelativePath: string;
+          customOutputFileNameWithoutLastExtension?: string;
+        }>;
+
+      }
+
+    }
+
+    export type EntryPointsGroup =
+        SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
+        Readonly<{
+          HTML_Validation?: EntryPointsGroup.HTML_Validation;
+          accessibilityInspection?: EntryPointsGroup.AccessibilityInspection;
+          convertToHandlebarsOnNonStaticPreviewModes?: boolean;
+          buildingModeDependent: Readonly<{ [projectBuildingMode: string]: EntryPointsGroup.BuildingModeDependent; }>;
+        }>;
+
+    export namespace EntryPointsGroup {
+
+      export type BuildingModeDependent = SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.
+          EntryPointsGroup.BuildingModeDependent &
+          Readonly<{ outputCodeFormatting?: BuildingModeDependent.OutputCodeFormatting; }>;
+
+      export namespace BuildingModeDependent {
+        export type OutputCodeFormatting = Readonly<{ enable?: boolean; }>;
+      }
+
+      export type HTML_Validation = Readonly<{ disable?: boolean; }>;
+
+      export type AccessibilityInspection = Readonly<{
+        standard?: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
+        disable?: boolean;
+      }>;
+
+    }
+
+
+    export type Logging = Readonly<{
+
+      filesPaths?: boolean;
+      filesCount?: boolean;
+      partialFilesAndParentEntryPointsCorrespondence?: boolean;
+
+      HTML_Validation?: Readonly<{
+        starting?: boolean;
+        completionWithoutIssues?: boolean;
+      }>;
+
+      accessibilityChecking?: Readonly<{
+        starting?: boolean;
+        completionWithoutIssues?: boolean;
+      }>;
+
+    }>;
+
+  }

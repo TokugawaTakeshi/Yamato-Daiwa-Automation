@@ -1,0 +1,49 @@
+fileNameLocalizationExtensions: russian
+
+topPage:
+
+  $heading: "Главная страница"
+  $URI: @All/Top/TopPage.russian
+
+terminology:
+
+  $heading: "Терминология"
+
+functionality:
+
+  $heading: "Функциональность"
+
+  markupProcessing:
+
+    $heading: "Обработка разметки"
+
+    basicPugToHTML_Transpiling:
+
+      $heading: "Базовый транспайлинг из Pug в HTML"
+
+    resourcesReferencesResolving:
+
+      $heading: "Разрешение ссылок на ресурсы"
+
+configuration:
+
+  $heading: "Конфигурация"
+
+  outputPackageJSON_Generating:
+
+    $heading: "Генерирование package.json для сборки"
+
+#        incrementalBuilding: "Инкрементальная сборка"
+#      },
+#      globalConstants: { $heading: "Глобальные константы" },
+#      pugFilters: { $heading: "Pug-фильтры" },
+#      outputHTML_Formatting: { $heading: "Форматирование выходного HTML-кода" }
+#    }
+#  },
+#
+#  configuration: {
+#    markupProcessing: {
+#      $heading: "Обработка разметки",
+#      staticPreview: {
+#        $heading: "Статическое превью (вёрстка)",
+#        pagesStateDependentVariations: { $heading: "Варианты состояния страницы" }

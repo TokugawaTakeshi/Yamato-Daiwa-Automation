@@ -1,0 +1,60 @@
+top:
+
+  $heading: `topPage.$heading`
+  $URI: `topPage.$URI`
+
+terminology:
+
+  $heading: `terminology.$heading`
+  $URI: `@All/Terminology/Terminology.${ fileNameLocalizationExtensions }`
+  $sectioning:
+    $specificationFileRelativePath: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.yaml
+    $localizations:
+      english: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.english.yaml
+      japanese: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.japanese.yaml
+      russian: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.russian.yaml
+
+functionality:
+
+  $heading: `functionality.$heading`
+
+  $children:
+
+    markupProcessing:
+
+      $heading: `functionality.markupProcessing.$heading`
+
+      $children:
+
+        #        basicPugToHTML_Transpiling:
+        #
+        #          $heading: `functionality.markupProcessing.basicPugToHTML_Transpiling.$heading`
+        #          $URI: `@All/Functionality/MarkupProcessing/BasicPugToHTML_Transpiling/BasicPugToHTML_Transpiling.${ fileNameLocalizationExtensions }`
+
+        resourcesReferencesResolving:
+
+          $heading: `functionality.markupProcessing.resourcesReferencesResolving.$heading`
+          $URI: `@All/Functionality/MarkupProcessing/ResourcesReferencesResolving/ResourcesReferencesResolving.${ fileNameLocalizationExtensions }`
+          $sectioning:
+            $specificationFileRelativePath: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.yaml
+            $localizations:
+              english: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.english.yaml
+              japanese: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.japanese.yaml
+              russian: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.russian.yaml
+
+configuration:
+
+  $heading: `configuration.$heading`
+
+  $children:
+
+    outputPackageJSON_Generating:
+
+      $heading: `configuration.outputPackageJSON_Generating.$heading`
+      $URI: `@All/Configuration/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingConfiguration.${ localization.fileNameLocalizationExtensions }`
+  $sectioning:
+    $specificationFileRelativePath: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.yaml
+    $localizations:
+      english: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.english.yaml
+      japanese: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.japanese.yaml
+      russian: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.russian.yaml

@@ -11,39 +11,37 @@ block append Metadata
 
   -
 
-    HTML_PAGE_LANGUAGE = "ru";
-    HTML_PAGE_TITLE = buildHTML_PageTitle("Терминология");
-    HTML_PageMetaData = {
-      description:
-          "Терминология, используемая Node.js-утилитой для сборки проектов (клиентских веб-приложений, серверных" +
-            "приложений, консольных утилит, библиотек) «Yamato Daiwa Automation» (сокращённо: «YDA» читается: " +
-            "«Уай-ди-эй»). " +
-          "Часть терминов используется и в других технологиях, другая же часть была введена разработчиками YDA.",
-      author: HTML_PAGE_AUTHOR
-    };
-
-    FAVICON_URI = "@MustBeInPublicRoot/favicon";
-
-    styleSheetsURIs = [
-      "$CommonStyles",
-      "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
-      "$PreMadesStyles",
-      "@CustomizedExternalComponents"
-    ];
-
-    scriptsURIs.endOfBody = [ "$CommonLogic" ];
-
-    RoutingEmulator.setCurrentRoute("functionality.children.markupProcessing.children.basicPugToHTML_Transpiling");
-
-    LanguageDropDownList__YDF_DK.setLinks({
-      english: "./Terminology.english.html",
-      japanese: "./Terminology.japanese.html",
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle("Терминология"),
+        description:
+            "Терминология, используемая Node.js-утилитой для сборки проектов (клиентских веб-приложений, серверных" +
+              "приложений, консольных утилит, библиотек) «Yamato Daiwa Automation» (сокращённо: «YDA» читается: " +
+              "«Уай-ди-эй»). " +
+            "Часть терминов используется и в других технологиях, другая же часть была введена разработчиками YDA.",
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
     });
 
-    const pageTableOfContents = localizedRouting.terminology.$sectioning;
+    RoutingEmulator.setCurrentRoute("terminology");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: routing.english.terminology.$URI,
+      japanese: routing.japanese.terminology.$URI,
+    });
+
+    const {
+      $sectioning: localizedSectioning,
+      $heading: topHeading
+    } = routing.russian.terminology;
 
 
-block append HeadScriptsLinks
+block append HeadScripts
 
   if __IS_PRODUCTION_BUILDING_MODE__
 
@@ -55,18 +53,18 @@ block append SpecificContent
   article
 
     //- ━━━ Терминология ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    +Heading--YDF({ level: 1, text: localizedRouting.terminology.$heading }).Article-Heading1
+    h1.Article-Heading1= topHeading
 
     //- ━━━ YDA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.YDA.$heading,
-      HTML_ID: pageTableOfContents.YDA.$anchor
+      text: localizedSectioning.YDA.$heading,
+      HTML_ID: localizedSectioning.YDA.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
       #[+DefinableTerm--YDID YDA] (читается: «уай-ди-эй») — сокращённое от
-      #[+ImportantEntity--YDID «Yamato Daiwa Automation»], название утилиты, которой посвящена данная документация.
+      #[+ImportantEntity--YDID «Yamato Daiwa Automation»] название утилиты, которой посвящена данная документация.
       Здесь #[+ImportantEntity--YDID «Yamato Daiwa»] — название
         #[+Link--YDF({ endorsedExternalURI: sharedExternalLinks.YamatoDaiwa.homePage.top }).Article-Link японского стартапа],
         на данный момент специализирующегося на кастомной веб-разработке, а также на разработке библиотек, фреймворков
@@ -80,51 +78,50 @@ block append SpecificContent
     //- ━━━ Проект (Project) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.project.$heading,
-      HTML_ID: pageTableOfContents.project.$anchor
+      text: localizedSectioning.project.$heading,
+      HTML_ID: localizedSectioning.project.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
-      #[+Keyphrase--YDID В контексте программирования], #[+DefinableTerm--YDID проект] — набор файлов и папок,
-        имеющих общую родительскую директорию и на основе которых собирается программный продукт —
-        (веб-приложение, консольное приложение, библиотека и так далее).
-      Этот термин важен потому, что утилита #[+ImportantEntity--YDID YDA] рассчитана на работу #[+Keyword--YDID именно]
-        с #[+Term--YDID проектами], а #[+Keyword--YDID не]&nbsp;одиночными файлами с кодом.
+      #[+Keyphrase--YDID В контексте программирования], #[+DefinableTerm--YDID проект] — организованный набор файлов и
+        папок, #[+Keyword--YDID необходимых] для разработки конкретного #[+Term--YDID программного продукта]
+        (сайта, веб-приложения, консольного приложения, нативного приложения, библиотеки и так далее) и имеющих
+        #[+Keyword--YDID общую] #[+Keyword__Contrast--YDID родительскую] #[+Term--YDID директорию].
+      Утилита #[+ImportantEntity--YDID YDA] рассчитана на работу #[+Keyword--YDID именно] с #[+Term--YDID проектами], а
+        #[+Keyword--YDID не]&nbsp;одиночными файлами.
 
 
     //- ─── Сборка проекта (Project building) ──────────────────────────────────────────────────────────────────────────
     +Heading--YDF({
       level: 3,
-      text: pageTableOfContents.project.$children.building.$heading,
-      HTML_ID: pageTableOfContents.project.$children.building.$anchor
+      text: localizedSectioning.project.$children.building.$heading,
+      HTML_ID: localizedSectioning.project.$children.building.$anchor
     }).Article-Heading3
 
     p.Article-Paragraph.
-      Употребляется в значениях #[+Term--YDID «процесс»] и #[+Term--YDID «набор файлов»]:
+      Употребляется в значениях #[+Keyword--YDID «процесс»] и #[+Keyword--YDID «набор файлов»]:
 
     ul.Article-UnorderedList
 
       li.
         #[+DefinableTerm--YDID «Сборка проекта» как процесс] — генерация #[+Term--YDID выходных файлов] на основе
-          #[+Term__Contrast--YDID исходного кода] и других #[+Term__Contrast--YDID исходных файлов].
-        Этот процесс — основное, для что делает #[+ImportantEntity--YDID YDA].
+          #[+Term__Contrast--YDID исходных файлов].
+        Этот #[+Keyword--YDID процесс] — #[+Keyword__Contrast--YDID основное], для что делает
+          #[+ImportantEntity--YDID YDA].
 
       li.
         #[+DefinableTerm--YDID «Сборка проекта» как набор файлов] — совокупность #[+Keyword--YDID всех]
-          #[+Keyword__Contrast--YDID выходных] #[+Term--YDID файлов] #[+Term__Contrast--YDID проекта],
-          которая #[+Keyword--YDID обычно] объединена #[+Keyword--YDID общей] #[+Term--YDID директорией]
-          (#[+Term--YDID директорией сборки]).
-        #[+ImportantEntity--YDID YDA] #[+Keyword--YDID не]&nbsp;требует наличия #[+Keyword--YDID единой] выходной
-          директории, потому что в особых случаях такое ограничение создавало бы препятствие решению поставленных
-          задач.
+          #[+Keyword__Contrast--YDID выходных] #[+Term--YDID файлов] #[+Term__Contrast--YDID проекта].
+        #[+Keyword--YDID Обычно] они объединена #[+Keyword--YDID общей] #[+Term--YDID директорией]
+          (#[+Term--YDID директорией сборки]), но #[+ImportantEntity--YDID YDA] этого #[+Keyword--YDID не]&nbsp;требует.
 
     p.Article-Paragraph.
       #[+Keyword--YDID Не] все технологии предполагают #[+Term--YDID сборку проекта].
-      Например, если #[+Term--YDID сайт] или #[+Term--YDID веб-приложение] написаны на #[+Keyword--YDID чистом]
+      Например, если #[+Term--YDID сайт] или #[+Term--YDID веб-приложение] написаны на #[+Keyword--YDID чистых]
         #[+SecondaryEntity--YDID HTML], #[+SecondaryEntity--YDID CSS] и #[+SecondaryEntity--YDID PHP] (последний является
         #[+Keyword--YDID интерпретируемым] #[+Term--YDID языком программирования], что означает прямое выполнение файлов
-        с исходным кодом без их компиляции в #[+Term--YDID выходные исполняемые файлы]), то в этом случае собирать
-        #[+Keyword--YDID нечего].
+        с исходным кодом без их компиляции в #[+Term--YDID выходные исполняемые файлы]), то
+        #[+Keyphrase--YDID в этом случае] собирать #[+Keyword--YDID нечего].
       #[+ImportantEntity--YDID YDA] же рассчитан на работу с языками #[+ImportantEntity--YDID Pug],
         #[+ImportantEntity--YDID Stylus] и #[+ImportantEntity--YDID TypeScript], #[+Keyword--YDID каждый] из которых
         #[+Keyword--YDID предполагает] преобразование в #[+Term--YDID выходной код] (#[+ImportantEntity--YDID HTML],
@@ -138,49 +135,59 @@ block append SpecificContent
     //- ━━━ Задача (Task) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.task.$heading,
-      HTML_ID: pageTableOfContents.task.$anchor
+      text: localizedSectioning.task.$heading,
+      HTML_ID: localizedSectioning.task.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
       #[+Keyphrase--YDID В контексте #[+Term--YDID сборки проектов]], #[+DefinableTerm--YDID задача] — конкретная
         работа для компьютера среди автоматизации #[+Term--YDID сборки проектов].
-      На данный момент можно выделить следующие #[+Keyword--YDID основные] задачи, на которых специализируется
-        #[+ImportantEntity--YDID YDA]:
+      На данный момент можно выделить следующие #[+Keyword--YDID основные] #[+Term--YDID задачи], на которых
+        специализируется #[+ImportantEntity--YDID YDA]:
 
     ul.Article-UnorderedList
 
       li.
         Обработка #[+Term--YDID разметки] с #[+Keyword--YDID исходным] кодом на #[+Term--YDID препроцессорном языке]
-          #[+ImportantEntity--YDID Pug].
+          #[+ImportantEntity--YDID Pug]
 
       li.
         Обработка #[+Term--YDID стилей] с #[+Keyword--YDID исходным] кодом на #[+Term--YDID препроцессорном языке]
-          #[+ImportantEntity--YDID Stylus].
+          #[+ImportantEntity--YDID Stylus]
 
       li.
         Обработка #[+Term--YDID ECMAScript-логики] с #[+Keyword--YDID исходным] кодом на
-          #[+Term--YDID языке] #[+ImportantEntity--YDID TypeScript] (хотя этот язык редко называют препроцессорным,
-          он будет являться таковым до тех пор, пока его интерпретаторы не&nbsp;наберут популярность).
+          #[+Term--YDID языке] #[+ImportantEntity--YDID TypeScript].
+        Хотя этот язык редко называют препроцессорным, де факто он будет являться таковым до тех пор, пока его
+          интерпретаторы не&nbsp;наберут популярность).
         Возможно преобразование как в #[+Term--YDID браузерный JavaScript], так и в #[+ImportantEntity--YDID Node.js].
 
       li Обработка изображений
 
-      li Копирование шрифтов,видео, аудио и любых других файлов
+      li Копирование шрифтов, видео, аудио и любых других файлов
+
+      li.
+        Автоматические открывание #[+Term--YDID браузера] при завершении #[+Keyword--YDID начальной]
+          #[+Term--YDID сборки проекта] с автоматической перезагрузкой страницы #[+Term--YDID браузера] по мере
+          обновления выходного кода
+
+      li.
+        Автоматический запуск #[+Term--YDID Node.js-сервера] при завершении #[+Keyword--YDID начальной]
+          #[+Term--YDID сборки проекта] с автоматическим перезапуском этого сервера по мере обновления выходного кода
 
 
     //- ━━━ Сценарий (Scenario) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.scenario.$heading,
-      HTML_ID: pageTableOfContents.scenario.$anchor
+      text: localizedSectioning.scenario.$heading,
+      HTML_ID: localizedSectioning.scenario.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
       #[+Keyphrase--YDID В контексте #[+ImportantEntity--YDID YDA]], а также #[+ImportantEntity--YDID Gulp] и
-        аналогичных утилит для #[+Term--YDID сборки проектов], #[+DefinableTerm--YDID сценарий] — набор
-        #[+Term--YDID задач], расположенных в #[+Term--YDID последовательности] (#[+Term--YDID серии]) и
-        #[+Term--YDID параллели].
+        аналогичных утилит для #[+Term--YDID сборки проектов], #[+DefinableTerm--YDID сценарий] —
+        #[+Keyword--YDID набор] #[+Term--YDID задач], расположенных в #[+Term--YDID последовательности]
+        (#[+Term--YDID серии]) и #[+Term--YDID параллели].
 
     p.Article-Paragraph.
       Правильное расположение #[+Term--YDID задач] #[+Keyword--YDID критично] как для корректной работы, так и для
@@ -203,83 +210,96 @@ block append SpecificContent
 
     dl.Article-DescriptionList
 
-      dt Инкрементальная сборка проекта
+      dt Инкрементальная сборка проекта (Incremental building of project)
       dd.
-        #[+Keyword--YDID Сначала] выполняется #[+Keyword__Contrast--YDID полная] #[+Term--YDID сборка проекта], затем
-          при внесении изменений в исходные файлы осуществляется #[+Keyword--YDID выборочная] пересборка.
-
+        #[+Keyword--YDID Сначала] выполняется #[+Keyword__Contrast--YDID полная] #[+Term--YDID сборка проекта],
+          #[+Keyword--YDID затем] при внесении изменений в #[+Keyword--YDID исходные] файлы осуществляется
+          #[+Keyword--YDID выборочная] пересборка.
         Таким образом, выполнение приложения будет осуществляться до тех пор, пока оно не&nbsp;будет
           #[+Keyword--YDID вручную] остановлено или не&nbsp;произойдёт критическая ошибка.
         При необходимости можно настроить автоматическое открытие браузера (если в #[+Term--YDID проекте] есть
           клиентская часть) и/или автоматический запуск локального сервера (если в #[+Term--YDID проекте] есть
           серверная часть на #[+ImportantEntity--YDID Node.js]).
 
-      dt Продакшен-подобная сборка проекта
+      dt Продакшен-подобная сборка проекта (Production-like building of project)
       dd.
-        Проект собирается #[+Keyword--YDID полностью], после чего приложение #[+Keyword--YDID завершает] своё выполнение.
-        Такой функциональности, как автоматическая перезагрузка страницы браузера, #[+Keyphrase--YDID в этом]
-          #[+Term--YDID сценарии] #[+Keyword--YDID не]&nbsp;доступно ввиду его назначения.
+        #[+Term--YDID Проект] собирается #[+Keyword--YDID полностью], после чего #[+ImportantEntity--YDID YDA]
+          #[+Keyword--YDID завершает] своё выполнение.
+        Такой функциональности, как автоматическая перезагрузка страницы браузера,
+          #[+Keyphrase--YDID в этом #[+Term--YDID сценарии]] #[+Keyword--YDID не]&nbsp;доступно ввиду его назначения.
 
 
     //- ━━━ Режим сборки проекта (Project building mode) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.projectBuildingMode.$heading,
-      HTML_ID: pageTableOfContents.projectBuildingMode.$anchor
+      text: localizedSectioning.projectBuildingMode.$heading,
+      HTML_ID: localizedSectioning.projectBuildingMode.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
       #[+Keyword--YDID Оба] #[+Term--YDID сценария] могут осуществляться в #[+Keyword--YDID нескольких]
-        #[+Term--YDID режимах (сборки проекта)], #[+Keyword--YDID каждый] из которых имеет свои особенности.
+        #[+Term--YDID режимах сборки проекта], #[+Keyword--YDID каждый] из которых имеет свои особенности.
       #[+ImportantEntity--YDID YDA] предлагает #[+ImportantEntity--YDID 5] нижеследующих
         #[+Term--YDID режимов сборки проекта].
-      Их также можно считать #[+Keyword--YDID этапами], но #[+Keyword--YDID не]&nbsp;разработки программного продукта
+      В случае разработки сайта или приложения с графическим интерфейсом, эти #[+Term--YDID режимы] также можно
+        считать #[+Keyword--YDID этапами], но #[+Keyword--YDID не]&nbsp;разработки программного продукта
         в целом, а разработки #[+Keyphrase--YDID отдельной его страницы либо конкретной функциональности].
 
     dl.Article-DescriptionList
 
-      dt Инкрементальные
+      dt Инкрементальные (Incremental)
       dd
 
         p.Article-Paragraph.
-          Данное прилагательное означает, что при таких #[+Term--YDID режимах] #[+Keyword--YDID сначала] осуществляется
+          Актуальны для #[+Term--YDID сценария] #[+Term__Contrast--YDID инкрементальной сборки проекта].
+          В соответствии с этим #[+Term--YDID сценарием], #[+Keyword--YDID сначала] осуществляется
             #[+Keyword--YDID полная] #[+Term--YDID сборка проекта], а затем по мере внесения изменений в исходный код
             #[+Keyword--YDID автоматически] запускается #[+Keyword--YDID выборочная] пересборка.
+          Общим для #[+Keyword--YDID инкрементальных] #[+Term--YDID режимов сборки] требованием к
+            #[+Term--YDID сборщику проектов] являются #[+Keyword--YDID оптимизация] #[+Term--YDID пересборки проекта].
+           Также, если речь идёт о разработке сайтов или приложений с графическим интерфейсом, то
+            требуется #[+Keyword--YDID автоматическая] перезагрузка страницы браузера и прочие меры, обеспечивающие
+            #[+Keyword--YDID комфортную] разработку программного продукта с качественной обратной связью включая ранее
+            оповещение о разного рода проблемах, таких как нарушение валидности #[+Term--YDID HTML-кода].
 
         dl.Article-DescriptionList
 
-          dt Статическое превью (Static Preview)
+          dt Статическое превью (Static preview)
           dd.
-            Задуман как этап разработки, на котором инженер #[+Keyword--YDID полностью] сконцентрирован на
-              #[+Keyword--YDID вёрстке], а #[+Term--YDID JavaScript-динамика] и серверная часть — это вопрос
+            Задуман как этап, на котором разработчик #[+Keyword--YDID полностью] сконцентрирован на
+              #[+Keyword--YDID вёрстке], а #[+Term--YDID JavaScript-динамика] и серверная часть — это задачи
               #[+Keyword--YDID следующих] этапов.
-            Все вопросы, связанные с дизайном и адаптацией под разные размеры экранов следует решить на этом этапе.
-            В #[+ImportantEntity--YDID YDA] для соответствующего #[+Term--YDID режима] имеется функциональность,
-              позволяющая собрать #[+Term--YDID проект] таким образом, чтобы заказчики либо руководители смогли
-              проверить промежуточный результат #[+Keyphrase--YDID без локального сервера] и любого другого
-              специализированного программного обеспечения.
+            Соответственно, данный #[+Term--YDID режим сборки проекта] актуален #[+Keyword--YDID только] для разработки
+              сайтов и приложений с графическим интерфейсом.
+            Важным требованием к #[+Term--YDID сборщику проектов] на этом этапе является обеспечение просмотра выходных
+              файлов заказчиками или руководителями
+              #[+Keyphrase--YDID без&nbsp;технических знаний и специализированного программного обеспечения], такого
+              как #[+SecondaryEntity--YDID npm] или #[+SecondaryEntity--YDID Git], при этом
+              изображения и другие мультимедийные файлы #[+Keyword--YDID должны] корректно отображаться в браузере.
+            Проще говоря, должен соблюдаться принцип: «открыл скачанный #[+Term--YDID HTML-файл] в браузере — и всё
+              корректно отображается».
 
-          dt Локальная разработка (Local Development)
+          dt Локальная разработка (Local development)
           dd.
             На этом этапе, в отличие от предыдущего, уже осуществляется #[+Keyword--YDID полноценная] реализация
-              #[+Term--YDID JavaScript-динамики] и серверной части.
-            От #[+Term--YDID сборщика проектов] на данном этапе требуется обеспечить #[+Keyword--YDID оптимизированную]
-              #[+Term--YDID пересборку проекта], #[+Keyword--YDID автоматическую] перезагрузку страницы браузера,
-              #[+Keyword--YDID автоматический] перезапуск локального сервера по мере обновления файлов,
-              и прочие меры, обеспечивающие #[+Keyword--YDID комфортную] разработку программного продукта с качественной
-              обратной связью включая ранее оповещение о разного рода проблемах, таких как нарушение валидности
-              #[+Term--YDID HTML-кода].
+              #[+Term--YDID JavaScript-динамики] клиентской части, а также серверной части, если речь идёт о разработке
+              сайта или клиент-серверного приложения.
+            От #[+Term--YDID сборщика проектов] на данном этапе помимо общих требований на
+              #[+Term--YDID инкрементальных режимах] может потребоваться некоторая дополнительная функциональность,
+                например #[+Keyword--YDID автоматический] перезапуск локального сервера по мере обновления выходных
+                файлов, если в проекте имеется серверная часть на #[+ImportantEntity--YDID Node.js].
 
-      dt Продакшен-подобные
+      dt Продакшен-подобные (Production-like)
       dd
 
         p.Article-Paragraph.
           Обычно перед тем, как публиковать сайт или веб-приложение, их запускают на тестовом сервере и настраивают
             ограниченный доступ, чтобы тестировщики могли выявить неполадки (баги), не&nbsp;обнаруженные на предыдущих
             этапах сборки.
-          На этих этапах этой группы автоматической #[+Term--YDID пересборки проекта] и автоматической перезагрузки
-            браузера по мере обновления файлов уже #[+Keyword--YDID нет], поскольку собранные сайты или приложения
-            подлежат запуску на сервере, а #[+Keyword--YDID не]&nbsp;локальном компьютере.
+          На этапах этой группы автоматической #[+Term--YDID пересборки проекта], автоматической перезагрузки
+            браузера и автоматического перезапуска локального сервера по мере обновления файлов уже
+            #[+Keyword--YDID нет], поскольку собранные сайты или приложения подлежат запуску на сервере, а
+            #[+Keyword--YDID не]&nbsp;локальном компьютере.
           Хотя такие сборки должны быть максимально блики к окончательной версии для публикации
             (или «продакшену», почему режимы этой группы и называется «продакшен-подобными»),
             какие-то особенности поведения (например, уровень логирования) часто отличаются в зависимости от конкретного
@@ -306,82 +326,100 @@ block append SpecificContent
           dt Продакшен (Production)
           dd.
             Сайт или приложение, собранные в этом режиме, подлежат публикации и использованию целевой аудиторией.
-            По сравнению с предыдущими режимами сборки, здесь необходимо сделать максимальные настройки безопасности.
+            По сравнению с предыдущими режимами сборки, здесь #[+Keyword--YDID необходимы] максимальные настройки
+              безопасности.
             Кроме того, на этом этапе разработчики часто стремятся минимизировать вывод логов в консоль браузера.
 
 
-    //- ━━━ Точки входа и дочерние файлы ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //- ━━━ Точки входа и дочерние файлы (Entry points / children files) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.entryPointsAndChildrenFiles.$heading,
-      HTML_ID: pageTableOfContents.entryPointsAndChildrenFiles.$anchor
+      text: localizedSectioning.entryPointsAndChildrenFiles.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
       #[+DefinableTerm--YDID Точка входа] — название #[+Term--YDID шаблона проектирования];
         #[+Keyphrase--YDID в общем случае] означает #[+Term--YDID файл], #[+Term--YDID функцию] или
         #[+Term--YDID метод класса], с которых начинается выполнение программы.
-      В контексте той или иной технологии данный термин может иметь более конкретный смысл.
-    //- TODO  Дополнительная проверка ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      В контексте той или иной технологии данный термин может иметь более конкретный смысл, но для
+        #[+ImportantEntity--YDID YDA] #[+Term--YDID точка входа] важна именно как #[+Keyword--YDID файл].
+
     p.Article-Paragraph.
       Подавляющее большинство современных языков программирования и препроцессоров имеют функцию разбиения
-        #[+Keyword--YDID исходного] файла на произвольное число составляющих.
+        #[+Keyword--YDID исходного] файла на #[+Keyword--YDID произвольное] число #[+Keyword--YDID составляющих].
       Здесь необходимо различать #[+Term--YDID родительские файлы] и #[+Term--YDID дочерние файлы].
       Поскольку #[+Term--YDID дочерние файлы] #[+Keyword--YDID тоже] могут быть разбиты на составляющие, то образуется
         #[+Keyword--YDID древовидная] #[+Keyword__Contrast--YDID иерархическая] #[+Term--YDID структура], где
         на #[+Keyword--YDID самом] #[+Keyword__Contrast--YDID верхнем] уровне — #[+Term--YDID точка входа].
 
-    p.Article-Paragraph.
+    +AdmonitionBlock--YDF({
+      SVG_Icon: true,
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice
+    }).
       #[+Keyword--YDID Дочерние] файлы в англоязычных источниках часто называют #[+Term--YDID «partial files»], однако
-        слово «partial» («частичный») #[+Keyword--YDID не]&nbsp;подразумевает наличие вертикальной иерархии, а для
-        #[+ImportantEntity--YDID YDA] такая иерархия имеет #[+Keyword--YDID важное] значение.
-      Поэтому, мы выбрали термин «дочерний файл», при этом #[+Keyword--YDID подразумевается]
-        #[+Keyword__Contrast--YDID зависимость] от #[+Term--YDID точки входа].
+        слово «partial» («частичный») #[+Keyword--YDID не]&nbsp;подразумевает наличие
+        #[+Term--YDID вертикальной иерархии], а для #[+ImportantEntity--YDID YDA] такая иерархия имеет
+        #[+Keyword--YDID принципиальное] значение.
+      Поэтому, мы выбрали термин #[+Term--YDID «дочерний файл»].
+
+
+    //- ─── По типу файлов ─────────────────────────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$anchor
+    }).Article-Heading3
 
     //- ─── Разметка ───────────────────────────────────────────────────────────────────────────────────────────────────
     +Heading--YDF({
-      level: 3,
-      text: pageTableOfContents.entryPointsAndChildrenFiles.$children.markup.$heading,
-      HTML_ID: pageTableOfContents.entryPointsAndChildrenFiles.$children.markup.$anchor
-    }).Article-Heading3
-    //- TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    p.Article-Paragraph.
-      #[+Keyphrase--YDID В случае #[+Term--YDID разметки]], #[+Term--YDID точка входа] представляет собой
-        #[+Keyword--YDID завершённый] #[+Term--YDID HTML-документ].
-      Обычный #[+Term--YDID HTML-файл] #[+Keyword--YDID не]&nbsp;может быть разделён на несколько файлов, однако
-        #[+Term--YDID HTML-препроцессоры] (включая #[+ImportantEntity--YDID Pug]) позволяют это сделать на стадии
-         исходного когда.
-      Здесь необходимо различать #[+Keyword--YDID родительские] файлы (они же #[+Term--YDID точки входа]), которые
-        преобразуются в #[+Keyword--YDID завершённый] #[+Term--YDID HTML-файл], и #[+Keyword--YDID дочерние]
-        файлы, которые сами по себе #[+Keyword--YDID не]&nbsp;представляют собой валидные #[+Term--YDID HTML-документы]
-        и могут использоваться #[+Keyword--YDID только] в составе #[+Term--YDID точек входа].
-
-      В поисках более точного термина, мы остановили выбор на слове #[+Term--YDID «фрагмент»] и словосочетании
-        #[+Term--YDID «фрагментарный файл»], поскольку согласно определению #[+Term--YDID «фрагмент»]
-        #[+Keyphrase--YDID в широком смысле] — часть чего-либо целого.
+      level: 4,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.markup.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.markup.$anchor
+    }).Article-Heading4
 
     p.Article-Paragraph.
-      В #[+ImportantEntity--YDID YDA], работающим с препроцессорным языком #[+ImportantEntity--YDID Pug], термин
-        #[+Term--YDID «точка входа»] применяется как по отношению к исходным #[+Term--YDID Pug-файлам],
-        #[+Keyword--YDID каждый] из которых должен быть откомпилирован в #[+Keyword--YDID полноценный]
-        #[+Term--YDID HTML-файл], #[+Keyphrase--YDID так и] к #[+Keyword--YDID выходным] #[+Term--YDID HTML-файлам].
-      Для того, чтобы включить #[+Term--YDID фрагментарный файл] в #[+Term__Contrast--YDID точку входа] или
-        другой #[+Term--YDID фрагментарный файл], используется #[+Term--YDID директива]
+      #[+Keyphrase--YDID В случае #[+Term--YDID разметки]], #[+Term__Contrast--YDID точка входа]
+        #[+Keyword--YDID соответствует] #[+Keyword__Contrast--YDID завершённому] #[+Term--YDID HTML-документу].
+
+    p.Article-Paragraph.
+      Если #[+Term--YDID точка входа] не&nbsp;имеет #[+Term__Contrast--YDID дочерних файлов], то после преобразования в
+        #[+Term--YDID HTML] #[+Keyword--YDID должен] быть получен #[+Keyword--YDID валидный]
+        #[+Term--YDID HTML-документ].
+      Если же #[+Term--YDID дочерние файлы] есть, то они
+        #[+Keyphrase--YDID по отдельности #[+Keyword--YDID не]&nbsp;должны быть преобразованы в #[+Term--YDID HTML]],
+        потому так на выходе валидного #[+Term--YDID HTML-документа] #[+Keyword--YDID не]&nbsp;получится.
+
+    p.Article-Paragraph.
+      #[+Keyword--YDID Обычный] #[+Term--YDID HTML-файл] #[+Keyword--YDID не]&nbsp;может быть разделён на несколько
+        файлов, однако #[+Term--YDID HTML-препроцессоры] (включая #[+ImportantEntity--YDID Pug]) позволяют это сделать
+        на стадии исходного когда.
+      В #[+ImportantEntity--YDID YDA], работающим с препроцессором #[+ImportantEntity--YDID Pug], термин
+        #[+Term--YDID «точка входа»] применяется как по отношению к #[+Keyword--YDID исходным] #[+Term--YDID Pug-файлам],
+        #[+Keyphrase--YDID так и] к #[+Keyword--YDID выходным] #[+Term--YDID HTML-файлам].
+      Для того, чтобы включить #[+Term--YDID дочерний файл] в #[+Term__Contrast--YDID точку входа] или
+        другой #[+Term--YDID дочерний файл], используется #[+Term--YDID директива]
         #[+ImportantEntity__Code--YDID include].
       #[+Term--YDID Директива] #[+ImportantEntity--YDID extends] #[+Keyword--YDID тоже] означает использование
-        #[+Term--YDID фрагментарного файла], потому что тот файл, от которого осуществляется наследование,
+        #[+Term--YDID дочернего файла], потому что тот файл, от которого осуществляется наследование,
         #[+Keyword--YDID не]&nbsp;обязательно является завершенным #[+Term--YDID HTML-документом].
 
-    +AdmonitionBlock--YDF({ decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning, SVG_Icon: true }).
+    +AdmonitionBlock--YDF({
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning,
+      SVG_Icon: true
+    }).
       #[+Keyword--YDID Не]&nbsp;каждый #[+Term--YDID Pug-файл] может быть #[+Term--YDID точкой входа], однако
-        #[+Keyword--YDID любой] #[+Term--YDID HTML-файл] таковой является.
+        #[+Keyword--YDID любой] #[+Keyword__Contrast--YDID валидный] #[+Term--YDID HTML-файл] таковой является.
+
 
     //- ─── Стили ──────────────────────────────────────────────────────────────────────────────────────────────────────
     +Heading--YDF({
-      level: 3,
-      text: pageTableOfContents.entryPointsAndChildrenFiles.$children.styles.$heading,
-      HTML_ID: pageTableOfContents.entryPointsAndChildrenFiles.$children.styles.$anchor
-    }).Article-Heading3
+      level: 4,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.styles.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.styles.$anchor
+    }).Article-Heading4
 
     p.Article-Paragraph
       | #[+Keyphrase--YDID В случае #[+Term--YDID стилей]], понятие #[+Term--YDID «точки входа»]
@@ -391,7 +429,7 @@ block append SpecificContent
         если речь идёт #[+Keyword--YDID только] о #[+Keyword__Contrast--YDID выходных] #[+Term--YDID СSS-файлах].
       |
       | В отличие от #[+Term--YDID HTML-документов], по отношению к #[+Term--YDID каскадным таблицам стилей] понятие
-      |   «завершенности» #[+Keyword--YDID нет], поскольку стили, имеющие отношение к конкретному
+      |   «завершенности» #[+Keyword--YDID нет], поскольку #[+Term--YDID стили], имеющие отношение к конкретному
       |   #[+Term--YDID HTML-документу], могут быть #[+Keyword--YDID произвольным] образом распределены между
       |   #[+Term--YDID СSS-файлами], а также иметься вне #[+Term--YDID СSS-файлов].
 
@@ -399,60 +437,62 @@ block append SpecificContent
       Однако, #[+Keyphrase--YDID при использовании #[+Term--YDID CSS-препроцессоров]], #[+DefinableTerm--YDID точка входа]
         — файл с #[+Keyword--YDID исходным] кодом, с которого #[+Keyword--YDID начинается] процесс преобразования в
         выходной #[+Term--YDID CSS-код].
-      #[+Term--YDID CSS-препроцессоры] #[+Keyword--YDID также] позволяют организовать #[+Term--YDID стили] по
-        #[+Keyword--YDID контекстно-зависимым] (#[+Keyword__Contrast--YDID дочерним]) файлам, которые
-        сами по себе в отдельные #[+Term--YDID CSS-файлы] #[+Keyword--YDID не]&nbsp;компилируются, но могут быть
-        #[+Keyword--YDID подключены] в #[+Term--YDID точки входа] (в #[+Term--YDID CSS-препроцессоре]
-        #[+ImportantEntity--YDID Stylus] это возможно с помощью #[+Term--YDID директив]
-        #[+ImportantEntity__Code--YDID @require] и #[+ImportantEntity__Code--YDID @import]).
+      #[+Term__Contrast--YDID CSS-препроцессоры] #[+Keyword--YDID также] позволяют организовать #[+Term--YDID стили] по
+        #[+Term--YDID дочерним файлам], которые сами по себе в отдельные #[+Term--YDID CSS-файлы]
+        #[+Keyword--YDID не]&nbsp;преобразуются, но могут быть #[+Keyword--YDID подключены] в #[+Term--YDID точки входа]
+        или другие #[+Term--YDID дочерние файлы].
+      В #[+Term--YDID CSS-препроцессоре] #[+ImportantEntity--YDID Stylus] это возможно с помощью #[+Term--YDID директив]
+        #[+ImportantEntity__Code--YDID @require] и #[+ImportantEntity__Code--YDID @import].
 
     p.Article-Paragraph.
-      #[+Keyword--YDID Не]&nbsp;существует никаких правил относительно того, сколько #[+Term--YDID HTML-странице] должно
-        соответствовать #[+Term--YDID CSS-файлов], а значит #[+Term--YDID точка входа] #[+Term__Contrast--YDID стилей]
-        #[+Keyword--YDID не]&nbsp;обязательно должна содержать все #[+Term--YDID стили] исключительно для соответствующего
-        #[+Term--YDID HTML-документа].
+      #[+Keyword--YDID Не]&nbsp;существует никаких правил относительно того, сколько каждой #[+Term--YDID HTML-странице]
+        должно соответствовать #[+Term--YDID CSS-файлов], а значит #[+Term--YDID точка входа]
+        #[+Term__Contrast--YDID стилей] #[+Keyword--YDID не]&nbsp;обязательно должна содержать все #[+Term--YDID стили]
+        исключительно для соответствующего #[+Term--YDID HTML-документа].
       Однако, вопрос разбиения #[+Term--YDID стилей] на #[+Term__Contrast--YDID CSS-файлы] является
-        #[+Keyword--YDID важным] #[+Keyphrase--YDID с точки зрения оптимизации] (следует также учитывать
-        #[+Term--YDID кэширование] #[+Term__Contrast--YDID CSS-файлов] браузером).
+        #[+Keyword--YDID важным] #[+Keyphrase--YDID с точки зрения оптимизации], причём следует учитывать
+        #[+Term--YDID кэширование] #[+Term__Contrast--YDID CSS-файлов] браузером.
       Бывает, что все #[+Term--YDID стили] (общие, а также для каждой отдельной страницы) собирают в единый
-        #[+Term--YDID CSS-файл], но если #[+Term--YDID стилей] много, то пользователю, пришедшему посмотреть 1-2 страницы,
-        будет #[+Keyword--YDID впустую] загружено большое количество лишних стилей, а #[+Term--YDID кэширование] в
-        данном случае будет #[+Keyword--YDID неэффективно].
-      Более разумным является такой подход:
+        #[+Term--YDID CSS-файл], но если #[+Term--YDID стилей] много, то пользователю, пришедшему посмотреть 1-2
+        страницы, будет #[+Keyword--YDID впустую] загружено большое количество #[+Keyword--YDID лишних] стилей, а
+        #[+Term--YDID кэширование] #[+Keyphrase--YDID в данном случае] будет #[+Keyword--YDID неэффективно].
+      Более оптимизированным является такой подход:
 
     ul.Article-UnorderedList
 
       li.
-        В отдельный #[+Term--YDID CSS-файл] (#[+Term--YDID точку входа]) собираются #[+Keyword--YDID общие]
-          #[+Keyphrase--YDID для всех] страниц #[+Term--YDID стили].
+        В #[+Keyword--YDID отдельный] #[+Term--YDID CSS-файл] (#[+Term--YDID точку входа]) собираются
+          #[+Keyword--YDID общие] #[+Keyphrase--YDID для всех] страниц #[+Term--YDID стили].
 
       li.
-        Если на сайте есть админ-панель, то общие стили для её страниц следует вынести в #[+Keyword--YDID отдельный]
-          от предыдущего #[+Term--YDID CSS-файл]
+        Если на сайте или приложении есть админ-панель, то общие стили для её страниц следует вынести в
+          #[+Keyword--YDID отдельный] от предыдущего #[+Term--YDID CSS-файл].
 
       li.
         Если используется какой-либо #[+Term--YDID CSS-фреймворк], то его стили тоже следует вынести в
-          #[+Keyword--YDID отдельный] #[+Term--YDID CSS-файл]
+          #[+Keyword--YDID отдельный] #[+Term--YDID CSS-файл].
 
       li.
         У #[+Keyword--YDID каждой] страницы должен быть #[+Keyword--YDID свой] #[+Term--YDID CSS-файл], где содрежатся
-          стили #[+Keyword--YDID только] для этой страницы
+          стили, актуальные #[+Keyword--YDID только] для этой страницы.
 
       li.
-        Можно также вынести в отдельный файл типографику, стили каких-либо крупных компонентов и так далее.
+        Также можно вынести в отдельный файл типографику, стили каких-либо крупных компонентов и так далее.
 
     p.Article-Paragraph.
-      При соблюдении этих рекомендаций, файлы #[+Term--YDID CSS-файлы] будут подгружаться
-        #[+Keyphrase--YDID по необходимости], а #[+Term--YDID кэширование] будет работать эффективно (для этого также
-        потребуется генерировать имя файла, зависимое от содержимого — многие системы сборки это могут).
+      Наконец, #[+Keyphrase--YDID в каждой] странице #[+Keyword--YDID нужно] сослаться только на те
+        #[+Term--YDID CSS-файлы], которые нужны для корректного отображения этой страницы.
+      Тогда загрузка #[+Keyword--YDID неиспользуемых] #[+Term--YDID стилей] будет #[+Keyword--YDID минимизирована],
+        а #[+Term--YDID кэширование] будет работать эффективно (для этого также #[+Keyword--YDID потребуется]
+        генерировать имя файла, зависимое от содержимого — многие #[+Term--YDID сборщики проекта] это могут).
 
 
     //- ─── ECMAScript-логика ──────────────────────────────────────────────────────────────────────────────────────────
     +Heading--YDF({
-      level: 3,
-      text: pageTableOfContents.entryPointsAndChildrenFiles.$children.ECMA_ScriptLogic.$heading,
-      HTML_ID: pageTableOfContents.entryPointsAndChildrenFiles.$children.ECMA_ScriptLogic.$anchor
-    }).Article-Heading3
+      level: 4,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.ECMA_ScriptLogic.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.ECMA_ScriptLogic.$anchor
+    }).Article-Heading4
 
     p.Article-Paragraph.
       В случае #[+Term--YDID ECMAScript-логики], понятие #[+Term--YDID точки входа]
@@ -466,9 +506,9 @@ block append SpecificContent
           содержащий #[+Term--YDID логику] #[+Keyword--YDID конкретной] #[+Term--YDID HTML-страницы].
         Однако, такая организация кода является лишь #[+Keyword--YDID рекомендацией], а в реальности с
           #[+Term--YDID JavaScript-файлами] ситуация почти такая же, как с #[+Term--YDID CSS-файлами]:
-          #[+Term__Contrast--YDID логика] страницы может быть #[+Keyword--YDID произвольным] образом распределена между
+          #[+Term__Contrast--YDID логика] страницы можно #[+Keyword--YDID произвольным] образом распределить между
           #[+Term--YDID JavaScript-файлами], и до появления #[+Term--YDID систем сборки проектов] так часто и делали,
-          чтобы в одном фале не скапливалось слишком много кода.
+          чтобы в одном фале не&nbsp;скапливалось слишком много кода.
         Но всё-таки в современности рекомендуется придерживаться принципов, аналогичным приведённым выше рекомендациям
           для #[+Term--YDID CSS-файлов], тем более что современные #[+Term--YDID системы сборки проектов] могут
           #[+Keyword--YDID автоматически] выносить в отдельные файлы повторяющиеся в нескольких
@@ -483,5 +523,194 @@ block append SpecificContent
           потому что наличие нескольких #[+Term--YDID точек входа]
           #[+Keyphrase--YDID снижает уровень безопасности и усложняет поддерживаемость].
         Хотя #[+ImportantEntity--YDID YDA] не&nbsp;может Вам запретить иметь несколько #[+Term--YDID точек входа] на
-          серверной стороне, за исключением редких особых случаев, шаблон #[+Term--YDID «единая точка входа»]
-          #[+Keyphrase--YDID де факто] является #[+Keyword--YDID безальтернативным].
+          серверной стороне, шаблон #[+Term--YDID «единая точка входа»]
+          #[+Keyphrase--YDID де факто] является #[+Keyword--YDID безальтернативным] за исключением редких особых случаев.
+
+
+    //- ─── Группа точек входа (Entry points group) ────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.entryPointsGroup.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.entryPointsGroup.$anchor
+    }).Article-Heading3
+
+      h3.Article-Heading3 Группа точек входа
+
+      p.Article-Paragraph.
+        #[+DefinableTerm--YDID Группа точек входа] — #[+Keyword--YDID набор] #[+Term--YDID точек входа], обработка которых
+          должна осуществляться согласно #[+Keyword--YDID общим] настройкам.
+        Для лёгкости масштабирования, #[+ImportantEntity--YDID YDA] работает с #[+Keyword--YDID группами]
+          #[+Term--YDID  точек входа],
+          #[+Keyphrase--YDID даже если #[+Term--YDID точка входа] #[+Keyword--YDID только] #[+Keyword__Contrast--YDID одна]].
+    p.Article-Paragraph.
+      #[+DefinableTerm--YDID Группа точек входа] — #[+Keyword--YDID набор] #[+Term--YDID точек входа], обработка которых
+        должна осуществляться согласно #[+Keyword--YDID общим] настройкам.
+      Для лёгкости масштабирования, #[+ImportantEntity--YDID YDA] работает с #[+Keyword--YDID группами]
+        #[+Term--YDID  точек входа],
+        #[+Keyphrase--YDID даже если #[+Term--YDID точка входа] #[+Keyword--YDID только] #[+Keyword__Contrast--YDID одна]].
+
+    ul.Article-UnorderedList
+
+      li.
+        #[+DefinableTerm--YDID Группа одной точки входа] не&nbsp;просто включает в себя #[+Keyword--YDID одну]
+          #[+Term--YDID точку входа], но при этом #[+Term--YDID её #[+Term--YDID путь] #[+Keyword--YDID явно] указан]
+          в настройках.
+
+      li.
+        В случае #[+DefinableTerm--YDID группы произвольного числа точек входа] указывается #[+Keyword--YDID не]&nbsp;
+          конкретные #[+Term--YDID пути] к #[+Term--YDID точкам входа], а их #[+Keyword--YDID общая]
+          #[+Term--YDID директория], а далее при запуске #[+ImportantEntity--YDID YDA]
+          #[+Keyword--YDID сама] определит пути к соответствующим #[+Term--YDID точкам входа].
+
+    p.Article-Paragraph.
+      Таким образом, #[+Term--YDID группа произвольного числа точек входа] #[+Keyword--YDID может] включать в себя и
+        #[+Keyword--YDID одну] #[+Term--YDID точку входа], а разница с #[+Term--YDID группой одной точка входа] в том,
+        что в случае #[+Keyword--YDID последней] #[+Term--YDID путь] к #[+Term__Contrast--YDID точке входа] указан
+        #[+Keyword--YDID явно].
+
+    p.Article-Paragraph.
+      Разделение #[+Term--YDID точек входа] на #[+Term__Contrast--YDID группы] является крайне востребованной
+        функциональностью.
+      Например, в веб-приложениях полного цикла будет, согласно выше упомянутым требования по безопасности,
+        #[+Term--YDID группа одной точки входа] для #[+Keyword--YDID серверной] части и ещё одна #[+Term--YDID группа] —
+        для #[+Keyword--YDID клиентской] части.
+      #[+Keyphrase--YDID Как минимум] из-за разной среды выполнения, обработка этих точек входа
+        #[+Keyword--YDID не]&nbsp;может быть выполнена по одним и тем же настройкам, а потому определение их в виде
+        разных #[+Term--YDID групп] #[+Keyword--YDID неизбежно].
+
+
+    //- ━━━ Ассеты (Assets) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.assets.$heading,
+      HTML_ID: localizedSectioning.assets.$anchor
+    }).Article-Heading2
+
+    p.Article-Paragraph.
+      #[+Keyword--YDID Обобщающий] термин для следующих типов файлов:
+
+    ul.Article-UnorderedList
+      li изображения
+      li шрифты
+      li аудио
+      li видео
+
+    p.Article-Paragraph.
+      Все эти виды файлов активно используется в современных веб-сайтах и приложениях.
+
+    p.Article-Paragraph.
+      В определенных ситуациях необходимо различать #[+Keyword--YDID исходные] и
+        #[+Keyword__Contrast--YDID выходные] файлы #[+Term--YDID асетов].
+      На данный момент модификация #[+Keyword--YDID содержимого] (а именно оптимизация, при этом только на
+        #[+Term--YDID продакшен-подобных режимах сборки]) осуществляется #[+Keyword--YDID только] у изображений,
+        однако для #[+Keyword--YDID всех] ассетов #[+Term--YDID продакшен-подобных режимах] осуществляется
+        модификация имени файла во избежание отображения в браузере устаревшего содержимого из-за кэширования.
+
+
+    //- ─── Группы ассетов (Assets groups) ─────────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.assets.$children.groups.$heading,
+      HTML_ID: localizedSectioning.assets.$children.groups.$anchor
+    }).Article-Heading3
+
+    p.Article-Paragraph.
+      #[+DefinableTerm--YDID Группа ассетов] — #[+Keyword--YDID набор] #[+Term--YDID ассетов]
+        #[+Keyphrase--YDID конкретного вида], обработка которых осуществляется
+        согласно #[+Keyword--YDID общим] настройкам.
+      Для лёгкости масштабирования, #[+ImportantEntity--YDID YDA] работает с #[+Keyword--YDID группами]
+        #[+Term--YDID ассетов],
+      #[+Keyphrase--YDID даже если #[+Term--YDID ассет] #[+Keyword--YDID только] #[+Keyword__Contrast--YDID один]].
+
+    p.Article-Paragraph.
+      В отличие от файлов c кодом, #[+Term--YDID ассеты] являются #[+Keyword--YDID цельными] файлами, потому термин
+        #[+Term--YDID «точка входа»] к ним #[+Keyword--YDID неприменим].
+      Кроме того, #[+Keyword--YDID все] группы #[+Term--YDID ассетов] подразумевают #[+Keyword--YDID произвольное]
+        число #[+Term--YDID ассетов] в группе, потому пути к конкретным файлом в настройках #[+Keyword--YDID никогда]
+        #[+Keyword__Contrast--YDID не]&nbsp;указываются.
+
+
+    //- ━━━ Ресурсы (Resources) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.resources.$heading,
+      HTML_ID: localizedSectioning.resources.$anchor
+    }).Article-Heading2
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID В контексте #[+ImportantEntity--YDID YDA]], #[+DefinableTerm--YDID ресурсы] —
+        #[+Keyword--YDID обобщающий] термин для #[+Term--YDID стилей], #[+Term--YDID скриптов] и #[+Term--YDID ассетов]
+        (в соответствии с приведённым выше определением).
+
+
+    //- ━━━ Выборочное выполнение (Selective execution) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.selectiveExecution.$heading,
+      HTML_ID: localizedSectioning.selectiveExecution.$anchor
+    }).Article-Heading2
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID По умолчанию] будут выполнены #[+Keyword--YDID все] #[+Term--YDID задачи], указанные в файле
+        настроек,при этом будут обработаны #[+Keyword--YDID все] объявленные #[+Term--YDID группы]
+        #[+Term__Contrast--YDID точек входа] и #[+Term__Contrast--YDID ассетов].
+      Однако, зачастую востребовано выполнить #[+Term--YDID сборку проекта] #[+Keyword--YDID выборочно].
+
+    p.Article-Paragraph.
+      #[+DefinableTerm--YDID Выборочное выполнение] — функциональность запуска #[+ImportantEntity--YDID YDA],
+        позволяющая среди объявленных в файле настроек #[+Term--YDID задач], #[+Term--YDID групп точек входа] и
+        #[+Term--YDID групп ассетов] выполнить #[+Keyword--YDID только] #[+Keyword__Contrast--YDID выбранные]
+        #[+Term--YDID задачи], при этом обработав только часть #[+Term--YDID групп точек входа] и
+        #[+Term--YDID групп ассетов].
+
+    p.Article-Paragraph.
+      #[+Term--YDID Выборочные выполнений] #[+Keyword--YDID может] быть #[+Keyword__Contrast--YDID несколько], при этом
+        они должны быть объявлены в файле настроек и иметь #[+Keyword--YDID уникальные] идентификаторы.
+      Благодаря этому, при запуске #[+ImportantEntity--YDID YDA] через консоль, останется указать лишь идентификатор
+        #[+Term--YDID выборочного выполнения].
+
+
+    //- ━━━ Важные для YDA общие термины ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.importantForYDA_ExistingTerms.$heading,
+      HTML_ID: localizedSectioning.importantForYDA_ExistingTerms.$anchor
+    }).Article-Heading2
+
+    //- ━━━ Публичный путь и укороченный абсолютный путь (Public path / Shortened absolute path) ━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.importantForYDA_ExistingTerms.$children.publicPathAndShortenedAbsolutePath.$heading,
+      HTML_ID: localizedSectioning.importantForYDA_ExistingTerms.$children.publicPathAndShortenedAbsolutePath.$anchor
+    }).Article-Heading3
+
+    p.Article-Paragraph.
+      #[+DefinableTerm--YDID Публичный путь] — директория #[+Keyphrase--YDID на сервере], относительно которой
+        указываются пути к файлам, доступным в интернете #[+Keyphrase--YDID без ограничений] такие как
+        #[+Term--YDID аутентификация] и #[+Term--YDID авторизация].
+      Если брать #[+Term--YDID Linux-сервер], то обычно это что-то вроде
+        #[+SecondaryEntity__Code--YDID /var/www/example.com/public].
+
+    p.Article-Paragraph.
+      Примечательно, но несмотря на слово «публичный» #[+Term--YDID путь] к этой #[+Term__Contrast--YDID директории]
+        #[+Keyword--YDID никому], кроме людей, имеющий отношение к разработке и поддержке программного продукта знать
+        #[+Keyword--YDID не]&nbsp;должен.
+      Прилагательное «публичный» лишь означает, что в соответствующей #[+Term--YDID директории] содержатся файлы,
+        доступные в интернете #[+Keyword--YDID любому] посетителю.
+
+    p.Article-Paragraph.
+      С понятием #[+Term--YDID публичного пути] связано понятие #[+Term--YDID укороченного абсолютного пути].
+      Чтобы не&nbsp;затягивать раздел подробным рассмотрением структуры #[+ImportantEntity--YDID URI], ограничимся
+        описательным упрощённым определением.
+      #[+DefinableTerm--YDID Укороченный абсолютный путь]
+        #[+Keyphrase--YDID в контексте #[+Term--YDID HTML-кода] и #[+Term--YDID CSS-кода]] — способ указания
+        #[+Term--YDID пути] к файлу, при котором путь начинается со знака #[+Term--YDID косой черты], например
+        #[+SecondaryEntity__Code--YDID /images/kittens/GrayKitten.jpg].
+
+    p.Article-Paragraph.
+      #[+Keyword--YDID Не]&nbsp;каждый #[+Term--YDID укороченный абсолютный путь] ссылается на
+        #[+Term--YDID публичный путь], однако если это путь изображению, файлу #[+Term--YDID каскадных таблиц стилей],
+        шрифтам и другим #[+Term--YDID ассетам], то #[+Keyphrase--YDID чаще всего] это так.
+      Хотя не&nbsp;зная кода серверной части нельзя однозначно сказать, ссылается ли
+        #[+SecondaryEntity__Code--YDID /images/kittens/GrayKitten.jpg] на файл ниже публичного пути, зачастую это именно
+        так.

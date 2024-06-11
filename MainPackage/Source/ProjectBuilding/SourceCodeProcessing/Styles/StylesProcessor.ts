@@ -25,7 +25,7 @@ import gulpPostCSS from "gulp-postcss";
 import Autoprefixer from "autoprefixer";
 import CSS_Nano from "cssnano";
 
-/* ─── Third-party Solutions Specialises ──────────────────────────────────────────────────────────────────────────── */
+/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import StylusPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/StylusPreProcessorSpecialist";
 
 /* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -84,9 +84,9 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
       dataHoldingSelfInstance.sourceCodeSelectiveReprocessingHelper = new SourceCodeSelectiveReprocessingHelper({
         initialEntryPointsSourceFilesAbsolutePaths: stylesProcessingSettingsRepresentative.
             initialRelevantEntryPointsSourceFilesAbsolutePaths,
-        affiliatedFilesResolutionRules: {
-          affiliatedFilesIncludingDeclarationsPatterns: StylusPreProcessorSpecialist.partialFilesIncludingDeclarationPatterns,
-          implicitFilesNamesExtensionsWithoutLeadingDotsOfAffiliatedFiles: StylusPreProcessorSpecialist.
+        childrenFilesResolutionRules: {
+          childrenFilesIncludingDeclarationsPatterns: StylusPreProcessorSpecialist.partialFilesIncludingDeclarationPatterns,
+          implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles: StylusPreProcessorSpecialist.
               implicitFilesNamesExtensionsWithoutLeadingDotsOfPartials
         },
         isEntryPoint: stylesProcessingSettingsRepresentative.isEntryPoint.bind(stylesProcessingSettingsRepresentative),

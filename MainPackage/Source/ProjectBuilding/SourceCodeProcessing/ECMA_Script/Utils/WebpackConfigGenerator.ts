@@ -1,21 +1,21 @@
-/* --- Restrictions ------------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRestrictions";
 import SupportedECMA_ScriptRuntimesTypes = ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes;
 
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type ECMA_ScriptLogicProcessingSettingsRepresentative from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettingsRepresentative";
 
-/* --- Third-party solutions specialises ---------------------------------------------------------------------------- */
+/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import WebpackSpecialist from "@ThirdPartySolutionsSpecialists/WebpackSpecialist";
 import TypeScriptSpecialist from "@ThirdPartySolutionsSpecialists/TypeScriptSpecialist";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import Webpack from "webpack";
 import type { Configuration as WebpackConfiguration } from "webpack";
 import type TypeScript from "typescript";
@@ -23,175 +23,64 @@ import { VueLoaderPlugin as VueLoaderWebpackPlugin } from "vue-loader";
 import ForkTS_CheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import provideAccessToNodeJS_ExternalDependencies from "webpack-node-externals";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import Path from "path";
 import {
   isUndefined,
   isNotUndefined,
-  isNull,
-  isNotNull,
   insertSubstringIf,
   removeAllFileNameExtensions,
   Logger,
   UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
-import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-export default class WebpackConfigGenerator {
+/* [ Approach ] Because of serious performance impact, the file watching has been delegated to external watcher. */
+export default abstract class WebpackConfigGenerator {
 
-  private readonly ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
-  private readonly masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
-
-  private readonly typeScriptConfigurations: {
+  private static readonly cachedTypeScriptConfigurations: {
     [typeScriptConfigurationFileAbsolutePath: string]: TypeScript.CompilerOptions | undefined;
   } = {};
 
-  private hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided: boolean = false;
-
-
-  public static generateWebpackConfigurationForEachEntryPointsGroup(
-    ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative,
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
-  ): ReadonlyArray<WebpackConfiguration> {
-
-    const dataHoldingSelfInstance: WebpackConfigGenerator = new WebpackConfigGenerator(
-      ECMA_ScriptLogicProcessingConfigRepresentative, masterConfigRepresentative
-    );
-
-    const webpackConfigurationForEachEntryPointsGroup: Array<WebpackConfiguration> = [];
-
-    for (
-      const ECMA_ScriptLogicEntryPointsGroupSettings of
-      dataHoldingSelfInstance.ECMA_ScriptLogicProcessingConfigRepresentative.relevantEntryPointsGroupsSettings.values()
-    ) {
-
-      const webpackConfiguration: WebpackConfiguration | null = dataHoldingSelfInstance.
-          generateSingleWebpackConfigurationIfAtLeastOneTargetEntryPointFileExists(ECMA_ScriptLogicEntryPointsGroupSettings);
-
-      if (isNotNull(webpackConfiguration)) {
-
-        webpackConfigurationForEachEntryPointsGroup.push(webpackConfiguration);
-
-        dataHoldingSelfInstance.hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided = true;
-
-      }
-
-    }
-
-    return webpackConfigurationForEachEntryPointsGroup;
-
-  }
-
-  public static getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
+  /* [ Approach ] Although the parameter is excessive, its properties are been pre-computed externally for other needs,
+   *   so no need to compute them again. */
+  public static generateWebpackConfigurationForEntryPointsGroupWithExistingFiles(
     {
-      sourceFilesGlobSelectors,
-      entryPointsGroupID_ForLogging,
-      webpackContext
+      entryPointsSourceFilesAbsolutePaths,
+      ECMA_ScriptLogicEntryPointsGroupSettings: entryPointsGroupSettings,
+      ECMA_ScriptLogicProcessingConfigRepresentative,
+      masterConfigRepresentative,
+      mustProvideTypeScriptTypeChecking
     }: Readonly<{
-      entryPointsGroupID_ForLogging: string;
-      sourceFilesGlobSelectors: ReadonlyArray<string>;
-      webpackContext: string;
+      entryPointsSourceFilesAbsolutePaths: ReadonlyArray<string>;
+      ECMA_ScriptLogicEntryPointsGroupSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup;
+      ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
+      masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+      mustProvideTypeScriptTypeChecking: boolean;
     }>
-  ): Webpack.EntryObject | null {
-
-    /* [ Reference ] https://webpack.js.org/configuration/entry-context/#entry */
-    const webpackEntryPoints__objectSyntax: Webpack.EntryObject = {};
-    const targetEntryPointsSourceFilesAbsolutePaths: Array<string> = ImprovedGlob.
-        getFilesAbsolutePathsSynchronously(sourceFilesGlobSelectors);
-
-    if (targetEntryPointsSourceFilesAbsolutePaths.length === 0) {
-
-      Logger.logWarning({
-        title: "Restarting may required",
-        description:
-            `No files has been found for the ECMAScript entry points group with id "${ entryPointsGroupID_ForLogging }". ` +
-            "Please restart the building once these files will be added"
-      });
-
-      return null;
-
-    }
-
-
-    WebpackConfigGenerator.
-        checkForFilesWithSameDirectoryAndFileNameButDifferentExtensions(targetEntryPointsSourceFilesAbsolutePaths);
-
-    for (const entryPointSourceFileAbsolutePath of targetEntryPointsSourceFilesAbsolutePaths) {
-
-      const targetSourceFilePathRelativeToSourceEntryPointsTopDirectory: string = ImprovedPath.
-          computeRelativePath({
-            comparedPath: entryPointSourceFileAbsolutePath,
-            basePath: webpackContext
-          });
-
-      const outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory: string =
-          removeAllFileNameExtensions(targetSourceFilePathRelativeToSourceEntryPointsTopDirectory);
-
-      /* [ Webpack theory ] The key must be the output path without filename extension relative to 'output.path'.
-       *    The value must the source file path (relative or absolute), for example
-       * { 'HikariFrontend/StarterPugTemplate/StarterPugTemplate':
-       *      'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/HikariFrontend/StarterPugTemplate.ts',
-       *   'Minimal': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/Minimal.ts',
-       *   'TopPage': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/TopPage.ts'
-       * } */
-      webpackEntryPoints__objectSyntax[
-        outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory
-      ] = entryPointSourceFileAbsolutePath;
-
-    }
-
-    return webpackEntryPoints__objectSyntax;
-
-  }
-
-
-  private constructor(
-    ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative,
-    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
-  ) {
-    this.ECMA_ScriptLogicProcessingConfigRepresentative = ECMA_ScriptLogicProcessingConfigRepresentative;
-    this.masterConfigRepresentative = masterConfigRepresentative;
-  }
-
-
-  private generateSingleWebpackConfigurationIfAtLeastOneTargetEntryPointFileExists(
-    entryPointsGroupSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
-  ): WebpackConfiguration | null {
+  ): WebpackConfiguration {
 
     /* [ Reference ] https://webpack.js.org/configuration/entry-context/#context */
     const sourceFilesTopDirectoryAbsolutePath: string = entryPointsGroupSettings.sourceFilesTopDirectoryAbsolutePath;
 
     /** @see https://webpack.js.org/configuration/entry-context/#entry */
-    const webpackEntryPointsDefinition: Webpack.EntryObject | null =
-        WebpackConfigGenerator.getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings(
-          {
-            entryPointsGroupID_ForLogging: entryPointsGroupSettings.ID,
-            sourceFilesGlobSelectors: entryPointsGroupSettings.sourceFilesGlobSelectors,
-            webpackContext: sourceFilesTopDirectoryAbsolutePath
-          }
+    const webpackEntryPointsDefinition: Webpack.EntryObject =
+        WebpackConfigGenerator.getWebpackEntryObjectRespectiveToExistingEntryPoints(
+          { entryPointsSourceFilesAbsolutePaths, webpackContext: sourceFilesTopDirectoryAbsolutePath }
         );
 
-    if (isNull(webpackEntryPointsDefinition)) {
-      Logger.logWarning({
-        title: "Empty entry point group",
-        description: `No files has been found for the group '${ entryPointsGroupSettings.ID }' of ECMAScript ` +
-            "entry points. Please restart the build once new files will be added."
-      });
-      return null;
-    }
-
-
     let typeScriptCompilerOptions: TypeScript.CompilerOptions;
-    const cachedTypeScriptCompilerOptions: TypeScript.CompilerOptions | undefined = this.
-        typeScriptConfigurations[entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath];
+    const cachedTypeScriptCompilerOptions: TypeScript.CompilerOptions | undefined = WebpackConfigGenerator.
+        cachedTypeScriptConfigurations[entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath];
 
     if (isUndefined(cachedTypeScriptCompilerOptions)) {
 
       typeScriptCompilerOptions = TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions(
         entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath
       );
-      this.typeScriptConfigurations[entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath] =
+
+      this.cachedTypeScriptConfigurations[entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath] =
           typeScriptCompilerOptions;
 
     } else {
@@ -201,7 +90,9 @@ export default class WebpackConfigGenerator {
     }
 
 
-    const webpackPublicPath: string | undefined = this.computePublicPathIfPossible(entryPointsGroupSettings);
+    const webpackPublicPath: string = WebpackConfigGenerator.computePublicPath(
+      entryPointsGroupSettings, masterConfigRepresentative
+    );
 
     const willBrowserJS_LibraryBeBuilt: boolean =
         entryPointsGroupSettings.distributing?.exposingOfExportsFromEntryPoints.mustExpose === true &&
@@ -309,14 +200,14 @@ export default class WebpackConfigGenerator {
         } : null,
 
         ...willPugLibraryBeBuilt ? { globalObject: "globalThis" } : null
+
       },
 
       ...isNotUndefined(distributingSettings) && distributingSettings.externalizingDependencies.length > 0 ? {
         externals: distributingSettings.externalizingDependencies.
             reduce(
               (
-                accumulatingObject: { [packageName: string]: string; },
-                packageName: string
+                accumulatingObject: { [packageName: string]: string; }, packageName: string
               ): { [packageName: string]: string; } => {
                 accumulatingObject[packageName] = packageName;
                 return accumulatingObject;
@@ -327,23 +218,13 @@ export default class WebpackConfigGenerator {
 
       ...willBrowserJS_LibraryBeBuilt ? { experiments: { outputModule: true } } : null,
 
-      mode: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-          this.masterConfigRepresentative.isLocalDevelopmentBuildingMode ?
+      mode: masterConfigRepresentative.mustProvideIncrementalBuilding ?
               "development" : "production",
-
-      watch: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-          this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
-
-      watchOptions: {
-        ignored: [ "node_modules" ]
-      },
 
       /* [ Theory ] Although "cheap-module-source-map" causes both slow first building and slow rebuilding,
        *   faster alternatives including "eval" could cause the errors related with security.
        *   See https://stackoverflow.com/a/49100966. */
-      devtool: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-          this.masterConfigRepresentative.isLocalDevelopmentBuildingMode ?
-              "cheap-module-source-map" : false,
+      devtool: masterConfigRepresentative.mustProvideIncrementalBuilding ? "cheap-module-source-map" : false,
 
       ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS ? {
         node: {
@@ -355,7 +236,7 @@ export default class WebpackConfigGenerator {
       module: {
         rules: [
 
-          /* --- Logic ---------------------------------------------------------------------------------------------- */
+          /* ━━━ Logic ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
           {
             test: /\.tsx?$/u,
             loader: "ts-loader",
@@ -376,7 +257,7 @@ export default class WebpackConfigGenerator {
           },
 
 
-          /* --- Data ----------------------------------------------------------------------------------------------- */
+          /* ━━━ Data ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
           {
             test: /\.json5$/u,
             loader: "json5-loader"
@@ -388,7 +269,7 @@ export default class WebpackConfigGenerator {
           },
 
 
-          /* --- Markup --------------------------------------------------------------------------------------------- */
+          /* ━━━ Markup ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
           {
             test: /\.pug$/u,
             oneOf: [
@@ -419,7 +300,7 @@ export default class WebpackConfigGenerator {
           },
 
 
-          /* --- 意匠設計記法 ----------------------------------------------------------------------------------------- */
+          /* ━━━ Styles ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
           {
             test: /\.css$/u,
             oneOf: [
@@ -464,20 +345,20 @@ export default class WebpackConfigGenerator {
               }
             ]
           }
+
         ]
       },
 
       resolve: {
 
-        extensions: this.ECMA_ScriptLogicProcessingConfigRepresentative.
+        extensions: ECMA_ScriptLogicProcessingConfigRepresentative.
             supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.
             map((fileNameExtensionWithoutDot: string): string => `.${ fileNameExtensionWithoutDot }`),
 
         alias: {
-          ...WebpackSpecialist.
-            convertPathsAliasesFromTypeScriptFormatToWebpackFormat({
-              typeScriptPathsSettings: typeScriptCompilerOptions.paths,
-              typeScriptBasicAbsolutePath:
+          ...WebpackSpecialist.convertPathsAliasesFromTypeScriptFormatToWebpackFormat({
+            typeScriptPathsSettings: typeScriptCompilerOptions.paths,
+            typeScriptBasicAbsolutePath:
                 typeScriptCompilerOptions.baseUrl ??
                 ImprovedPath.extractDirectoryFromFilePath({
                   targetPath: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
@@ -495,7 +376,7 @@ export default class WebpackConfigGenerator {
       },
 
       resolveLoader: WebpackSpecialist.
-          generateLoadersResolvingSettings(this.masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath),
+          generateLoadersResolvingSettings(masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath),
 
       ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS ? {
         externals: [ provideAccessToNodeJS_ExternalDependencies() ]
@@ -505,10 +386,10 @@ export default class WebpackConfigGenerator {
 
         new Webpack.DefinePlugin({
 
-          __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__: this.masterConfigRepresentative.isLocalDevelopmentBuildingMode,
-          __IS_TESTING_BUILDING_MODE__: this.masterConfigRepresentative.isTestingBuildingMode,
-          __IS_STAGING_BUILDING_MODE__: this.masterConfigRepresentative.isStagingBuildingMode,
-          __IS_PRODUCTION_BUILDING_MODE__: this.masterConfigRepresentative.isProductionBuildingMode,
+          __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__: masterConfigRepresentative.isLocalDevelopmentBuildingMode,
+          __IS_TESTING_BUILDING_MODE__: masterConfigRepresentative.isTestingBuildingMode,
+          __IS_STAGING_BUILDING_MODE__: masterConfigRepresentative.isStagingBuildingMode,
+          __IS_PRODUCTION_BUILDING_MODE__: masterConfigRepresentative.isProductionBuildingMode,
 
           /* [ Theory ] Settings for the Vue 3 which must be defined explicitly.
           * https://github.com/vuejs/core/tree/main/packages/vue#bundler-build-feature-flags */
@@ -520,8 +401,8 @@ export default class WebpackConfigGenerator {
 
         }),
 
-        ...this.hasTypeScriptTypeCheckingFunctionalityAlreadyBeenProvided ?
-            [] :
+        /* < === Temporary ========================================================================================== */
+        ...mustProvideTypeScriptTypeChecking ?
             [
               new ForkTS_CheckerWebpackPlugin({
                 typescript: {
@@ -537,28 +418,73 @@ export default class WebpackConfigGenerator {
                   }
                 }
               })
-            ],
+            ] :
+            [],
+
+        /* === Temporary > ========================================================================================== */
 
         new VueLoaderWebpackPlugin()
 
       ],
 
-
       optimization: {
-        minimize: this.masterConfigRepresentative.isStagingBuildingMode ||
-            this.masterConfigRepresentative.isProductionBuildingMode,
-        emitOnErrors: this.masterConfigRepresentative.isStaticPreviewBuildingMode ||
-            this.masterConfigRepresentative.isLocalDevelopmentBuildingMode
+        minimize: !masterConfigRepresentative.mustProvideIncrementalBuilding,
+        emitOnErrors: masterConfigRepresentative.mustProvideIncrementalBuilding
       }
+
     };
+
+  }
+
+  public static getWebpackEntryObjectRespectiveToExistingEntryPoints(
+    {
+      entryPointsSourceFilesAbsolutePaths,
+      webpackContext
+    }: Readonly<{
+      entryPointsSourceFilesAbsolutePaths: ReadonlyArray<string>;
+      webpackContext: string;
+    }>
+  ): Webpack.EntryObject {
+
+    /* [ Reference ] https://webpack.js.org/configuration/entry-context/#entry */
+    const webpackEntryPoints__objectSyntax: Webpack.EntryObject = {};
+
+    WebpackConfigGenerator.
+        checkForFilesWithSameDirectoryAndFileNameButDifferentExtensions(entryPointsSourceFilesAbsolutePaths);
+
+    for (const entryPointSourceFileAbsolutePath of entryPointsSourceFilesAbsolutePaths) {
+
+      const targetSourceFilePathRelativeToSourceEntryPointsTopDirectory: string = ImprovedPath.
+          computeRelativePath({
+            comparedPath: entryPointSourceFileAbsolutePath,
+            basePath: webpackContext
+          });
+
+      const outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory: string =
+          removeAllFileNameExtensions(targetSourceFilePathRelativeToSourceEntryPointsTopDirectory);
+
+      /* [ Webpack theory ] The key must be the output path without filename extension relative to 'output.path'.
+       *    The value must the source file path (relative or absolute), for example
+       * { 'HikariFrontend/StarterPugTemplate/StarterPugTemplate':
+       *      'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/HikariFrontend/StarterPugTemplate.ts',
+       *   'Minimal': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/Minimal.ts',
+       *   'TopPage': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/TopPage.ts'
+       * } */
+      webpackEntryPoints__objectSyntax[
+        outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory
+      ] = entryPointSourceFileAbsolutePath;
+
+    }
+
+    return webpackEntryPoints__objectSyntax;
 
   }
 
 
   /* [ Webpack theory ] 'publicPath' computing
    *
-   * 1. For the production building mode, just "/" is enough.
-   *    For the development building mode, everything must work without development server otherwise the customer
+   * 1. For the production-like building modes, just "/" is enough.
+   *    For the incremental building modes, everything must work without development server otherwise the customer
    *    could not check the application just by opening the HTML files ("/" will be resolved to the root of current hard drive).
    *    The known solution is the relative path: it is required to match the path where Webpack chunks are being outputted
    *    and the path where Webpack chunks are being searched (initially it could be different paths).
@@ -573,26 +499,21 @@ export default class WebpackConfigGenerator {
    * 3. Chunks will be searched in
    *       [ path at search string of browser ] + publicPath + chunkFilename
    * */
-  private computePublicPathIfPossible(
-    ECMA_ScriptLogicEntryPointsGroupSettings__normalized: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
+  private static computePublicPath(
+    ECMA_ScriptLogicEntryPointsGroupSettings__normalized: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup,
+    masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): string {
 
-    if (
-      !this.masterConfigRepresentative.isStaticPreviewBuildingMode &&
-      !this.masterConfigRepresentative.isLocalDevelopmentBuildingMode
-    ) {
-      return "/";
-    }
+    return masterConfigRepresentative.mustProvideIncrementalBuilding ?
+        ECMA_ScriptLogicEntryPointsGroupSettings__normalized.ID.replace(
+          ECMA_ScriptLogicEntryPointsGroupSettings__normalized.ID, "/"
+        ) :
+        "/";
 
-
-    return ECMA_ScriptLogicEntryPointsGroupSettings__normalized.ID.replace(
-      ECMA_ScriptLogicEntryPointsGroupSettings__normalized.ID, "/"
-    );
   }
 
-
   private static checkForFilesWithSameDirectoryAndFileNameButDifferentExtensions(
-    entryPointsSourceFilesAbsolutePaths: Array<string>
+    entryPointsSourceFilesAbsolutePaths: ReadonlyArray<string>
   ): void {
 
     const entryPointsSourceFiles: Set<string> = new Set<string>();
@@ -614,6 +535,9 @@ export default class WebpackConfigGenerator {
       } else {
         entryPointsSourceFiles.add(filePathWithoutFilenameExtension);
       }
+
     }
+
   }
+
 }

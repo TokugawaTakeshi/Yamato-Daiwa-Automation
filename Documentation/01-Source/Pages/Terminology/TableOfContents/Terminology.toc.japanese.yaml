@@ -1,0 +1,49 @@
+project:
+
+  $heading: プロジェクト
+  building:
+
+    $heading: プロジェクト構成
+
+
+task: { $heading: "課題 (Task)" }
+scenario: { $heading: "作業順序・シナリオ（Scenario）" }
+projectBuildingMode: { $heading: "プロジェクト構成モード（Project building mode）" }
+
+entryPointsAndChildrenFiles:
+
+  $heading: "Точки входа и дочерние файлы (Entry points / children files)"
+
+  byFileType:
+
+    $heading: "ファイル種類毎"
+
+    markup: { $heading: "Разметка" }
+    styles: { $heading: "Стили" }
+    ECMA_ScriptLogic: { $heading: "ECMAScript-логика" }
+
+  entryPointsGroup: "Группа точек входа (Entry points group)"
+
+assets:
+
+  $heading: "アセット (Assets)"
+
+  groups:
+
+    $heading: "Assets Groups"
+
+resources:
+
+  $heading: "Resources"
+
+selectiveExecution:
+
+  $heading: "Выборочное выполнение (Selective execution)"
+
+importantForYDA_ExistingTerms:
+
+  $heading: "Важный для YDA общие термины"
+
+  publicPathAndShortenedAbsolutePath:
+
+    $heading: "Публичный путь и укороченный абсолютный путь (Public path / Shortened absolute path)"

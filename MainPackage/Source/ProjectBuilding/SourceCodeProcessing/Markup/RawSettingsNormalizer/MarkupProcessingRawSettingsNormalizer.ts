@@ -21,6 +21,7 @@ import type MarkupProcessingSettings__Normalized from
 /* ─── Settings normalizers ───────────────────────────────────────────────────────────────────────────────────────── */
 import SourceCodeProcessingRawSettingsNormalizer from
     "@ProjectBuilding/Common/RawSettingsNormalizers/SourceCodeProcessingRawSettingsNormalizer";
+import RoutingSettingsNormalizer from "@MarkupProcessing/RawSettingsNormalizer/RoutingSettingsNormalizer";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
@@ -109,6 +110,17 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
             normalizeStaticPreviewStateDependentPageVariationsSpecification(),
         importsFromStaticDataFiles: dataHoldingSelfInstance.normalizeImportsFromStaticDataFiles()
       },
+
+      ...isNotUndefined(markupProcessingSettings__fromFile__rawValid.routing) ? {
+        routing: {
+          variable: markupProcessingSettings__fromFile__rawValid.routing.variable,
+          routes: RoutingSettingsNormalizer.normalize({
+            routingSettings__fromFile__rawValid: markupProcessingSettings__fromFile__rawValid.routing,
+            projectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+            absolutePathsOfSectioningToCache: new Set<string>()
+          })
+        }
+      } : null,
 
       relevantEntryPointsGroups:
           dataHoldingSelfInstance.createNormalizedEntryPointsGroupsSettings(

@@ -11,39 +11,37 @@ block append Metadata
 
   -
 
-    HTML_PAGE_LANGUAGE = "en";
-    HTML_PAGE_TITLE = buildHTML_PageTitle("Terminology");
-    HTML_PageMetaData = {
-      description:
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle("Terminology"),
+        description:
           "The terminology which being used by the \"Yamato Daiwa Automation\" (abbreviation: \"YDA\")," +
             "the Node.js utility for the projects (client web applications, server applications, console utilities, " +
             "libraries) building tool. " +
-          "The part of terms is being used be other technologies, another part has been defined by the YDA developers",
-      author: HTML_PAGE_AUTHOR
-    };
-
-    FAVICON_URI = "@MustBeInPublicRoot/favicon";
-
-    styleSheetsURIs = [
-      "$CommonStyles",
-      "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
-      "$PreMadesStyles",
-      "@CustomizedExternalComponents"
-    ];
-
-    scriptsURIs.endOfBody = [ "$CommonLogic" ];
-
-    RoutingEmulator.setCurrentRoute("functionality.children.markupProcessing.children.basicPugToHTML_Transpiling");
-
-    LanguageDropDownList__YDF_DK.setLinks({
-      japanese: "./Terminology.japanese.html",
-      russian: "./Terminology.russian.html"
+          "The part of terms is being used be other technologies, another part has been defined by the YDA developers"
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
     });
 
-    const pageTableOfContents = localizedRouting.terminology.$sectioning;
+    RoutingEmulator.setCurrentRoute("terminology");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      japanese: routing.japanese.terminology.$URI,
+      russian: routing.russian.terminology.$URI,
+    });
+
+    const {
+      $sectioning: localizedSectioning,
+      $heading: topHeading
+    } = routing.english.terminology;
 
 
-block append HeadScriptsLinks
+block append HeadScripts
 
   if __IS_PRODUCTION_BUILDING_MODE__
 
@@ -55,13 +53,13 @@ block append SpecificContent
   article
 
     //- ━━━ Terminology ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    +Heading--YDF({ level: 1, text: localizedRouting.terminology.$heading }).Article-Heading1
+    h1.Article-Heading1= topHeading
 
     //- ━━━ YDA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.YDA.$heading,
-      HTML_ID: pageTableOfContents.YDA.$anchor
+      text: localizedSectioning.YDA.$heading,
+      HTML_ID: localizedSectioning.YDA.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
@@ -69,37 +67,39 @@ block append SpecificContent
         this tool about documentation which.
       Here, the #[+ImportantEntity--YDID Yamato Daiwa] is the name of of
         #[+Link--YDF({ endorsedExternalURI: sharedExternalLinks.YamatoDaiwa.homePage.top }).Article-Link Japanese startup],
-        currently specializing on custom web development, and also on development of the librarires, frameworks and
+        currently specializing on custom web development, and also on development of the libraries, frameworks and
         other tools (including #[+ImportantEntity--YDID YDA]).
 
 
     //- ━━━ Project ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.project.$heading,
-      HTML_ID: pageTableOfContents.project.$anchor
+      text: localizedSectioning.project.$heading,
+      HTML_ID: localizedSectioning.project.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
       #[+Keyphrase--YDID In the programming context], the #[+DefinableTerm--YDID project] — is the files and folders set
-        which has the common parent directory and on which base the software product (web application, console
-        application, library etc.) will be built.
-      Why this term important is the #[+ImportantEntity--YDID YDA] intended exactly for the working with
+        which are #[+Keyword--YDID required] for the development of specific digital project (web site, web application,
+          console application, native application, library etc.) and has the #[+Keyword--YDID common]
+          #[+Keyword__Contrast--YDID parent] #[+Term--YDID directory].
+      The #[+ImportantEntity--YDID YDA] utility is intended #[+Keyword--YDID exactly] for the working with
         #[+Term--YDID projects], #[+Keyword--YDID not]&nbsp;with individual files.
 
 
     //- ─── Project build(ing) ─────────────────────────────────────────────────────────────────────────────────────────
     +Heading--YDF({
       level: 3,
-      text: pageTableOfContents.project.$children.building.$heading,
-      HTML_ID: pageTableOfContents.project.$children.building.$anchor
+      text: localizedSectioning.project.$children.building.$heading,
+      HTML_ID: localizedSectioning.project.$children.building.$anchor
     }).Article-Heading3
 
     p.Article-Paragraph.
       In the #[+Term--YDID "project building"], the #[+Term__Contrast--YDID gerund] #[+Term--YDID "building"] refers
         #[+Keyword--YDID mainly] on the #[+Keyword--YDID process], namely the forming of the #[+Term--YDID output files]
-        based on the #[+Term--YDID source code] and other #[+Term--YDID source files].
-      This process is the main thing which #[+ImportantEntity--YDID YDA] doing.
+        based on the #[+Term--YDID source files].
+      This #[+Keyword--YDID process] is the #[+Keyword__Contrast--YDID main] thing which #[+ImportantEntity--YDID YDA]
+        doing.
 
     p.Article-Paragraph.
       The #[+Term--YDID "build"] could be the #[+Term--YDID noun] #[+Keyword--YDID or] #[+Term--YDID verb].
@@ -107,12 +107,10 @@ block append SpecificContent
     ul.Article-UnorderedList
 
       li.
-        As #[+Term--YDID noun], the #[+Term--YDID "build"] in the #[+DefinableTerm--YDID project build] means
-          #[+Keyword--YDID all] #[+Term--YDID output files] of the #[+Term--YDID project] which
-          #[+Keyword--YDID usually] has the #[+Keyword__Contrast--YDID common] #[+Term--YDID directory] called
-          #[+Term--YDID "build directory"].
-        #[+ImportantEntity--YDID YDA] does&nbsp;#[+Keyword--YDID not] require the single #[+Term--YDID build directory],
-          because is some cases it could be the obstacle for the solving of target problems.
+        As #[+Term--YDID noun], the #[+Term--YDID "build"] in the #[+DefinableTerm--YDID "project build"] means
+          #[+Keyword--YDID all] #[+Term--YDID output files] of the #[+Term--YDID project].
+        Usually, they are been outputted to the #[+Keyword--YDID common] #[+Term--YDID directory] called
+          #[+Term--YDID "build directory"], but #[+ImportantEntity--YDID YDA] has&nbsp;no&nbsp;such limitation.
 
       li.
         As #[+Term--YDID verb], the #[+Term--YDID "build"] in the #[+DefinableTerm--YDID build project] means the
@@ -120,12 +118,12 @@ block append SpecificContent
           etc.
 
     p.Article-Paragraph.
-      #[+Keyword--YDID Not] all technologies requires the #[+Term--YDID project building].
+      #[+Keyword--YDID Not] all technologies assumes the #[+Term--YDID project building].
       For example, if the #[+Term--YDID web site] or #[+Term--YDID web application] has been written by pure
         #[+SecondaryEntity--YDID HTML], #[+SecondaryEntity--YDID CSS] and #[+SecondaryEntity--YDID PHP] (the
         last one is #[+Term--YDID interpreted programming language] what means that source code files are being executed
-        directly without compilation to the #[+Term--YDID output executable files]), in this case it is
-        #[+Keyword--YDID nothing] to build.
+        directly without compilation to the #[+Term--YDID output executable files]), #[+Keyphrase--YDID in this case] it
+        is #[+Keyword--YDID nothing] to build.
       About #[+ImportantEntity--YDID YDA], it has being developed for the working with #[+ImportantEntity--YDID Pug],
         #[+ImportantEntity--YDID Stylus] и #[+ImportantEntity--YDID TypeScript] languages each of them
         #[+Keyword--YDID intended] to be transpiled to the #[+Term--YDID output code] (#[+ImportantEntity--YDID HTML],
@@ -139,42 +137,53 @@ block append SpecificContent
     //- ━━━ Task ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.scenario.$heading,
-      HTML_ID: pageTableOfContents.scenario.$anchor
+      text: localizedSectioning.scenario.$heading,
+      HTML_ID: localizedSectioning.scenario.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
       #[+Keyphrase--YDID In the #[+Term--YDID project building] context], the #[+DefinableTerm--YDID task] is the
         specialized work for the computer among #[+Term--YDID project building] automation.
-      Currently the following primary #[+Term--YDID tasks] on which #[+ImportantEntity--YDID YDA] is specializing
-        could be highlighted.
+      Currently the following #[+Keyword--YDID primary] #[+Term--YDID tasks] on which #[+ImportantEntity--YDID YDA]
+        is specializing could be highlighted.
 
     ul.Article-UnorderedList
 
       li.
         The processing of the #[+Term--YDID markup] with source code on #[+ImportantEntity--YDID Pug], the
-          #[+Term--YDID preprocessor language].
+          #[+Term--YDID preprocessor language]
 
       li.
         The processing of the #[+Term--YDID styles] with source code on #[+ImportantEntity--YDID Stylus], the
-          #[+Term--YDID preprocessor language].
+          #[+Term--YDID preprocessor language]
 
       li.
         The processing of #[+Term--YDID ECMAScript logic] with source code on #[+ImportantEntity--YDID TypeScript]
-          (although it rarely called by "preprocessor language", it will be so until it's runtimes will become popular).
-        The transpiling to #[+Keyword--YDID both] browser #[+ImportantEntity--YDID JavaScript] and
+          language.
+        Although this language rarely called by "preprocessor language", it will be so until it's runtimes will become
+          popular.
+        The transpiling to #[+Keyword--YDID both] #[+ImportantEntity__Code--YDID browser JavaScript] and
           #[+ImportantEntity--YDID Node.js] is available.
 
       li Images processing
 
       li The copying of fronts, videos, audios and ony other files
 
+      li.
+        Automatic opening of the #[+Term--YDID browser] on complete of #[+Keyword--YDID initial]
+          #[+Term--YDID project building] with automatic reloading of #[+Term--YDID browser] page on updating of
+          output code
+
+      li.
+        Automatic starting of #[+ImportantEntity--YDID Node.js] #[+Term--YDID server] on complete of
+          #[+Keyword--YDID initial] #[+Term--YDID project building] with automatic restarting of this server on
+          updating of output code
 
     //- ━━━ Scenario ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.task.$heading,
-      HTML_ID: pageTableOfContents.task.$anchor
+      text: localizedSectioning.task.$heading,
+      HTML_ID: localizedSectioning.task.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
@@ -187,52 +196,57 @@ block append SpecificContent
       The correct #[+Term--YDID tasks] arranging is #[+Keyword--YDID critical] for #[+Keyword--YDID both] correct
         executing and performance optimization.
       For example, the #[+Term--YDID markup] processing is been executed only when files #[+Keyword--YDID all]
-        #[+Keyword__Contrast--YDID other] files types are ready to correctly resolve the paths to styles,
-        images etc., and browser is opening #[+Keyword--YDID automatically] #[+Keyword__Contrast--YDID last] of all,
-        when the #[+Term--YDID markup] is ready.
+        #[+Keyword__Contrast--YDID other] files types are ready to correctly resolve the paths to #[+Term--YDID styles],
+        #[+Term--YDID images] etc., and browser open #[+Keyword--YDID automatically] #[+Keyword__Contrast--YDID last]
+        of all, when the #[+Term--YDID markup] is ready.
 
     p.Article-Paragraph.
       Because the #[+ImportantEntity--YDID YDA] is more high-level tool than #[+ImportantEntity--YDID Gulp], the users
         does #[+Keyword--YDID not]&nbsp;need to care about correct arranging of the #[+Term--YDID tasks] to
-        #[+Term__Contrast--YDID series] and #[+Term__Contrast--YDID parallels].
-      It is enough to know which #[+Term--YDID scenarios] are available.
+        #[+Term__Contrast--YDID series] and #[+Term__Contrast--YDID parallels], it is enough to know which
+        #[+Term--YDID scenarios] are available.
 
     p.Article-Paragraph.
-      Currently, #[+ImportantEntity--YDID YDA] supports #[+ImportantEntity--YDID 2] #[+Term--YDID scenarios]:
+      Currently, #[+ImportantEntity--YDID YDA] suggests #[+ImportantEntity--YDID 2] following #[+Term--YDID scenarios]:
+
 
     dl.Article-DescriptionList
 
-      dt Project incremental building
+      dt Project Incremental Building
       dd.
         #[+Keyword--YDID First], the #[+Keyword__Contrast--YDID full] #[+Term--YDID project building] is being executed,
-          #[+Keyword--YDID then] on changing of the source files, the #[+Keyword--YDID selective] rebuilding will be.
-        So, the application will be executed until will not&nbsp;be manually stopped or the critical error occurs.
+          #[+Keyword--YDID then] on changing of the #[+Keyword--YDID source] files, the #[+Keyword--YDID selective]
+          rebuilding will be.
+        This way, the application will be executed until will not&nbsp;be #[+Keyword--YDID manually] stopped or the
+          critical error occur.
         If required, the automatic browser opening (if the #[+Term--YDID project] has the client part) and/or automatic
           starting of the local server (if the #[+Term--YDID project] has the #[+ImportantEntity--YDID Node.js] server
           part) could be setup.
 
-      dt Production-like project building
+      dt Production-like Project Building
       dd.
-        The #[+Term--YDID project] is being built, then the application will #[+Keyword--YDID stop].
-        The functionality like automatic reloading of the browser page is unavailable because of the scenario purpose.
+        The #[+Term--YDID project] is being built #[+Keyword--YDID completely], then the application will
+          #[+Keyword--YDID finish].
+        The functionality like automatic reloading of the browser page is unavailable
+          #[+Keyphrase--YDID in this #[+Term--YDID scenario]] because of its purpose.
 
 
     //- ━━━ Project Building Mode ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.projectBuildingMode.$heading,
-      HTML_ID: pageTableOfContents.projectBuildingMode.$anchor
+      text: localizedSectioning.projectBuildingMode.$heading,
+      HTML_ID: localizedSectioning.projectBuildingMode.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
-
       #[+Keyword--YDID Both] #[+Term--YDID scenarios] could be executed in the #[+Keyword--YDID multiple]
-        (#[+Term--YDID project building]) #[+Term--YDID modes], #[+Keyword--YDID each] of them has specific feature.
+        #[+Term--YDID project building modes], #[+Keyword--YDID each] of them has the features.
       #[+ImportantEntity--YDID YDA] is suggesting #[+ImportantEntity--YDID 5] following
         #[+Term--YDID project building modes].
-      They also could be considered as the #[+Keyword--YDID stages], but #[+Keyword--YDID not]&nbsp;the
-        #[+Term--YDID stages] of development of the software as a whole — the are the #[+Term--YDID stages] of the
-        development of a #[+Keyphrase--YDID separate page or a specific functionality].
+      In the case of development of web site or the GUI application, this modes also could be considered as the
+        #[+Keyword--YDID stages], but #[+Keyword--YDID not]&nbsp;the #[+Term--YDID stages] of development of the product
+        as a whole — they are the #[+Term--YDID stages] of the development of a
+        #[+Keyphrase--YDID separate page or a specific functionality].
 
     dl.Article-DescriptionList
 
@@ -240,168 +254,252 @@ block append SpecificContent
       dd
 
         p.Article-Paragraph.
-          This adverb means that on such #[+Term--YDID modes] #[+Keyword--YDID first]
-            #[+Keyword--YDID full] #[+Term--YDID project building] is being executed, а the with the changes of the source
-            code, #[+Keyword--YDID automatic] #[+Keyword__Contrast--YDID selective] #[+Term--YDID rebuilding] starts.
+          Actual for the #[+Term--YDID incremental project building] #[+Term__Contrast--YDID scenario].
+          According to this #[+Term--YDID scenario], #[+Keyword--YDID first] #[+Keyword--YDID full]
+            #[+Term--YDID project building] will be executed, then with the changes of the source code,
+            the #[+Keyword--YDID selective] #[+Term--YDID rebuilding] will be executed.
+          For #[+Keyword--YDID all] #[+Keyword__Contrast--YDID incremental] #[+Term--YDID modes], from the
+            #[+Term--YDID project building tools] it is required to provide good performance optimization.
+          Also, in the case of the development of the websites and GUI applications, it is required the
+            #[+Keyword--YDID automated] browser page reloading and other measures provides the
+            #[+Keyword--YDID comfortable] product development with high quality feedback including the early
+            notifications about various problems such as #[+Term--YDID HTML code] validity violations.
 
         dl.Article-DescriptionList
 
           dt Static Preview
           dd.
-            Designed and the development stage on which the engineer focuses on the #[+Term--YDID markup]
-              #[+Keyword--YDID and] #[+Term--YDID styles], while the #[+Term--YDID JavaScript dynamics] and
-              #[+Term--YDID server part] (#[+Term--YDID backend]) is the matter of #[+Keyword--YDID next] stages.
-            All problems related with the design (appearance) and adaptation to screens of various sized should be
-              solved on this stage.
-            In this mode, #[+ImportantEntity--YDID YDA] case build the project such as the customers or managers
-              could check the interim result #[+Keyphrase--YDID without local server] and any other specialized
-              software.
+            Designed and the development stage on which the engineer #[+Keyword--YDID completely] focused on the
+              #[+Term--YDID markup] #[+Keyword--YDID and] #[+Term--YDID styles], while the
+              #[+Term--YDID JavaScript dynamics] and #[+Term--YDID server part] (#[+Term--YDID backend]) is the matter
+              of #[+Keyword--YDID subsequent] stages.
+            Thus, this #[+Term--YDID project building mode] is actual #[+Keyword--YDID only] for the development of the
+              websites and the GUI applications.
+            The significand requirement to #[+Term--YDID project building system] on current development state is the
+              providing of the browsing of the output files by the customers or managers
+              #[+Keyphrase--YDID without technical knowledge and specialized software] such as
+              #[+ImportantEntity--YDID npm] or #[+ImportantEntity--YDID git], herewith the images and other multimedia
+              files #[+Keyword--YDID must] currently displaying in browser.
+            Simply put, the "open downloaded #[+Term--YDID HTML file] in browser — and everything displaying"
+              principe must be respected.
 
-          dt Local Development
-          dd.
-            On this stage, unlike previous one, the #[+Keyword--YDID full-fledged] implementation of
-              #[+Term--YDID JavaScript dynamics] and #[+Term--YDID server part] (#[+Term--YDID backend]) is being
-              executed.
-            On this stage, the #[+Term--YDID project building tool] must provide the #[+Keyword--YDID optimized]
-              #[+Term--YDID project rebuilding], #[+Keyword--YDID automated] reloading of the browser  page,
-              #[+Keyword--YDID automated] restarting of the local server with the changing of the files and other
-              measured gives the comfortable software development with high-quality feedback including early
-              notification about various problems such as the #[+Term--YDID HTML validity violation].
+            dt Local Development
+            dd.
+              On this stage, unlike previous one, the #[+Keyword--YDID full-fledged] implementation of
+                #[+Term--YDID JavaScript dynamics] and #[+Term--YDID server part] (#[+Term--YDID backend]) is being
+                executed.
+              On this stage, the #[+Term--YDID project building tool] must provide the #[+Keyword--YDID optimized]
+                #[+Term--YDID project rebuilding], #[+Keyword--YDID automated] reloading of the browser  page,
+                #[+Keyword--YDID automated] restarting of the local server with the changing of the files and other
+                measured gives the comfortable software development with high-quality feedback including early
+                notification about various problems such as the #[+Term--YDID HTML validity violation].
 
-      dt Production-like
-      dd
+        dt Production-like
+        dd
 
-        p.Article-Paragraph.
-          It is usual before the publishing of the web site or the web application they being launched on the test
-            server with the limited access to make testers able to check the bugs which has not been detected on previous
-            development stages.
-          On the stages of this group, there is no the automated #[+Term--YDID project rebuilding] or automated
-            browser reloading on updating of files anymore because built web site or web application intended to be
-            launched on the server, #[+Keyword--YDID not]&nbsp;on the local machine.
-          Although such builds must be close to the final one (the #[+Keyword--YDID production] one, that is why the
-            modes of this group is being called "production-like"), some behaviour (for example, the logging level)
-            could be different dependent on the specific #[+Term--YDID mode].
+          p.Article-Paragraph.
+            It is usual before the publishing of the web site or the web application they being launched on the test
+              server with the limited access to make testers able to check the bugs which has not been detected on previous
+              development stages.
+            On the stages of this group, there is no the automated #[+Term--YDID project rebuilding] or automated
+              browser reloading on updating of files anymore because built web site or web application intended to be
+              launched on the server, #[+Keyword--YDID not]&nbsp;on the local machine.
+            Although such builds must be close to the final one (the #[+Keyword--YDID production] one, that is why the
+              modes of this group is being called "production-like"), some behaviour (for example, the logging level)
+              could be different dependent on the specific #[+Term--YDID mode].
 
-        dl.Article-DescriptionList
+          dl.Article-DescriptionList
 
-          dt Testing
-          dd.
-            Unlike the #[+Term--YDID local development mode], the testers, managers and other people related with
-              target web site or web application has access to the instance built in this mode.
-            As it obvious from the name, the target of the current stage is the testing for the detecting of the bugs.
+            dt Testing
+            dd.
+              Unlike the #[+Term--YDID local development mode], the testers, managers and other people related with
+                target web site or web application has access to the instance built in this mode.
+              As it obvious from the name, the target of the current stage is the testing for the detecting of the bugs.
 
-          dt Staging
-          dd.
-            In large projects, besides the #[+Term--YDID testing] build, there is the similar one called "staging".
-            The difference are usually small: it tends to be the usage of the data close with the real one, not the
-              data designed for testing purposes.
-            Thanks to it, the management and customers feels like using the final published instance of the
-              web site or web application.
+            dt Staging
+            dd.
+              In large projects, besides the #[+Term--YDID testing] build, there is the similar one called "staging".
+              The difference are usually small: it tends to be the usage of the data close with the real one, not the
+                data designed for testing purposes.
+              Thanks to it, the management and customers feels like using the final published instance of the
+                web site or web application.
 
-          dt Production
-          dd.
-            The web site of web application built in this mode intended to be published for the target audience.
-            By comparison with other #[+Term--YDID production-like modes], here the maximal security settings are
-              required.
-            Also, on this stage, the developers are tending to minimize the output to the browser console.
-
-
-    //- ━━━ Entry Points and Fragments ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    +Heading--YDF({
-      level: 2,
-      text: pageTableOfContents.entryPointsAndChildrenFiles.$heading,
-      HTML_ID: pageTableOfContents.entryPointsAndChildrenFiles.$anchor
-    }).Article-Heading2
-
-    p.Article-Paragraph.
-      The #[+DefinableTerm--YDID entry point] is the name of #[+Term--YDID design pattern],
-        #[+Keyphrase--YDID in the general case] it is the #[+Term--YDID file], #[+Term--YDID function] or
-        #[+Term--YDID class method] from which the program execution started.
-      In the context of the certain technology, it could have more specific meaning.
-    //- TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            dt Production
+            dd.
+              The web site of web application built in this mode intended to be published for the target audience.
+              By comparison with other #[+Term--YDID production-like modes], here the maximal security settings are
+                required.
+              Also, on this stage, the developers are tending to minimize the output to the browser console.
 
 
-    //- ─── Markup ─────────────────────────────────────────────────────────────────────────────────────────────────────
-    +Heading--YDF({
-      level: 3,
-      text: pageTableOfContents.entryPointsAndChildrenFiles.$children.markup.$heading,
-      HTML_ID: pageTableOfContents.entryPointsAndChildrenFiles.$children.markup.$anchor
-    }).Article-Heading3
-
-    p.Article-Paragraph.
-      #[+Keyphrase--YDID In #[+Keyword--YDID markup] case], the #[+Term--YDID entry point] is the file representing the
-        #[+Keyword--YDID complete] #[+Term--YDID HTML document].
-      #[+Keyword--YDID Basically], #[+Term--YDID HTML file] could&nbsp;#[+Keyword--YDID not] be split to multiple files,
-        but the #[+Term--YDID HTML pre-processors] like #[+ImportantEntity--YDID Pug] allows to do it on the source code
-        stage for example, for the reusing of the specific #[+Term--YDID code] in multiple files.
-      Here #[+Term--YDID parent files] (which are the #[+Term--YDID entry points] compiled to #[+Keyword--YDID complete]
-        #[+Term--YDID HTML files]) and #[+Term--YDID partials] (#[+Keyword--YDID children]
-        #[+Keyphrase--YDID context dependent] files which are #[+Keyword--YDID not]&nbsp;representing the valid
-        #[+Term--YDID HTML document] and could be used #[+Keyphrase--YDID only as the part] of
-        #[+Term--YDID entry points] must be distinguished.
-      Originally the «partial» does&nbsp;#[+Keyphrase--YDID not]&nbsp;assume the vertical hierarchy, while in the
-        context of the programming and declarative languages (especially pre-processors), often is does.
-      Finding more exact term, we have selected the «fragment» word and "fragment file" compound noun, because according
-        the definition, #[+Keyphrase--YDID in a broad sense] "fragment" the part of something whole.
-
-    //- ─── Styles ─────────────────────────────────────────────────────────────────────────────────────────────────────
-    +Heading--YDF({
-      level: 3,
-      text: pageTableOfContents.entryPointsAndChildrenFiles.$children.styles.$heading,
-      HTML_ID: pageTableOfContents.entryPointsAndChildrenFiles.$children.styles.$anchor
-    }).Article-Heading3
-
-    p.Article-Paragraph
-      | #[+Keyphrase--YDID In #[+Term--YDID styles] case], the #[+Term--YDID "entry point"] term is
-      |   #[+Keyword--YDID unclear]
-      |
-      +Keyphrase--YDID.
-        if to consider #[+Keyword--YDID only] #[+Keyword__Contrast--YDID output] #[+Term--YDID СSS-files].
-      |
-      | Unlike the #[+Term--YDID HTML documents], in relation to #[+Term--YDID cascading style sheets], the
-      |   "complete" adverb is #[+Keyword--YDID not]&nbsp;applicable, because the #[+Term--YDID styles] related with
-      |   certain #[+Term--YDID HTML document] could be #[+Keyword--YDID arbitrary] distributed between
-      |   #[+Term--YDID CSS files] and also exist outside of the #[+Term--YDID CSS files].
-
-    p.Article-Paragraph.
-      But, #[+Keyphrase--YDID in the case of usage of #[+Term--YDID CSS preprocessors]], the
-        #[+DefinableTerm--YDID entry point] is the file including the #[+Keyword--YDID source] code, from which
-        the conversion to output #[+Term--YDID CSS code] #[+Keyword--YDID beings].
-      The #[+Term--YDID CSS preprocessors] #[+Keyword--YDID also] allows to organize the #[+Term--YDID styles] by
-        #[+Term--YDID partial files] which is&nbsp;#[+Keyword--YDID not]&nbsp;being conversed to separate
-        #[+Term--YDID CSS files] but could be #[+Keyword--YDID included] to the #[+Term--YDID entry points]
-        (in the #[+ImportantEntity--YDID Stylus] preprocessor case it is possible by
-        #[+ImportantEntity__Code--YDID @require] и #[+ImportantEntity__Code--YDID @import] #[+Term--YDID directives]).
-
-    p.Article-Paragraph.
-      There are #[+Keyword--YDID no] rules how many #[+Term--YDID CSS files] must be provided per
-        #[+Term--YDID HTML page], thus the #[+Keyword--YDID styles] #[+Term--YDID entry point]
-        #[+Keyword--YDID not]&nbsp;necessary must include all styles exclusively for corresponding
-        #[+Term--YDID HTML document].
-      But the spitting of the #[+Term--YDID styles] to #[+Term__Contrast--YDID CSS files] is the
-        #[+Keyword--YDID important] #[+Term--YDID performance optimization] measure (also, the caching of
-        #[+Term--YDID CSS files] should be respected).
-
-      h3.Article-Heading3 ECMAScript logic
+      //- ━━━ Entry Points and Fragments ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      +Heading--YDF({
+        level: 2,
+        text: localizedSectioning.entryPointsAndChildrenFiles.$heading,
+        HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$anchor
+      }).Article-Heading2
 
       p.Article-Paragraph.
-        In ECMAScript logic case, the entry point is the JavaScript file from which the execution of application starting.
+        The #[+DefinableTerm--YDID entry point] is the name of #[+Term--YDID design pattern],
+          #[+Keyphrase--YDID in the general case] it is the #[+Term--YDID file], #[+Term--YDID function] or
+          #[+Term--YDID class method] from which the program execution started.
+        In the context of the certain technology, it could have more specific meaning.
+
+      p.Article-Paragraph.
+        The majority of the programming languages and preprocessors supports the splitting of the #[+Keyword--YDID source]
+          file to #[+Keyword--YDID arbitrary] number of #[+Keyword--YDID constituents].
+        Here, the #[+Term--YDID parent files] and #[+Term--YDID children files] must be distinguished.
+        Because the #[+Term--YDID children filed] #[+Keyword--YDID also] could be spit to constituents, the
+          #[+Keyword--YDID thee-like] #[+Keyword__Contrast--YDID hierarchical] #[+Term--YDID structure] is being formed,
+          where is the #[+Term--YDID entry point] is #[+Keyword--YDID topmost] element.
+
+      p.Article-Paragraph.
+        The #[+Term--YDID children files] is frequently being called #[+Term--YDID "partial files"], while
+          #[+Keyword--YDID originally] "partial" does&nbsp;#[+Keyword--YDID not]&nbsp;imply the vertical hierarchy.
+        Because this vertical hierarchy matters for the #[+ImportantEntity--YDID YDA], we have selected the
+          #[+Term--YDID "child file"] / #[+Term--YDID "children files"] terms.
+
+
+      //- ─── Markup ─────────────────────────────────────────────────────────────────────────────────────────────────────
+      +Heading--YDF({
+        level: 3,
+        text: localizedSectioning.entryPointsAndChildrenFiles.$children.markup.$heading,
+        HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.markup.$anchor
+      }).Article-Heading3
+
+      p.Article-Paragraph.
+        #[+Keyphrase--YDID In #[+Keyword--YDID markup] case], the #[+Term--YDID entry point] is the file
+          #[+Keyword--YDID corresponding] to #[+Keyword__Contrast--YDID full-fledged] #[+Term--YDID HTML document].
+
+      p.Article-Paragraph.
+        If the #[+Term--YDID entry point] does&nbsp;#[+Keyword--YDID not] have the #[+Term__Contrast--YDID children files],
+          the #[+Keyword--YDID valid] #[+Term--YDID HTML document] #[+Keyword--YDID must] be the result of Pug-to-HTML
+          conversation.
+        And if there are the #[+Term--YDID children files], they are
+          #[+Keyphrase--YDID must&nbsp;#[+Keyword--YDID not]&nbsp;be&nbsp;converted to #[+Term--YDID HTML] separately],
+          because this way the valid #[+Term--YDID HTML document] will&nbsp;#[+Keyword--YDID not]&nbsp;be.
+
+      p.Article-Paragraph.
+        The #[+Keyword--YDID regular] #[+Term--YDID HTML file] could&nbsp;#[+Keyword--YDID not]&nbsp;be&nbsp;split to
+          multiple files, but the #[+Term--YDID HTML pre-processors] (including #[+ImportantEntity--YDID Pug]) allows
+          to do it on the source code stage.
+        In #[+ImportantEntity--YDID YDA] working with #[+ImportantEntity--YDID Pug] preprocessor, the
+          #[+Term--YDID "entry point"] term is being applied to #[+Keyword--YDID both] #[+Keyword__Contrast--YDID source]
+          #[+Term--YDID Pug files] and #[+Keyword__Contrast--YDID output] #[+Term--YDID HTML files].
+        To include the #[+Term--YDID children file] to the #[+Term--YDID entry point] or another
+          #[+Term--YDID children file], #[+ImportantEntity__Code--YDID include] #[+Term--YDID directive] is being used.
+        The #[+ImportantEntity--YDID extends] #[+Term--YDID directive] also means the usage of #[+Term--YDID children file],
+          because the file on which target one being extended in not&nbsp;mandatory represents the complete
+          #[+Term--YDID HTML document].
+
+      +AdmonitionBlock--YDF({
+        geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+        decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning,
+        SVG_Icon: true
+      }).
+        #[+Keyword--YDID Not]&nbsp;every #[+Term--YDID Pug file] could be the #[+Term--YDID entry point], while
+          #[+Keyword--YDID any] #[+Term--YDID HTML file] could.
+
+
+      //- ─── Styles ─────────────────────────────────────────────────────────────────────────────────────────────────────
+      +Heading--YDF({
+        level: 3,
+        text: localizedSectioning.entryPointsAndChildrenFiles.$children.styles.$heading,
+        HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.styles.$anchor
+      }).Article-Heading3
+
+      p.Article-Paragraph
+        | #[+Keyphrase--YDID In #[+Term--YDID styles] case], the #[+Term--YDID "entry point"] term is
+        |   #[+Keyword--YDID unclear]
+        |
+        +Keyphrase--YDID.
+          if to consider #[+Keyword--YDID only] #[+Keyword__Contrast--YDID output] #[+Term--YDID СSS-files].
+        |
+        | Unlike the #[+Term--YDID HTML documents], in relation to #[+Term--YDID cascading style sheets], the
+        |   "complete" adverb is #[+Keyword--YDID not]&nbsp;applicable, because the #[+Term--YDID styles] related with
+        |   certain #[+Term--YDID HTML document] could be #[+Keyword--YDID arbitrary] distributed between
+        |   #[+Term--YDID CSS files] and also exist outside of the #[+Term--YDID CSS files].
+
+      p.Article-Paragraph.
+        But, #[+Keyphrase--YDID in the case of usage of #[+Term--YDID CSS preprocessors]], the
+          #[+DefinableTerm--YDID entry point] is the file including the #[+Keyword--YDID source] code, from which
+          the conversion to output #[+Term--YDID CSS code] #[+Keyword--YDID beings].
+        The #[+Term--YDID CSS preprocessors] #[+Keyword--YDID also] allows to organize the #[+Term--YDID styles] by
+          #[+Term--YDID children files] which is&nbsp;#[+Keyword--YDID not]&nbsp;being conversed to separate
+          #[+Term--YDID CSS files] but could be #[+Keyword--YDID included] to the #[+Term--YDID entry points]ю
+        In the #[+ImportantEntity--YDID Stylus] #[+Term--YDID preprocessor] case it is possible by
+          #[+ImportantEntity__Code--YDID @require] и #[+ImportantEntity__Code--YDID @import] #[+Term--YDID directives].
+
+      p.Article-Paragraph.
+        There are #[+Keyword--YDID no] rules how many #[+Term--YDID CSS files] must be provided per
+          #[+Term--YDID HTML page], thus the #[+Keyword--YDID styles] #[+Term--YDID entry point]
+          #[+Keyword--YDID not]&nbsp;necessary must include all styles exclusively for corresponding
+          #[+Term--YDID HTML document].
+        But the spitting of the #[+Term--YDID styles] to #[+Term__Contrast--YDID CSS files] is the
+          #[+Keyword--YDID important] #[+Term--YDID performance optimization] measure, herewith #[+Term--YDID caching] of
+          #[+Term--YDID CSS files] by the browsers should be respected.
+        Sometime, all #[+Term--YDID styles] (common and of each individual page) is being built to single
+          #[+Term--YDID CSS file], but if the #[+Term--YDID styles] volume is large, the user will come to check 1-2
+          pages will be loaded the plenty of excess styles, and the #[+Term--YDID caching] will&nbsp;not&nbsp;work
+          effectively.
+        The following approach is more optimized.
 
       ul.Article-UnorderedList
 
         li.
-          For the front-end (client side), normally it must be one entry point per HTML document.
-          The usage of multiple JavaScript files per HTML document without main one is skill existing methodology,
-          but the project building tools has been created to replace it with organized entry point.
+          #[+Keyword--YDID Common] for all pages styles should be built to separate #[+Term--YDID CSS file]
+            (#[+Keyword--YDID entry point]).
 
         li.
-          he Single Page Applications (SPA) has one and only entry point, but for the web-sites it could be one entry point per HTML page.
+          If the site or application has the admin panel, the common styles for all pages of admin panel should be
+            built to #[+Keyword--YDID separate] from previous one #[+Term--YDID CSS file].
 
         li.
-          The project building systems like Webpack which YDA using can automatically extreact the common part from
-            multiple entry points for the performance, but these extracted files are not entry points and called chunks.
+          If some #[+Term--YDID CSS фреймворк] being used, its styles also should be extracted to
+            #[+Keyword--YDID separate] #[+Term--YDID CSS file].
 
-        li For the server application single entry point is strongly recommended pattern.
+        li.
+          #[+Keyword--YDID Each] page should have own #[+Term--YDID CSS file] with styles #[+Keyword--YDID only] for
+            this page.
+
+        li.
+          Also, the typography, the styles of large components etc. could be extracted to separate files.
+
+      p.Article-Paragraph.
+        Lastly, #[+Keyphrase--YDID in each] page it is required to refer #[+Keyword--YDID only] to such
+          #[+Term--YDID CSS files] which required for this page.
+        Thus, the loading of unused in specific page styles will be minimized and #[+Term--YDID caching] will work
+          effectively (herewith, it is #[+Keyword--YDID required] to generate the file name depending of file content
+          which is possible with majority of project building systems).
+
+
+      //- ─── ECMAScript Logic ───────────────────────────────────────────────────────────────────────────────────────────
+      +Heading--YDF({
+        level: 3,
+        text: localizedSectioning.entryPointsAndChildrenFiles.$children.ECMA_ScriptLogic.$heading,
+        HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.ECMA_ScriptLogic.$anchor
+      }).Article-Heading3
+
+      p.Article-Paragraph.
+        In #[+Term--YDID ECMAScript logic] case, the #[+Term--YDID entry point] is
+          #[+Keyphrase--YDID depends on the runtime].
+
+      ul.Article-UnorderedList
+
+        li.
+          #[+Keyphrase--YDID In the #[+Keyword--YDID browser] #[+ImportantEntity--YDID JavaScript] case],
+            the #[+DefinableTerm--YDID entry point] is #[+Keyword--YDID usually] being called the
+            #[+Term--YDID JavaScript file], including the #[+Term--YDID logic] of #[+Keyword--YDID specific]
+            #[+Term--YDID HTML page].
+          However, such code management is just the #[+Keyword--YDID recommendation], while actually the situation with
+            #[+Term--YDID JavaScript files] is #[+Keyword--YDID similar] with #[+Term--YDID CSS files]:
+            the #[+Term--YDID logic] could be #[+Keyword--YDID arbitrary] #[+Keyword--YDID distributed] between the files,
+            and before there were the project building system, it been done such as to avoid the overflowing of the file
+            by the code.
+          But in modern times it is recorded to adhere to the principles similar to above ones for #[+Term--YDID CSS files],
+            furthermore modern #[+Term--YDID project building system] could #[+Keyword--YDID automatically] extract
+            the repeating code fragments to separate files, and also dynamically load the #[+Term--YDID JavaScript code]
+            on demand.
 
 
       h2.Article-Heading2 Assets

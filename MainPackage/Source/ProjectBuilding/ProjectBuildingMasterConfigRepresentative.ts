@@ -27,6 +27,9 @@ import PlainCopyingSettingsRepresentative from "@ProjectBuilding/PlainCopying/Pl
 import FilesWatchingSettingsRepresentative from "@ProjectBuilding/FilesWatching/FilesWatchingSettingsRepresentative";
 import BrowserLiveReloadingSettingsRepresentative from "@BrowserLiveReloading/BrowserLiveReloadingSettingsRepresentative";
 
+import OutputPackageJSON_GeneratingSettingsRepresentative from
+    "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettingsRepresentative";
+
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
 import {
   Logger,
@@ -42,20 +45,22 @@ export default class ProjectBuildingMasterConfigRepresentative {
   private static selfSoleInstance: ProjectBuildingMasterConfigRepresentative | null = null;
 
 
-  public readonly markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative | undefined;
-  public readonly stylesProcessingSettingsRepresentative: StylesProcessingSettingsRepresentative | undefined;
-  public readonly ECMA_ScriptLogicProcessingSettingsRepresentative:
-      ECMA_ScriptLogicProcessingSettingsRepresentative | undefined;
+  public readonly markupProcessingSettingsRepresentative?: MarkupProcessingSettingsRepresentative;
+  public readonly stylesProcessingSettingsRepresentative?: StylesProcessingSettingsRepresentative;
+  public readonly ECMA_ScriptLogicProcessingSettingsRepresentative?:
+      ECMA_ScriptLogicProcessingSettingsRepresentative;
 
-  public readonly imagesProcessingSettingsRepresentative: ImagesProcessingSettingsRepresentative | undefined;
-  public readonly fontsProcessingSettingsRepresentative: FontsProcessingSettingsRepresentative | undefined;
-  public readonly audiosProcessingSettingsRepresentative: AudiosProcessingSettingsRepresentative | undefined;
-  public readonly videosProcessingSettingsRepresentative: VideosProcessingSettingsRepresentative | undefined;
+  public readonly imagesProcessingSettingsRepresentative?: ImagesProcessingSettingsRepresentative;
+  public readonly fontsProcessingSettingsRepresentative?: FontsProcessingSettingsRepresentative;
+  public readonly audiosProcessingSettingsRepresentative?: AudiosProcessingSettingsRepresentative;
+  public readonly videosProcessingSettingsRepresentative?: VideosProcessingSettingsRepresentative;
 
-  public readonly plainCopyingSettingsRepresentative: PlainCopyingSettingsRepresentative | undefined;
+  public readonly plainCopyingSettingsRepresentative?: PlainCopyingSettingsRepresentative;
 
-  public readonly filesWatchingSettingsRepresentative: FilesWatchingSettingsRepresentative;
-  public readonly browserLiveReloadingSettingsRepresentative: BrowserLiveReloadingSettingsRepresentative | undefined;
+  public readonly filesWatchingSettingsRepresentative?: FilesWatchingSettingsRepresentative;
+  public readonly browserLiveReloadingSettingsRepresentative?: BrowserLiveReloadingSettingsRepresentative;
+
+  public readonly outputPackageJSON_GeneratingSettingsRepresentative?: OutputPackageJSON_GeneratingSettingsRepresentative;
 
 
   private readonly commonSettings: ProjectBuildingCommonSettings__Normalized;
@@ -143,6 +148,12 @@ export default class ProjectBuildingMasterConfigRepresentative {
     if (isNotUndefined(projectBuilderNormalizedConfig.browserLiveReloading)) {
       this.browserLiveReloadingSettingsRepresentative = new BrowserLiveReloadingSettingsRepresentative(
         projectBuilderNormalizedConfig.browserLiveReloading
+      );
+    }
+
+    if (isNotUndefined(projectBuilderNormalizedConfig.outputPackageJSON_Generating)) {
+      this.outputPackageJSON_GeneratingSettingsRepresentative = new OutputPackageJSON_GeneratingSettingsRepresentative(
+        projectBuilderNormalizedConfig.outputPackageJSON_Generating
       );
     }
 

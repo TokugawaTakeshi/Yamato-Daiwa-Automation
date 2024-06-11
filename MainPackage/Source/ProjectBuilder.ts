@@ -28,6 +28,7 @@ import PlainCopier from "@ProjectBuilding/PlainCopying/PlainCopier";
 import LocalDevelopmentServerOrchestrator from
     "@ECMA_ScriptProcessing/Subtasks/LocalDevelopmentServerOrchestration/LocalDevelopmentServerOrchestrator";
 import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
+import OutputPackageJSON_Generator from "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_Generator";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import Gulp from "gulp";
@@ -113,6 +114,7 @@ abstract class ProjectBuilder {
         MarkupProcessor.provideMarkupProcessingIfMust(masterConfigRepresentative),
 
         BrowserLiveReloader.provideBrowserLiveReloadingIfMust(masterConfigRepresentative),
+        OutputPackageJSON_Generator.generateIfMust(masterConfigRepresentative),
 
         Gulp.parallel([
           FilesMasterWatcher.watchIfMust(masterConfigRepresentative),
