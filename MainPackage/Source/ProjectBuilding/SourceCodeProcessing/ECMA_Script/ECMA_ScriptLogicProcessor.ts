@@ -312,7 +312,6 @@ class ECMA_ScriptLogicProcessor {
       }
 
 
-      if (!this.masterConfigRepresentative.mustProvideIncrementalBuilding && isNotUndefined(finalErrorMessageDynamicPart)) {
       if (
         !this.projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding &&
             isNotUndefined(finalErrorMessageDynamicPart)
