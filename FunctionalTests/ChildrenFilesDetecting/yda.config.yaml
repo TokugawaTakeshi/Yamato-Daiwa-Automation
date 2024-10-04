@@ -64,5 +64,5 @@ projectBuilding:
             major: 16
 
         buildingModeDependent:
-          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: 03-LocalDevelopmentBuild }
+          LOCAL_DEVELOPMENT: { outputTopDirectoryRelativePath: 02-LocalDevelopmentBuild }
           PRODUCTION: { outputTopDirectoryRelativePath: 03-ProductionBuild }

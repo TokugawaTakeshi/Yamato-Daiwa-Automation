@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "Local Development Building": "yda build --mode LOCAL_DEVELOPMENT",
+    "Local Development Building Without Earlier Cache": "rimraf .yda && yda build --mode LOCAL_DEVELOPMENT",
     "Production Building": "yda build --mode PRODUCTION"
   },
   "dependencies": {
@@ -10,6 +11,7 @@
   },
   "devDependencies": {
     "@yamato-daiwa/automation": "../../MainPackage",
-    "@yamato-daiwa/style_guides": "0.2.3"
+    "@yamato-daiwa/style_guides": "0.2.3",
+    "rimraf": "6.0.1"
   }
 }
