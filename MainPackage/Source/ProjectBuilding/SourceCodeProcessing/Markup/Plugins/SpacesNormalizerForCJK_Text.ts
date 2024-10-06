@@ -12,7 +12,7 @@ export default class SpacesNormalizerForCJK_Text {
 
   private static readonly extraSpaceSurroundedByCharactersDetectingPatterns: ReadonlyArray<RegExp> = [
     new RegExp(
-      `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES }) ` +
+      `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })\\r?\\n\\x20+` +
           `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })`,
       "gmu"
     )

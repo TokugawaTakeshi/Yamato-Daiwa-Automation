@@ -67,12 +67,18 @@ export default abstract class EntryPoint {
 
           Logger.throwErrorAndLog({
             errorInstance: new FileReadingFailedError({
-              customMessage: `Config file not found at: ${ rawConfigFileAbsolutePath }`
+              customMessage:
+                  "The configuration file for \"Yamato Daiwa Automation\" utility not found at path " +
+                  `"${ rawConfigFileAbsolutePath }". ` +
+                  "The \"Yamato Daiwa Automation\" utility is required the configuration file and will expect the " +
+                  `file "${ CONFIG_FILE_DEFAULT_NAME_WITH_EXTENSION }" at the same directory as CLI has been invoked. ` +
+                  "You can set custom configuration file name via CLI if you want."
             }),
             title: FileReadingFailedError.localization.defaultTitle,
             occurrenceLocation: "EntryPoint.interpretAndExecuteConsoleCommand()",
             innerError: error
           });
+
         }
 
         ProjectBuilder.buildProject({

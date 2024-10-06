@@ -125,9 +125,6 @@ abstract class ProjectBuilder {
 
     ]));
 
-    /* eslint-disable-next-line @typescript-eslint/no-floating-promises --
-    *  This issue is not false positive because gulp chain could collapse on some errors, but working solution has
-    *  not been found yet. https://stackoverflow.com/q/66169978/4818123 */
     Gulp.task(GULP_TASK_NAME)?.(
       (error?: Error | null): void => {
         if (isNeitherUndefinedNorNull(error)) {
