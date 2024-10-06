@@ -213,6 +213,15 @@ class ECMA_ScriptLogicProcessor {
             handlerID: "ON_ANY_EVENT_WITH_ECMA_SCRIPT_LOGIC_SOURCE_CODE_FILE--BY_ECMA_SCRIPT_LOGIC_PROCESSOR",
             handler: this.onSourceFilesWatcherEmittedAnyEvent.bind(this)
           });
+          // TODO
+          // addOnEntryPointFileAddedEventHandler({
+          //   handlerID: "ON_MARKUP_ENTRY_POINT_FILE_ADDED--BY_MARKUP_PROCESSOR",
+          //   handler: dataHoldingSelfInstance.onEntryPointFileAdded.bind(dataHoldingSelfInstance)
+          // }).
+          // addOnEntryPointFileDeletedEventHandler({
+          //   handlerID: "ON_MARKUP_ENTRY_POINT_FILE_DELETED--BY_MARKUP_PROCESSOR",
+          //   handler: MarkupProcessor.onEntryPointFileDeleted
+          // });
 
     }
 

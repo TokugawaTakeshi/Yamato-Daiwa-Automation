@@ -13,7 +13,7 @@ import LinterLikeTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpS
 import type VinylFile from "vinyl";
 
 /* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
-import ESLintLinterSpecialist from "@ThirdPartySolutionsSpecialists/ESLintLinterSpecialist";
+import ESLintSpecialist from "@ThirdPartySolutionsSpecialists/ESLintSpecialist";
 
 /* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import { ESLint } from "eslint";
@@ -214,14 +214,11 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
         ),
 
         /* [ ESLint theory ]
-         * As default, ESLint finds the configuration file at `process.cwd()` and detects the `.eslintignore` file there.
-         * However, because of the integration with Gulp, the files specified in `.eslintignore` must be additionally
-         *   excluded from `targetFilesGlobSelectors`. */
-        ...ESLintLinterSpecialist.getGlobSelectorsOfExcludedFiles({
-          consumingProjectRootDirectoryAbsolutePath:
-            projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-          mustSkipNodeModulesDirectory: true
-        })
+         * In there are files and/or directories ignored in ESLint configuration they also must be excluded from
+         *   the Gulp pipelines otherwise ESLint will emit the warning for ignored files. */
+        ...ESLintSpecialist.generateExcludingGlobSelectorsOfIgnoredFiles(
+          projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
+        )
 
       ],
 

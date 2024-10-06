@@ -117,7 +117,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
           routes: RoutingSettingsNormalizer.normalize({
             routingSettings__fromFile__rawValid: markupProcessingSettings__fromFile__rawValid.routing,
             projectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
-            absolutePathsOfSectioningToCache: new Set<string>()
+            absolutePathsOfSectioningToCache: new Set<string>() // TODO Replace mock
           })
         }
       } : null,

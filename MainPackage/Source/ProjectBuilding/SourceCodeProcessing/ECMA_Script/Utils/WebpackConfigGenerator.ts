@@ -109,6 +109,7 @@ export default abstract class WebpackConfigGenerator {
     const distributingSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup.Distributing | undefined =
         entryPointsGroupSettings.distributing;
 
+    // TODO Is entryPointsGroupSettings.directoriesAliasesAndCorrespondingAbsolutePathsMap related
     return {
 
       name: entryPointsGroupSettings.ID,

@@ -42,19 +42,50 @@ functionality:
               japanese: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.japanese.yaml
               russian: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.russian.yaml
 
-configuration:
+#configuration:
+#
+#  $heading: `configuration.$heading`
+#
+#  $children:
+#
+#    outputPackageJSON_Generating:
+#
+#      $heading: `configuration.outputPackageJSON_Generating.$heading`
+#      $URI: `@All/Configuration/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingConfiguration.${ fileNameLocalizationExtensions }`
 
-  $heading: `configuration.$heading`
+
+configurationFile:
+
+  $heading: Configuration File
 
   $children:
 
-    outputPackageJSON_Generating:
+    commonSettings:
 
-      $heading: `configuration.outputPackageJSON_Generating.$heading`
-      $URI: `@All/Configuration/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingConfiguration.${ localization.fileNameLocalizationExtensions }`
-  $sectioning:
-    $specificationFileRelativePath: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.yaml
-    $localizations:
-      english: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.english.yaml
-      japanese: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.japanese.yaml
-      russian: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.russian.yaml
+      $heading: Common Settings
+      $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/CommonSettings/CommonSettings.english.md
+
+    markupProcessing:
+
+      $heading: Markup Processing
+      $URI: `@All/ConfigurationFile/MarkupProcessing/MarkupProcessingConfiguration.${ fileNameLocalizationExtensions }`
+
+    stylesProcessing:
+
+      $heading: Styles Processing
+      $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/Styles/StylesProcessing.md
+
+    ECMAScriptLogicProcessing:
+
+      $heading: ECMAScript Logic Processing
+      $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/ECMA_ScriptProcessing/ECMA_ScriptProcessing.md
+
+    plainCopying:
+
+      $heading: Plain Copying
+      $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/PlainCopying/PlainCopying.md
+
+CLI:
+
+  $heading: CLI
+  $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation?tab=readme-ov-file#console
