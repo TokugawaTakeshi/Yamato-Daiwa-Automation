@@ -65,7 +65,7 @@ block append SpecificContent
       #[+DefinableTerm--YDID YDA]（ウァイ・ディ・エイ）は、#[+ImportantEntity--YDID Yamato Daiwa Automation]と言う此の説明書サイトの対象
         と成っているツールの#[+Keyword--YDID 省略名]。
       此処で「Yamato Daiwa」は
-        #[+Link--YDF({ endorsedExternalURI: sharedExternalLinks.YamatoDaiwa.homePage.top }).Article-Link 株式会社やまとダイワ]
+        #[+Link--YDF({ endorsedExternalURI: sharedExternalLinks.YamatoDaiwa.homePage.top }) 株式会社やまとダイワ]
         に参照し、カスタムウェブ開発、そしてエンジニア育成及びフレームワークや#[+DefinableTerm--YDID YDA]を含むツールの開発に専門している。
       日本語の資料では#[+ImportantEntity--YDID 「やまとダイワ自動化」]と日本語名でも表記する。
 
@@ -239,6 +239,64 @@ block append SpecificContent
               技術知識や#[+SecondaryEntity--YDID npm]や#[+SecondaryEntity--YDID Git]の様にエンジニア向けソフトウェアが無くても
             | 、依頼側や経営側に依り出力ファイルがブラウザーに開かれた際、画像や其の他の復号媒体ファイルを含めて、正常な表示の確保。
             | 簡単に言えば、「ダウンロードされた#[+Term--YDID HTMLファイル]をブラウザーで開くと、全部正常に表示される」と言う原理が守られなければいけない。
+
+          dt ローカル開発 (Local development)
+          dd.
+            ウェブサイトやGUIアプリケーションの場合、直前の段階と違って、此の段階ではクライアント側の#[+Keyword--YDID 本格的な]
+              #[+Term--YDID JavaScript動態]、そしてサーバー側の実装が行われている。
+            此の段階では#[+Term--YDID プロジェクト構成ツール]から、上記の#[+Term--YDID 増分構成モード]の共通要求以外、
+              出力ファイルの更新に応じてローカルサーバーの#[+Keyword--YDID 自動]再起動の様に追加機能が求められている。
+
+      dt 納品系 (Production-like)
+      dd
+
+        p.Article-Paragraph.
+          ウェブサイト又はアプリケーションを公開する前に、テストサーバ―に実行され、以前の段階で検出されなかったバグを検出する為にテスターの為に有限なアクセス
+            が設定される事は普通。
+          此の段階群だと、構成されたサイト・アプリケーションはローカルコンピューターでは#[+Keyword--YDID なく]、#[+Keyword__Contrast--YDID 遠隔]
+            サーバーでの実行専用なので、ファイルの更新に応じてプロジェクトの自動再構成やブラウザーページの自動リロードの様な機能は#[+Keyword--YDID 無い]。
+          当構成は公開専用版（「納品」、だから当モードの群は「納品系」と呼ぶ）に近くなければいけないが、具体的なモードに依ってログのレーベルやデータセットの様な
+            特性に違いがある。
+
+        dl.Article-DescriptionList
+
+          dt テスティング (Testing)
+          dd.
+            #[+Term--YDID ローカル開発モード]と違って、此のモードで構成されたサイト・アプリケーションにテスターや営業者や其の他の関係者がアクセスがある。
+            名前から自明的ではあるが、該当している段階の主な目的はテスティングを行う事に依り不具合（バグ）を発見する事。
+
+          dt ステージング（Staging）
+          dd.
+            大規模のプロジェクトに於いて、テスティング版と他に「ステージング」と呼ぶ似た様な版もよくある。
+            違いが多くなく、主にテストしやすいデータではなく、実データに近いデータの利用。
+            其の御蔭で、依頼側は公開されたサイト・アプリケーションを使っている印象がある。
+            だからこそ、依頼側に提示したい場合、テスティング版ではなく、ステージングを提示すれば良い。
+
+          dt 納品 (Production)
+          dd.
+            此のモードで構成されたウェブサイト・ウェブアプリケーションは公開・対象利用専用。
+            以前の構成モードに比べて、セキュリティーの#[+Keyword--YDID 最厳]設定が必要に成り、データを何気無く変更・削除すると、様々な規模の損害
+              が発生するので、注意して取り扱わなければいけない。
+            尚、此の段階では開発者がブラウザーコンソールへの出力を可能な限り少なくする傾向がある。
+
+
+    //- ━━━ 初期位置・子ファイル (Entry points / children files) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$anchor
+    }).Article-Heading2
+
+    p.Article-Paragraph.
+      #[+DefinableTerm--YDID 初期位置]は英語・片仮名語表記の「エントリポイント」に該当するものであり、#[+Term--YDID デザインパターン]の名前。
+      #[+Keyword--YDID 一般的に]プログラムが実行が始まる#[+Term--YDID ファイル]、#[+Term--YDID 関数]又は#[+Term--YDID クラス]の
+        #[+Term__Contrast--YDID メソッド]を意味し、
+      詳細な意味は技術に依って異なる。
+
+    p.Article-Paragraph.
+      殆どの現代プログラミング言語及びプリプロセッサはソースファイルを何れでもの成分に別ける機能がある。
+      此処で#[+Term--YDID 親ファイル]及び#[+Term--YDID 子ファイル]を判別する必要が有る。
+      #[+Term--YDID 子ファイル]も成分に別ける事が出来るので、ツリー系の階層構造と成り、一番上に在るのは#[+Term--YDID 初期位置]である。
     //- TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     //-
       h2.Article-Heading2 ファイル・コード種類
@@ -247,9 +305,9 @@ block append SpecificContent
 
       p.Article-Paragraph.
         英語・片仮名語表記の
-          #[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/6sYb" }).Article-Link マークアップ]に該当する。
+          #[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/6sYb" }) マークアップ]に該当する。
         #[+ImportantEntity--YDID やまとダイワ自動化]内では、主に
-          #[+Link--YDF({ unendorsedExternalURI: sharedExternalLinks.pug.homePage.top }).Article-Link Pug]
+          #[+Link--YDF({ unendorsedExternalURI: sharedExternalLinks.pug.homePage.top }) Pug]
           で書かれたソースコードか、#[+Term--YDID 出力HTMLコード]を指す。
 
       +AdmonitionBlock--YDF({
@@ -268,7 +326,7 @@ block append SpecificContent
       h3.Article-Heading3 構造設計記法
 
       p.Article-Paragraph.
-        英語・片仮名語表記の#[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/7GSz" }).Article-Link スタイル]。
+        英語・片仮名語表記の#[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/7GSz" }) スタイル]。
 
       +AdmonitionBlock--YDF({
         title: "日本語考案者の解説",
@@ -282,7 +340,7 @@ block append SpecificContent
       h3.Article-Heading3 挙動制御記法
 
       p.Article-Paragraph.
-        英語・片仮名語表記の#[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/7GoA" }).Article-Link （命令）プログラミング言語]。
+        英語・片仮名語表記の#[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/7GoA" }) （命令）プログラミング言語]。
 
       +AdmonitionBlock--YDF({
         title: "日本語考案者の解説",
@@ -348,11 +406,6 @@ block append SpecificContent
             th 納品
             td __IS_PRODUCTION_BUILDING_MODE__
 
-      h2.Article-Heading2 開始位置・子ファイル
-
-      p.Article-Paragraph.
-        英語・片仮名語表記の「エントリポイント」に該当するものであり、デザインパターンの名前。
-        詳細な意味はファイル類や技術に依って異なる。
 
       h3.Article-Heading3 構造設計記法に於いて
 

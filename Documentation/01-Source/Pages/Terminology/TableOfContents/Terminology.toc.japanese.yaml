@@ -12,7 +12,7 @@ projectBuildingMode: { $heading: "プロジェクト構成モード（Project bu
 
 entryPointsAndChildrenFiles:
 
-  $heading: "Точки входа и дочерние файлы (Entry points / children files)"
+  $heading: "初期位置・子ファイル (Entry points / children files)"
 
   byFileType:
 

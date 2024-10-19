@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "yda build --mode LOCAL_DEVELOPMENT"
+    "build": "yda help"
   },
   "devDependencies": {
     "@yamato-daiwa/automation": "../../MainPackage"

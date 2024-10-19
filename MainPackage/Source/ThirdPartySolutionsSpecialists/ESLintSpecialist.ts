@@ -84,10 +84,9 @@ export default abstract class ESLintSpecialist {
     }
 
 
-    const filesIgnoringPatternsRawExpression: string | null = getMatchingWithFirstRegularExpressionCapturingGroup({
-      targetString: configurationFileContent,
-      regularExpression: /ignores:\s*(?<array>\[(?:.|\s)+?\])/gu
-    });
+    const filesIgnoringPatternsRawExpression: string | null = getMatchingWithFirstRegularExpressionCapturingGroup(
+      configurationFileContent, /ignores:\s*(?<array>\[(?:.|\s)+?\])/gu
+    );
 
     if (isNull(filesIgnoringPatternsRawExpression)) {
       return [];

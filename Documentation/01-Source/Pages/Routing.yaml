@@ -42,6 +42,8 @@ functionality:
               japanese: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.japanese.yaml
               russian: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.russian.yaml
 
+# Functionality/MarkupProcessing/ResourcesReferencesResolving/ResourcesReferencesResolving.${ fileNameLocalizationExtensions }`
+
 #configuration:
 #
 #  $heading: `configuration.$heading`

@@ -1,17 +1,20 @@
-/* --- Defaults ----------------------------------------------------------------------------------------------------- */
-import CONFIG_FILE_DEFAULT_NAME_WITH_EXTENSION from
-    "@ProjectBuilding/Common/Defaults/CONFIG_FILE_DEFAULT_NAME_WITH_EXTENSION";
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import BUG_TRACKER_URI from "@ProjectBuilding/Common/Restrictions/BUG_TRACKER_URI";
 
-/* --- Console line interface --------------------------------------------------------------------------------------- */
+/* ─── Defaults ───────────────────────────────────────────────────────────────────────────────────────────────────── */
+import CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION from
+      "@ProjectBuilding/Common/Defaults/CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION";
+
+/* ─── Console List Interface ─────────────────────────────────────────────────────────────────────────────────────── */
 import ApplicationConsoleLineInterface from "./ApplicationConsoleLineInterface";
 
-/* --- Scenarios ---------------------------------------------------------------------------------------------------- */
+/* ─── Scenarios ──────────────────────────────────────────────────────────────────────────────────────────────────── */
 import ProjectBuilder from "./ProjectBuilder";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
   Logger,
   FileReadingFailedError,
@@ -20,6 +23,7 @@ import {
 import {
   ConsoleApplicationLogger,
   ConsoleCommandsParser,
+  FileNotFoundError,
   ObjectDataFilesProcessor
 } from "@yamato-daiwa/es-extensions-nodejs";
 import Path from "path";
@@ -28,29 +32,34 @@ import Path from "path";
 export default abstract class EntryPoint {
 
   static {
+
     Logger.setImplementation(ConsoleApplicationLogger);
-    PoliteErrorsMessagesBuilder.setDefaultBugTrackerURI("https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/issues");
+
+    PoliteErrorsMessagesBuilder.setDefaultBugTrackerURI(BUG_TRACKER_URI);
+
+    EntryPoint.interpretAndExecuteConsoleCommand();
+
   }
 
 
-  public static interpretAndExecuteConsoleCommand(rawConsoleCommand: Array<string>): void {
+  public static interpretAndExecuteConsoleCommand(): void {
 
-    /* [ Theory ] The global constant "__IS_DEVELOPMENT_BUILDING_MODE__" is not available in above static block. */
+    /* [ Theory ] The global constant `__IS_DEVELOPMENT_BUILDING_MODE__` is not available in above static block. */
     PoliteErrorsMessagesBuilder.setTechnicalDetailsOnlyModeIf(__IS_DEVELOPMENT_BUILDING_MODE__);
 
     const parsedConsoleCommand: ConsoleCommandsParser.
         ParsedCommand<ApplicationConsoleLineInterface.SupportedCommandsAndParametersCombinations> =
-            ConsoleCommandsParser.parse(ApplicationConsoleLineInterface.specification, rawConsoleCommand);
+            ConsoleCommandsParser.parse(ApplicationConsoleLineInterface.specification);
 
     const consumingProjectRootDirectoryAbsolutePath: string = process.cwd();
     DotYDA_DirectoryManager.unrollDotYDA_Directory(consumingProjectRootDirectoryAbsolutePath);
 
     switch (parsedConsoleCommand.phrase) {
 
-      case ApplicationConsoleLineInterface.CommandPhrases.buildProject: {
+      case ApplicationConsoleLineInterface.CommandPhrases.projectBuilding: {
 
         const rawConfigFileAbsolutePath: string = Path.resolve(
-          consumingProjectRootDirectoryAbsolutePath, CONFIG_FILE_DEFAULT_NAME_WITH_EXTENSION
+          consumingProjectRootDirectoryAbsolutePath, CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION
         );
 
         /* [ Approach ] The validation is scenario-dependent thus will be executed later. */
@@ -65,13 +74,30 @@ export default abstract class EntryPoint {
 
         } catch (error: unknown) {
 
+          if (error instanceof FileNotFoundError) {
+            Logger.throwErrorAndLog({
+              errorInstance: new FileNotFoundError({
+                customMessage:
+                    "The configuration file for \"Yamato Daiwa Automation\" utility not found at path " +
+                    `"${ rawConfigFileAbsolutePath }". ` +
+                    "The \"Yamato Daiwa Automation\" utility is required the configuration file and will expect the " +
+                    `file "${ CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION }" at the same directory as CLI has been invoked. ` +
+                    "You can set custom configuration file name via CLI if you want."
+              }),
+              title: FileNotFoundError.localization.defaultTitle,
+              occurrenceLocation: "EntryPoint.interpretAndExecuteConsoleCommand()",
+              innerError: error
+            });
+          }
+
+
           Logger.throwErrorAndLog({
             errorInstance: new FileReadingFailedError({
               customMessage:
                   "The configuration file for \"Yamato Daiwa Automation\" utility not found at path " +
-                  `"${ rawConfigFileAbsolutePath }". ` +
+                    `"${ rawConfigFileAbsolutePath }". ` +
                   "The \"Yamato Daiwa Automation\" utility is required the configuration file and will expect the " +
-                  `file "${ CONFIG_FILE_DEFAULT_NAME_WITH_EXTENSION }" at the same directory as CLI has been invoked. ` +
+                  `file "${ CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION }" at the same directory as CLI has been invoked. ` +
                   "You can set custom configuration file name via CLI if you want."
             }),
             title: FileReadingFailedError.localization.defaultTitle,
@@ -93,11 +119,11 @@ export default abstract class EntryPoint {
         break;
       }
 
-      case ApplicationConsoleLineInterface.CommandPhrases.deployProject: {
+      case ApplicationConsoleLineInterface.CommandPhrases.referenceGenerating: {
 
-        Logger.logWarning({
-          title: "Not implemented yet",
-          description: "This functionality has not been implemented yet."
+        Logger.logInfo({
+          title: "Yamato Daiwa Automation",
+          description: ConsoleCommandsParser.generateFullHelpReference(ApplicationConsoleLineInterface.specification)
         });
 
       }

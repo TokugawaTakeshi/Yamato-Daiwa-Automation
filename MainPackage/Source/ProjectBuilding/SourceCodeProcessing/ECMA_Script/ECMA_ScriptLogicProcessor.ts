@@ -38,10 +38,9 @@ import { ImprovedPath, ImprovedGlob } from "@yamato-daiwa/es-extensions-nodejs";
 
 class ECMA_ScriptLogicProcessor {
 
+  /* ━━━ Private Static Fields ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   private static readonly ENTRY_POINTS_AND_PARTIAL_FILES_MAPPING_CACHE_FILE_NAME_WITH_EXTENSION: string =
       "ECMA_ScriptEntryPointsAndAffiliatedFilesMappingCache.json";
-
-  protected readonly TASK_NAME_FOR_LOGGING: string = "ECMAScript logic processing";
 
   private readonly projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
   private readonly ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
@@ -57,6 +56,7 @@ class ECMA_ScriptLogicProcessor {
   private subsequentFilesStateChangeTimeout: NodeJS.Timeout | null = null;
 
 
+  /* ━━━ Public Static Methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   public static provideLogicProcessingIfMust(
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): (callback: (error?: Error) => void) => void {
@@ -84,24 +84,27 @@ class ECMA_ScriptLogicProcessor {
       } catch (error: unknown) {
 
         /* [ Theory ] Once reached here, the Gulp tasks chain will collapse whatever will callback called to no. */
-        Logger.logError({
-          errorType: UnexpectedEventError.NAME,
-          title: UnexpectedEventError.localization.defaultTitle,
-          description:
-              "The error emitted by Webpack has been caught while no error catching required according the official" +
-                "documentation: https://webpack.js.org/api/node/",
-          occurrenceLocation: "ECMA_ScriptLogicProcessor.provideLogicProcessing(projectBuildingMasterConfigRepresentative)",
-          caughtError: error
-        });
+        gulpCallback(
+          new UnexpectedEventError(
+            Logger.formatErrorLog({
+              title: UnexpectedEventError.localization.defaultTitle,
+              errorType: UnexpectedEventError.NAME,
+              description:
+                  "The error emitted by Webpack has been caught while no error catching required according the official" +
+                  "documentation: https://webpack.js.org/api/node/",
+              occurrenceLocation: "ECMA_ScriptLogicProcessor.provideLogicProcessing(projectBuildingMasterConfigRepresentative)",
+              caughtError: error
+            })
+          )
+        );
 
       }
-
-      gulpCallback();
 
     };
   }
 
 
+  /* ━━━ Constructor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   private constructor(
     ecmaScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative,
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
@@ -212,68 +215,19 @@ class ECMA_ScriptLogicProcessor {
           addOnAnyEventRelatedWithActualFilesHandler({
             handlerID: "ON_ANY_EVENT_WITH_ECMA_SCRIPT_LOGIC_SOURCE_CODE_FILE--BY_ECMA_SCRIPT_LOGIC_PROCESSOR",
             handler: this.onSourceFilesWatcherEmittedAnyEvent.bind(this)
+          }).
+          addOnEntryPointFileAddedEventHandler({
+            handlerID: "ON_MARKUP_ENTRY_POINT_FILE_ADDED--BY_MARKUP_PROCESSOR",
+            handler: ECMA_ScriptLogicProcessor.onEntryPointFileAdded
           });
-          // TODO
-          // addOnEntryPointFileAddedEventHandler({
-          //   handlerID: "ON_MARKUP_ENTRY_POINT_FILE_ADDED--BY_MARKUP_PROCESSOR",
-          //   handler: dataHoldingSelfInstance.onEntryPointFileAdded.bind(dataHoldingSelfInstance)
-          // }).
-          // addOnEntryPointFileDeletedEventHandler({
-          //   handlerID: "ON_MARKUP_ENTRY_POINT_FILE_DELETED--BY_MARKUP_PROCESSOR",
-          //   handler: MarkupProcessor.onEntryPointFileDeleted
-          // });
 
     }
 
   }
 
 
-  /* ━━━ Rebuilding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  private onSourceFilesWatcherEmittedAnyEvent(targetFileAbsolutePath: string): void {
-
-    this.absolutePathOfFilesWaitingForReProcessing.add(targetFileAbsolutePath);
-
-    if (isNotNull(this.subsequentFilesStateChangeTimeout)) {
-      clearTimeout(this.subsequentFilesStateChangeTimeout);
-    }
-
-
-    this.subsequentFilesStateChangeTimeout = setTimeout(
-      (): void => {
-
-        const absolutePathOfEntryPointsWhichMustBeReprocessed__forwardSlashSeparators: ReadonlyArray<string> =
-            this.sourceCodeSelectiveReprocessingHelper?.getAbsolutePathsOfEntryPointsWhichMustBeProcessed(
-              this.absolutePathOfFilesWaitingForReProcessing
-            ) ??
-            [];
-
-        const actualConfigurationsNames: ReadonlyArray<string> = Array.from(
-          filterMap(
-            this.entryPointsSourceFilesAbsolutePathsAndWebpackConfigurationNamesMap,
-            (targetEntryPointAbsolutePath__forwardSlashSeparators: string): boolean =>
-              absolutePathOfEntryPointsWhichMustBeReprocessed__forwardSlashSeparators.
-                  includes(targetEntryPointAbsolutePath__forwardSlashSeparators)
-          ).values()
-        );
-
-        if (actualConfigurationsNames.length === 1) {
-          getArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne(
-            this.webpackMultiCompiler.compilers,
-            (webpackCompiler: Webpack.Compiler): boolean => webpackCompiler.name === actualConfigurationsNames[0],
-            { mustThrowErrorIfElementNotFoundOrMatchesAreMultiple: true }
-          ).run(this.generateWebpackCallback());
-        } else if (actualConfigurationsNames.length > 1) {
-          this.webpackMultiCompiler.run(this.generateWebpackCallback());
-        }
-
-        this.absolutePathOfFilesWaitingForReProcessing.clear();
-
-      },
-      secondsToMilliseconds(1)
-    );
-
-  }
-
+  /* ━━━ Private Methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ─── Webpack Callback ─────────────────────────────────────────────────────────────────────────────────────────── */
   private generateWebpackCallback(
     gulpCallback?: (error?: Error) => void
   ): (hardError?: Error | null, statistics?: Webpack.Stats | Webpack.MultiStats) => void {
@@ -352,9 +306,70 @@ class ECMA_ScriptLogicProcessor {
     };
   }
 
+
+  /* ─── Events Handling ──────────────────────────────────────────────────────────────────────────────────────────── */
+  private onSourceFilesWatcherEmittedAnyEvent(targetFileAbsolutePath: string): void {
+
+    this.absolutePathOfFilesWaitingForReProcessing.add(targetFileAbsolutePath);
+
+    if (isNotNull(this.subsequentFilesStateChangeTimeout)) {
+      clearTimeout(this.subsequentFilesStateChangeTimeout);
+    }
+
+
+    this.subsequentFilesStateChangeTimeout = setTimeout(
+      (): void => {
+
+        const absolutePathOfEntryPointsWhichMustBeReprocessed__forwardSlashSeparators: ReadonlyArray<string> =
+            this.sourceCodeSelectiveReprocessingHelper?.getAbsolutePathsOfEntryPointsWhichMustBeProcessed(
+              this.absolutePathOfFilesWaitingForReProcessing
+            ) ??
+            [];
+
+        const actualConfigurationsNames: ReadonlyArray<string> = Array.from(
+          filterMap(
+            this.entryPointsSourceFilesAbsolutePathsAndWebpackConfigurationNamesMap,
+            (targetEntryPointAbsolutePath__forwardSlashSeparators: string): boolean =>
+              absolutePathOfEntryPointsWhichMustBeReprocessed__forwardSlashSeparators.
+                  includes(targetEntryPointAbsolutePath__forwardSlashSeparators)
+          ).values()
+        );
+
+        if (actualConfigurationsNames.length === 1) {
+          getArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne(
+            this.webpackMultiCompiler.compilers,
+            (webpackCompiler: Webpack.Compiler): boolean => webpackCompiler.name === actualConfigurationsNames[0],
+            { mustThrowErrorIfElementNotFoundOrMatchesAreMultiple: true }
+          ).run(this.generateWebpackCallback());
+        } else if (actualConfigurationsNames.length > 1) {
+          this.webpackMultiCompiler.run(this.generateWebpackCallback());
+        }
+
+        this.absolutePathOfFilesWaitingForReProcessing.clear();
+
+      },
+      secondsToMilliseconds(1)
+    );
+
+  }
+
+  private static onEntryPointFileAdded(targetEntryPointSourceFileAbsolutePath: string): void {
+    Logger.logWarning({
+      title: "Restarting is Required",
+      description: [
+        "New ECMAScript logic entry point has been added:",
+        targetEntryPointSourceFileAbsolutePath,
+        "We are sorry, but current YDA version does not support the building of ECMAScript logic entry points added " +
+          "after the starting of YDA. Please restart the YDA."
+      ].join("\n")
+    });
+  }
+
+
+  /* ─── Other ────────────────────────────────────────────────────────────────────────────────────────────────────── */
   /* [ Theory ] Although it is a rare case, same directory alias (e.g. "@components") could refer to different
   *    directory depending on entry points group. Because the `SourceCodeSelectiveReprocessingHelper` does not
-  *    respect the specific entry points group, all aliases definition must be merged herewith wihtout overwriting. */
+  *    respect the specific entry points group, all aliases definition must be merged herewith without overwriting. */
   private static generateUnifiedDirectoriesAliasesAndTheirAbsolutePatsMapForSourceCodeSelectiveReprocessingHelper(
     ecmaScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative
   ): Map<string, Set<string>> {

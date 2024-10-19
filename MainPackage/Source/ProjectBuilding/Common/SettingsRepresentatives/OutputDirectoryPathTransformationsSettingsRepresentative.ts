@@ -6,7 +6,7 @@ import type OutputDirectoryPathTransformationsSettings__Normalized from
 import {
   removeSpecificSegmentsFromURI_Path,
   explodeURI_PathToSegments,
-  getIndexesOfArrayElementsWhichSatisfiesThePredicate,
+  getIndexesOfSatisfiesThePredicateArrayElements,
   removeArrayElementsByIndexes,
   isNumber
 } from "@yamato-daiwa/es-extensions";
@@ -39,7 +39,7 @@ export default abstract class OutputDirectoryPathTransformationsSettingsRepresen
             segmentsWhichLastDuplicatesMustBeRemoved
       ) {
 
-        const indexesOfDuplicatesOfTargetPathSegment: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
+        const indexesOfDuplicatesOfTargetPathSegment: Array<number> = getIndexesOfSatisfiesThePredicateArrayElements(
             outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile,
             (outputDirectoryAbsolutePathSegment: string): boolean =>
                 outputDirectoryAbsolutePathSegment === pathSegmentWhichLastDuplicateMustBeRemoved
