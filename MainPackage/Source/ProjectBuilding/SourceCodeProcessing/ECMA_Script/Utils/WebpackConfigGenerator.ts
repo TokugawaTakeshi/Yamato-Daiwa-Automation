@@ -115,7 +115,7 @@ export default abstract class WebpackConfigGenerator {
       name: entryPointsGroupSettings.ID,
 
       /* [ Webpack theory ] In this case, path separators must be operating system dependent, otherwise following error
-       *    will be thrown: "configuration[0].context: The provided value "D:/OSPanel/../01_Open" is not an absolute path!" */
+       *    will be thrown: `configuration[0].context: The provided value "D:/OSPanel/../01_Open" is not an absolute path!` */
       context: Path.normalize(sourceFilesTopDirectoryAbsolutePath),
 
       /* [ Reference ] https://webpack.js.org/configuration/target/ */

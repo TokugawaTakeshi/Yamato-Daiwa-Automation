@@ -502,8 +502,7 @@ namespace ECMA_ScriptSourceCodeLinter {
 export default ECMA_ScriptSourceCodeLinter;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars --
- * It is the only way to extract the child namespace (no need to expose whole ECMA_ScriptSourceCodeLinter for the localization
+/* It is the only way to extract the child namespace (no need to expose whole ECMA_ScriptSourceCodeLinter for the localization
  *  packages).
  * https://stackoverflow.com/a/73400523/4818123 */
 export import ECMA_ScriptSourceCodeLinterLocalization = ECMA_ScriptSourceCodeLinter.Localization;

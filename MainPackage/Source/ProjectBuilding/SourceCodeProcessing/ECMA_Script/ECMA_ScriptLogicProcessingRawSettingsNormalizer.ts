@@ -67,7 +67,6 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
     > = dataHoldingSelfInstance.createNormalizedEntryPointsGroupsSettings(
       ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.entryPointsGroups,
       dataHoldingSelfInstance.
-          /* eslint-disable-next-line max-len -- Unable to split this line to multiple. */
           completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilECMA_ScriptLogicEntryPointsGroupNormalizedSettings.
           bind(dataHoldingSelfInstance)
     );
