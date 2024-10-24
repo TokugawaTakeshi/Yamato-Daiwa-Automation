@@ -1,5 +1,7 @@
-/02-StaticPreviewBuild/
+02-StaticPreviewBuild/
 
-/node_modules/
+node_modules/
 
 **/.DS_Store
+
+.yda/

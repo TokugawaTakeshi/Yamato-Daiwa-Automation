@@ -39,13 +39,9 @@ const accessibilityInspectorLocalization__english: AccessibilityInspector.Locali
       ({
         title: "HTML code accessibility cheking of single file has finished with no issues found",
         description: `The HTML code in file "${ targetFileRelativePath }" has no the accessibility issues.\n` +
-            `${
-              /* eslint-disable-next-line @typescript-eslint/no-useless-template-literals -- 
-              * テンプレートリテラルを無くすと、「+」の前の部分が無くなっていまう。 */
-              isUndefined(secondsElapsed) ?
-                  "(Cached result, no changes in output HTML code since last building)" : 
-                  `${ secondsElapsed } seconds taken.`
-            }`
+            isUndefined(secondsElapsed) ?
+                "(Cached result, no changes in output HTML code since last building)" :
+                `${ secondsElapsed } seconds taken.`
 
       }),
 

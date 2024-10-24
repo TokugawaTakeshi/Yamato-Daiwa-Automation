@@ -1,8 +1,6 @@
 include _HTML_PageMetadata.pug
-include _generateLocalizedRouting.pug
 include _generateSharedExternalLinks.pug
 
-include Localizations/English/RoutingLocalization.english.pug
 include Localizations/English/SharedExternalLinksLocalization.english.pug
 
 include ThirdPartyEmbeddableScripts/GoogleAnalyticsScript.pug
@@ -10,15 +8,9 @@ include ThirdPartyEmbeddableScripts/GoogleAnalyticsScript.pug
 
 -
 
-  const localizedRouting = generateLocalizedRouting(routingEnglishLocalization);
-  let generatePageTableOfContents;
+  RegularWebPageTemplate__YDF.metadata.locale = "en";
 
-
-include ../../Pages/Terminology/TableOfContents/Terminology.toc.english.pug
-
-
--
-
+  const localizedRouting = routing.english;
   RoutingEmulator.initialize(localizedRouting);
 
   const sharedExternalLinks = generateSharedExternalLinks(sharedExternalLinksEnglishLocalization);

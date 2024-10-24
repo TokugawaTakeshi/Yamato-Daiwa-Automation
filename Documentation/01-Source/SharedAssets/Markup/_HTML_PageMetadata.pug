@@ -6,4 +6,12 @@
     return `${ dynamicPart }${ HTML_PAGES_TITLE_POSTFIX }`;
   }
 
-  const HTML_PAGE_AUTHOR = "Copyright (c) 2023-present, Yamato Daiwa Co., Ltd.";
+  RegularWebPageTemplate__YDF.configure({
+    metadata: {
+      author: "Copyright (c) 2023-present, Yamato Daiwa Co., Ltd."
+    },
+    faviconURI: "@MustBeInPublicRoot/favicon",
+    scriptsURIs: {
+      atEndOfBody: [ "$CommonLogic" ]
+    }
+  });

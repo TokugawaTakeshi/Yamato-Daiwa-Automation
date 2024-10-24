@@ -15,6 +15,7 @@ type MarkupProcessingSettings__Normalized = Readonly<{
   linting: MarkupProcessingSettings__Normalized.Linting;
   importingFromTypeScript?: MarkupProcessingSettings__Normalized.ImportingFromTypeScript;
   staticPreview: MarkupProcessingSettings__Normalized.StaticPreview;
+  routing?: MarkupProcessingSettings__Normalized.Routing;
   relevantEntryPointsGroups: ReadonlyMap<
     SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
     MarkupProcessingSettings__Normalized.EntryPointsGroup
@@ -65,6 +66,12 @@ namespace MarkupProcessingSettings__Normalized {
     }
 
   }
+
+
+  export type Routing = Readonly<{
+    variable: string;
+    routes: ArbitraryObject;
+  }>;
 
 
   export type EntryPointsGroup =

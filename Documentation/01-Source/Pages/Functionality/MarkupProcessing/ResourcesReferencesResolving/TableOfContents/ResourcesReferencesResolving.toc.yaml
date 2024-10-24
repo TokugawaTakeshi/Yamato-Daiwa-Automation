@@ -1,0 +1,11 @@
+project:
+
+  $heading: `project.$heading`
+  $anchor: PROJECT--SECTION
+
+  $children:
+
+    building:
+
+      $heading: `project.building.$heading`
+      $anchor: PROJECT-BUILDING--SECTION

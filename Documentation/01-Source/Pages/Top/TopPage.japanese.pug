@@ -11,30 +11,25 @@ block append Metadata
 
   -
 
-    HTML_PAGE_LANGUAGE = "ja";
-    HTML_PAGE_TITLE = buildHTML_PageTitle("トップ");
-    HTML_PageMetaData = {
-      description:
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle("トップ"),
+        description:
           "「やまとダイワ自動化」（技術名：「Yamato Daiwa Auitomation」、略：「YDA」）は高水準プロジェクト（クライアントアプリケーションやサーバアプリケーションや" +
             "ブラウザーJavaScript・Node.js専用ラブライブ）用構成手段、Node.jsのユーティリティ。" +
           "高品質開発専用向いていて、体現は厳しい規定設定や納品系の構成モードに於いて特定の違反を許さず構成を拒否する事。" +
           "「やまとダイワ自動化」はGulpやWebpackの様に命令型設定の低水準の手段と、「Laravel Elixir」の様に少ししかカスタマイズ出来ない超高水準の手段" +
             "の間の妥協なソリューションだ。" +
-          "「やまとダイワ自動化」は宣言的に（YAML型）でかかれ、特定のディレクトリ構成は強いられない。",
-      author: HTML_PAGE_AUTHOR
-    };
-
-    FAVICON_URI = "@MustBeInPublicRoot/favicon.ico";
-
-    styleSheetsURIs = [
-      "$CommonStyles",
-      "$LayoutsStyles/Minimal/MinimalLayout.css",
-      "$PreMadesStyles",
-      "@CustomizedExternalComponents",
-      "@Pages/Top/TopPage"
-    ];
-
-    scriptsURIs.endOfBody = [ "$CommonLogic" ];
+          "「やまとダイワ自動化」は宣言的に（YAML型）でかかれ、特定のディレクトリ構成は強いられない。"
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/Minimal/MinimalLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents",
+        "@Pages/Top/TopPage"
+      ]
+    });
 
     RoutingEmulator.setCurrentRoute("top");
 
@@ -44,7 +39,7 @@ block append Metadata
     });
 
 
-block append HeadScriptsLinks
+block append HeadScripts
 
   if __IS_PRODUCTION_BUILDING_MODE__
 

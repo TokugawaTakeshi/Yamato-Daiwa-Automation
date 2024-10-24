@@ -1,14 +1,14 @@
-/* --- Defaults ----------------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* --- Raw valid config --------------------------------------------------------------------------------------------- */
+/* ─── Raw Valid Configuration ────────────────────────────────────────────────────────────────────────────────────── */
 import type { ProjectBuildingTasksIDsForConfigFile__Localized } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 import { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
 
 
@@ -20,12 +20,12 @@ type ProjectBuildingCommonSettings__FromFile__RawValid = Readonly<{
 
 namespace ProjectBuildingCommonSettings__FromFile__RawValid {
 
-  /* === Types ====================================================================================================== */
   export type SelectiveExecutions = Readonly<{ [selectiveExecutionID: string]: SelectiveExecution | undefined; }>;
 
   export type SelectiveExecution = Readonly<{
     tasksAndSourceFilesSelection: ProjectBuilderTasksAndSourceFilesSelection;
     browserLiveReloadingSetupID?: string;
+    outputPackageJSON_Generating?: boolean;
   }>;
 
   type ProjectBuilderTasksAndSourceFilesSelection = Readonly<{
@@ -40,12 +40,13 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
   }>;
 
 
-  /* === Localization =============================================================================================== */
+  /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Localization = Readonly<{
     selectiveExecutions: Readonly<{
       KEY: string;
       tasksAndSourceFilesSelection: Readonly<{ KEY: string; }>;
       browserLiveReloadingSetupID: Readonly<{ KEY: string; }>;
+      outputPackageJSON_Generating: Readonly<{ KEY: string; }>;
     }>;
     publicDirectoriesRelativePaths: Readonly<{ KEY: string; }>;
   }>;
@@ -110,6 +111,12 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
             [projectBuildingCommonSettingsLocalization.selectiveExecutions.browserLiveReloadingSetupID.KEY]: {
               newName: "browserLiveReloadingSetupID",
               type: String,
+              required: false
+            },
+
+            [projectBuildingCommonSettingsLocalization.selectiveExecutions.outputPackageJSON_Generating.KEY]: {
+              newName: "outputPackageJSON_Generating",
+              type: Boolean,
               required: false
             }
 

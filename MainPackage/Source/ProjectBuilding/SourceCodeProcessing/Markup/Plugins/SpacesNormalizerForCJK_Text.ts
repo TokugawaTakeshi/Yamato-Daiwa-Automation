@@ -11,11 +11,20 @@ export default class SpacesNormalizerForCJK_Text {
       "[\\u3000-\\u303f\\u3040-\\u309f\\u30a0-\\u30ff\\uff00-\\uffef\\u4e00-\\u9fff\\uac00-\\ud7af]";
 
   private static readonly extraSpaceSurroundedByCharactersDetectingPatterns: ReadonlyArray<RegExp> = [
+
+    /* [ Regular Expressions Tester ] https://regex101.com/r/oTsJps/2 */
     new RegExp(
-      `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES }) ` +
+      `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })\\x20+` +
+          `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })`,
+      "gmu"
+    ),
+
+    new RegExp(
+      `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })\\r?\\n\\x20+` +
           `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })`,
       "gmu"
     )
+
   ];
 
   private static readonly ATTRIBUTE_NAME_OF_TARGET_HTML_ELEMENTS: string = "data-yda-normalize_spaces_in_cjk";

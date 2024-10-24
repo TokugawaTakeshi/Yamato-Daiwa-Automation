@@ -1,0 +1,51 @@
+extends ../../../../../node_modules/@yamato-daiwa/programming_documentation/Layouts/TwoColumns/TwoColumnsLayout.pug
+
+
+block append Requirements
+
+  include ../../../../SharedAssets/Markup/SharedAssets.english.pug
+  include ../../../../SharedComponents/SharedComponents.english.pug
+
+
+block append Metadata
+
+  -
+
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle("Output HTML Code Validation"),
+        description:
+            "The \"Yamato Daiwa Automation\" (abbreviation: \"YDA\") , the Node.js project building " +
+              "tool executing the HTML code validation with outputting of the results to the console in the real time. " +
+            "In comparison with existing on the moment of realize of first version of YDA Node.js utilities and their " +
+              "Gulp adaptations, the HTML code validation in YDA has and improved validity issues logging and good " +
+              "performance optimization .",
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
+    });
+
+    RoutingEmulator.setCurrentRoute("functionality.children.markupProcessing.children.basicPugToHTML_Transpiling");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      japanese: "./HTML_Validation.japanese.html",
+      russian: "./HTML_Validation.russian.html",
+    });
+
+
+block append HeadScripts
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  article
+
+    h1.Article-Heading1 Output HTML Code Validation

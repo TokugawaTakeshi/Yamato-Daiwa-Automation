@@ -28,6 +28,7 @@ import PlainCopier from "@ProjectBuilding/PlainCopying/PlainCopier";
 import LocalDevelopmentServerOrchestrator from
     "@ECMA_ScriptProcessing/Subtasks/LocalDevelopmentServerOrchestration/LocalDevelopmentServerOrchestrator";
 import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
+import OutputPackageJSON_Generator from "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_Generator";
 
 /* --- Applied utils ------------------------------------------------------------------------------------------------ */
 import Gulp from "gulp";
@@ -113,6 +114,7 @@ abstract class ProjectBuilder {
         MarkupProcessor.provideMarkupProcessingIfMust(masterConfigRepresentative),
 
         BrowserLiveReloader.provideBrowserLiveReloadingIfMust(masterConfigRepresentative),
+        OutputPackageJSON_Generator.generateIfMust(masterConfigRepresentative),
 
         Gulp.parallel([
           FilesMasterWatcher.watchIfMust(masterConfigRepresentative),
@@ -123,9 +125,6 @@ abstract class ProjectBuilder {
 
     ]));
 
-    /* eslint-disable-next-line @typescript-eslint/no-floating-promises --
-    *  This issue is not false positive because gulp chain could collapse on some errors, but working solution has
-    *  not been found yet. https://stackoverflow.com/q/66169978/4818123 */
     Gulp.task(GULP_TASK_NAME)?.(
       (error?: Error | null): void => {
         if (isNeitherUndefinedNorNull(error)) {

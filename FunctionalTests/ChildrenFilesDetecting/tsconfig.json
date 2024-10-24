@@ -1,0 +1,34 @@
+{
+
+  "compilerOptions": {
+
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    "strict": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "paths": {
+      "@Layouts/*": [ "./01-Source/Implementation/Elements/Client/Layouts/*" ],
+      "@SharedComponents/*": [ "./01-Source/Implementation/Elements/Client/SharedComponents/*" ]
+    }
+
+  },
+
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    },
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  }
+
+}

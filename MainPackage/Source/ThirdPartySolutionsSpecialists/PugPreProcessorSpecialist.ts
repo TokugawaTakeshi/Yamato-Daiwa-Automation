@@ -28,10 +28,8 @@ class PugPreProcessorSpecialist {
     for (const sourceCodeLine of explodeStringToLines({ targetString: sourceCode, mustIgnoreCarriageReturn: true })) {
 
       /* [ Fiddle ] https://regex101.com/r/yV0TNG/1 */
-      const indentString: string | null = getMatchingWithFirstRegularExpressionCapturingGroup({
-        targetString: sourceCodeLine,
-        regularExpression: /^(?<indent> +|\t)\S/gmu
-      });
+      const indentString: string | null =
+          getMatchingWithFirstRegularExpressionCapturingGroup(sourceCodeLine, /^(?<indent> +|\t)\S/gmu);
 
       if (isNotNull(indentString)) {
         return indentString;

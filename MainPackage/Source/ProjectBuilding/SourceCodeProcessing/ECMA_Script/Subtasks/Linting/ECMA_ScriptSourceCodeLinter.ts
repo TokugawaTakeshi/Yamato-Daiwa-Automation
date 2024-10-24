@@ -12,8 +12,8 @@ import LinterLikeTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpS
 /* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import type VinylFile from "vinyl";
 
-/* ─── Third-party Solutions Specialises ──────────────────────────────────────────────────────────────────────────── */
-import ESLintLinterSpecialist from "@ThirdPartySolutionsSpecialists/ESLintLinterSpecialist";
+/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
+import ESLintSpecialist from "@ThirdPartySolutionsSpecialists/ESLintSpecialist";
 
 /* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import { ESLint } from "eslint";
@@ -214,14 +214,11 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
         ),
 
         /* [ ESLint theory ]
-         * As default, ESLint finds the configuration file at `process.cwd()` and detects the `.eslintignore` file there.
-         * However, because of the integration with Gulp, the files specified in `.eslintignore` must be additionally
-         *   excluded from `targetFilesGlobSelectors`. */
-        ...ESLintLinterSpecialist.getGlobSelectorsOfExcludedFiles({
-          consumingProjectRootDirectoryAbsolutePath:
-            projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-          mustSkipNodeModulesDirectory: true
-        })
+         * In there are files and/or directories ignored in ESLint configuration they also must be excluded from
+         *   the Gulp pipelines otherwise ESLint will emit the warning for ignored files. */
+        ...ESLintSpecialist.generateExcludingGlobSelectorsOfIgnoredFiles(
+          projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
+        )
 
       ],
 
@@ -361,38 +358,42 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
         targetArray: replaceArrayElementsByIndexesImmutably({
           targetArray: sourceCodeExplodedToLines,
           replacements: [
-            ...rawIssue.line === rawIssue.endLine ? [
-              {
-                index: rawIssue.line - 1,
-                newElement: cropString({
-                  targetString: sourceCodeExplodedToLines[rawIssue.line - 1],
-                  startingCharacterNumber__numerationFrom1: rawIssue.column,
-                  endingCharacterNumber__numerationFrom1: rawIssue.column === rawIssue.endColumn ?
-                      rawIssue.endColumn : rawIssue.endColumn - 1,
-                  mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
-                })
-              }
-            ] : [
-              {
-                index: rawIssue.line - 1,
-                newElement: cropString({
-                  targetString: sourceCodeExplodedToLines[rawIssue.line - 1],
-                  startingCharacterNumber__numerationFrom1: rawIssue.column,
-                  untilEnd: true,
-                  mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
-                })
-              },
-              {
-                index: rawIssue.endLine - 1,
-                newElement: cropString({
-                  targetString: sourceCodeExplodedToLines[rawIssue.endLine - 1],
-                  fromStart: true,
-                  endingCharacterNumber__numerationFrom1: rawIssue.column === rawIssue.endColumn ?
-                      rawIssue.endColumn : rawIssue.endColumn - 1,
-                  mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
-                })
-              }
-            ]
+            ...rawIssue.line === rawIssue.endLine ?
+              [
+                {
+                  index: rawIssue.line - 1,
+                  newElement: cropString({
+                    targetString: sourceCodeExplodedToLines[rawIssue.line - 1],
+                    startingCharacterNumber__numerationFrom1: rawIssue.column,
+                    endingCharacterNumber__numerationFrom1: rawIssue.column === rawIssue.endColumn ?
+                        rawIssue.endColumn : rawIssue.endColumn - 1,
+                    mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
+                  })
+                }
+              ] : [
+                {
+                  index: rawIssue.line - 1,
+                  newElement: cropString({
+                    targetString: sourceCodeExplodedToLines[rawIssue.line - 1],
+                    startingCharacterNumber__numerationFrom1: rawIssue.column,
+                    untilEnd: true,
+                    mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
+                  })
+                },
+                ...rawIssue.endColumn > 1 ?
+                    [
+                      {
+                        index: rawIssue.endLine - 1,
+                        newElement: cropString({
+                          targetString: sourceCodeExplodedToLines[rawIssue.endLine - 1],
+                          fromStart: true,
+                          endingCharacterNumber__numerationFrom1: rawIssue.column === rawIssue.endColumn ?
+                              rawIssue.endColumn : rawIssue.endColumn - 1,
+                          mustThrowErrorIfSpecifiedCharactersNumbersIsOutOfRange: true
+                        })
+                      }
+                    ] : []
+              ]
           ]
         }),
         startingElementNumber__numerationFrom1: rawIssue.line,
@@ -501,8 +502,7 @@ namespace ECMA_ScriptSourceCodeLinter {
 export default ECMA_ScriptSourceCodeLinter;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars --
- * It is the only way to extract the child namespace (no need to expose whole ECMA_ScriptSourceCodeLinter for the localization
+/* It is the only way to extract the child namespace (no need to expose whole ECMA_ScriptSourceCodeLinter for the localization
  *  packages).
  * https://stackoverflow.com/a/73400523/4818123 */
 export import ECMA_ScriptSourceCodeLinterLocalization = ECMA_ScriptSourceCodeLinter.Localization;

@@ -11,7 +11,8 @@ export enum ProjectBuildingTasksIDsForConfigFile {
   videosProcessing = "videosProcessing",
   browserLiveReloading = "browserLiveReloading",
   plainCopying = "plainCopying",
-  filesWatching = "filesWatching"
+  filesWatching = "filesWatching",
+  outputPackageJSON_Generating = "outputPackageJSON_Generating"
 }
 
 

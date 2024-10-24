@@ -11,6 +11,8 @@ import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosP
 import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
 import type FilesWatchingSettings__Normalized from "@ProjectBuilding/FilesWatching/FilesWatchingSettings__Normalized";
 import type BrowserLiveReloadingSettings__Normalized from "@BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
+import type OutputPackageJSON_GeneratingSettings__Normalized from
+    "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettings__Normalized";
 
 
 type ProjectBuildingConfig__Normalized = Readonly<{
@@ -30,6 +32,8 @@ type ProjectBuildingConfig__Normalized = Readonly<{
 
   filesWatching: FilesWatchingSettings__Normalized;
   browserLiveReloading?: BrowserLiveReloadingSettings__Normalized;
+
+  outputPackageJSON_Generating?: OutputPackageJSON_GeneratingSettings__Normalized;
 
 }>;
 

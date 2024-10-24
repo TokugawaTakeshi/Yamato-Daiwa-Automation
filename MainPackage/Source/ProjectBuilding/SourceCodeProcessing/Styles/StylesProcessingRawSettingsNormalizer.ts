@@ -8,7 +8,7 @@ import StylesProcessingSettings__Default from "@StylesProcessing/StylesProcessin
 import type StylesProcessingSettings__FromFile__RawValid from
     "@StylesProcessing/StylesProcessingSettings__FromFile__RawValid";
 
-/* ─── Third-party Solutions Specialises ──────────────────────────────────────────────────────────────────────────── */
+/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import StlintLinterSpecialist from "@ThirdPartySolutionsSpecialists/StlintLinterSpecialist";
 
 /* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */

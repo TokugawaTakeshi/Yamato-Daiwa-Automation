@@ -11,7 +11,7 @@ import LinterLikeTaskExecutor from "@ProjectBuilding/Common/TasksExecutors/GulpS
 /* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import type VinylFile from "vinyl";
 
-/* ─── Third-party Solutions Specialises ──────────────────────────────────────────────────────────────────────────── */
+/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import PugPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/PugPreProcessorSpecialist";
 
 /* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */

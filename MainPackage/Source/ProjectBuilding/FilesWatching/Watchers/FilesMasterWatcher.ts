@@ -1,4 +1,4 @@
-/* ─── Third-party Solutions Specialises ──────────────────────────────────────────────────────────────────────────── */
+/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/Chokidar/ChokidarSpecialist";
 
 /* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
@@ -11,6 +11,7 @@ import type FilesPassiveWatcher from "@ProjectBuilding/FilesWatching/Watchers/Fi
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
 import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+import { isUndefined } from "@yamato-daiwa/es-extensions";
 
 
 abstract class FilesMasterWatcher {
@@ -22,10 +23,10 @@ abstract class FilesMasterWatcher {
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): (callback: (error?: Error | null) => void) => void {
 
-    const filesWatchingSettingsRepresentative: FilesWatchingSettingsRepresentative =
+    const filesWatchingSettingsRepresentative: FilesWatchingSettingsRepresentative | undefined =
         projectBuildingMasterConfigRepresentative.filesWatchingSettingsRepresentative;
 
-    if (!filesWatchingSettingsRepresentative.mustProvideFilesWatching) {
+    if (isUndefined(filesWatchingSettingsRepresentative) || !filesWatchingSettingsRepresentative.mustProvideFilesWatching) {
       return (callback: () => void): void => { callback(); };
     }
 

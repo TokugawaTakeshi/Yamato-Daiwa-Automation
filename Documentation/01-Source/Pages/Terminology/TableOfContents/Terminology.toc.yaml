@@ -1,0 +1,97 @@
+YDA:
+
+  $heading: YDA
+  $anchor: YDA--SECTION
+
+project:
+
+  $heading: `project.$heading`
+  $anchor: PROJECT--SECTION
+
+  $children:
+
+    building:
+
+      $heading: `project.building.$heading`
+      $anchor: PROJECT-BUILDING--SECTION
+
+task:
+
+  $heading: `task.$heading`
+  $anchor: TASK--SECTION
+
+scenario:
+
+  $heading: `scenario.$heading`
+  $anchor: SCENARIO--SECTION
+
+projectBuildingMode:
+
+  $heading: `projectBuildingMode.$heading`
+  $anchor: PROJECT_BUILDING_MODE--SECTION
+
+entryPointsAndChildrenFiles:
+
+  $heading: `entryPointsAndChildrenFiles.$heading`
+  $anchor: ENTRY_POINTS_AND_CONTEXT_DEPENDENT_FILES--SECTION
+
+  $children:
+
+    byFileType:
+
+      $heading: `entryPointsAndChildrenFiles.byFileType.$heading`
+      $anchor: ENTRY_POINTS_AND_CONTEXT_DEPENDENT_FILES-BY_FILE_TYPE--SECTION
+
+      $children:
+
+        markup:
+
+          $heading: `entryPointsAndChildrenFiles.byFileType.markup.$heading`
+          $anchor: ENTRY_POINTS_AND_CONTEXT_DEPENDENT_FILES-MARKUP--SECTION
+
+        styles:
+          $heading: `entryPointsAndChildrenFiles.byFileType.styles.$heading`
+          $anchor: ENTRY_POINTS_AND_CONTEXT_DEPENDENT_FILES-STYLES--SECTION
+
+        ECMA_ScriptLogic:
+          $heading: `entryPointsAndChildrenFiles.byFileType.ECMA_ScriptLogic.$heading`
+          $anchor: ENTRY_POINTS_AND_CONTEXT_DEPENDENT_FILES-ECMA_SCRIPT--SECTION
+
+    entryPointsGroup:
+
+      $heading: `entryPointsAndChildrenFiles.entryPointsGroup`
+      $anchor: ENTRY_POINTS_GROUP--SECTION
+
+assets:
+
+  $heading: `assets.$heading`
+  $anchor: ASSETS--SECTION
+
+  $children:
+
+    groups:
+
+      $heading: `assets.groups.$heading`
+      $anchor: ASSETS_GROUPS--SECTION
+
+resources:
+
+  $heading: `resources.$heading`
+  $anchor: RESOURCES--SECTION
+
+selectiveExecution:
+
+  $heading: `selectiveExecution.$heading`
+  $anchor: SELECTIVE_EXECUTION--SECTION
+
+importantForYDA_ExistingTerms:
+
+  $heading: `importantForYDA_ExistingTerms.$heading`
+  $anchor: IMPORTANT_FOR_YDA_EXITING_TERMS--SECTION
+
+  $children:
+
+    publicPathAndShortenedAbsolutePath:
+
+      $heading: `importantForYDA_ExistingTerms.publicPathAndShortenedAbsolutePath.$heading`
+      $anchor: PUBLIC_PATH_AND_SHORTENED_ABSOLUTE_PATH--SECTION
