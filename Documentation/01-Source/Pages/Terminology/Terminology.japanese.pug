@@ -297,11 +297,62 @@ block append SpecificContent
       殆どの現代プログラミング言語及びプリプロセッサはソースファイルを何れでもの成分に別ける機能がある。
       此処で#[+Term--YDID 親ファイル]及び#[+Term--YDID 子ファイル]を判別する必要が有る。
       #[+Term--YDID 子ファイル]も成分に別ける事が出来るので、ツリー系の階層構造と成り、一番上に在るのは#[+Term--YDID 初期位置]である。
+
+    +AdmonitionBlock--YDF({
+      SVG_Icon: true,
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice
+    }).
+      英語の情報源に於いて、#[+Term--YDID 子ファイル]よく「partial files」と呼ばれるが、「partial」形容詞（「部分的」）自体は#[+Term--YDID 垂直階層]
+        暗示#[+Keyword--YDID していない]。
+      #[+Term--YDID 垂直階層]は#[+ImportantEntity--YDID YDA]に於いて考慮#[+Keyword--YDID 必須]なので、#[+Term--YDID 「子ファイル」]
+        と言う用語が選ばれた。
+
+
+    //- ─── ファイル種類毎 ─────────────────────────────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$anchor
+    }).Article-Heading3
+
+    //- ─── マークアップ ───────────────────────────────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.markup.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.markup.$anchor
+    }).Article-Heading4
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID #[+Term--YDID マークアップ]の場合]、#[+Term__Contrast--YDID 初期位置]は
+        #[+Keyword--YDID 完成した]#[+Term--YDID HTMLドキュメント]に#[+Keyword--YDID 該当]している。
+
+    p.Article-Paragraph.
+      #[+Term--YDID 初期位置]は#[+Term__Contrast--YDID 子ファイル]が無いが合い、#[+Term--YDID HTML]への変換の結果
+        #[+Keyword--YDID 妥当な]#[+Term--YDID HTMLドキュメント]が取得される。
+      #[+Term--YDID 子ファイル]が有った場合、#[+Keyphrase--YDID 独立的に#[+ImportantEntity--YDID HTML]に変化したはならなく]、
+        変化すると妥当な#[+Term--YDID HTMLドキュメント]には#[+Keyword--YDID ならない]。
+
+    p.Article-Paragraph.
+      #[+Keyword--YDID 一般]#[+Term--YDID HTMLファイル]を複数のファイルに別ける事が#[+Keyword--YDID 不可能]だが、
+        #[+ImportantEntity--YDID Pug]を含めて#[+Term--YDID HTMLプリプロセッサ]はソースコードの段階で此の機能が有る。
+      #[+ImportantEntity--YDID Pug]プリプロセッサを活用している#[+ImportantEntity--YDID YDA]に於いて#[+Term--YDID 初期位置]
+        は#[+Keyword--YDID ソース]#[+Term--YDID Pugファイル]に#[+Keyword--YDID も]#[+Keyword--YDID 出力]#[+Term--YDID HTMLファイル]
+        にも適用。
+      #[+Term--YDID 子ファイル]を#[+Term__Contrast--YDID 初期位置]又は他の#[+Term__Contrast--YDID 子ファイル]に含むには
+        #[+ImportantEntity__Code--YDID include]#[+Term--YDID ディレクティブ]が利用される。
+      #[+ImportantEntity--YDID extends]#[+Term--YDID ディレクティブ]も#[+Term--YDID 子ファイル]の利用を意味し、理由としては
+        継承されるファイル自体は完成した#[+Term--YDID HTMLドキュメント]を代表しているとは#[+Keyword--YDID 限らない]。
+
+    +AdmonitionBlock--YDF({
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning,
+      SVG_Icon: true
+    }).
+      #[+Term--YDID Pugファイル]は#[+Term__Contrast--YDID 初期位置]を代表しているとは限らないが、#[+Keyword--YDID 何れでもの]
+        #[+Keyword--YDID 妥当な]#[+Term--YDID HTMLファイル]は#[+Term__Contrast--YDID 初期位置]になっているのだ。
     //- TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     //-
-      h2.Article-Heading2 ファイル・コード種類
-
-      h3.Article-Heading3 構造設計記法
 
       p.Article-Paragraph.
         英語・片仮名語表記の

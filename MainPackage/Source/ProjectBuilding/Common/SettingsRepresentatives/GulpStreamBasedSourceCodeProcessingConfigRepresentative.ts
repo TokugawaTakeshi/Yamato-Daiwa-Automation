@@ -52,7 +52,7 @@ export default abstract class GulpStreamBasedSourceCodeProcessingConfigRepresent
                     ambiguitiesResolution: {
                       mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
                       mustConsiderLastSegmentStartingWithDotAsDirectory: false,
-                      mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                      mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
                     },
                     alwaysForwardSlashSeparators: true
                   })

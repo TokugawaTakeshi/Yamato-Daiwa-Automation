@@ -358,7 +358,7 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
           targetPath: typeScriptConfigurationFileAbsolutePath,
           alwaysForwardSlashSeparators: true,
           ambiguitiesResolution: {
-            mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true,
+            mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true,
             mustConsiderLastSegmentStartingWithDotAsDirectory: false,
             mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false
           }

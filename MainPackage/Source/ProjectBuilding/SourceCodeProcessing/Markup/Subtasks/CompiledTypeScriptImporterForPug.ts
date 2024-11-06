@@ -105,7 +105,7 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
                 ambiguitiesResolution: {
                   mustConsiderLastSegmentStartingWithDotAsDirectory: false,
                   mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-                  mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: false
+                  mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: false
                 }
               })
           });

@@ -356,55 +356,67 @@ block append SpecificContent
       Because the #[+Term--YDID children files] #[+Keyword--YDID also] could be spit to constituents, the
         #[+Keyword--YDID thee-like] #[+Keyword__Contrast--YDID hierarchical] #[+Term--YDID structure] is being formed,
         where is the #[+Term--YDID entry point] is #[+Keyword--YDID topmost] element.
+
+    +AdmonitionBlock--YDF({
+      SVG_Icon: true,
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice
+    }).
+      The #[+Term--YDID children files] is frequently being called #[+Term--YDID "partial files"], while
+        #[+Keyword--YDID originally] "partial" does&nbsp;#[+Keyword--YDID not]&nbsp;imply the
+        #[+Term--YDID vertical hierarchy].
+      Because this #[+Term--YDID vertical hierarchy] #[+Keyword--YDID matters] for the #[+ImportantEntity--YDID YDA],
+        the #[+Term--YDID "child file"] / #[+Term--YDID "children files"] terms has been selected.
+
+
+    //- ─── By Files Type ──────────────────────────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$anchor
+    }).Article-Heading3
+
+    //- ─── Markup ───────────────────────────────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.markup.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.markup.$anchor
+    }).Article-Heading4
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID In #[+Keyword--YDID markup] case], the #[+Term--YDID entry point] is the file
+        #[+Keyword--YDID corresponding] to #[+Keyword__Contrast--YDID complete] #[+Term--YDID HTML document].
+
+    p.Article-Paragraph.
+      If the #[+Term--YDID entry point] does&nbsp;#[+Keyword--YDID not] have the #[+Term__Contrast--YDID children files],
+        the #[+Keyword--YDID valid] #[+Term--YDID HTML document] #[+Keyword--YDID must] be the result of Pug-to-HTML
+        conversation.
+      And if there are the #[+Term--YDID children files], they are
+        #[+Keyphrase--YDID must&nbsp;#[+Keyword--YDID not]&nbsp;be&nbsp;converted to #[+Term--YDID HTML] separately],
+        because this way the valid #[+Term--YDID HTML document] will&nbsp;#[+Keyword--YDID not]&nbsp;be at the output.
+
+    p.Article-Paragraph.
+      The #[+Keyword--YDID regular] #[+Term--YDID HTML file] could&nbsp;#[+Keyword--YDID not]&nbsp;be&nbsp;split to
+        multiple files, but the #[+Term--YDID HTML pre-processors] including #[+ImportantEntity--YDID Pug] allows
+        to do it on the source code stage.
+      In #[+ImportantEntity--YDID YDA] working with #[+ImportantEntity--YDID Pug] preprocessor, the
+        #[+Term--YDID "entry point"] term is being applied to #[+Keyword--YDID both] #[+Keyword__Contrast--YDID source]
+        #[+Term--YDID Pug files] and #[+Keyword__Contrast--YDID output] #[+Term--YDID HTML files].
+      To include the #[+Term--YDID children file] to the #[+Term--YDID entry point] or another
+        #[+Term--YDID children file], #[+ImportantEntity__Code--YDID include] #[+Term--YDID directive] is being used.
+      The #[+ImportantEntity--YDID extends] #[+Term--YDID directive] also means the usage of #[+Term--YDID children file],
+        because the file on which target one being extended in #[+Keyword--YDID not]&nbsp;mandatory represents the complete
+        #[+Term--YDID HTML document].
+
+    +AdmonitionBlock--YDF({
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning,
+      SVG_Icon: true
+    }).
+      #[+Keyword--YDID Not]&nbsp;every #[+Term--YDID Pug file] could be the #[+Term--YDID entry point], while
+        #[+Keyword--YDID any] #[+Term--YDID HTML file] is the entry #[+Term--YDID point].
+
     //-
-      p.Article-Paragraph.
-        The #[+Term--YDID children files] is frequently being called #[+Term--YDID "partial files"], while
-          #[+Keyword--YDID originally] "partial" does&nbsp;#[+Keyword--YDID not]&nbsp;imply the vertical hierarchy.
-        Because this vertical hierarchy matters for the #[+ImportantEntity--YDID YDA], we have selected the
-          #[+Term--YDID "child file"] / #[+Term--YDID "children files"] terms.
-
-
-      //- ─── Markup ─────────────────────────────────────────────────────────────────────────────────────────────────────
-      +Heading--YDF({
-        level: 3,
-        text: localizedSectioning.entryPointsAndChildrenFiles.$children.markup.$heading,
-        HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.markup.$anchor
-      }).Article-Heading3
-
-      p.Article-Paragraph.
-        #[+Keyphrase--YDID In #[+Keyword--YDID markup] case], the #[+Term--YDID entry point] is the file
-          #[+Keyword--YDID corresponding] to #[+Keyword__Contrast--YDID full-fledged] #[+Term--YDID HTML document].
-
-      p.Article-Paragraph.
-        If the #[+Term--YDID entry point] does&nbsp;#[+Keyword--YDID not] have the #[+Term__Contrast--YDID children files],
-          the #[+Keyword--YDID valid] #[+Term--YDID HTML document] #[+Keyword--YDID must] be the result of Pug-to-HTML
-          conversation.
-        And if there are the #[+Term--YDID children files], they are
-          #[+Keyphrase--YDID must&nbsp;#[+Keyword--YDID not]&nbsp;be&nbsp;converted to #[+Term--YDID HTML] separately],
-          because this way the valid #[+Term--YDID HTML document] will&nbsp;#[+Keyword--YDID not]&nbsp;be.
-
-      p.Article-Paragraph.
-        The #[+Keyword--YDID regular] #[+Term--YDID HTML file] could&nbsp;#[+Keyword--YDID not]&nbsp;be&nbsp;split to
-          multiple files, but the #[+Term--YDID HTML pre-processors] (including #[+ImportantEntity--YDID Pug]) allows
-          to do it on the source code stage.
-        In #[+ImportantEntity--YDID YDA] working with #[+ImportantEntity--YDID Pug] preprocessor, the
-          #[+Term--YDID "entry point"] term is being applied to #[+Keyword--YDID both] #[+Keyword__Contrast--YDID source]
-          #[+Term--YDID Pug files] and #[+Keyword__Contrast--YDID output] #[+Term--YDID HTML files].
-        To include the #[+Term--YDID children file] to the #[+Term--YDID entry point] or another
-          #[+Term--YDID children file], #[+ImportantEntity__Code--YDID include] #[+Term--YDID directive] is being used.
-        The #[+ImportantEntity--YDID extends] #[+Term--YDID directive] also means the usage of #[+Term--YDID children file],
-          because the file on which target one being extended in not&nbsp;mandatory represents the complete
-          #[+Term--YDID HTML document].
-
-      +AdmonitionBlock--YDF({
-        geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
-        decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning,
-        SVG_Icon: true
-      }).
-        #[+Keyword--YDID Not]&nbsp;every #[+Term--YDID Pug file] could be the #[+Term--YDID entry point], while
-          #[+Keyword--YDID any] #[+Term--YDID HTML file] could.
-
-
       //- ─── Styles ─────────────────────────────────────────────────────────────────────────────────────────────────────
       +Heading--YDF({
         level: 3,

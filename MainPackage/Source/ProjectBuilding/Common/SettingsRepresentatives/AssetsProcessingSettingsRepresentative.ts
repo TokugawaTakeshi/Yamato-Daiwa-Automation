@@ -75,7 +75,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
               ambiguitiesResolution: {
                 mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
                 mustConsiderLastSegmentStartingWithDotAsDirectory: false,
-                mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
               },
               alwaysForwardSlashSeparators: true
             })

@@ -284,7 +284,7 @@ class SourceCodeSelectiveReprocessingHelper {
         ambiguitiesResolution: {
           mustConsiderLastSegmentStartingWithDotAsDirectory: false,
           mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-          mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+          mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
         },
         alwaysForwardSlashSeparators: true
       });
@@ -505,7 +505,7 @@ class SourceCodeSelectiveReprocessingHelper {
             ambiguitiesResolution: {
               mustConsiderLastSegmentStartingWithDotAsDirectory: false,
               mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-              mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+              mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
             },
             alwaysForwardSlashSeparators: true
           });

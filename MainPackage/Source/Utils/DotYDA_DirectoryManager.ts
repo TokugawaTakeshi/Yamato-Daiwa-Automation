@@ -20,8 +20,6 @@ export default class DotYDA_DirectoryManager {
   private static readonly GIT_IGNORE_FILE_NAME: string = ".gitignore";
   private static readonly DOT_VERSION_FILE_NAME: string = ".version";
 
-  /* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access --
-    * TypeScript detects the content of "package.json" and provides the type safety. */
   private static readonly CURRENT_YDA_VERSION: string = packageJSON_Metadata.version;
 
   private static selfSoleInstance: DotYDA_DirectoryManager | null = null;

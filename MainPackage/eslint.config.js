@@ -19,9 +19,9 @@ module.exports = [
   },
   {
     files: [
-      "**Settings__FromFile__RawValid.ts",
+      "**/*Settings__FromFile__RawValid.ts",
       "ProjectBuildingConfig__FromFile__RawValid.ts",
-      "**Settings__Normalized.ts"
+      "**/*Settings__Normalized.ts"
     ],
     rules: {
 

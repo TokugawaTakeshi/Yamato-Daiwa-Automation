@@ -366,7 +366,7 @@ export default abstract class WebpackConfigGenerator {
                   ambiguitiesResolution: {
                     mustConsiderLastSegmentStartingWithDotAsDirectory: false,
                     mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-                    mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                    mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
                   },
                   alwaysForwardSlashSeparators: true
                 })

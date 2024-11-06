@@ -8,10 +8,6 @@ type BrowserLiveReloadingSettings__FromFile__RawValid = Readonly<{
 }>;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-redeclare --
- * The merging of type/interface and namespace is completely valid TypeScript,
- * but @typescript-eslint community does not wish to support it.
- * https://github.com/eslint/eslint/issues/15504 */
 namespace BrowserLiveReloadingSettings__FromFile__RawValid {
 
   /* === Types ====================================================================================================== */

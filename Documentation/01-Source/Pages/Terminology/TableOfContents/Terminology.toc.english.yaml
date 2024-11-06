@@ -16,7 +16,7 @@ entryPointsAndChildrenFiles:
 
   byFileType:
 
-    $heading: "By File Type"
+    $heading: "By Files Type"
 
     markup: { $heading: "Markup" }
     styles: { $heading: "Styles" }

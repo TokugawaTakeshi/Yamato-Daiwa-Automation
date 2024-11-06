@@ -18,7 +18,7 @@ entryPointsAndChildrenFiles:
 
     $heading: "ファイル種類毎"
 
-    markup: { $heading: "Разметка" }
+    markup: { $heading: "マークアップ" }
     styles: { $heading: "Стили" }
     ECMA_ScriptLogic: { $heading: "ECMAScript-логика" }
 

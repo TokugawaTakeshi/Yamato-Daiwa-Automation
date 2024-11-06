@@ -70,7 +70,7 @@ export default abstract class VinylFileClass extends VinylFile {
     /* @ts-ignore: TS2358 (See above) */
     return isNull(this.contents) || (isArbitraryObject(this.contents) && !(this.contents instanceof Buffer)) ?
 
-        /* eslint-disable @typescript-eslint/no-unsafe-call */
+        /* eslint-disable @typescript-eslint/no-unsafe-call -- (See ※ explanation) */
         /* @ts-ignore: TS2339 (See ※ explanation) */
         "" : this.contents.toString();
         /* eslint-enable @typescript-eslint/no-unsafe-call */

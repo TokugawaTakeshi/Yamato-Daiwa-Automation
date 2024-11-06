@@ -243,7 +243,7 @@ export default class PlainCopyingRawSettingsNormalizer {
                 ambiguitiesResolution: {
                   mustConsiderLastSegmentStartingWithDotAsDirectory: false,
                   mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-                  mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: false
+                  mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: false
                 }
               })
             })

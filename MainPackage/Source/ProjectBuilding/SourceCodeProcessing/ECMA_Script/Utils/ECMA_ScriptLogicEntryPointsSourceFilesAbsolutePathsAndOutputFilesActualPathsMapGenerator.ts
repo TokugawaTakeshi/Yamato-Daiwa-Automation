@@ -66,7 +66,7 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
                 ambiguitiesResolution: {
                   mustConsiderLastSegmentStartingWithDotAsDirectory: false,
                   mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-                  mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                  mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
                 },
                 alwaysForwardSlashSeparators: true
               })
@@ -120,7 +120,7 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
               ambiguitiesResolution: {
                 mustConsiderLastSegmentStartingWithDotAsDirectory: false,
                 mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-                mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
               },
               alwaysForwardSlashSeparators: true
             }),

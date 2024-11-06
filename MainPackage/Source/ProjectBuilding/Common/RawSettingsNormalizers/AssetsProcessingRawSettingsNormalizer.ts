@@ -92,7 +92,7 @@ abstract class AssetsProcessingRawSettingsNormalizer {
             ambiguitiesResolution: {
               mustConsiderLastSegmentStartingWithDotAsDirectory: true,
               mustConsiderLastSegmentWithNonLeadingDotAsDirectory: true,
-              mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: false
+              mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: false
             },
             alwaysForwardSlashSeparators: true
           });
