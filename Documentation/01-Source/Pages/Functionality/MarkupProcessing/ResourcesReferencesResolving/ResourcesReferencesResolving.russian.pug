@@ -11,23 +11,18 @@ block append Metadata
 
   -
 
-    HTML_PAGE_LANGUAGE = "ru";
-    HTML_PAGE_TITLE = buildHTML_PageTitle("Resources references resolution");
-    HTML_PageMetaData = {
-      description: "",
-      author: HTML_PAGE_AUTHOR
-    };
-
-    FAVICON_URI = "@MustBeInPublicRoot/favicon";
-
-    styleSheetsURIs = [
-      "$CommonStyles",
-      "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
-      "$PreMadesStyles",
-      "@CustomizedExternalComponents"
-    ];
-
-    scriptsURIs.endOfBody = [ "$CommonLogic" ];
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle("Разрешение ссылок к ресурсам"),
+        description: ""
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
+    });
 
     RoutingEmulator.setCurrentRoute("functionality.children.markupProcessing.children.basicPugToHTML_Transpiling");
 
@@ -37,7 +32,7 @@ block append Metadata
     });
 
 
-block append HeadScriptsLinks
+block append HeadScripts
 
   if __IS_PRODUCTION_BUILDING_MODE__
 
@@ -85,11 +80,23 @@ block append SpecificContent
 
               StaticPreview:
 
-                topDirectoryRelativePath: 01-Source/Pages
+                sourceFilesTopDirectoryRelativePath: 01-Source/Pages
 
                 buildingModeDependent:
                   STATIC_PREVIEW:
                     outputTopDirectoryRelativePath: 02-StaticPreviewBuild
+
+          stylesProcessing:
+
+            entryPointsGroups:
+
+              Main:
+
+                singleEntryPointSourceFileRelativePath: 01-Source/SharedAssets/Main.styl
+
+                buildingModeDependent:
+                  STATIC_PREVIEW:
+                    outputTopDirectoryRelativePath: 02-StaticPreviewBuild/styles
 
           imagesProcessing:
 
@@ -110,6 +117,7 @@ block append SpecificContent
 
                 localServer:
                   rootDirectoryRelativePath: 02-StaticPreviewBuild
+
 
     p.Article-Paragraph.
       Теперь, мы можем ссылаться на файл #[+SecondaryEntity--YDID 01-Source/SharedAssets/Images/Cats/GrayCat.jpg]
@@ -142,15 +150,15 @@ block append SpecificContent
 
     p.Article-Paragraph.
       Во-первых, чтобы указать значение #[+Term--YDID HTML-аттрибута] #[+ImportantEntity__Code--YDID src], нужно
-        было просчитать в голове путь выходного файла (в данном случае путь к изображению, относительный корню проекта,
-        будет #[+SecondaryEntity--YDID 02-StaticPreviewBuild/images/Cats/GrayCat.jpg]).
-      Хорошая система сборки проекта должна брать эту рутину на себя.
+        было просчитать в голове путь #[+Keyword--YDID выходного] файла (в данном случае путь к изображению,
+        относительный корню проекта,　будет #[+SecondaryEntity--YDID 02-StaticPreviewBuild/images/Cats/GrayCat.jpg]).
+      Хорошая #[+Term--YDID система сборки проектов] должна брать эту рутину на себя.
 
     p.Article-Paragraph.
       Во-вторых, изображение будет корректно отображаться до тех пор, пока оно находится (или, как говорят, «хоститься»)
-        на том же же сервере, что и HTML-файл — сервере для локальной разработки, или же обычного.
-      В данном случае YDA для обеспечения сервера для локальной разработки под капотом использует утилиту
-        #[+Link--YDF({ unendorsedExternalURI: "https://browsersync.io" }).Article-Link Browsersync],
+        на том же же сервере, что и #[+Term--YDID HTML-файл] — сервере для локальной разработки, или же обычного.
+      В данном случае #[+ImportantEntity--YDID YDA] для обеспечения сервера для локальной разработки под капотом
+        использует утилиту #[+Link--YDF({ unendorsedExternalURI: "https://browsersync.io" }) Browsersync],
         в результате чего укороченный абсолютный путь #[+SecondaryEntity--YDID /images/Cats/GrayCat.jpg] соответствует
         полному абсолютному пути #[+SecondaryEntity--YDID http://localhost:3000/images/Cats/GrayCat.jpg].
 
@@ -163,56 +171,57 @@ block append SpecificContent
         и там его распакует.
       Однако, #[+SecondaryEntity--YDID Windows] он использует или #[+SecondaryEntity--YDID macOS] — изображения он
         #[+Keyword--YDID не] увидит, когда откроет в браузере #[+SecondaryEntity--YDID index.html],
-        в какой директории он бы архив не распаковал.
+        в какой директории он бы архив не&nbsp;распаковал.
       Всё потому, что #[+Term--YDID укороченный абсолютный путь] к изображению ссылается #[+Keyword--YDID уже]
         #[+Keyword__Contrast--YDID не] на #[+Term--YDID локальный хост] #[+SecondaryEntity--YDID http://localhost:3000/],
         а на #[+Term--YDID локальную файловую систему] — в случае с #[+SecondaryEntity--YDID Windows] и диском
-        #[+SecondaryEntity--YDID C], #[+Term--YDID укороченному абсолютному пути]
+        #[+SecondaryEntity--YDID C], на #[+Term--YDID укороченному абсолютному пути]
         #[+SecondaryEntity--YDID /images/Cats/GrayCat.jpg]
         будет соответствовать #[+SecondaryEntity--YDID C:\images\Cats\GrayCat.jpg].
 
     p.Article-Paragraph.
-      И что Вы скажете Вашему заказчику, когда от него придёт разгневанное сообщение: «У меня картинки не отображаются!!!»?
-      «О, это потому что у вас нет локального сервера.
+      И что Вы скажете Вашему заказчику, когда от него придёт разгневанное сообщение:
+        «У меня картинки не отображаются!!! Что за ерунду ты мне прислал?!»?
+      Вы скажете: «О, это потому что у вас нет локального сервера.
       Так, подождите минуту, я сейчас отправлю вам приглашение в GitHub — вы там зарегистрируетесь.
       Потом, установите систему контроля версий Git себе на компьютер и склонируйте репозиторий с проектом.
       Также, у вас должен быть установлен Node.js.
       Как только будет готово, откройте терминал и смените директорию на ту, куда Вы склонировали репозиторий.
-      Потом, переключитесь на ветвь «feature/top_page» и установить зависимости командой «npm install» - её тоже
+      Потом, переключитесь на ветвь «feature/top_page» и установить зависимости командой «npm install» — её тоже
         через терминал надо вводить.
       Как только будет готово, запустите «npm run dev», и тогда у вас откроется браузер и вы увидите все изображения!».
 
     p.Article-Paragraph.
-      Если Вы хоть немного имеете опыт общения с клиентами, то понимаете, что заказчик испытает целую гамму чувства
+      Если Вы хоть немного имеете опыт общения с клиентами, то понимаете, что заказчик испытает целую гамму чувств
         — от ступора и ощущения, что Вы над ним издеваетесь до желания Вас убить.
       И эти чувства #[+Keyphrase--YDID вполне естественны] для заказчиков, потому что Вы в данной ситуации заставляете
         их заниматься работой, #[+Keyphrase--YDID требующей профессиональных навыков].
-      Менеджеры и любые другие представителя стороны заказчика #[+Keyword--YDID не] обязаны иметь технологические навыки —
-        будь то #[+SecondaryEntity--YDID Node.js], контроль версий, работа с зависимостями, или сборка проекта;
-        их задача — контролировать выполнение работы в срок и при необходимости менять приоритет задач.
-      Всё, что им для этого нужно — это открыл файл — и чтобы всё работало.
+      Менеджеры и любые другие представителя стороны заказчика #[+Keyword--YDID не] обязаны иметь технологические навыки
+        и специализированное программное обеспечение— будь то #[+SecondaryEntity--YDID Node.js], контроль версий,
+        работа с зависимостями, или #[+Term--YDID сборка проекта]; их задача — контролировать выполнение работы в срок
+        и при необходимости менять приоритет задач.
+      Всё, что им для этого нужно — это открыл файл у себя в браузере — и чтобы всё отображалось.
 
     p.Article-Paragraph.
-      Первое решение — использование так называемых #[+Term--YDID облачных сред для разработки].
-      По сути #[+Term--YDID веб-сервер] с ограниченным доступом, куда можно загружать промежуточный результат с целью
-        показать его заказчику.
+      Распространённое решение — использование так называемых #[+Term--YDID облачных сред для разработки].
+      По сути это — #[+Term--YDID веб-сервер] с ограниченным доступом, куда можно загружать промежуточный результат с
+        целью показать его заказчику.
       Подобные услуги часто входят в перечень поставщиков облачных вычислений, таких как #[+SecondaryEntity--YDID AWS] и
         #[+SecondaryEntity--YDID GCP].
-
-      Однако, такой поход добавляет новую переменную в уравнение — новая услуга, новые траты, новые проблемы, что усложняет
+      Однако, такой поход добавляет новые переменные в уравнение — новая услуга, новые траты, новые проблемы, что усложняет
         организацию разработки.
       Подобный сервер понадобится для этапов функционального тестирования, инсценирования (стэйджинга), и, конечно же,
         продакшена, но ещё один сервер для режима разработки — это новая проблема, к решению которой руководство
-        обычно не готово #[+Keyphrase--YDID в самом начале] проекта.
-      Должно быть какое-то другое решение, которое #[+Keyword__Contrast--YDID не] вовлекает сторонние сервисы,
-        но при этом #[+Keyword--YDID не] является сложным.
+        обычно не&nbsp;готово #[+Keyphrase--YDID в самом начале] проекта.
+      Должно быть какое-то другое решение, которое #[+Keyword__Contrast--YDID не]&nbsp;вовлекает сторонние сервисы,
+        но при этом #[+Keyword--YDID не]&nbsp;является сложным.
       Отправка заказчику набора файлов — вполне приемлемое решение, просто оно #[+Keyword--YDID несовместимо] с
         использованием #[+Term--YDID абсолютных путей].
 
     p.Article-Paragraph.
       Как вывод, #[+Term--YDID использование укороченный абсолютных] путей является хорошим выбором
         #[+Keyphrase--YDID на стадиях функционального тестирования, инсценировки и продакшена], но для режимов
-        статического превью и иногда — локальной разработки #[+Keyword--YDID не] годится в силу
+        #[+Term--YDID статического превью] и иногда — локальной разработки #[+Keyword--YDID не]&nbsp;годится в силу
         #[+Keyword--YDID невозможности] правильного вычисления конечного пути
         #[+Keyphrase--YDID вне зависимости от конкретного компьютера].
 
@@ -222,8 +231,8 @@ block append SpecificContent
     p.Article-Paragraph.
       Изменение #[+Term--YDID укороченных абсолютных путей] на #[+Term__Contrast--YDID относительные]
         #[+Keyphrase--YDID на первый взгляд] решит вышеизложенную проблему: изображение будет корректно
-        отображаться что с использованием локального сервера для разработки, что прямом при открывании HTML-файла в браузере
-        на другом компьютере.
+        отображаться что с использованием локального сервера для разработки, что прямом при открывании
+        #[+Term--YDID HTML-файла] в браузере на другом компьютере.
 
     +CodeViewer--YDF
       +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Pug }).
@@ -233,7 +242,8 @@ block append SpecificContent
         )
 
     p.Article-Paragraph.
-      Проблема даст о себе знать, как только сайт или приложение будут расти, что мы сейчас и инсценируем.
+      Проблема даст о себе знать, как только в сайте или приложении начнёт увеличиваться количество страниц, что мы
+        сейчас и инсценируем.
 
     p.Article-Paragraph.
       Добавим две новые страницы:
@@ -243,11 +253,12 @@ block append SpecificContent
       li 01-Source/Pages/Animals/Dogs.pug
 
     p.Article-Paragraph.
-      Важно, что эти файлы находятся #[+Keyword--YDID не] в той же директории, что и #[+SecondaryEntity--YDID index.pug],
-      Организовать HTML-файлы по директориям — это #[+Keyphrase--YDID вполне нормально]; хорошая система сборки проектов
-        #[+Keyword--YDID обязана] это поддерживать.
+      Важно, что эти файлы находятся #[+Keyword--YDID не]&nbsp;в той же #[+Term--YDID директории], что и
+        #[+SecondaryEntity--YDID index.pug],
+      Организовать #[+Term--YDID HTML-файлы] по директориям — это #[+Keyphrase--YDID вполне нормально] а хорошая
+        #[+Term--YDID система сборки проектов] #[+Keyword--YDID обязана] это поддерживать.
       Однако, на каждой из этих страниц будет шапка с одним и тем же изображением (логотипом).
-      Не проблема, когда мы используем препроцессор #[+ImportantEntity--YDID Pug]: создадим компонент
+      Не&nbsp;проблема, когда мы используем препроцессор #[+ImportantEntity--YDID Pug]: создадим компонент
         #[+SecondaryEntity--YDID Header] с помощью #[+Term--YDID Pug-примеси] в
         #[+SecondaryEntity--YDID 01-Source/SharedComponents/Singletons]:
 
@@ -283,7 +294,7 @@ block append SpecificContent
         #[+SecondaryEntity--YDID index.pug], #[+SecondaryEntity--YDID Cats.pug] и #[+SecondaryEntity--YDID Dogs.pug].
 
     p.Article-Paragraph.
-      Если мы пересоберём проект, то на главной странице логотип будет отображаться корректно.
+      Если мы пересоберём проект, то #[+Keyphrase--YDID на главной странице] логотип будет отображаться корректно.
       Однако, если мы откроем #[+SecondaryEntity--YDID 02-StaticPreviewBuild/Animals/Cats.html] или
         #[+SecondaryEntity--YDID 02-StaticPreviewBuild/Animals/Dogs.html], то логотип отображаться #[+Keyword--YDID не]
         будет, потому что #[+Term--YDID относительный путь] #[+SecondaryEntity--YDID ./images/NNN_PetShopLogo.svg]
@@ -305,17 +316,18 @@ block append SpecificContent
 
     p.Article-Paragraph.
       Мало того, мы #[+Keyword--YDID заранее] #[+Keyword__Contrast--YDID не] знаем и #[+Keyword--YDID не] должны знать,
-        в каком файле будет использован компонент #[+Keyword--YDID Header], потому что суть #[+Term--YDID компонентов] в
-        том, что их можно использовать неограниченное количество раз на любой странице, причём иногда даже за пределами
-        проекта (если мы, например, разрабатываем компоненты с корпоративным брендингом для их использования в других
-        проектах).
+        в каком файле будет использован компонент #[+SecondaryEntity__Code--YDID Header], потому что суть
+        #[+Term--YDID компонентов] в том, что их можно использовать #[+Keyword--YDID неограниченное] количество раз
+        #[+Keyphrase--YDID на любой] странице, причём иногда даже за пределами проекта (если мы, например, разрабатываем
+        компоненты с корпоративным брендингом для их использования в других проектах).
 
     p.Article-Paragraph.
       Но что же теперь делать?
-      #[+Term--YDID Укороченные абсолютные пути] уже отсеяны, а теперь оказывается, что относительные тоже не подходят.
-      Короткий ответ: хорошая система сборки проекта должна вычислять правильные пути для #[+Keyword--YDID каждого]
-        выходного HTML-файла.
-      Разумеется, #[+ImportantEntity--YDID YDA] такую функциональность имеет.
+      #[+Term--YDID Укороченные абсолютные пути] уже отсеяны, а теперь оказывается, что относительные тоже
+        #[+Keyword--YDID не]&nbsp;подходят.
+      Однако, зорошая #[+Term--YDID система сборки проекта] должна вычислять правильные пути для
+        #[+Keyword--YDID каждого] #[+Keyword--YDID выходного] #[+Term--YDID HTML-файла] и #[+ImportantEntity--YDID YDA]
+        такую функциональность имеет.
 
 
     h2.Article-Heading2 Концепция ссылок на файлы ресурсов в YDA
@@ -323,15 +335,16 @@ block append SpecificContent
     p.Article-Paragraph.
       Суть в том, что используя #[+ImportantEntity--YDID YDA], в исходных #[+Term--YDID Pug-файлах] нужно
         #[+Keyword--YDID HTML-аттрибутам], обычно содержащим пути (#[+SecondaryEntity--YDID src],
-        #[+SecondaryEntity--YDID href] и т. д.) указывать #[+Keyword--YDID не] обычные абсолютные
-        или относительные пути, а пути в особом формате, который легко распознать по символам #[+ImportantEntity--YDID @]
-        или #[+ImportantEntity--YDID $] (они #[+Keyword--YDID не] эквиваленты, но обо всём по порядку).
-      Далее, в зависимости от режима сборки и настроек, #[+ImportantEntity--YDID YDA] вычислит либо
-        #[+Term--YDID относительные пути] #[+Keyphrase--YDID для каждой] HTML-страницы, либо
-        #[+Term--YDID укороченный абсолютные пути].
+        #[+SecondaryEntity--YDID href] и т. д.) указывать #[+Keyword--YDID не]&nbsp;обычные #[+Term--YDID абсолютные]
+        или #[+Term--YDID относительные пути], а #[+Term--YDID пути] #[+Keyword--YDID в особом формате], который легко
+        распознать по символам #[+ImportantEntity--YDID @] или #[+ImportantEntity--YDID $] (они
+        #[+Keyword--YDID не]&nbsp;эквиваленты, но обо всём по порядку).
+      Далее, #[+Keyphrase--YDID в зависимости от #[+Term--YDID режима сборки] и настроек], #[+ImportantEntity--YDID YDA]
+        #[+Keyword--YDID вычислит] либо #[+Term--YDID относительные пути] #[+Keyphrase--YDID для каждой] HTML-страницы,
+        либо #[+Term--YDID укороченный абсолютные пути].
 
     p.Article-Paragraph.
-      В случае файла #[+SecondaryEntity--YDID GrayCat.jpg] из примера выше, такой пусть в особом формате будет:
+      В случае файла #[+SecondaryEntity--YDID GrayCat.jpg] из примера выше, такой #[+Term--YDID путь] в особом формате будет:
 
     +CodeViewer--YDF
       +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Pug }).
@@ -352,9 +365,10 @@ block append SpecificContent
     })
 
     p.Article-Paragraph.
-      В данном случае можно даже опустить #[+SecondaryEntity--YDID .jpg]: #[+ImportantEntity--YDID YDA] понимает,
-        что #[+ImportantEntity--YDID src] внутри #[+ImportantEntity--YDID img], начинающийся с #[+ImportantEntity--YDID @],
-        ссылается на конкретную #[+Term--YDID группу изображений] #[+Keyphrase--YDID одного из поддерживаемых форматов]:
+      #[+Keyphrase--YDID В данном случае] можно даже опустить #[+SecondaryEntity--YDID .jpg]:
+        #[+ImportantEntity--YDID YDA] понимает, что #[+ImportantEntity--YDID src] внутри #[+ImportantEntity--YDID img],
+        начинающийся с #[+ImportantEntity--YDID @], ссылается на конкретную #[+Term--YDID группу изображений]
+        #[+Keyphrase--YDID одного из поддерживаемых форматов]:
 
     +CodeViewer--YDF
       +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Pug }).
@@ -367,10 +381,11 @@ block append SpecificContent
       #[+SecondaryEntity--YDID @Shared/Cats/GrayCat] можно называть «ссылкой на ресурс», однако слово «ссылка» может
         запутать, так как используется в разных значениях.
       Другое название — #[+Term--YDID алиасированный путь], означающее, что путь #[+Keyword--YDID изначально]
-        #[+Keyword--YDID не] является #[+Keyword__Contrast--YDID ни] абсолютным, #[+Keyword__Contrast--YDID ни] относительным,
-        а содержит #[+Term--YDID алиас] — указатель на главную директорию группы ресурсов, или же на конкретный файл,
-        если он конкретный один на группу (с изображениями такого в #[+ImportantEntity--YDID YDA] невозможно,
-        но возможно со стилями).
+        #[+Keyword__Contrast--YDID не]&nbsp;является #[+Keyword--YDID ни]]&nbsp;абсолютным,
+        #[+Keyword--YDID ни]&nbsp;относительным, а содержит #[+Term--YDID алиас] — указатель на главную директорию
+        #[+Term--YDID группы ресурсов], или же на #[+Keyword--YDID конкретный] файл,
+        если он один на группу (с изображениями такого в #[+ImportantEntity--YDID YDA] невозможно, но возможно со
+        #[+Term--YDID стилями]).
 
 
     h3.Article-Heading3 Абсолютный или относительный путь будет в итоге?
@@ -378,14 +393,14 @@ block append SpecificContent
     ul.Article-UnorderedList
 
       li.
-        По умолчанию, на основе указанных алиасированных путей, YDA попытается вычисляеть укороченные абсолютные пути
-          для всех режимов сборки, кроме статического превью.
-        Однако, если не указан публичный путь для целевого режима сборки, то укороченный абсолютные абсолютные пути
-          не могут быть вычислены и вместо них будут относительные пути.
-
-      li.
         Как было сказано выше, укороченные абсолютные пути несовместимы с концепцией статического превью,
           а потому в режиме статического превью пути всегда будут относительные.
+
+      li.
+        По умолчанию, на основе указанных #[+Term--YDID алиасированных путей], YDA попытается вычислить укороченные
+          абсолютные пути для всех режимов сборки, кроме статического превью.
+        Однако, если не указан публичный путь для целевого режима сборки, то укороченный абсолютные абсолютные пути
+          не могут быть вычислены и вместо них будут относительные пути.
 
       li.
         С помощью настроек, при необходимости можно вычислять относительные пути и на других режимах сборки.
@@ -397,15 +412,19 @@ block append SpecificContent
 
     h4.Article-Heading4 Обрабатываемые файлы
 
+    p.Article-Paragraph.
+      Обрабатываемыми файлами являются все, которые не&nbsp;связаны с задачей простое копирование.
+      #[+Term--YDID Алиасированный путь] в данном случае будет начинаться с #[+ImportantEntity--YDID @].
+
     h5.Article-Heading5 Группа произвольного количества файлов
 
     dl.Article-DescriptionList
 
-      dt Префикс алиаса
+      dt Префикс алиаса (Alias Prefix)
       dd.
-        Указывает, что данный путь является не обычным ...
+        Указывает, что данный путь является не обычным абсолютным или относительным путём, а путём в форма YDA.
 
-      dt ID группы ресурсов
+      dt ID группы ресурсов (Resources Group ID)
       dd Должны совпадать с ключами ассоциативного массива entryPointsGroups или assetsGroups
 
       dt Алис группы ресурсов
@@ -421,27 +440,21 @@ block append SpecificContent
 
     dl.Article-DescriptionList
 
-      dt Префикс асиса
+      dt Префикс алиаса (Alias Prefix)
       dd.
-        Указывает, что данный путь является не обычным ...
+        Указывает, что данный путь является не обычным абсолютным или относительным путём, а путём в форма YDA.
 
-      dt ID группы ресурсов
+      dt ID группы ресурсов (Resources Group ID)
       dd.
         Должны совпадать с ключами ассоциативного массива entryPointsGroups или assetsGroups.
 
       dt Алис группы ресурсов
-      dd Ссылается на ... группы
-
-      dt Пусь, относительный sourceFilesTopDirectoryRelativePath
-      dd
-
-      dt Необязательное расширение имени файла
-      dd Если файл имеет несколько расширений, то последнее можно опустить.
+      dd Ссылается на sourceFilesTopDirectoryRelativePath группы
 
 
     h4.Article-Heading4 Необрабатываемые файлы
 
-
+    //- TODO 再開点
     //-
 
       * As default, the **resources references** will be resolved to _absolute_ paths for all project building modes

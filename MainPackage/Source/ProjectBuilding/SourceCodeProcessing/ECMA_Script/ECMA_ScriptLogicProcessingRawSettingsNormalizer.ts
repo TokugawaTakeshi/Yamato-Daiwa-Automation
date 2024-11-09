@@ -19,13 +19,17 @@ import type ProjectBuildingCommonSettings__Normalized from
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Normalized";
 
-/* ─── Settings normalizers ───────────────────────────────────────────────────────────────────────────────────────── */
+/* ─── Settings Normalizers ───────────────────────────────────────────────────────────────────────────────────────── */
 import SourceCodeProcessingRawSettingsNormalizer from
     "@ProjectBuilding:Common/RawSettingsNormalizers/SourceCodeProcessingRawSettingsNormalizer";
 import RevisioningSettingsNormalizer from
     "@ProjectBuilding/Common/RawSettingsNormalizers/Reusables/RevisioningSettingsNormalizer";
 
+/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
+import TypeScriptSpecialist from "@ThirdPartySolutionsSpecialists/TypeScriptSpecialist";
+
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+import type TypeScript from "typescript";
 import { isUndefined, isNotUndefined } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
@@ -34,6 +38,9 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
   protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string> =
       ECMA_ScriptLogicProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots;
+
+  protected readonly cachedTypeScriptConfigurationsFilesRelativePathsAndCorrespondingCompilersOptions:
+      Map<string, TypeScript.CompilerOptions> = new Map();
 
 
   public static normalize(
@@ -60,7 +67,6 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
     > = dataHoldingSelfInstance.createNormalizedEntryPointsGroupsSettings(
       ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.entryPointsGroups,
       dataHoldingSelfInstance.
-          /* eslint-disable-next-line max-len -- Unable to split this line to multiple. */
           completeEntryPointsGroupNormalizedSettingsCommonPropertiesUntilECMA_ScriptLogicEntryPointsGroupNormalizedSettings.
           bind(dataHoldingSelfInstance)
     );
@@ -147,8 +153,27 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
     entryPointsGroupSettings__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup
   ): ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup {
 
-    const distributingSettings__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup
-        .Distributing | undefined = entryPointsGroupSettings__rawValid.distributing;
+    const distributingSettings__rawValid: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.
+        EntryPointsGroup.Distributing | undefined =
+            entryPointsGroupSettings__rawValid.distributing;
+
+    const typeScriptConfigurationFileRelativePath: string = ImprovedPath.replacePathSeparatorsToForwardSlashes(
+      entryPointsGroupSettings__rawValid.typeScriptConfigurationFileRelativePath ??
+      ECMA_ScriptLogicProcessingSettings__Default.typeScriptConfigurationFileRelativePath
+    );
+
+    const typeScriptConfigurationFileAbsolutePath: string = ImprovedPath.joinPathSegments(
+      [ this.consumingProjectRootDirectoryAbsolutePath, typeScriptConfigurationFileRelativePath ],
+      { alwaysForwardSlashSeparators: true }
+    );
+
+    const typeScriptCompilerOptions: Readonly<TypeScript.CompilerOptions> =
+        this.cachedTypeScriptConfigurationsFilesRelativePathsAndCorrespondingCompilersOptions.
+            get(typeScriptConfigurationFileRelativePath) ??
+        this.readAndCacheTypeScriptCompilerOptions({
+          typeScriptConfigurationFileAbsolutePath,
+          typeScriptConfigurationFileRelativePath
+        });
 
     return {
 
@@ -201,14 +226,15 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
                     associatedMarkupEntryPointsGroupID_ForDynamicModulesLoadingWithoutDevelopmentServer
           } : null,
 
-      typeScriptConfigurationFileAbsolutePath: ImprovedPath.joinPathSegments(
-        [
-          this.consumingProjectRootDirectoryAbsolutePath,
-          entryPointsGroupSettings__rawValid.typeScriptConfigurationFileRelativePath ??
-              ECMA_ScriptLogicProcessingSettings__Default.typeScriptConfigurationFileRelativePath
-        ],
-        { alwaysForwardSlashSeparators: true }
-      ),
+      typeScriptConfigurationFileAbsolutePath,
+
+      typeScriptCompilerOptions,
+
+      directoriesAliasesAndCorrespondingAbsolutePathsMap: ECMA_ScriptLogicProcessingRawSettingsNormalizer.
+          createDirectoriesAliasesAndCorrespondingAbsolutePathsMap(
+            typeScriptConfigurationFileAbsolutePath,
+            typeScriptCompilerOptions
+          ),
 
       revisioning: RevisioningSettingsNormalizer.normalize({
         revisioningSettings__rawValid: entryPointsGroupSettings__rawValid.
@@ -294,6 +320,66 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
       }
 
     };
+
+  }
+
+  private readAndCacheTypeScriptCompilerOptions(
+    {
+      typeScriptConfigurationFileAbsolutePath,
+      typeScriptConfigurationFileRelativePath
+    }: Readonly<{
+      typeScriptConfigurationFileAbsolutePath: string;
+      typeScriptConfigurationFileRelativePath: string;
+    }>
+
+  ): TypeScript.CompilerOptions {
+
+    const typeScriptCompilerOptions: TypeScript.CompilerOptions = TypeScriptSpecialist.
+        readTypeScriptConfigurationFileAndGetCompilerOptions(typeScriptConfigurationFileAbsolutePath);
+
+    this.cachedTypeScriptConfigurationsFilesRelativePathsAndCorrespondingCompilersOptions.set(
+      typeScriptConfigurationFileRelativePath, typeScriptCompilerOptions
+    );
+
+    return typeScriptCompilerOptions;
+
+  }
+
+  private static createDirectoriesAliasesAndCorrespondingAbsolutePathsMap(
+    typeScriptConfigurationFileAbsolutePath: string,
+    typeScriptCompilerOptions: Readonly<TypeScript.CompilerOptions>
+  ): ReadonlyMap<string, ReadonlyArray<string>> {
+
+    /* [ TypeScript theory ] If `baseUrl` has been specified in configuration file, once parsed, it will be the
+     +   absolute path herewith forward slashes path separators. */
+    const typeScriptBasicAbsolutePath: string =
+        typeScriptCompilerOptions.baseUrl ??
+        ImprovedPath.extractDirectoryFromFilePath({
+          targetPath: typeScriptConfigurationFileAbsolutePath,
+          alwaysForwardSlashSeparators: true,
+          ambiguitiesResolution: {
+            mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true,
+            mustConsiderLastSegmentStartingWithDotAsDirectory: false,
+            mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false
+          }
+        });
+
+    return new Map<string, ReadonlyArray<string>>(
+      Object.entries(typeScriptCompilerOptions.paths ?? {}).map(
+        ([ rawAlias, rawPaths ]: [ string, ReadonlyArray<string> ]): [ string, ReadonlyArray<string> ] => [
+          rawAlias.endsWith("/*") ? rawAlias.slice(0, -"/*".length) : rawAlias,
+          rawPaths.map(
+            (rawPath: string): string => ImprovedPath.joinPathSegments(
+              [
+                typeScriptBasicAbsolutePath,
+                ...rawPath.endsWith("/*") ? [ rawPath.slice(0, -"/*".length) ] : [ rawPath ]
+              ],
+              { alwaysForwardSlashSeparators: true }
+            )
+          )
+        ]
+      )
+    );
 
   }
 

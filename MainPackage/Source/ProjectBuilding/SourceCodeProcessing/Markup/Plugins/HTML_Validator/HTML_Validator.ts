@@ -1073,7 +1073,7 @@ namespace HTML_Validator {
 
 export default HTML_Validator;
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars --
-* It is the only way to extract the child namespace (no need to expose whole HTML_Validator for the localization packages).
-* https://stackoverflow.com/a/73400523/4818123 */
+
+/* It is the only way to extract the child namespace (no need to expose whole AccessibilityInspector for the localization
+ * packages). See https://stackoverflow.com/a/73400523/4818123 */
 export import HTML_ValidatorLocalization = HTML_Validator.Localization;

@@ -11,36 +11,36 @@ block append Metadata
 
   -
 
-    HTML_PAGE_LANGUAGE = "ja";
-    HTML_PAGE_TITLE = buildHTML_PageTitle("用語");
-    HTML_PageMetaData = {
-      description:
-          "「やまとダイワ自動化」（技術名：「Yamato Daiwa Automation」、略：「YDA」）と言うプロジェクト（クライアント・ウェブ・アプリケーション、サーバアプリケーション" +
-            "コンソル・ユーティリティ、ライブラリ）構成専用Node.jsユーティリティに使われている用語。" +
-          "一部分の用語は別の技術にも使われているが、その他の一部分は「やまとダイワ自動化」の開発が依り導入。",
-      author: HTML_PAGE_AUTHOR
-    };
-
-    FAVICON_URI = "@MustBeInPublicRoot/favicon";
-
-    styleSheetsURIs = [
-      "$CommonStyles",
-      "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
-      "$PreMadesStyles",
-      "@CustomizedExternalComponents"
-    ];
-
-    scriptsURIs.endOfBody = [ "$CommonLogic" ];
-
-    RoutingEmulator.setCurrentRoute("functionality.children.markupProcessing.children.basicPugToHTML_Transpiling");
-
-    LanguageDropDownList__YDF_DK.setLinks({
-      english: "./Terminology.english.html",
-      russian: "./Terminology.russian.html",
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle("用語"),
+        description:
+            "「やまとダイワ自動化」（技術名：「Yamato Daiwa Automation」、略：「YDA」）と言うプロジェクト（クライアント・ウェブ・アプリケーション、サーバアプリケーション" +
+              "コンソル・ユーティリティ、ライブラリ）構成専用Node.jsユーティリティに使われている用語。" +
+            "一部分の用語は別の技術にも使われているが、その他の一部分は「やまとダイワ自動化」の開発が依り導入。",
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
     });
 
+    RoutingEmulator.setCurrentRoute("terminology");
 
-block append HeadScriptsLinks
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: routing.english.terminology.$URI,
+      russian: routing.russian.terminology.$URI,
+    });
+
+    const {
+      $sectioning: localizedSectioning,
+      $heading: topHeading
+    } = routing.japanese.terminology;
+
+
+block append HeadScripts
 
   if __IS_PRODUCTION_BUILDING_MODE__
 
@@ -52,293 +52,498 @@ block append SpecificContent
   article
 
     //- ━━━ 用語 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    +Heading--YDF({ level: 1, text: localizedRouting.terminology.$heading }).Article-Heading1
+    h1.Article-Heading1= topHeading
 
     //- ━━━ YDA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.YDA.$heading,
-      HTML_ID: pageTableOfContents.YDA.$anchor
+      text: localizedSectioning.YDA.$heading,
+      HTML_ID: localizedSectioning.YDA.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
       #[+DefinableTerm--YDID YDA]（ウァイ・ディ・エイ）は、#[+ImportantEntity--YDID Yamato Daiwa Automation]と言う此の説明書サイトの対象
         と成っているツールの#[+Keyword--YDID 省略名]。
       此処で「Yamato Daiwa」は
-        #[+Link--YDF({ endorsedExternalURI: sharedExternalLinks.YamatoDaiwa.homePage.top }).Article-Link 株式会社やまとダイワ]
-        に参照し、カスタムウェブ開発、そしてフレームワークや#[+DefinableTerm--YDID YDA]を含むツールの開発に専門している。
+        #[+Link--YDF({ endorsedExternalURI: sharedExternalLinks.YamatoDaiwa.homePage.top }) 株式会社やまとダイワ]
+        に参照し、カスタムウェブ開発、そしてエンジニア育成及びフレームワークや#[+DefinableTerm--YDID YDA]を含むツールの開発に専門している。
       日本語の資料では#[+ImportantEntity--YDID 「やまとダイワ自動化」]と日本語名でも表記する。
 
 
     //- ━━━ プロジェクト ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
-      text: pageTableOfContents.project.$heading,
-      HTML_ID: pageTableOfContents.project.$anchor
+      text: localizedSectioning.project.$heading,
+      HTML_ID: localizedSectioning.project.$anchor
     }).Article-Heading2
 
     p.Article-Paragraph.
-      #[+Keyphrase--YDID プログラム文脈に於いて]、#[+DefinableTerm--YDID プロジェクト]はソフトウェア製品が構成される元に成っている
-  　　    但し共通の親ディレクトリを持っているファイル及びフォルダの揃いである。
-      #[+ImportantEntity--YDID やまとダイワ自動化]は個別のファイルでは#[+Keyword--YDID なく]、#[+Term--YDID プロジェクト]を取り扱っているので、
-        此の定義を態々記載する必要が有った。
+      #[+Keyphrase--YDID プログラム文脈に於いて]、具体的なディジタル製品（ウェブサイト、ウェブアプリケーション、コンソールアプリケーション、ネイティブアプリケーション、
+        ライブラリ等）の開発に必要で、#[+Keyword--YDID 共通の]#[+Keyword__Contrast--YDID 親]#[+Term--YDID ディレクトリ]を持っているファイル
+        及びフォルダの揃いである。
+      #[+ImportantEntity--YDID やまとダイワ自動化]は個別のファイルでは#[+Keyword--YDID なく]、#[+Term--YDID プロジェクト]専用のものだ。
 
 
     //- ─── プロジェクトの構成 ───────────────────────────────────────────────────────────────────────────────────────────────
     +Heading--YDF({
       level: 3,
-      text: pageTableOfContents.project.$children.building.$heading,
-      HTML_ID: pageTableOfContents.project.$children.building.$anchor
+      text: localizedSectioning.project.$children.building.$heading,
+      HTML_ID: localizedSectioning.project.$children.building.$anchor
     }).Article-Heading3
 
     p.Article-Paragraph.
-      「過程」及び「ファイルの揃い」と言う２つの意味が有る。
+      #[+Keyword--YDID 「過程」]及び#[+Keyword--YDID 「ファイルの揃い」]と言う#[+ImportantEntity--YDID ２つ]の意味が有る。
 
     ul.Article-UnorderedList
 
       li.
         #[+Keyphrase--YDID 過程として]#[+DefinableTerm--YDID プロジェクト構成]は#[+Term--YDID ソースコード]及び其の他の材料ファイルを元に
           #[+Term--YDID 出力ファイル]の生成である。
-        此の家庭は、#[+ImportantEntity--YDID やまとダイワ自動化]がしている中に主な事である。
+        此の#[+Keyword--YDID 過程]は、#[+ImportantEntity--YDID やまとダイワ自動化]がしている中に#[+Keyword--YDID 主な]事である。
 
       li.
-        #[+Keyphrase--YDID ファイル揃いとして]#[+DefinableTerm--YDID プロジェクト構成]は#[+Term--YDID 構成ディレクトリ]と呼ぶ共通ディレクトリの下
-          に揃ている#[+Term--YDID プロジェクト]の#[+Keyword--YDID 全ての]#[+Keyword__Contrast--YDID 出力]ファイルである。
-        特殊の場合に依って、共通#[+Term--YDID 構成ディレクトリ]規制が差支えに成っている事が有るので、#[+ImportantEntity--YDID やまとダイワ自動化]
-          だと、共通#[+Term--YDID 構成ディレクトリ]を#[+Keyword--YDID 求めていない]。
-    //- TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        #[+Keyphrase--YDID ファイル揃いとして]#[+DefinableTerm--YDID プロジェクト構成]は#[+Keyword--YDID 全ての]#[+Keyword--YDID 出力]
+          ファイルの#[+Keyword--YDID 揃い]である。
+        此のファイルの揃いは常に「構成ディレクトリ」と呼ぶ共通ディレクトリの下に出力される事が多いが、#[+ImportantEntity--YDID やまとダイワ自動化]はこう言った
+          規制は#[+Keyword--YDID 無い]。
+
     p.Article-Paragraph.
-      どんな技術でも#[+Term--YDID プロジェクト構成]が有る訳では#[+Keyword--YDID ない]。
+      どれの技術でも#[+Term--YDID プロジェクト構成]概念が有るとか#[+Keyword--YDID 限らない]。
       例えばウェブサイト又はウェブアプリケーションは純粋#[+SecondaryEntity--YDID HTML]、#[+SecondaryEntity--YDID CSS]と
-        #[+SecondaryEntity--YDID PHP]（最後の奴は解釈されるプログラミング言語即ちファイルはコンパイルせずに直接実行される）で作られた場合、
-        構成するものは無い。
+        #[+SecondaryEntity--YDID PHP]（最後の奴は解釈されるプログラミング言語、詰まりファイルはコンパイルせずに直接実行される）で作られた場合、
+        構成するものは#[+Keyword--YDID 無い]。
       #[+ImportantEntity--YDID やまとダイワ自動化]だと、#[+ImportantEntity--YDID Pug]、#[+ImportantEntity--YDID Stylus]、
         と#[+ImportantEntity--YDID TypeScript]言語専用なので、そろぞれ#[+ImportantEntity--YDID HTML]、#[+ImportantEntity--YDID CSS]
         と#[+ImportantEntity--YDID JavaScript]に変換されなければいけない。
-      其の他に、元の画像ファイルと出力画像ファイルは#[+Keyword--YDID 最適化]の為異なる事もある。
-      ソースファイルを処理せずにそもままで構成に使えば良い時、ソースファイルと出力ファイルを交ぜない様に、一般コピーを設定する事が可能。
+      其の他に、元の画像ファイルと出力画像ファイルは#[+Keyword--YDID 最適化]の為異なる事も有る。
+      ソースファイルを処理せずにそもままで構成に使えば良い時、ソースファイルと出力ファイルを交ぜない様に、一般コピーを設定する事も可能。
 
 
-    h2.Article-Heading2 ファイル・コード種類
-
-    h3.Article-Heading3 構造設計記法
+    //- ━━━ 課題 (Task) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.task.$heading,
+      HTML_ID: localizedSectioning.task.$anchor
+    }).Article-Heading2
 
     p.Article-Paragraph.
-      英語・片仮名語表記の
-        #[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/6sYb" }).Article-Link マークアップ]に該当する。
-      #[+ImportantEntity--YDID やまとダイワ自動化]内では、主に
-        #[+Link--YDF({ unendorsedExternalURI: sharedExternalLinks.pug.homePage.top }).Article-Link Pug]
-        で書かれたソースコードか、#[+Term--YDID 出力HTMLコード]を指す。
+      #[+Keyphrase--YDID プロジェクト構成文脈の於いて]、#[+DefinableTerm--YDID 課題]は#[+Term--YDID プロジェクトの構成]自動化の中に
+        コンピューター専用の特定の仕事。
+      #[+ImportantEntity--YDID やまとダイワ自動化]が専門している#[+Term--YDID 課題]の中に、下記の項目は主だ。
+
+    ul.Article-UnorderedList
+
+      li.
+        #[+ImportantEntity--YDID Pug]言語で書かれた#[+Term--YDID 構造設計記]（#[+Term--YDID マークアップ]）の処理
+
+
+      li.
+        #[+ImportantEntity--YDID Stylus]言語で書かれた#[+Term--YDID 意匠設計記法]（#[+Term--YDID スタイルシート]）の処理
+
+      li.
+        #[+ImportantEntity--YDID TypeScript]言語で書かれた#[+Term--YDID 挙動制御記法]（#[+Term--YDID ロジック]）の処理。
+        当言語はプリプロセッサで呼ばれる事は少ないが、此れのインタプリタが普及されない限り、事実上プリプロセッサ言語である。
+        #[+Term--YDID ブラウザー専用JavaScript]にも、#[+ImportantEntity--YDID Node.js]にも変換（トランスパイリング）可能。
+
+      li 画像の処理
+
+      li 活字、動画、オーディオ及び其の他の種類のファイルのコピー
+
+      li #[+Term--YDID プロジェクト]処理構成に応じてブラウザーの自動起動及び出力コードの更新に応じてブラウザーのページの自動リロード
+
+      li #[+Term--YDID プロジェクト]処理構成に応じて#[+Term--YDID Node.jsサーバ]の自動起動及び出力コードの更新に応じて此のサーバの自動再起動
+
+
+    //- ━━━ 作業順序・シナリオ（Scenario） ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.scenario.$heading,
+      HTML_ID: localizedSectioning.scenario.$anchor
+    }).Article-Heading2
+
+    p.Article-Paragraph
+      +Keyphrase--YDID.
+        #[+ImportantEntity--YDID YDA]及び#[+ImportantEntity--YDID Gulp]の様に#[+Term--YDID プロジェクト構成]手段の文脈に於いて]、
+      | #[+DefinableTerm--YDID 作業順序]（#[+DefinableTerm--YDID シナリオ]）は#[+Term--YDID 順番]・#[+Term--YDID 並行]で並べてある
+      |   #[+Term--YDID 課題]の#[+Keyword--YDID 揃い]である。
+
+    p.Article-Paragraph.
+      正常可能、パフォーマンスの最適化、#[+Keyword--YDID 両方]#[+Term--YDID 課題]の正しい並び順に#[+Keyword--YDID 依存]している。
+      例えば、#[+Term--YDID 構造設計記法]（#[+Term--YDID マークアップ]）の処理は其の他の種類のファイルの処理が終わってからでなないと、
+        #[+Term--YDID 意匠設計記法]（#[+Term--YDID スタイル]）や画像等にパスの算出が可能。
+      そして、ブラウザーの自動起動、#[+Term--YDID 構造設計記法]を含めて全てのファイルの処理が出来てからに#[+Keyword--YDID しなければいけない]。
+
+    p.Article-Paragraph.
+      #[+ImportantEntity--YDID YDA]は#[+ImportantEntity--YDID Gulp]に比べてより高水準の手段なので、利用者にとって
+        #[+Term--YDID 課題]を#[+Term--YDID 順番]・#[+Term--YDID 並行]で並べる事に就いて構う必要は無く、利用可能な
+        #[+Term--YDID 作業順序]を知るだけで良い。
+
+    p.Article-Paragraph.
+      現在、#[+ImportantEntity--YDID YDA]は下記の#[+Term--YDID 作業順序]を提供している。
+
+    dl.Article-DescriptionList
+
+      dt プロジェクト増分構成 (Incremental building of project)
+      dd.
+        #[+Keyword--YDID 先ず]は#[+Keyword__Contrast--YDID 完全な]#[+Term--YDID プロジェクト構成]が実行され、其の
+          #[+Keyword--YDID 後]、#[+Keyword--YDID ソース]ファイルの編集の更新と共に#[+Keyword--YDID 選択的な]再構成が行われる。
+        此の様に、アプリケーションは#[+Keyword--YDID 手動]停止されられないか、致命的なエラーが発生する迄に実装し続けられる。
+        必要に応じて、プラウザーの自動起動（#[+Term--YDID プロジェクト]にフロントエンド部分が有る場合）若しくはローカルサーバ自動起動
+        （プロジェクトに#[+ImportantEntity--YDID Node.js]バックエンド部分が有る場合）が設定出来る。
+
+      dt 納品系 (Production-like building of project)
+      dd.
+        #[+Term--YDID プロジェクト]が#[+Keyword--YDID 完全に]構成されてから、#[+ImportantEntity--YDID YDA]が正常
+          #[+Keyword--YDID 終了]する。
+        此のシナリオの用途上、ブラウザーページの自動リロードの様な機能は、#[+Keyword--YDID 此の#[+Term--YDID 作業順序]には]#[+Keyword--YDID 無い]。
+
+
+    //- ━━━ プロジェクト構成モード（Project building mode） ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.projectBuildingMode.$heading,
+      HTML_ID: localizedSectioning.projectBuildingMode.$anchor
+    }).Article-Heading2
+
+    p.Article-Paragraph.
+      #[+Keyword--YDID 両方]の#[+Term--YDID 作業順序]は#[+Keyword--YDID 複数の]#[+Term--YDID プロジェクト構成モード]で行われ、
+        #[+Keyword--YDID 各]#[+Term--YDID モード]は特定が有る。
+      #[+ImportantEntity--YDID YDA]は下記の#[+ImportantEntity--YDID 5件]の#[+Term--YDID プロジェクト構成モード]を提供。
+      ウェブサイトか、GUIアプリケーションの開発の場合、当#[+Term--YDID モード]を#[+Keyword--YDID 段階]として見做しても良いが、
+        プロダクト全体開発の段階では#[+Keyword--YDID なく]、#[+Keyphrase--YDID 特定の一ページ又は特定の機能の]開発の段階である。
+
+    dl.Article-DescriptionList
+
+      dt 増分（Incremental）
+      dd
+
+        p.Article-Paragraph.
+          #[+Term--YDID プロジェクト増分構成作業順序]に該当。
+          此の#[+Term--YDID 作業順序]通り、#[+Keyword--YDID 先ず]#[+Term--YDID プロジェクト]の#[+Keyword--YDID 完全な]
+            #[+Term--YDID 構成]が行われてから、ソースコードの変化と共に、#[+Keyword--YDID 自動的に]変わった分だけ再構成される。
+          #[+Keyword--YDID 全ての]#[+Term--YDID プロジェクト増分構成モード]にとって、#[+Term--YDID プロジェクト構成ツール]から良い
+            パフォーマンス最適が求められる。
+          尚、ウェブサイトとGUIアプリケーション開発の場合、ブラウザーの#[+Keyword--YDID 自動的な]ページリロードや、其の他のプロダクト開発を便利にしている
+            対策が需要と成り、#[+Term--YDID HTMLコード]妥当性違反の様に様々な問題に就いて可能な限り早い通知を含む。
+
+        dl.Article-DescriptionList
+
+          dt 静的プレビュー（Static preview）
+          dd
+            | 開発者が#[+Keyword--YDID 完全に]#[+Term--YDID マーカップ]及び#[+Term--YDID スタイル]#[+Keyword--YDID のみ]に集中
+            |   している様な開発の段階として考案され、#[+Term--YDID JavaScript挙動]且つサーバ側の開発は其の#[+Keyword--YDID 次の]
+            |   段階と成っている。
+            | 此の様に、当#[+Term--YDID プロジェクト構成モード]の対象はウェブサイトとGUIアプリケーション#[+Keyword--YDID だけ]。
+            | #[+Term--YDID プロジェクト構成ツール]宛ての要求は、
+            Keyphrase--YDID.
+              技術知識や#[+SecondaryEntity--YDID npm]や#[+SecondaryEntity--YDID Git]の様にエンジニア向けソフトウェアが無くても
+            | 、依頼側や経営側に依り出力ファイルがブラウザーに開かれた際、画像や其の他の復号媒体ファイルを含めて、正常な表示の確保。
+            | 簡単に言えば、「ダウンロードされた#[+Term--YDID HTMLファイル]をブラウザーで開くと、全部正常に表示される」と言う原理が守られなければいけない。
+
+          dt ローカル開発 (Local development)
+          dd.
+            ウェブサイトやGUIアプリケーションの場合、直前の段階と違って、此の段階ではクライアント側の#[+Keyword--YDID 本格的な]
+              #[+Term--YDID JavaScript動態]、そしてサーバー側の実装が行われている。
+            此の段階では#[+Term--YDID プロジェクト構成ツール]から、上記の#[+Term--YDID 増分構成モード]の共通要求以外、
+              出力ファイルの更新に応じてローカルサーバーの#[+Keyword--YDID 自動]再起動の様に追加機能が求められている。
+
+      dt 納品系 (Production-like)
+      dd
+
+        p.Article-Paragraph.
+          ウェブサイト又はアプリケーションを公開する前に、テストサーバ―に実行され、以前の段階で検出されなかったバグを検出する為にテスターの為に有限なアクセス
+            が設定される事は普通。
+          此の段階群だと、構成されたサイト・アプリケーションはローカルコンピューターでは#[+Keyword--YDID なく]、#[+Keyword__Contrast--YDID 遠隔]
+            サーバーでの実行専用なので、ファイルの更新に応じてプロジェクトの自動再構成やブラウザーページの自動リロードの様な機能は#[+Keyword--YDID 無い]。
+          当構成は公開専用版（「納品」、だから当モードの群は「納品系」と呼ぶ）に近くなければいけないが、具体的なモードに依ってログのレーベルやデータセットの様な
+            特性に違いがある。
+
+        dl.Article-DescriptionList
+
+          dt テスティング (Testing)
+          dd.
+            #[+Term--YDID ローカル開発モード]と違って、此のモードで構成されたサイト・アプリケーションにテスターや営業者や其の他の関係者がアクセスがある。
+            名前から自明的ではあるが、該当している段階の主な目的はテスティングを行う事に依り不具合（バグ）を発見する事。
+
+          dt ステージング（Staging）
+          dd.
+            大規模のプロジェクトに於いて、テスティング版と他に「ステージング」と呼ぶ似た様な版もよくある。
+            違いが多くなく、主にテストしやすいデータではなく、実データに近いデータの利用。
+            其の御蔭で、依頼側は公開されたサイト・アプリケーションを使っている印象がある。
+            だからこそ、依頼側に提示したい場合、テスティング版ではなく、ステージングを提示すれば良い。
+
+          dt 納品 (Production)
+          dd.
+            此のモードで構成されたウェブサイト・ウェブアプリケーションは公開・対象利用専用。
+            以前の構成モードに比べて、セキュリティーの#[+Keyword--YDID 最厳]設定が必要に成り、データを何気無く変更・削除すると、様々な規模の損害
+              が発生するので、注意して取り扱わなければいけない。
+            尚、此の段階では開発者がブラウザーコンソールへの出力を可能な限り少なくする傾向がある。
+
+
+    //- ━━━ 初期位置・子ファイル (Entry points / children files) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$anchor
+    }).Article-Heading2
+
+    p.Article-Paragraph.
+      #[+DefinableTerm--YDID 初期位置]は英語・片仮名語表記の「エントリポイント」に該当するものであり、#[+Term--YDID デザインパターン]の名前。
+      #[+Keyword--YDID 一般的に]プログラムが実行が始まる#[+Term--YDID ファイル]、#[+Term--YDID 関数]又は#[+Term--YDID クラス]の
+        #[+Term__Contrast--YDID メソッド]を意味し、
+      詳細な意味は技術に依って異なる。
+
+    p.Article-Paragraph.
+      殆どの現代プログラミング言語及びプリプロセッサはソースファイルを何れでもの成分に別ける機能がある。
+      此処で#[+Term--YDID 親ファイル]及び#[+Term--YDID 子ファイル]を判別する必要が有る。
+      #[+Term--YDID 子ファイル]も成分に別ける事が出来るので、ツリー系の階層構造と成り、一番上に在るのは#[+Term--YDID 初期位置]である。
 
     +AdmonitionBlock--YDF({
-      title: "日本語考案者の解説",
-      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice,
+      SVG_Icon: true,
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice
+    }).
+      英語の情報源に於いて、#[+Term--YDID 子ファイル]よく「partial files」と呼ばれるが、「partial」形容詞（「部分的」）自体は#[+Term--YDID 垂直階層]
+        暗示#[+Keyword--YDID していない]。
+      #[+Term--YDID 垂直階層]は#[+ImportantEntity--YDID YDA]に於いて考慮#[+Keyword--YDID 必須]なので、#[+Term--YDID 「子ファイル」]
+        と言う用語が選ばれた。
+
+
+    //- ─── ファイル種類毎 ─────────────────────────────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$anchor
+    }).Article-Heading3
+
+    //- ─── マークアップ ───────────────────────────────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      text: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.markup.$heading,
+      HTML_ID: localizedSectioning.entryPointsAndChildrenFiles.$children.byFileType.$children.markup.$anchor
+    }).Article-Heading4
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID #[+Term--YDID マークアップ]の場合]、#[+Term__Contrast--YDID 初期位置]は
+        #[+Keyword--YDID 完成した]#[+Term--YDID HTMLドキュメント]に#[+Keyword--YDID 該当]している。
+
+    p.Article-Paragraph.
+      #[+Term--YDID 初期位置]は#[+Term__Contrast--YDID 子ファイル]が無いが合い、#[+Term--YDID HTML]への変換の結果
+        #[+Keyword--YDID 妥当な]#[+Term--YDID HTMLドキュメント]が取得される。
+      #[+Term--YDID 子ファイル]が有った場合、#[+Keyphrase--YDID 独立的に#[+ImportantEntity--YDID HTML]に変化したはならなく]、
+        変化すると妥当な#[+Term--YDID HTMLドキュメント]には#[+Keyword--YDID ならない]。
+
+    p.Article-Paragraph.
+      #[+Keyword--YDID 一般]#[+Term--YDID HTMLファイル]を複数のファイルに別ける事が#[+Keyword--YDID 不可能]だが、
+        #[+ImportantEntity--YDID Pug]を含めて#[+Term--YDID HTMLプリプロセッサ]はソースコードの段階で此の機能が有る。
+      #[+ImportantEntity--YDID Pug]プリプロセッサを活用している#[+ImportantEntity--YDID YDA]に於いて#[+Term--YDID 初期位置]
+        は#[+Keyword--YDID ソース]#[+Term--YDID Pugファイル]に#[+Keyword--YDID も]#[+Keyword--YDID 出力]#[+Term--YDID HTMLファイル]
+        にも適用。
+      #[+Term--YDID 子ファイル]を#[+Term__Contrast--YDID 初期位置]又は他の#[+Term__Contrast--YDID 子ファイル]に含むには
+        #[+ImportantEntity__Code--YDID include]#[+Term--YDID ディレクティブ]が利用される。
+      #[+ImportantEntity--YDID extends]#[+Term--YDID ディレクティブ]も#[+Term--YDID 子ファイル]の利用を意味し、理由としては
+        継承されるファイル自体は完成した#[+Term--YDID HTMLドキュメント]を代表しているとは#[+Keyword--YDID 限らない]。
+
+    +AdmonitionBlock--YDF({
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning,
       SVG_Icon: true
     }).
-      「構造設計」は建築物の設計で使われる用語で、建物の土台や骨組みなど、強度に直結する基本的な構造部分の設計を意味します。
-      この言葉は、インターフェースの基本構造を決めるHTMLにもマッチすると考えました。
+      #[+Term--YDID Pugファイル]は#[+Term__Contrast--YDID 初期位置]を代表しているとは限らないが、#[+Keyword--YDID 何れでもの]
+        #[+Keyword--YDID 妥当な]#[+Term--YDID HTMLファイル]は#[+Term__Contrast--YDID 初期位置]になっているのだ。
+    //- TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //-
 
-    p.Article-Paragraph.
-      日本の文化を尊重する#[+ImportantEntity--YDID やまとダイワ]は、積極的な日本語（漢字語）の使用と普及を推進している。
-      英字や片仮名で表記される外来語を（可能な限り）日本語に置き換える他、現在では殆ど使われなくなった古い漢字も使っている。
+      p.Article-Paragraph.
+        英語・片仮名語表記の
+          #[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/6sYb" }) マークアップ]に該当する。
+        #[+ImportantEntity--YDID やまとダイワ自動化]内では、主に
+          #[+Link--YDF({ unendorsedExternalURI: sharedExternalLinks.pug.homePage.top }) Pug]
+          で書かれたソースコードか、#[+Term--YDID 出力HTMLコード]を指す。
 
+      +AdmonitionBlock--YDF({
+        title: "日本語考案者の解説",
+        decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice,
+        SVG_Icon: true
+      }).
+        「構造設計」は建築物の設計で使われる用語で、建物の土台や骨組みなど、強度に直結する基本的な構造部分の設計を意味します。
+        この言葉は、インターフェースの基本構造を決めるHTMLにもマッチすると考えました。
 
-    h3.Article-Heading3 構造設計記法
-
-    p.Article-Paragraph.
-      英語・片仮名語表記の#[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/7GSz" }).Article-Link スタイル]。
-
-    +AdmonitionBlock--YDF({
-      title: "日本語考案者の解説",
-      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice,
-     SVG_Icon: true
-    }) 人工的な造形物のデザインを意味する「意匠」で「意匠設計」とするほうが、「外見設計」よりもカッチリした雰囲気になり、プロ開発者向けの専門用語にふさわしいと考えます。
-
-    p.Article-Paragraph やまとダイワでは「積極的な日本語の使用」を推進中。
-
-
-    h3.Article-Heading3 挙動制御記法
-
-    p.Article-Paragraph.
-      英語・片仮名語表記の#[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/7GoA" }).Article-Link （命令）プログラミング言語]。
-
-    +AdmonitionBlock--YDF({
-      title: "日本語考案者の解説",
-      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice,
-     SVG_Icon: true
-    }).
-      「挙動」ではなく「動作」でも良いのですが、こちらのほうがより専門的な響きになり、なおかつプログラミング言語の役割である「振る舞い」に最もふさわしい表現です。
-      「制御」には「制して御する」の言葉通り、「意のままに操る」という意味があります。
-      プログラミング言語は挙動を制御するための記法である、という解釈です。
-
-    p.Article-Paragraph.
-      やまとダイワでは「積極的な日本語の使用」を推進中。
-
-    p.Article-Paragraph.
-      #[+ImportantEntity--YDID やまとダイワ自動化]にとって重要なのは、#[+ImportantEntity--YDID ECMAScript制御記法]。
-      元コードは#[+ImportantEntity--YDID TypeScript]で書かれるが、#[+Term--YDID ブラウザー専用JavaScript]、又は
-        #[+ImportantEntity--YDID Node.js]に変換され、どちらにせよ#[+Term--YDID ECMAScript規格]に基づいている。
+      p.Article-Paragraph.
+        日本の文化を尊重する#[+ImportantEntity--YDID やまとダイワ]は、積極的な日本語（漢字語）の使用と普及を推進している。
+        英字や片仮名で表記される外来語を（可能な限り）日本語に置き換える他、現在では殆ど使われなくなった古い漢字も使っている。
 
 
-    h2.Article-Heading2 課題
+      h3.Article-Heading3 構造設計記法
 
-    p.Article-Paragraph.
-      #[+Keyphrase--YDID プロジェクト構成文脈の於いて]、#[+DefinableTerm--YDID 課題]はプロジェクトの構成に於けるコンピューター専用の仕事。
-      現在#[+ImportantEntity--YDID やまとダイワ自動化]では、下記の課題に対応可能。
+      p.Article-Paragraph.
+        英語・片仮名語表記の#[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/7GSz" }) スタイル]。
 
-    ul.Article-UnorderedList
-      li 構造設計記法処理
-      li 意匠設計記法処理
-      li ECMAScript挙動制御記法処理
-      li 画像ファイル処理
-      li 活字ファイルのコピー
-      li オーディオファイルのコピー
-      li 動画ファイルのコピー
-      li ブラウザー自動リロード
+      +AdmonitionBlock--YDF({
+        title: "日本語考案者の解説",
+        decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice,
+       SVG_Icon: true
+      }) 人工的な造形物のデザインを意味する「意匠」で「意匠設計」とするほうが、「外見設計」よりもカッチリした雰囲気になり、プロ開発者向けの専門用語にふさわしいと考えます。
+
+      p.Article-Paragraph やまとダイワでは「積極的な日本語の使用」を推進中。
 
 
-    h2.Article-Heading2 作業順序
+      h3.Article-Heading3 挙動制御記法
 
-    p.Article-Paragraph.
-      課題は作業の順序に沿って適切に並べられる。
-      正しい課題の並び順は、プロジェクトの正常稼働と計算リソースの最適化の両方に必要。
+      p.Article-Paragraph.
+        英語・片仮名語表記の#[+Link--YDF({ unendorsedExternalURI: "https://w.wiki/7GoA" }) （命令）プログラミング言語]。
 
+      +AdmonitionBlock--YDF({
+        title: "日本語考案者の解説",
+        decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.notice,
+       SVG_Icon: true
+      }).
+        「挙動」ではなく「動作」でも良いのですが、こちらのほうがより専門的な響きになり、なおかつプログラミング言語の役割である「振る舞い」に最もふさわしい表現です。
+        「制御」には「制して御する」の言葉通り、「意のままに操る」という意味があります。
+        プログラミング言語は挙動を制御するための記法である、という解釈です。
 
-    h2.Article-Heading2 プロジェクト構成モード
+      p.Article-Paragraph.
+        やまとダイワでは「積極的な日本語の使用」を推進中。
 
-    p.Article-Paragraph.
-      開発の際、元コードのファイルの保存直後にアプリケーションを自動的に再構成し、ブラウザーが自動的に再読み込みする機能は便利であるが、納品版を構成する時は此の様な機能は必要ない。
-      此の様な特性は、「プロジェクト構成モード」という概念を生んだ。
-      #[+ImportantEntity--YDID やまとダイワ自動化]は下記のモードに対応している。
-
-    ul.Article-UnorderedList
-      li 静的プレビュー
-      li ローカル開発
-      li 機能テスト
-      li ステージング
-      li 納品
-
-    p.Article-Paragraph.
-      構成モードと環境を同一視してはならない。例えばIS_PRODUCTIONと言う変数が在るとしたら、其れが構成モードを参照しているのか、環境を参照しているのかは不明だ。
-      構成モードなら、IS_PRODUCTIONの値はプロジェクト構成中に初期化され、構成されて以降値の変更は出来ない。
-      環境変数なら、アプリケーションが構成されてから起動される際に値を変えることが出来る
-
-      上記を考慮し、やまとダイワ自動化ではPug、Stylus**、TypeScript用に次の変数を用意している。
-
-    table
-      thead
-        tr
-          td 構成モード
-          td 変数名
-      tbody
-        tr
-          th 静的プレビュー
-          td _IS_STATIC_PREVIEW_BUILDING_MODE__
-        tr
-          th ローカル開発
-          td __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__
-        tr
-          th 機能テスト
-          td __IS_TESTING_BUILDING_MODE__
-        tr
-          th ステージング
-          td __IS_STAGING_BUILDING_MODE__
-        tr
-          th 納品
-          td __IS_PRODUCTION_BUILDING_MODE__
-
-    h2.Article-Heading2 開始位置・子ファイル
-
-    p.Article-Paragraph.
-      英語・片仮名語表記の「エントリポイント」に該当するものであり、デザインパターンの名前。
-      詳細な意味はファイル類や技術に依って異なる。
-
-    h3.Article-Heading3 構造設計記法に於いて
-
-    p.Article-Paragraph.
-      #[+Term--YDID 構造設計記法]に於いては、各開始位置は完成したHTMLファイルを代表する。
-      基本的に単一のHTMLファイルを複数ファイルに別ける事は不可能だが、Pugの様なプリプロセッサの御蔭で、複数の「.pug」ファイルから単一のHTMLファイルを[構成出来る](https://pugjs.org/language/includes.html)。
-      此処で、親ファイル（開始位置）と子ファイルに区別される。
-      開始位置は子ファイルの中身と一緒にHTMLファイルにコンパイルされるが、子ファイルは単独でHTMLファイルにコンパイルされる事はない。
+      p.Article-Paragraph.
+        #[+ImportantEntity--YDID やまとダイワ自動化]にとって重要なのは、#[+ImportantEntity--YDID ECMAScript制御記法]。
+        元コードは#[+ImportantEntity--YDID TypeScript]で書かれるが、#[+Term--YDID ブラウザー専用JavaScript]、又は
+          #[+ImportantEntity--YDID Node.js]に変換され、どちらにせよ#[+Term--YDID ECMAScript規格]に基づいている。
 
 
-    h3.Article-Heading3 意匠設計記法に於いて
-
-    p.Article-Paragraph.
-      #[+Term--YDID 意匠設計記法]に於いては、各#[+Term--YDID 開始位置は]は完成したCSSファイルを代表する。
-      HTMLドキュメント１件当たりに複数のCSSファイルが置かれる事は、ウエブサイト・ウエブアプリに関係無く、現在・過去も関係無く、全く普通の手法である。
-      然し此の他に、複数のファイルから一つのCSSファイルを構成するやり方もあり、事実上此の二つのやり方が両立している。
-        （例えば、１件目のCSSファイルは共通のスタイルを含め、２件目のCSSファイルは特定ページのスタイルのみ含める。但し両方のCSSファイルが複数の元ファイルから構成された場合）
-      基本的に単一のCSSファイルを複数のファイルに別ける事は不可能だが、Stylusの様なプリプロセッサの御蔭で、複数の「.styl」ファイルから単一のCSSファイルを[構成出来る](https://stylus-lang.com/docs/import.html)。
 
 
-    h3.Article-Heading3 挙動制御記法
 
-    p.Article-Paragraph.
-      #[+Term--YDID 挙動制御記法]に於いては、各開始位置は完成したJavaScriptファイルを代表する。
+      h2.Article-Heading2 プロジェクト構成モード
 
+      p.Article-Paragraph.
+        開発の際、元コードのファイルの保存直後にアプリケーションを自動的に再構成し、ブラウザーが自動的に再読み込みする機能は便利であるが、納品版を構成する時は此の様な機能は必要ない。
+        此の様な特性は、「プロジェクト構成モード」という概念を生んだ。
+        #[+ImportantEntity--YDID やまとダイワ自動化]は下記のモードに対応している。
 
-    h4.Article-Heading4 クライアント側
+      ul.Article-UnorderedList
+        li 静的プレビュー
+        li ローカル開発
+        li 機能テスト
+        li ステージング
+        li 納品
 
-    p.Article-Paragraph.
-      クライアント側の場合、現代では1ページ当たりの開始位置は単一であるべきだ（違反は「アンチパターン」と呼ぶ）。
-      [Webpack](https://webpack.js.org)を使っているやまとダイワ自動化は、複数のファイルから開始位置を構成する事も出来るし、
-        最適化の為に[動的ロードされる子ファイルを生成する](https://webpack.js.org/guides/code-splitting/)事も可能。
+      p.Article-Paragraph.
+        構成モードと環境を同一視してはならない。例えばIS_PRODUCTIONと言う変数が在るとしたら、其れが構成モードを参照しているのか、環境を参照しているのかは不明だ。
+        構成モードなら、IS_PRODUCTIONの値はプロジェクト構成中に初期化され、構成されて以降値の変更は出来ない。
+        環境変数なら、アプリケーションが構成されてから起動される際に値を変えることが出来る
 
-    p.Article-Paragraph.
-      シングルページアプリケーションの場合、アプリケーション当たりの開始位置は１件のみであるべきが、ウェブサイトの場合、各ページに特定の開始位置がある事は普通だ。
+        上記を考慮し、やまとダイワ自動化ではPug、Stylus**、TypeScript用に次の変数を用意している。
 
-
-    h4.Article-Heading4 サーバ側
-
-    p.Article-Paragraph.
-      サーバ側にとって、単一の開始位置は特に強く推奨される開発パターンであり、此れに反するやり方はセキュリティの脆弱化に繋がると考えられる。
-
-
-    h3.Article-Heading3 関連用語
-    h4.Article-Heading4 開始位置群
-
-    p.Article-Paragraph.
-      #[+ImportantEntity--YDID やまとダイワ自動化]は開始位置を群毎に扱っているが、単一の開始位置群の扱いも可能だ。
-      特定の開始位置群に該当するファイルは特定のディレクトリ下に置くべきだが、開始位置と子ファイルが混在していても、やまとダイワ自動化なら判別のための設定が出来る。
-
-
-    h4.Article-Heading4 開始位置群参照
-
-    p.Article-Paragraph.
-      元コードに対しては、開始位置や複合媒体ファイルへのパスを指定する際に、絶対パス・相対パスの両方を使わない方が良い。
-      絶対パスだと、静的プレビューがローカルサーバを使わずに意匠設計ファイルや画像ファイル等を読み込まなくなる。相対パスの場合は、子ファイルによって同じファイルへのリンク先が異なる為、納品版では非推奨。
-
-      代わりに開始位置群参照を使ってパスを指定すれば、やまとダイワ自動化は構成モードに応じて、各ファイルに最適なパスを算出出来る。
-      開始位置群参照を使ったパスは「@Pages/About/About」といった感じになり、ファイル名の拡張子は自動的に判断され、日本語にも対応している。
-
-
-    h2.Article-Heading2 素材
-
-    p.Article-Paragraph.
-      英語・片仮名語表記では「アセット」。主に、画像・音源・動画・文字といった素材を表す名称。
+      table
+        thead
+          tr
+            td 構成モード
+            td 変数名
+        tbody
+          tr
+            th 静的プレビュー
+            td _IS_STATIC_PREVIEW_BUILDING_MODE__
+          tr
+            th ローカル開発
+            td __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__
+          tr
+            th 機能テスト
+            td __IS_TESTING_BUILDING_MODE__
+          tr
+            th ステージング
+            td __IS_STAGING_BUILDING_MODE__
+          tr
+            th 納品
+            td __IS_PRODUCTION_BUILDING_MODE__
 
 
-    h2.Article-Heading2 選択的実行
+      h3.Article-Heading3 構造設計記法に於いて
 
-    p.Article-Paragraph.
-      指定された課題と開始位置群のみを処理する事。
-      規定では全ての課題と開始位置群が実行されるが、選択的に実行する事も出来る。
-
-
-    h2.Article-Heading2  「やまとダイワ自動化」以外でも使われる用語
-
-    h3.Article-Heading3 省略絶対パス（shortened absolute path）
-
-    p.Article-Paragraph.
-      無[オリジン](https://developer.mozilla.org/ja/docs/Glossary/Origin)のURIであり、「/」から始まる。
-      例えば絶対パス「 http://example.com/app1/index.html 」の場合、省略形の絶対パスは「 /app1/index.html 」。
-      但しシステムは完全な絶対パスへの変換が可能でなくてはならない。
+      p.Article-Paragraph.
+        #[+Term--YDID 構造設計記法]に於いては、各開始位置は完成したHTMLファイルを代表する。
+        基本的に単一のHTMLファイルを複数ファイルに別ける事は不可能だが、Pugの様なプリプロセッサの御蔭で、複数の「.pug」ファイルから単一のHTMLファイルを[構成出来る](https://pugjs.org/language/includes.html)。
+        此処で、親ファイル（開始位置）と子ファイルに区別される。
+        開始位置は子ファイルの中身と一緒にHTMLファイルにコンパイルされるが、子ファイルは単独でHTMLファイルにコンパイルされる事はない。
 
 
-    h3.Article-Heading3 公開パス（public path）
+      h3.Article-Heading3 意匠設計記法に於いて
 
-    p.Article-Paragraph.
-      サーバアプリケーションに於いて、無制限でアクセス出来るファイルが保管されているディレクトリであり、常に「public」と名付けられる。
-      例えば、URI「 http://example.com/app1/index.html 」の場合、「 index.html 」ファイルはサーバー上の
-      「＜サーバーアプリケーションディレクトリ＞/public/app1/index.html」で保管される可能性が高い。
+      p.Article-Paragraph.
+        #[+Term--YDID 意匠設計記法]に於いては、各#[+Term--YDID 開始位置は]は完成したCSSファイルを代表する。
+        HTMLドキュメント１件当たりに複数のCSSファイルが置かれる事は、ウエブサイト・ウエブアプリに関係無く、現在・過去も関係無く、全く普通の手法である。
+        然し此の他に、複数のファイルから一つのCSSファイルを構成するやり方もあり、事実上此の二つのやり方が両立している。
+          （例えば、１件目のCSSファイルは共通のスタイルを含め、２件目のCSSファイルは特定ページのスタイルのみ含める。但し両方のCSSファイルが複数の元ファイルから構成された場合）
+        基本的に単一のCSSファイルを複数のファイルに別ける事は不可能だが、Stylusの様なプリプロセッサの御蔭で、複数の「.styl」ファイルから単一のCSSファイルを[構成出来る](https://stylus-lang.com/docs/import.html)。
+
+
+      h3.Article-Heading3 挙動制御記法
+
+      p.Article-Paragraph.
+        #[+Term--YDID 挙動制御記法]に於いては、各開始位置は完成したJavaScriptファイルを代表する。
+
+
+      h4.Article-Heading4 クライアント側
+
+      p.Article-Paragraph.
+        クライアント側の場合、現代では1ページ当たりの開始位置は単一であるべきだ（違反は「アンチパターン」と呼ぶ）。
+        [Webpack](https://webpack.js.org)を使っているやまとダイワ自動化は、複数のファイルから開始位置を構成する事も出来るし、
+          最適化の為に[動的ロードされる子ファイルを生成する](https://webpack.js.org/guides/code-splitting/)事も可能。
+
+      p.Article-Paragraph.
+        シングルページアプリケーションの場合、アプリケーション当たりの開始位置は１件のみであるべきが、ウェブサイトの場合、各ページに特定の開始位置がある事は普通だ。
+
+
+      h4.Article-Heading4 サーバ側
+
+      p.Article-Paragraph.
+        サーバ側にとって、単一の開始位置は特に強く推奨される開発パターンであり、此れに反するやり方はセキュリティの脆弱化に繋がると考えられる。
+
+
+      h3.Article-Heading3 関連用語
+      h4.Article-Heading4 開始位置群
+
+      p.Article-Paragraph.
+        #[+ImportantEntity--YDID やまとダイワ自動化]は開始位置を群毎に扱っているが、単一の開始位置群の扱いも可能だ。
+        特定の開始位置群に該当するファイルは特定のディレクトリ下に置くべきだが、開始位置と子ファイルが混在していても、やまとダイワ自動化なら判別のための設定が出来る。
+
+
+      h4.Article-Heading4 開始位置群参照
+
+      p.Article-Paragraph.
+        元コードに対しては、開始位置や複合媒体ファイルへのパスを指定する際に、絶対パス・相対パスの両方を使わない方が良い。
+        絶対パスだと、静的プレビューがローカルサーバを使わずに意匠設計ファイルや画像ファイル等を読み込まなくなる。相対パスの場合は、子ファイルによって同じファイルへのリンク先が異なる為、納品版では非推奨。
+
+        代わりに開始位置群参照を使ってパスを指定すれば、やまとダイワ自動化は構成モードに応じて、各ファイルに最適なパスを算出出来る。
+        開始位置群参照を使ったパスは「@Pages/About/About」といった感じになり、ファイル名の拡張子は自動的に判断され、日本語にも対応している。
+
+
+      h2.Article-Heading2 素材
+
+      p.Article-Paragraph.
+        英語・片仮名語表記では「アセット」。主に、画像・音源・動画・文字といった素材を表す名称。
+
+
+      h2.Article-Heading2 選択的実行
+
+      p.Article-Paragraph.
+        指定された課題と開始位置群のみを処理する事。
+        規定では全ての課題と開始位置群が実行されるが、選択的に実行する事も出来る。
+
+
+      h2.Article-Heading2  「やまとダイワ自動化」以外でも使われる用語
+
+      h3.Article-Heading3 省略絶対パス（shortened absolute path）
+
+      p.Article-Paragraph.
+        無[オリジン](https://developer.mozilla.org/ja/docs/Glossary/Origin)のURIであり、「/」から始まる。
+        例えば絶対パス「 http://example.com/app1/index.html 」の場合、省略形の絶対パスは「 /app1/index.html 」。
+        但しシステムは完全な絶対パスへの変換が可能でなくてはならない。
+
+
+      h3.Article-Heading3 公開パス（public path）
+
+      p.Article-Paragraph.
+        サーバアプリケーションに於いて、無制限でアクセス出来るファイルが保管されているディレクトリであり、常に「public」と名付けられる。
+        例えば、URI「 http://example.com/app1/index.html 」の場合、「 index.html 」ファイルはサーバー上の
+        「＜サーバーアプリケーションディレクトリ＞/public/app1/index.html」で保管される可能性が高い。

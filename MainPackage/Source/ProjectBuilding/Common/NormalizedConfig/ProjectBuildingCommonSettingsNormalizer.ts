@@ -1,10 +1,12 @@
-/* --- Business rules ----------------------------------------------------------------------------------------------- */
-import { ProjectBuildingTasksIDsForConfigFile } from
-    "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import type ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
+import mustProvideIncrementalProjectBuilding from
+    "@ProjectBuilding/Common/Restrictions/mustProvideIncrementalProjectBuilding";
 
-/* --- Raw valid config ---------------------------------------------------------------------------------------------- */
+/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
+import { ProjectBuildingTasksIDsForConfigFile } from
+    "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 import type ProjectBuildingCommonSettings__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/ProjectBuildingCommonSettings__FromFile__RawValid";
 
@@ -12,11 +14,9 @@ import type ProjectBuildingCommonSettings__FromFile__RawValid from
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 
-/* --- Utils -------------------------------------------------------------------------------------------------------- */
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import { isNotUndefined } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
-import mustProvideIncrementalProjectBuilding
-  from "@ProjectBuilding/Common/Restrictions/mustProvideIncrementalProjectBuilding";
 
 
 export default abstract class ProjectBuildingCommonSettingsNormalizer {
@@ -90,13 +90,17 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
 
           videosProcessing: actualSelectiveExecution.
               tasksAndSourceFilesSelection[ProjectBuildingTasksIDsForConfigFile.videosProcessing]
+
         }
 
       } : null,
 
       browserLiveReloadingSetupID: actualSelectiveExecution?.browserLiveReloadingSetupID,
 
+      mustGenerateOutputPackageJSON: actualSelectiveExecution?.outputPackageJSON_Generating === true,
+
       actualPublicDirectoryAbsolutePath
+
     };
 
   }

@@ -12,7 +12,7 @@ import {
   explodeURI_PathToSegments,
   isUndefined,
   isNonEmptyArray,
-  getIndexesOfArrayElementsWhichSatisfiesThePredicate,
+  getIndexesOfSatisfiesThePredicateArrayElements,
   removeArrayElementsByIndexes,
   isNumber
 } from "@yamato-daiwa/es-extensions";
@@ -52,7 +52,7 @@ export default abstract class GulpStreamBasedSourceCodeProcessingConfigRepresent
                     ambiguitiesResolution: {
                       mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
                       mustConsiderLastSegmentStartingWithDotAsDirectory: false,
-                      mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                      mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
                     },
                     alwaysForwardSlashSeparators: true
                   })
@@ -79,7 +79,7 @@ export default abstract class GulpStreamBasedSourceCodeProcessingConfigRepresent
             relevantEntryPointsGroupSettings.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved
       ) {
 
-        const indexesOfDuplicatesOfTargetPathSegment: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
+        const indexesOfDuplicatesOfTargetPathSegment: Array<number> = getIndexesOfSatisfiesThePredicateArrayElements(
             outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile,
             (outputDirectoryAbsolutePathSegment: string): boolean =>
                 outputDirectoryAbsolutePathSegment === pathSegmentWhichLastDuplicateMustBeRemoved

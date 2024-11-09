@@ -29,7 +29,7 @@ import FileSystem from "fs";
 import {
   removeAllFileNameExtensions,
   extractAllFileNameExtensions,
-  addMultiplePairsToMap,
+  addEntriesToMap,
   extractFileNameWithAllExtensionsFromPath,
   isNotUndefined,
   isUndefined
@@ -243,7 +243,7 @@ export default class PlainCopyingRawSettingsNormalizer {
                 ambiguitiesResolution: {
                   mustConsiderLastSegmentStartingWithDotAsDirectory: false,
                   mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-                  mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: false
+                  mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: false
                 }
               })
             })
@@ -280,10 +280,11 @@ export default class PlainCopyingRawSettingsNormalizer {
 
     }
 
-    addMultiplePairsToMap(
-      PlainCopyingSharedState.sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondenceMap,
-      sourceAndOutputFilesAbsolutePathsCorrespondenceMapForCurrentGroup
-    );
+    addEntriesToMap({
+      targetMap: PlainCopyingSharedState.sourceFilesAbsolutePathsAndRespectiveFilesGroupSettingsCorrespondenceMap,
+      newEntries: sourceAndOutputFilesAbsolutePathsCorrespondenceMapForCurrentGroup,
+      mutably: true
+    });
 
     return {
 

@@ -81,7 +81,7 @@ export default abstract class TypeScriptSpecialist {
             ambiguitiesResolution: {
               mustConsiderLastSegmentStartingWithDotAsDirectory: false,
               mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-              mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+              mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
             }
           })
       );

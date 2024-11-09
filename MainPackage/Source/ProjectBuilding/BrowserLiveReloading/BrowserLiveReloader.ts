@@ -224,8 +224,7 @@ namespace BrowserLiveReloader {
 export default BrowserLiveReloader;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars --
- * It is the only way to extract the child namespace (no need to expose whole MarkupProcessingRawSettingsNormalizer
+/* It is the only way to extract the child namespace (no need to expose whole MarkupProcessingRawSettingsNormalizer
  * for the localization packages).
  * https://stackoverflow.com/a/73400523/4818123 */
 export import BrowserLiveReloaderLocalization = BrowserLiveReloader.Localization;

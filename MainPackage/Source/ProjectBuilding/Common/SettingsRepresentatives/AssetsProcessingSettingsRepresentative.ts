@@ -6,7 +6,7 @@ import type AssetsProcessingSettingsGenericProperties__Normalized from
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
-  getIndexesOfArrayElementsWhichSatisfiesThePredicate,
+  getIndexesOfSatisfiesThePredicateArrayElements,
   getArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne,
   removeArrayElementsByIndexes,
   removeSpecificSegmentsFromURI_Path,
@@ -75,7 +75,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
               ambiguitiesResolution: {
                 mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
                 mustConsiderLastSegmentStartingWithDotAsDirectory: false,
-                mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+                mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
               },
               alwaysForwardSlashSeparators: true
             })
@@ -106,7 +106,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
             relevantAssetsGroupNormalizedSettings.outputPathTransformations.segmentsWhichLastDuplicatesMustBeRemoved
       ) {
 
-        const indexesOfDuplicatesOfTargetPathSegment: Array<number> = getIndexesOfArrayElementsWhichSatisfiesThePredicate(
+        const indexesOfDuplicatesOfTargetPathSegment: Array<number> = getIndexesOfSatisfiesThePredicateArrayElements(
             outputDirectoryAbsolutePathExplodedToSegmentsForTargetSourceFile,
             (outputDirectoryAbsolutePathSegment: string): boolean =>
                 outputDirectoryAbsolutePathSegment === pathSegmentWhichLastDuplicateMustBeRemoved

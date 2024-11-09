@@ -152,6 +152,7 @@ export default function generateConfiguration(
         }
       }),
       new ESLintPlugin({
+        configType: "flat",
         extensions: [ "js", "ts" ],
         failOnWarning: __IS_PRODUCTION_BUILDING_MODE__
       })

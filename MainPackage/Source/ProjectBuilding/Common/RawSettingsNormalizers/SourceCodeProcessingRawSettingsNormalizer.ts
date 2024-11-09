@@ -109,7 +109,7 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
           ambiguitiesResolution: {
             mustConsiderLastSegmentStartingWithDotAsDirectory: false,
             mustConsiderLastSegmentWithNonLeadingDotAsDirectory: false,
-            mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: true
+            mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: true
           }
         });
 
@@ -132,7 +132,7 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
           ambiguitiesResolution: {
             mustConsiderLastSegmentStartingWithDotAsDirectory: true,
             mustConsiderLastSegmentWithNonLeadingDotAsDirectory: true,
-            mustConsiderLastSegmentWihtoutDotsAsFileNameWithoutExtension: false
+            mustConsiderLastSegmentWithoutDotsAsFileNameWithoutExtension: false
           }
         });
 

@@ -476,6 +476,8 @@ abstract class LinterLikeTaskExecutor<SourceFileCheckingIssue extends ParsedJSON
 
   }
 
+  /* eslint-enable @typescript-eslint/member-ordering */
+
 }
 
 

@@ -17,6 +17,7 @@ type ProjectBuildingCommonSettings__Normalized = Readonly<{
   selectiveExecutionID?: string;
   tasksAndSourceFilesSelection?: ProjectBuildingCommonSettings__Normalized.TasksAndSourceFilesSelection;
   browserLiveReloadingSetupID?: string;
+  mustGenerateOutputPackageJSON: boolean;
   actualPublicDirectoryAbsolutePath?: string;
 }>;
 

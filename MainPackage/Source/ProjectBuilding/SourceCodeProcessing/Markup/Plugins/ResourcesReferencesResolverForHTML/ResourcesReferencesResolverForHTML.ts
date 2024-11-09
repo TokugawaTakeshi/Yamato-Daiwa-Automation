@@ -1209,8 +1209,6 @@ namespace ResourcesReferencesResolverForHTML {
 export default ResourcesReferencesResolverForHTML;
 
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars --
- * It is the only way to extract the child namespace (no need to expose whole ResourcesReferencesResolverForHTML for the
- * localization packages).
- * https://stackoverflow.com/a/73400523/4818123 */
+/* It is the only way to extract the child namespace (no need to expose whole AccessibilityInspector for the localization
+ * packages). See https://stackoverflow.com/a/73400523/4818123 */
 export import ResourcesReferencesResolverForHTML_Localization = ResourcesReferencesResolverForHTML.Localization;

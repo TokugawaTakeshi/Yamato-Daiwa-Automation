@@ -1,8 +1,8 @@
-/* --- Restrictions---- --------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import type ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* --- Raw valid config --------------------------------------------------------------------------------------------- */
+/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
 import { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 import type ProjectBuildingConfig__FromFile__RawValid from
@@ -58,12 +58,17 @@ import type BrowserLiveReloadingSettings__Normalized from
 import BrowserLiveReloadingSettingsNormalizer from
     "@BrowserLiveReloading/RawSettingsNormalizer/BrowserLiveReloadingSettingsNormalizer";
 
-/* --- Auxiliaries -------------------------------------------------------------------------------------------------- */
+import type OutputPackageJSON_GeneratingSettings__Normalized from
+    "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettings__Normalized";
+import OutputPackageJSON_GeneratingSettingsNormalizer from
+    "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettingsNormalizer";
+
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
   Logger,
   InvalidParameterValueError,
   isNotUndefined,
-  isUndefined
+  isUndefined, isNotNull
 } from "@yamato-daiwa/es-extensions";
 import { InvalidConsoleCommandError } from "@yamato-daiwa/es-extensions-nodejs";
 
@@ -107,7 +112,6 @@ abstract class ProjectBuilderRawConfigNormalizer {
               { actualSelectiveExecutionID: projectBuildingConfig__fromConsole.selectiveExecutionID } : null,
           actualSelectiveExecution
         });
-
 
     return {
 
@@ -365,6 +369,20 @@ abstract class ProjectBuilderRawConfigNormalizer {
             ...isNotUndefined(selectedBrowserLiveReloadingSetupID) ? { selectedBrowserLiveReloadingSetupID } : {}
           })
         };
+
+      })(),
+
+      ...((): { outputPackageJSON_Generating?: OutputPackageJSON_GeneratingSettings__Normalized; } => {
+
+        const outputPackageJSON_Generating: OutputPackageJSON_GeneratingSettings__Normalized | null =
+            OutputPackageJSON_GeneratingSettingsNormalizer.normalizeIfThereAreActualOnes({
+              outputPackageJSON_GeneratingSettings__fromFile__rawValid: projectBuildingConfig__fromFile__rawValid[
+                ProjectBuildingTasksIDsForConfigFile.outputPackageJSON_Generating
+              ],
+              commonSettings__normalized
+            });
+
+        return isNotNull(outputPackageJSON_Generating) ? { outputPackageJSON_Generating } : {};
 
       })()
 

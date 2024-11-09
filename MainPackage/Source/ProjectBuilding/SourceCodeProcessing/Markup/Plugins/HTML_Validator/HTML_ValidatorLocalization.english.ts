@@ -39,13 +39,9 @@ const HTML_ValidatorLocalization__english: HTML_Validator.Localization = {
     ({
       title: "HTML validation of single file has finished with no issues found",
       description: `File "${ targetFileRelativePath }" is fully obeying to W3C rules and recommendations.\n` +
-          `${
-            /* eslint-disable-next-line @typescript-eslint/no-useless-template-literals -- 
-             * テンプレートリテラルを無くすと、「+」の前の部分が無くなっていまう。 */
-            isUndefined(secondsElapsed) ? 
-                "(Cached result, no changes in output HTML code since last building)" : 
-                `${ secondsElapsed } seconds taken.`
-          }`
+          isUndefined(secondsElapsed) ?
+              "(Cached result, no changes in output HTML code since last building)" :
+              `${ secondsElapsed } seconds taken.`
 
     }),
 

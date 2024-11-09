@@ -17,7 +17,8 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       videosProcessing: "videosProcessing",
       plainCopying: "plainCopying",
       browserLiveReloading: "browserLiveReloading",
-      filesWatching: "filesWatching"
+      filesWatching: "filesWatching",
+      outputPackageJSON_Generating: "outputPackageJSON_Generating"
     },
 
     consumingProjectPreDefinedBuildingModes: {
@@ -99,7 +100,8 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
       selectiveExecutions: {
         KEY: "selectiveExecutions",
         tasksAndSourceFilesSelection: { KEY: "tasksAndSourceFilesSelection" },
-        browserLiveReloadingSetupID: { KEY: "browserLiveReloadingSetupID" }
+        browserLiveReloadingSetupID: { KEY: "browserLiveReloadingSetupID" },
+        outputPackageJSON_Generating: { KEY: "outputPackageJSON_Generating" }
       },
       publicDirectoriesRelativePaths: { KEY: "publicDirectoriesRelativePaths" }
     }
@@ -566,7 +568,26 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
         browserTabWillBeReloadedSoon: { KEY: "browserTabWillBeReloadedSoon" },
         browsersyncConnection: { KEY: "browsersyncConnection" }
       }
+    },
+
+    outputPackageJSON_Generating: {
+
+      inheritedDependencies: { KEY: "inheritedDependencies" },
+      inheritedDevelopmentDependencies: { KEY: "inheritedDevelopmentDependencies" },
+      inheritedNPM_Scripts: { KEY: "inheritedNPM_Scripts" },
+      newNPM_Scripts: { KEY: "newNPM_Scripts" },
+      indentString: { KEY: "indentString" },
+      linesSeparator: { KEY: "linesSeparator" },
+
+      buildingModeDependent: {
+        KEY: "buildingModeDependent",
+        outputDirectoryRelativePath: { KEY: "outputDirectoryRelativePath" },
+        indentString: { KEY: "indentString" },
+        linesSeparator: { KEY: "linesSeparator" }
+      }
+
     }
+
   }
 };
 

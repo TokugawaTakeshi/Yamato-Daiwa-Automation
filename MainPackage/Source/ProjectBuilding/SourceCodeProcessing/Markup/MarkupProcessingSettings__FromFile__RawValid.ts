@@ -20,6 +20,7 @@ type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
   linting?: MarkupProcessingSettings__FromFile__RawValid.Linting;
   importingFromTypeScript?: MarkupProcessingSettings__FromFile__RawValid.ImportingFromTypeScript;
   staticPreview?: MarkupProcessingSettings__FromFile__RawValid.StaticPreview;
+  routing?: MarkupProcessingSettings__FromFile__RawValid.Routing;
   entryPointsGroups: Readonly<{ [groupID: string]: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
   logging?: MarkupProcessingSettings__FromFile__RawValid.Logging;
 }>;
@@ -63,6 +64,17 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
       fileRelativePath: string;
     }>;
 
+  }
+
+
+  export type Routing = Readonly<{
+    specificationFileRelativePath: string;
+    variable: string;
+    localizations?: Readonly<{ [locale: string]: Routing.LocalizationFileRelativePath; }>;
+  }>;
+
+  export namespace Routing {
+    export type LocalizationFileRelativePath = string;
   }
 
 
@@ -417,6 +429,43 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
 
             }
 
+          }
+
+        }
+
+      },
+
+      routing: {
+
+        type: Object,
+        required: false,
+        preValidationModifications: nullToUndefined,
+
+        properties: {
+
+          $specificationFileRelativePath: {
+            newName: "specificationFileRelativePath",
+            type: String,
+            required: true,
+            minimalCharactersCount: 1
+          },
+
+          $variable: {
+            newName: "variable",
+            type: String,
+            required: true,
+            minimalCharactersCount: 1
+          },
+
+          $localizations: {
+            newName: "localizations",
+            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+            required: false,
+            preValidationModifications: nullToUndefined,
+            value: {
+              type: String,
+              minimalCharactersCount: 1
+            }
           }
 
         }

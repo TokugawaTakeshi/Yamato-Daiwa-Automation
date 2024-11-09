@@ -1,0 +1,73 @@
+//- TODO 深さを編集
+extends ../../node_modules/@yamato-daiwa/programming_documentation/Layouts/TwoColumns/TwoColumnsLayout.pug
+
+
+block append Requirements
+
+  //- TODO 深さを編集
+  include ../../SharedAssets/Markup/SharedAssets.japanese.pug
+  include ../../SharedComponents/SharedComponents.japanese.pug
+
+
+block append Metadata
+
+  -
+
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle("${FILE_NAME_WITHOUT_EXTENSION}"),
+        description: "" // TODO
+      },
+      stylesSheetsURIs: [
+        "${DS}CommonStyles",
+        "${DS}LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "${DS}PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
+    });
+
+    RoutingEmulator.setCurrentRoute("${ROUTE}");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: "./${FILE_NAME_WITHOUT_EXTENSION}.english.html",
+      russian: "./${FILE_NAME_WITHOUT_EXTENSION}.russian.html"
+    });
+
+    const pageTableOfContents = localizedRouting.${ROUTE_PATH}.${DS}sectioning;
+
+
+block append HeadScriptsLinks
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  article
+
+    // TODO 編集
+    +CallableExpressionScheme--YDF_DK({
+      technicalName: "${FILE_NAME_WITHOUT_EXTENSION}",
+      headingTag: "h1",
+      localizedDescriptiveHeading: "特別なストリートの魔法をする",
+      parametersSpecification: [
+        {
+          localizedName: "Target string",
+          type: "string",
+          required: true,
+          genericTechnicalName: "targetString"
+        }
+      ],
+      returnedValue: "boolean"
+    })
+
+    +CodeViewer--YDF.Article-CodeViewer
+      +CodeViewer-TabPanel--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.TypeScript })
+
+        +CodeViewer-PartialListing--YDF: :code_listing--yda
+          console.log("OK");
+
+        +CodeViewer-Explanation--YDF.
+          "OK"をコンソールに取得させる（キャプテン・オブヴィアス、ありがとう）。

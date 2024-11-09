@@ -11,10 +11,10 @@ block append Metadata
 
   -
 
-    HTML_PAGE_LANGUAGE = "ru";
-    HTML_PAGE_TITLE = buildHTML_PageTitle("Главная страница");
-    HTML_PageMetaData = {
-      description:
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle("Главная страница"),
+        description:
           "Node.js-утилита «Yamato Daiwa Automation» (сокращённо: «YDA», читается: «Уай-ди-эй») — " +
             "высокоуровневый инструмент для сборки проектов: клиентских и серверных приложений, консольных приложений, " +
             "библиотек для браузерного JavaScript и Node.js. " +
@@ -24,20 +24,15 @@ block append Metadata
             "«Webpack», и сверхвысокоуровневыми инструментами с минимальной кастомизацией, такими так «Laravel Elixir». " +
           "Настройки YDA описываются в декларативной форме (в формате «YAML»), при этом этот сборщик проектов не навязывает " +
             "конкретной структуры проекта.",
-      author: HTML_PAGE_AUTHOR
-    };
-
-    FAVICON_URI = "@MustBeInPublicRoot/favicon.ico"
-
-    styleSheetsURIs = [
-      "$CommonStyles",
-      "$LayoutsStyles/Minimal/MinimalLayout.css",
-      "$PreMadesStyles",
-      "@CustomizedExternalComponents",
-      "@Pages/Top/TopPage"
-    ];
-
-    scriptsURIs.endOfBody = [ "$CommonLogic" ];
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/Minimal/MinimalLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents",
+        "@Pages/Top/TopPage"
+      ]
+    });
 
     RoutingEmulator.setCurrentRoute("top");
 
@@ -47,7 +42,7 @@ block append Metadata
     });
 
 
-block append HeadScriptsLinks
+block append HeadScripts
 
   if __IS_PRODUCTION_BUILDING_MODE__
 

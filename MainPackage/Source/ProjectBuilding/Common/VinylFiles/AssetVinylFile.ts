@@ -1,16 +1,16 @@
-/* ─── Normalized settings ───────────────────────────────────────────────────────────────────────────────────────── */
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type AssetsProcessingSettingsGenericProperties__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
 
-/* ─── Settings representatives ──────────────────────────────────────────────────────────────────────────────────── */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import AssetsProcessingSettingsRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/AssetsProcessingSettingsRepresentative";
 
-/* ─── Vinyl FS ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ─── Vinyl FS ───────────────────────────────────────────────────────────────────────────────────────────────────── */
 import type VinylFile from "vinyl";
 import VinylFileClass from "@Utils/VinylFileClass";
 
-/* ─── Utils ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
