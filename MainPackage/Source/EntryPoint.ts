@@ -79,9 +79,10 @@ export default abstract class EntryPoint {
               errorInstance: new FileNotFoundError({
                 customMessage:
                     "The configuration file for \"Yamato Daiwa Automation\" utility not found at path " +
-                    `"${ rawConfigFileAbsolutePath }". ` +
+                      `"${ rawConfigFileAbsolutePath }". ` +
                     "The \"Yamato Daiwa Automation\" utility is required the configuration file and will expect the " +
-                    `file "${ CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION }" at the same directory as CLI has been invoked. ` +
+                      `file "${ CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION }" at the same directory as CLI has ` +
+                      "been invoked. " +
                     "You can set custom configuration file name via CLI if you want."
               }),
               title: FileNotFoundError.localization.defaultTitle,
@@ -97,7 +98,8 @@ export default abstract class EntryPoint {
                   "The configuration file for \"Yamato Daiwa Automation\" utility not found at path " +
                     `"${ rawConfigFileAbsolutePath }". ` +
                   "The \"Yamato Daiwa Automation\" utility is required the configuration file and will expect the " +
-                  `file "${ CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION }" at the same directory as CLI has been invoked. ` +
+                    `file "${ CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION }" at the same directory as CLI has ` +
+                    "been invoked. " +
                   "You can set custom configuration file name via CLI if you want."
             }),
             title: FileReadingFailedError.localization.defaultTitle,
