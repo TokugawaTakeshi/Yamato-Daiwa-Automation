@@ -29,24 +29,14 @@ configuration:
 
   $heading: "Configuration"
 
+  markupProcessing:
+
+    $heading: "Markup Processing Configuration"
+
+  stylesProcessing:
+
+    $heading: "Styles Processing"
+
   outputPackageJSON_Generating:
 
     $heading: "Output package.json Generating"
-
-#      incrementalBuilding: "Incremental building"
-#    },
-#    globalConstants: { $heading: "Global constants" },
-#    pugFilters: { $heading: "Pug filters" },
-#    outputHTML_Formatting: { $heading: "Output HTML code formatting" }
-#  }
-#},
-#
-#configuration: {
-#  markupProcessing: {
-#    $heading: "Markup processing",
-#    staticPreview: {
-#      $heading: "Static preview",
-#      pagesStateDependentVariations: { $heading: "Pages state dependent variations" }
-#    }
-#  },
-#}

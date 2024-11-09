@@ -69,13 +69,25 @@ configurationFile:
 
     markupProcessing:
 
-      $heading: Markup Processing
+      $heading: `configuration.markupProcessing.$heading`
       $URI: `@All/ConfigurationFile/MarkupProcessing/MarkupProcessingConfiguration.${ fileNameLocalizationExtensions }`
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingConfiguration.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingConfiguration.toc.english.yaml
+          japanese: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingConfiguration.toc.japanese.yaml
+          russian: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingConfiguration.toc.russian.yaml
 
     stylesProcessing:
 
-      $heading: Styles Processing
-      $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/Styles/StylesProcessing.md
+      $heading: `configuration.stylesProcessing.$heading`
+      $URI: `@All/ConfigurationFile/StylesProcessing/StylesProcessingConfiguration.${ fileNameLocalizationExtensions }`
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingConfiguration.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingConfiguration.toc.english.yaml
+          japanese: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingConfiguration.toc.japanese.yaml
+          russian: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingConfiguration.toc.russian.yaml
 
     ECMAScriptLogicProcessing:
 

@@ -28,7 +28,6 @@ type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
 
 namespace MarkupProcessingSettings__FromFile__RawValid {
 
-  /* ━━━ Types ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Common = Readonly<{
     periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number;
     buildingModeDependent?: Readonly<{ [projectBuildingMode: string]: Common.BuildingModeDependent | undefined; }>;
@@ -274,7 +273,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
 
     return {
 
-      [markupProcessingPropertiesLocalization.common.KEY]: {
+      $common: {
 
         newName: "common",
         preValidationModifications: nullToUndefined,
@@ -283,14 +282,14 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
 
         properties: {
 
-          [markupProcessingPropertiesLocalization.common.periodBetweenFileUpdatingAndRebuildingStarting__seconds.KEY]: {
+          $periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
             newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
             type: Number,
-            required: false,
-            numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+            numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+            required: false
           },
-
-          [markupProcessingPropertiesLocalization.common.buildingModeDependent.KEY]: {
+          // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          $buildingModeDependent: {
 
             newName: "buildingModeDependent",
             type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,

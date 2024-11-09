@@ -1,0 +1,4 @@
+schema:
+
+  $heading: `schema.$heading`
+  $anchor: SCHEMA--SECTION

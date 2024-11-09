@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.markupProcessing;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Markup Processing Configuration"),
+        title: buildHTML_PageTitle(topHeading),
         description:
             "The description of the configuration of the markup (source code: Pug, output code: HTML) processing in the " +
               "\"Yamato Daiwa Automation\" (abbreviation: \"YDA\"), the Node.js utility for the projects " +
@@ -27,11 +32,11 @@ block append Metadata
       ]
     });
 
-    RoutingEmulator.setCurrentRoute("functionality.children.markupProcessing.children.basicPugToHTML_Transpiling");
+    RoutingEmulator.setCurrentRoute("configurationFile.markupProcessing");
 
     LanguageDropDownList__YDF_DK.setLinks({
-      japanese: "./MarkupProcessingConfiguration.japanese.html",
-      russian: "./MarkupProcessingConfiguration.russian.html",
+      japanese: routing.japanese.configurationFile.$children.markupProcessing.$heading.$URI,
+      russian: routing.russian.configurationFile.$children.markupProcessing.$heading.$URI
     });
 
 
@@ -46,30 +51,32 @@ block append SpecificContent
 
   article
 
-    h1.Article-Heading1 Markup processing settings
+    //- ━━━ Markup Processing Configuration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h1.Article-Heading1= topHeading
+    //- TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //-
+      p.Article-Paragraph.
+        The #[+Term--YDID markup processing] could be setup in the #[+ImportantEntity__Code--YDID projectBuilding.markupProcessing]
+          of the configuration file (#[+ImportantEntity--YDID yda.config.yaml] as default):
 
-    p.Article-Paragraph.
-      The #[+Term--YDID markup processing] could be setup in the #[+ImportantEntity__Code--YDID projectBuilding.markupProcessing]
-        of the configuration file (#[+ImportantEntity--YDID yda.config.yaml] as default):
+      +CodeViewer--YDF
+        +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+          projectBuilding:
 
-    +CodeViewer--YDF
-      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
-        projectBuilding:
+            markupProcessing:
 
-          markupProcessing:
-
-            # Define the markup processing setting here according this manual
+              # Define the markup processing setting here according this manual
 
 
-    h2.Article-Heading2 Schema
+      h2.Article-Heading2 Schema
 
-    p.Article-Paragraph.
-      The #[+ImportantEntity__Code--YDID projectBuilding.markupProcessing] must obey to the following
-        #[+ImportantEntity--YDID TypeScript] types definitions.
+      p.Article-Paragraph.
+        The #[+ImportantEntity__Code--YDID projectBuilding.markupProcessing] must obey to the following
+          #[+ImportantEntity--YDID TypeScript] types definitions.
 
-    +CodeViewer--YDF
-      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.TypeScript })
-        include _MarkupProcessingConfigurationSchema.pug
+      +CodeViewer--YDF
+        +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.TypeScript })
+          include _MarkupProcessingConfigurationSchema.pug
 
 
     //-

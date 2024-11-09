@@ -14,7 +14,7 @@ block append Metadata
     const {
       $heading: topHeading,
       $sectioning: localizedSectioning
-    } = localizedRouting.configurationFile.$children.markupProcessing;
+    } = localizedRouting.configurationFile.$children.stylesProcessing;
 
     RegularWebPageTemplate__YDF.configure({
       metadata: {
@@ -31,11 +31,11 @@ block append Metadata
       ]
     });
 
-    RoutingEmulator.setCurrentRoute("configurationFile.markupProcessing");
+    RoutingEmulator.setCurrentRoute("configurationFile.stylesProcessing");
 
     LanguageDropDownList__YDF_DK.setLinks({
-      english: routing.english.configurationFile.$children.markupProcessing.$heading.$URI,
-      russian: routing.russian.configurationFile.$children.markupProcessing.$heading.$URI
+      english: routing.english.configurationFile.$children.stylesProcessing.$heading.$URI,
+      russian: routing.russian.configurationFile.$children.stylesProcessing.$heading.$URI
     });
 
 
@@ -50,5 +50,5 @@ block append SpecificContent
 
   article
 
-    //- ━━━ 構造設計記法（マークアップ）処理設定 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //- ━━━ 意匠設計記法（スタイル）処理 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1= topHeading

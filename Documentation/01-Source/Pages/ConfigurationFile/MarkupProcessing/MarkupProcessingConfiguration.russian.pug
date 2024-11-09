@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.markupProcessing;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Настройки Обработки Разметки"),
+        title: buildHTML_PageTitle(topHeading),
         description:
             "Описание конфигурации обработки разметки (исходный код: Pug, выходной код: HTML) в «Yamato Daiwa Automation» " +
               "(сокращённо: «YDA», читается: «Уай-ди-эй»), Node.js-утилите для сборки проектов (клиентских веб-приложений, " +
@@ -27,11 +32,11 @@ block append Metadata
       ]
     });
 
-    RoutingEmulator.setCurrentRoute("functionality.children.markupProcessing.children.basicPugToHTML_Transpiling");
+    RoutingEmulator.setCurrentRoute("configurationFile.markupProcessing");
 
     LanguageDropDownList__YDF_DK.setLinks({
-      english: "./MarkupProcessingConfiguration.english.html",
-      japanese: "./MarkupProcessingConfiguration.japanese.html",
+      english: routing.english.configurationFile.$children.markupProcessing.$heading.$URI,
+      japanese: routing.japanese.configurationFile.$children.markupProcessing.$heading.$URI
     });
 
 
@@ -46,61 +51,51 @@ block append SpecificContent
 
   article
 
-    h1.Article-Heading1 Настройки обработки разметки
+    //- ━━━ Настройки обработки разметки ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h1.Article-Heading1= topHeading
 
     p.Article-Paragraph.
       Обработка #[+Term--YDID разметки] может быть настроена в
-        #[+ImportantEntity__Code--YDID projectBuilding.markupProcessing]
-        файла конфигурации (#[+ImportantEntity--YDID yda.config.yaml] #[+Keyphrase--YDID по умолчанию]):
+        #[+ImportantEntity__Code--YDID $projectBuilding.$markupProcessing]
+        #[+Term--YDID файла конфигурации] (#[+ImportantEntity--YDID yda.config.yaml] #[+Keyphrase--YDID по умолчанию]):
 
     +CodeViewer--YDF
       +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
-        projectBuilding:
+        $projectBuilding:
 
-          markupProcessing:
+          $markupProcessing:
 
-            # Задайте настройки обработки разметки здесь в соответствии с этим руководством
-
-
-    h2.Article-Heading2 Структура
-
-    p.Article-Paragraph.
-      Настройки группы  #[+ImportantEntity__Code--YDID projectBuilding.markupProcessing] #[+Keyword--YDID должны]
-        подчиняться следующим определениям #[+Term--YDID TypeScript-типов]:
-
-    +CodeViewer--YDF
-      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.TypeScript })
-        include _MarkupProcessingConfigurationSchema.pug
+            # Задайте настройки обработки разметки здесь в соответствии с данным руководством
 
 
-    h2.Article-Heading2 Описание
+    //- ━━━ `$common` — общие настройки  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h2.Article-Heading2 #[code $common] — общие настройки
 
-    h3.Article-Heading3 #[code common] — общие настройки
+    +PropertyMetadata--YDF_DK({
+      type: "MarkupProcessingSettings__FromFile__RawValid.Common",
+      required: false
+    })
 
-    dl.Article-DescriptionList
-
-      dt Тип
-      dd object
-
-      dt Обязательность
-      dd Необязательное
-
-    p.Article-Paragraph.
-      Определяет настройки, которые #[+Keyword--YDID не]&nbsp;связаны с конкретной #[+Term--YDID группой точек входа].
-
-
-    h4.Article-Heading4
-      code periodBetweenFileUpdatingAndRebuildingStarting__seconds
+    p.Article-Paragraph
+      | Определяет настройки, #[+Keyword--YDID не]&nbsp;связанные с конкретной
       |
-      | — Интервал между сохранением последнего файла разметки и началом пересборки
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.entryPointsAndChildrenFiles.$children.entryPointsGroup.$URI
+      }).Article-Link группой точек входа
+      | .
 
-    dl.Article-DescriptionList
 
-      dt Тип
-      dd number
+    //- ─── `periodBetweenFileUpdatingAndRebuildingStarting__seconds` — ────────────────────────────────────────────────
+    //- ─── Интервал между сохранением последнего файла разметки и началом пересборки` ─────────────────────────────────
+    h3.Article-Heading3
+      | #[code periodBetweenFileUpdatingAndRebuildingStarting__seconds] — Интервал между сохранением последнего файла
+      |   разметки и началом пересборки
 
-      dt Значение по умолчанию
-      dd 1
+    +PropertyMetadata--YDF_DK({
+      type: Number,
+      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+      defaultValue: 1
+    })
 
     p.Article-Paragraph.
       Определяет, сколько #[+Keyword--YDID секунд] должно пройти с момента сохранения #[+Keyword--YDID последнего]
@@ -146,100 +141,99 @@ block append SpecificContent
         каждого #[+Term--YDID Pug-файла] логируются, то Вы сможете заметить потребность в изменении значения
         #[+ImportantEntity__Code--YDID periodBetweenFileUpdatingAndRebuildingStarting__seconds], если таковая возникнет.
 
+    //-
+      h4.Article-Heading4  #[code buildingModeDependent] — настройки, зависящие от режима сборки
 
-    h4.Article-Heading4  #[code buildingModeDependent] — настройки, зависящие от режима сборки
+      dl.Article-DescriptionList
 
-    dl.Article-DescriptionList
+        dt Тип
+        dd object типа «ассоциативный массив»
 
-      dt Тип
-      dd object типа «ассоциативный массив»
+        dt Обязательность
+        dd Необязателен
 
-      dt Обязательность
-      dd Необязателен
+        dt Ключи
+        dd Должны быть режимом сборки проекта
 
-      dt Ключи
-      dd Должны быть режимом сборки проекта
+        dt Допустимые ключи
+        dd
+          ul.Article-UnorderedList
+            li STATIC_PREVIEW
+            li LOCAL_DEVELOPMENT
+            li TESTING
+            li STAGING
+            li PRODUCTION
 
-      dt Допустимые ключи
-      dd
-        ul.Article-UnorderedList
-          li STATIC_PREVIEW
-          li LOCAL_DEVELOPMENT
-          li TESTING
-          li STAGING
-          li PRODUCTION
+        dt Тип значения
+        dd Объект
 
-      dt Тип значения
-      dd Объект
-
-      dt Схема значения
-      dd
-        +CodeListing--YDF: :code_listing--yda
-          export type EntryPointsGroup =
-              SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
-              Readonly<{
-                HTML_Validation?: EntryPointsGroup.HTML_Validation;
-                accessibilityInspection?: EntryPointsGroup.AccessibilityInspection;
-                convertToHandlebarsOnNonStaticPreviewModes?: boolean;
-                buildingModeDependent: Readonly<{ [projectBuildingMode: string]: EntryPointsGroup.BuildingModeDependent; }>;
-              }>;
-
-
-    p.Article-Paragraph.
-      Настройки, зависящие от #[+Term--YDID режима сборки проекта], однако #[+Keyword--YDID общие] для
-        #[+Keyword__Contrast--YDID всех] #[+Term--YDID групп точек входа].
-      Не следует путать с настройками #[+ImportantEntity--YDID entryPointsGroups.entryPointsGroups.[GROUP_ID].buildingModeDependent],
-        которые зависят как от #[+Term--YDID группы точек входа], так и от #[+Term--YDID режима сборки проекта].
+        dt Схема значения
+        dd
+          +CodeListing--YDF: :code_listing--yda
+            export type EntryPointsGroup =
+                SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
+                Readonly<{
+                  HTML_Validation?: EntryPointsGroup.HTML_Validation;
+                  accessibilityInspection?: EntryPointsGroup.AccessibilityInspection;
+                  convertToHandlebarsOnNonStaticPreviewModes?: boolean;
+                  buildingModeDependent: Readonly<{ [projectBuildingMode: string]: EntryPointsGroup.BuildingModeDependent; }>;
+                }>;
 
 
-    h3.Article-Heading3 #[code logging] — настройки логирования
-
-    dl.Article-DescriptionList
-
-      dt Тип
-      dd object
-
-      dt Обязательность
-      dd Необязательное
-
-    p.Article-Paragraph.
-      Определяет настройки логирования в терминал.
+      p.Article-Paragraph.
+        Настройки, зависящие от #[+Term--YDID режима сборки проекта], однако #[+Keyword--YDID общие] для
+          #[+Keyword__Contrast--YDID всех] #[+Term--YDID групп точек входа].
+        Не следует путать с настройками #[+ImportantEntity--YDID entryPointsGroups.entryPointsGroups.[GROUP_ID].buildingModeDependent],
+          которые зависят как от #[+Term--YDID группы точек входа], так и от #[+Term--YDID режима сборки проекта].
 
 
-    h4.Article-Heading4 #[code filesPaths] — пути файлов
+      h3.Article-Heading3 #[code logging] — настройки логирования
 
-    dl.Article-DescriptionList
+      dl.Article-DescriptionList
 
-      dt Тип
-      dd boolean
+        dt Тип
+        dd object
 
-      dt Значение по умолчанию
-      dd true
+        dt Обязательность
+        dd Необязательное
 
-    p.Article-Paragraph.
-      Выводит в консоль пути обрабатываемых файлов, относительные директории, в которой находится файл настроек YDA.
-
-    p.Article-Paragraph.
-      Поскольку при начале обработке Pug-файла должна быть какая-то обратная связь, то по умолчанию это логирование
-        включено.
+      p.Article-Paragraph.
+        Определяет настройки логирования в терминал.
 
 
-    h4.Article-Heading4 #[code filesCount] — число файлов
+      h4.Article-Heading4 #[code filesPaths] — пути файлов
 
-    dl.Article-DescriptionList
+      dl.Article-DescriptionList
 
-      dt Тип
-      dd boolean
+        dt Тип
+        dd boolean
 
-      dt Значение по умолчанию
-      dd false
+        dt Значение по умолчанию
+        dd true
 
-    p.Article-Paragraph.
-      Выводит в количество файлов, которое будет обработано в одном цикле сборки
-        (на режимах инкрементальной сборки таких циклов может быть сколь угодно много, и каждый раз с разным количеством
-        файлов).
+      p.Article-Paragraph.
+        Выводит в консоль пути обрабатываемых файлов, относительные директории, в которой находится файл настроек YDA.
 
-    p.Article-Paragraph.
-      По умолчанию имеет значение false, так как если файлов мало, то обычно достаточно вывести лишь пути обрабатываемых
-        файлов, а если файлов много, мало кто захочет проверять правильность этого числа.
-    //- ━━━ TODO 再開点 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      p.Article-Paragraph.
+        Поскольку при начале обработке Pug-файла должна быть какая-то обратная связь, то по умолчанию это логирование
+          включено.
+
+
+      h4.Article-Heading4 #[code filesCount] — число файлов
+
+      dl.Article-DescriptionList
+
+        dt Тип
+        dd boolean
+
+        dt Значение по умолчанию
+        dd false
+
+      p.Article-Paragraph.
+        Выводит в количество файлов, которое будет обработано в одном цикле сборки
+          (на режимах инкрементальной сборки таких циклов может быть сколь угодно много, и каждый раз с разным количеством
+          файлов).
+
+      p.Article-Paragraph.
+        По умолчанию имеет значение false, так как если файлов мало, то обычно достаточно вывести лишь пути обрабатываемых
+          файлов, а если файлов много, мало кто захочет проверять правильность этого числа.

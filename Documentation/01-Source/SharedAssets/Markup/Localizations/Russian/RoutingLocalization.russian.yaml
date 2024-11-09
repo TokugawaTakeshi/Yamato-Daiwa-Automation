@@ -29,21 +29,10 @@ configuration:
 
   $heading: "Конфигурация"
 
-  outputPackageJSON_Generating:
+  markupProcessing:
 
-    $heading: "Генерирование package.json для сборки"
+    $heading: "Настройки обработки разметки"
 
-#        incrementalBuilding: "Инкрементальная сборка"
-#      },
-#      globalConstants: { $heading: "Глобальные константы" },
-#      pugFilters: { $heading: "Pug-фильтры" },
-#      outputHTML_Formatting: { $heading: "Форматирование выходного HTML-кода" }
-#    }
-#  },
-#
-#  configuration: {
-#    markupProcessing: {
-#      $heading: "Обработка разметки",
-#      staticPreview: {
-#        $heading: "Статическое превью (вёрстка)",
-#        pagesStateDependentVariations: { $heading: "Варианты состояния страницы" }
+  stylesProcessing:
+
+    $heading: "Настройки обработки стилей"

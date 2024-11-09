@@ -18,6 +18,7 @@ import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extens
 
 type StylesProcessingSettings__FromFile__RawValid = Readonly<{
   common?: StylesProcessingSettings__FromFile__RawValid.Common;
+  // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   linting?: StylesProcessingSettings__FromFile__RawValid.Linting;
   entryPointsGroups: Readonly<{ [groupID: string]: StylesProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
   logging?: StylesProcessingSettings__FromFile__RawValid.Logging;
@@ -26,7 +27,6 @@ type StylesProcessingSettings__FromFile__RawValid = Readonly<{
 
 namespace StylesProcessingSettings__FromFile__RawValid {
 
-  /* ━━━ Types ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Common = Readonly<{ periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number; }>;
 
 
@@ -128,7 +128,7 @@ namespace StylesProcessingSettings__FromFile__RawValid {
 
     return {
 
-      [stylesProcessingPropertiesLocalization.common.KEY]: {
+      $common: {
 
         newName: "common",
         type: Object,
@@ -136,16 +136,17 @@ namespace StylesProcessingSettings__FromFile__RawValid {
         preValidationModifications: nullToUndefined,
 
         properties: {
-          [stylesProcessingPropertiesLocalization.common.periodBetweenFileUpdatingAndRebuildingStarting__seconds.KEY]: {
+          $periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
             newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
             type: Number,
-            required: false,
-            numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+            numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+            required: false
           }
         }
 
       },
 
+      // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       [stylesProcessingPropertiesLocalization.linting.KEY]: {
         newName: "linting",
         type: Object,

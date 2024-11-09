@@ -34,8 +34,8 @@ Please familiarize with the YDF terminology because it is being used in document
 As default, **yda.config.yaml** file will be searched in the project root directory. 
 
 * [Common settings](TemporaryDocumentation/API/ConfigurationFile/CommonSettings/CommonSettings.english.md)
-* [Markup processing settings](TemporaryDocumentation/API/ConfigurationFile/Markup/MarkupProcessing.english.md)
-* [Styles processing settings](TemporaryDocumentation/API/ConfigurationFile/Styles/StylesProcessing.md)
+* [Markup processing settings](Documentation/01-Source/Pages/ConfigurationFile/MarkupProcessing/MarkupProcessing.draft.md)
+* [Styles processing settings](Documentation/01-Source/Pages/ConfigurationFile/StylesProcessing/StylesProcessing.draft.md)
 * [ECMAScript logic processing settings](TemporaryDocumentation/API/ConfigurationFile/ECMA_ScriptProcessing/ECMA_ScriptProcessing.md)
 * [Plain copying](TemporaryDocumentation/API/ConfigurationFile/PlainCopying/PlainCopying.md)
 

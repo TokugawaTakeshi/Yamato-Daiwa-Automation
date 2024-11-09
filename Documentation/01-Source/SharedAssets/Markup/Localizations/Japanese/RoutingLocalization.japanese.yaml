@@ -29,26 +29,10 @@ configuration:
 
   $heading: "コンフィグレーション"
 
-  outputPackageJSON_Generating:
+  markupProcessing:
 
-    $heading: "出力package.json生成"
+    $heading: "構造設計記法（マークアップ）処理設定"
 
-#        incrementalBuilding: "増分構成"
-#      },
-#      globalConstants: { $heading: "グローバル定数" },
-#      pugFilters: { $heading: "Pugフィルター" },
-#      outputHTML_Formatting: { $heading: "出力HTMLコードのフォーマット化" }
-#    }
-#  },
-#
-#  configuration: {
-#    markupProcessing: {
-#      $heading: "構造設計記法処理",
-#      staticPreview: {
-#        $heading: "静的プレビュー",
-#        pagesStateDependentVariations: { $heading: "ページ状態変形" }
-#      }
-#    },
-#  }
-#
-#};
+  stylesProcessing:
+
+    $heading: "意匠設計記法（スタイル）処理"
