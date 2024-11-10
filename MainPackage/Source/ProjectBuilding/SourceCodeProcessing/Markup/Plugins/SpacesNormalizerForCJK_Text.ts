@@ -23,6 +23,20 @@ export default class SpacesNormalizerForCJK_Text {
       `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })\\r?\\n\\x20+` +
           `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })`,
       "gmu"
+    ),
+
+    /* [ Theory ] This issue is frequently occurred because of HTML beautifying rather than Pug.
+     * [ Regular Expressions Tester ] https://regex101.com/r/iaGqag/1 */
+    new RegExp(
+      `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })\\r?\\n\\x20+(<)`,
+      "gmu"
+    ),
+
+    /* [ Theory ] Occurs when the line ends with interpolation like "#[+Term--YDID ライブラリ]や#[+Term--YDID フレームワーク]".
+     * [ Regular Expressions Tester ] https://regex101.com/r/76PkVy/2 */
+    new RegExp(
+      `(>)\\r?\\n\x20+(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })`,
+      "gmu"
     )
 
   ];
