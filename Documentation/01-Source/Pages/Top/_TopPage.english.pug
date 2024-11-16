@@ -13,10 +13,10 @@ block append Metadata
 
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Top page"),
+        title: buildHTML_PageTitle("Top Page"),
         description:
-            "Node.js utility &quot;Yamato Daiwa Automation&quot; (abbreviation: &quot;YDA&quot;) in the high-level project " +
-              "building tool such as client and server applications, console applications, the libraries for browser JavaScript" +
+            "Node.js utility \"Yamato Daiwa Automation\" (abbreviation: \"YDA\") in the high-level project building " +
+              "tool such as client and server applications, console applications, the libraries for browser JavaScript" +
               "or Node.js." +
             "Designed for the high quality development that is strict default configuration or rejection to build the " +
               "project on production-like modes if certain violations were committed." +
@@ -37,8 +37,8 @@ block append Metadata
     RoutingEmulator.setCurrentRoute("top");
 
     LanguageDropDownList__YDF_DK.setLinks({
-      japanese: "./Top/TopPage.japanese.html",
-      russian: "./Top/TopPage.russian.html"
+      japanese: routing.japanese.top.$URI,
+      russian: routing.russian.top.$URI
     });
 
 
@@ -52,5 +52,27 @@ block append HeadScripts
 block append SpecificContent
 
   main.TopPage
+
+    .TopPage-ImageAndTopHeadingGroup
+
+      img.TopPage-ImageAndTopHeadingGroup-Image(
+        src="@Shared/Icons/YDA_Icon.svg"
+        alt="The icon of Yamato Daiwa Automation, the project building tool"
+      )
+
+      h1.TopPage-ImageAndTopHeadingGroup-Heading
+        span.TopPage-ImageAndTopHeadingGroup-Heading-FirstLine Yamato Daiwa
+        span.TopPage-ImageAndTopHeadingGroup-Heading-SecondLine Automation
+
+    p.TopPage-ShortDescription-Heading.
+      The High-level Project Building Tool With Declarative Configuration
+
+    +AdmonitionBlock--YDF({
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning,
+      SVG_Icon: true
+    }).TopPage-Disclaimer.
+      This documentation site is under development.
+      Please understand that high-quality documentation requires more time than library development,
+        and the top priority of framework development is new functionality.
 
     +CompactTableOfContents--YDF_DK(localizedRouting).TopPage-TableOfContents

@@ -85,22 +85,23 @@ block append SpecificContent
       | .
 
 
-    //- ─── `periodBetweenFileUpdatingAndRebuildingStarting__seconds` — ────────────────────────────────────────────────
-    //- ─── Интервал между сохранением последнего файла стилей и началом пересборки` ───────────────────────────────────
-    h3.Article-Heading3
-      | #[code periodBetweenFileUpdatingAndRebuildingStarting__seconds] — Интервал между сохранением последнего файла
-      |   стилей и началом пересборки
+    //-
+      //- ─── `periodBetweenFileUpdatingAndRebuildingStarting__seconds` — ────────────────────────────────────────────────
+      //- ─── Интервал между сохранением последнего файла стилей и началом пересборки` ───────────────────────────────────
+      h3.Article-Heading3
+        | #[code periodBetweenFileUpdatingAndRebuildingStarting__seconds] — Интервал между сохранением последнего файла
+        |   стилей и началом пересборки
 
-    +PropertyMetadata--YDF_DK({
-      type: Number,
-      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-      defaultValue: 1
-    })
+      +PropertyMetadata--YDF_DK({
+        type: Number,
+        numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+        defaultValue: 1
+      })
 
-    p.Article-Paragraph.
-      Определяет, сколько #[+Keyword--YDID секунд] должно пройти с момента сохранения #[+Keyword--YDID последнего]
-        #[+Keyword__Contrast--YDID исходного] #[+Term--YDID файла разметки] (то есть #[+Term--YDID Pug-файла]) до
-        начала нового цикла обработки файлов #[+Term--YDID разметки] включая конвертацию из #[+ImportantEntity--YDID Pug]
-        в #[+ImportantEntity--YDID HTML].
-      Актуально для #[+Term--YDID инкрементальных режимов сборки] (#[+Term--YDID статическое превью],
-        #[+Term--YDID локальная разработка]).
+      p.Article-Paragraph.
+        Определяет, сколько #[+Keyword--YDID секунд] должно пройти с момента сохранения #[+Keyword--YDID последнего]
+          #[+Keyword__Contrast--YDID исходного] #[+Term--YDID файла разметки] (то есть #[+Term--YDID Pug-файла]) до
+          начала нового цикла обработки файлов #[+Term--YDID разметки] включая конвертацию из #[+ImportantEntity--YDID Pug]
+          в #[+ImportantEntity--YDID HTML].
+        Актуально для #[+Term--YDID инкрементальных режимов сборки] (#[+Term--YDID статическое превью],
+          #[+Term--YDID локальная разработка]).

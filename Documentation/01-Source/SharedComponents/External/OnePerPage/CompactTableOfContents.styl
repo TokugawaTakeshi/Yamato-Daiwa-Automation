@@ -1,1 +1,42 @@
-provideCompactTableOfContentsComponent()
+provideCompactTableOfContentsComponent(
+  overridings: {
+
+    link: {
+      normalState: {
+        textColor: YDF_ColorPalette.orange.dark
+      },
+      hoverState: {
+        backgroundColor: YDF_ColorPalette.orange.pastelLight
+      },
+      focusState: {
+        shadowColor: YDF_ColorPalette.orange.mediumDark
+      },
+      activeState: {
+        backgroundColor: YDF_ColorPalette.orange.pastelBright
+      },
+      selectedState: {
+        backgroundColor: YDF_ColorPalette.orange.mediumDark
+      }
+    },
+
+    title: {
+      textColor: YDF_ColorPalette.orange.dark
+    },
+
+    collapsingToggle: {
+      normalState: {
+        backgroundColor: YDF_ColorPalette.orange.mediumDark
+      },
+      hoverState: {
+        backgroundColor: YDF_ColorPalette.orange.slightlyDark
+      },
+      focusState: {
+        shadowColor: YDF_ColorPalette.orange.mediumDark
+      },
+      activeState: {
+        backgroundColor: YDF_ColorPalette.orange.bright
+      }
+    }
+
+  }
+)
