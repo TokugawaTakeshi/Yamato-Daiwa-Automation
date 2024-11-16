@@ -69,39 +69,97 @@ block append SpecificContent
 
 
     //- ━━━ `$common` — общие настройки  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    h2.Article-Heading2 #[code $common] — общие настройки
+    +Heading--YDF({
+      level: 2,
+      innerHTML: localizedSectioning.common.$heading,
+      HTML_ID: localizedSectioning.common.$anchor
+    }).Article-Heading2
 
     +PropertyMetadata--YDF_DK({
-      type: "StylesProcessingSettings__FromFile__RawValid.Common",
-      required: false
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+      required: false,
+      minimalEntriesCount: 1,
+      allowedKeys: [
+        "$staticPreview",
+        "$localDevelopment",
+        "$testing",
+        "$staging",
+        "$production"
+      ]
     })
 
     p.Article-Paragraph
-      | Определяет настройки, #[+Keyword--YDID не]&nbsp;связанные с конкретной
+      | Настройки, #[+Keyword--YDID не]&nbsp;связанные с конкретной
       |
       +Link--YDF({
         internalURI: localizedRouting.terminology.$sectioning.entryPointsAndChildrenFiles.$children.entryPointsGroup.$URI
       }).Article-Link группой точек входа
-      | .
+      |   и не&nbsp;принадлежащие другим подкатегориям обработки #[+Term--YDID стилей].
+      | На данный момент #[+Keyword--YDID все] настройки этой подкатегории #[+Keyword--YDID необходимо] указывать
+      | #[+Keyphrase--YDID для каждого]
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI
+      }).Article-Link режима сборки проекта
+      |
+      | #[+Keyword--YDID отдельно].
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $markupProcessing:
+
+            $common:
+
+              $staticPreview:
+
+                # Определите здесь настройки для режима статического превью
+
+              $localDevelopment:
+
+                # Определите здесь настройки для режима локальной разработки
+
+              $testing:
+
+                # Определите здесь настройки для режима тестирования
+
+              $staging:
+
+                # Определите здесь настройки для режима инсценирования
+
+              $production:
+
+                # Определите здесь настройки для режима «продакшен»
 
 
-    //-
-      //- ─── `periodBetweenFileUpdatingAndRebuildingStarting__seconds` — ────────────────────────────────────────────────
-      //- ─── Интервал между сохранением последнего файла стилей и началом пересборки` ───────────────────────────────────
-      h3.Article-Heading3
-        | #[code periodBetweenFileUpdatingAndRebuildingStarting__seconds] — Интервал между сохранением последнего файла
-        |   стилей и началом пересборки
+    p.Article-Paragraph.
+      Данная подкатегория включает в себя нижеследующие настройки.
 
-      +PropertyMetadata--YDF_DK({
-        type: Number,
-        numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-        defaultValue: 1
-      })
 
-      p.Article-Paragraph.
-        Определяет, сколько #[+Keyword--YDID секунд] должно пройти с момента сохранения #[+Keyword--YDID последнего]
-          #[+Keyword__Contrast--YDID исходного] #[+Term--YDID файла разметки] (то есть #[+Term--YDID Pug-файла]) до
-          начала нового цикла обработки файлов #[+Term--YDID разметки] включая конвертацию из #[+ImportantEntity--YDID Pug]
-          в #[+ImportantEntity--YDID HTML].
-        Актуально для #[+Term--YDID инкрементальных режимов сборки] (#[+Term--YDID статическое превью],
-          #[+Term--YDID локальная разработка]).
+    //- ─── `secondsBetweenFileUpdatingAndStartingOfRebuilding` — ──────────────────────────────────────────────────────
+    //- ─── секунд между сохранением файла разметки и началом пересборки ───────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      innerHTML: localizedSectioning.common.$children.secondsBetweenFileUpdatingAndStartingOfRebuilding.$heading,
+      HTML_ID: localizedSectioning.common.$children.secondsBetweenFileUpdatingAndStartingOfRebuilding.$anchor
+    }).Article-Heading3
+
+    +PropertyMetadata--YDF_DK({
+      type: Number,
+      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+      defaultValue: 1
+    })
+
+    p.Article-Paragraph
+      | Определяет, сколько #[+Keyword--YDID секунд] должно пройти с момента сохранения #[+Keyword--YDID исходного]
+      |   #[+Term--YDID файла стилей] (то есть #[+Term--YDID Stylus-файла]) до начала нового цикла обработки
+      |   #[+Term--YDID файлов стилей] включая преобразование из #[+ImportantEntity--YDID Stylus] в
+      |   #[+ImportantEntity--YDID CSS].
+      | Актуально для
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI
+      }).Article-Link инкрементальных режимов сборки
+      |
+      | (#[+Term--YDID статическое превью], #[+Term--YDID локальная разработка]).
