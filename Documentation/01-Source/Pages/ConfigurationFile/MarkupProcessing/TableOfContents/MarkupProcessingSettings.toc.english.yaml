@@ -1,0 +1,11 @@
+common:
+
+  $heading: "<code>$common</code> — Common Settings"
+
+  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+
+    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code>"
+
+  mustResolveResourcesPointersToRelativePaths:
+
+    $heading: "<code>mustResolveResourcesPointersToRelativePaths</code>"

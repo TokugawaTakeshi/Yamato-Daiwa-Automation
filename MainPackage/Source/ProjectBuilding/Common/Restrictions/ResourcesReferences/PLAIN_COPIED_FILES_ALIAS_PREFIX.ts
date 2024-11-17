@@ -1,4 +1,0 @@
-const PLAIN_COPIED_FILES_ALIAS_PREFIX: string = "$";
-
-
-export default PLAIN_COPIED_FILES_ALIAS_PREFIX;

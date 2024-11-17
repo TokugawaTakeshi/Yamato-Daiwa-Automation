@@ -1,0 +1,7 @@
+common:
+
+  $heading: "<code>$common</code> — общие настройки"
+
+  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+
+    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — секунд между сохранением файла стилей и началом пересборки"

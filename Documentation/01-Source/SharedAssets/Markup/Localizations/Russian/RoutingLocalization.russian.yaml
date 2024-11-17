@@ -21,13 +21,17 @@ functionality:
 
       $heading: "Базовый транспайлинг из Pug в HTML"
 
-    resourcesReferencesResolving:
+    resourcesPointersResolving:
 
-      $heading: "Разрешение ссылок на ресурсы"
+      $heading: "Разрешение указателей на ресурсы"
 
 configuration:
 
   $heading: "Конфигурация"
+
+  common:
+
+    $heading: "<code>$common</code> — Общие настройки"
 
   markupProcessing:
 
@@ -35,4 +39,4 @@ configuration:
 
   stylesProcessing:
 
-    $heading: "<code>$stylesProcessing</code> — Настройки обработки разметки"
+    $heading: "<code>$stylesProcessing</code> — Настройки обработки стилей"

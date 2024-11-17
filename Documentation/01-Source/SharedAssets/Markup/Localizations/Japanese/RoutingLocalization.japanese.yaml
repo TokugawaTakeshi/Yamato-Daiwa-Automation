@@ -21,18 +21,22 @@ functionality:
 
       $heading: "PugからHTMLへ基本変換"
 
-    resourcesReferencesResolving:
+    resourcesPointersResolving:
 
-      $heading: "リソースへの参照解決"
+      $heading: "リソースへのポインタ解決"
 
 configuration:
 
   $heading: "コンフィグレーション"
 
+  common:
+
+    $heading: "<code>$common</code>　一般設定"
+
   markupProcessing:
 
-    $heading: "<code>$markupProcessing</code> — 構造設計記法（マークアップ）処理設定"
+    $heading: "<code>$markupProcessing</code>　構造設計記法（マークアップ）処理設定"
 
   stylesProcessing:
 
-    $heading: "<code>$stylesProcessing</code> — 意匠設計記法（スタイル）処理"
+    $heading: "<code>$stylesProcessing</code>　意匠設計記法（スタイル）処理"

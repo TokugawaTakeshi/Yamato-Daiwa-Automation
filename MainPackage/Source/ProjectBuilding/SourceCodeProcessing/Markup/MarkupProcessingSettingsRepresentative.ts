@@ -1,9 +1,9 @@
 /* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRestrictions";
-import PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX from
-    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX";
-import PLAIN_COPIED_FILES_ALIAS_PREFIX from
-    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PLAIN_COPIED_FILES_ALIAS_PREFIX";
+import PROCESSABLE_FILES_POINTER_ALIAS_PREFIX from
+    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILES_POINTER_ALIAS_PREFIX";
+import PLAIN_COPIED_FILES_POINTER_ALIAS_PREFIX from
+    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PLAIN_COPIED_FILES_POINTER_ALIAS_PREFIX";
 
 /* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
@@ -30,7 +30,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Markup";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Markup";
   public readonly TASK_NAME_FOR_LOGGING: string = "Markup processing";
-  public readonly PLAIN_COPIED_FILES_ALIAS_PREFIX: string = PLAIN_COPIED_FILES_ALIAS_PREFIX;
+  public readonly PLAIN_COPIED_FILES_ALIAS_PREFIX: string = PLAIN_COPIED_FILES_POINTER_ALIAS_PREFIX;
   public readonly WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS: number;
 
   public readonly entryPointsGroupsNormalizedSettingsMappedByReferences: ReadonlyMap<
@@ -82,7 +82,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
         (entryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup):
             [string, MarkupProcessingSettings__Normalized.EntryPointsGroup] =>
                 [
-                  `${ PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX }${ entryPointsGroupSettings.ID }`,
+                  `${ PROCESSABLE_FILES_POINTER_ALIAS_PREFIX }${ entryPointsGroupSettings.ID }`,
                   entryPointsGroupSettings
                 ]
       )

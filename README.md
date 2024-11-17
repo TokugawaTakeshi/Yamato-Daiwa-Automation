@@ -21,5 +21,6 @@ npm i @yamato-daiwa/automation -D -E
   + Markup Processing 
     + [Resources References Resolution](https://automation.yamato-daiwa.com/Functionality/MarkupProcessing/ResourcesReferencesResolving/ResourcesReferencesResolving.english.html) 
 + Configuration File
+  + [Common Settings](https://automation.yamato-daiwa.com/http://localhost:3000/ConfigurationFile/Commmon/CommonSettings.english.html)
   + [Markup Processing Configuration](https://automation.yamato-daiwa.com/http://localhost:3000/ConfigurationFile/MarkupProcessing/MarkupProcessingConfiguration.english.html)
   + [Styles Processing Configuration](https://automation.yamato-daiwa.com/http://localhost:3000/ConfigurationFile/StylesProcessing/StylesProcessingConfiguration.english.html)

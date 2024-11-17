@@ -1,5 +1,5 @@
 /* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
-import type ConsumingProjectBuildingModes from
+import ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 /* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
@@ -37,6 +37,7 @@ namespace StylesProcessingSettings__FromFile__RawValid {
   }
 
 
+  // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   export type Linting = LintingSettings__FromFile__RawValid;
 
 
@@ -199,7 +200,7 @@ namespace StylesProcessingSettings__FromFile__RawValid {
 
       },
 
-      // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       [stylesProcessingPropertiesLocalization.linting.KEY]: {
         newName: "linting",
         type: Object,

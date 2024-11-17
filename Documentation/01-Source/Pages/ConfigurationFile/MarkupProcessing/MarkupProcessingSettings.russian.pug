@@ -1,0 +1,347 @@
+extends ../../../../node_modules/@yamato-daiwa/programming_documentation/Layouts/TwoColumns/TwoColumnsLayout.pug
+
+
+block append Requirements
+
+  include ../../../SharedAssets/Markup/SharedAssets.russian.pug
+  include ../../../SharedComponents/SharedComponents.russian.pug
+
+
+block append Metadata
+
+  -
+
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle("Настройки обработки разметки"),
+        description:
+            "Описание конфигурации обработки разметки (исходный код: Pug, выходной код: HTML) в «Yamato Daiwa Automation» " +
+              "(сокращённо: «YDA», читается: «Уай-ди-эй»), Node.js-утилите для сборки проектов (клиентских веб-приложений, " +
+              "серверных приложений, консольных утилит, библиотек)."
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
+    });
+
+    RoutingEmulator.setCurrentRoute("configurationFile.markupProcessing");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: routing.english.configurationFile.$children.markupProcessing.$URI,
+      japanese: routing.japanese.configurationFile.$children.markupProcessing.$URI
+    });
+
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.markupProcessing;
+
+
+block append HeadScripts
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  article
+
+    //- ━━━ `$markupProcessing` — Настройки обработки разметки ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h1.Article-Heading1!= topHeading
+
+    p.Article-Paragraph.
+      Обработка #[+Term--YDID разметки] может быть настроена в
+        #[+ImportantEntity__Code--YDID $projectBuilding.$markupProcessing]
+        #[+Term--YDID файла конфигурации] (#[+ImportantEntity--YDID yda.config.yaml] #[+Keyphrase--YDID по умолчанию]):
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $markupProcessing:
+
+            # Задайте настройки обработки разметки здесь в соответствии с данным руководством
+
+
+    //- ━━━ `$common` — общие настройки  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      innerHTML: localizedSectioning.common.$heading,
+      HTML_ID: localizedSectioning.common.$anchor
+    }).Article-Heading2
+
+    +PropertyMetadata--YDF_DK({
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+      required: false,
+      minimalEntriesCount: 1,
+      allowedKeys: [
+        "$staticPreview",
+        "$localDevelopment",
+        "$testing",
+        "$staging",
+        "$production"
+      ]
+    })
+
+    p.Article-Paragraph
+      | Настройки, #[+Keyword--YDID не]&nbsp;связанные с конкретной
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.entryPointsAndChildrenFiles.$children.entryPointsGroup.$URI
+      }).Article-Link группой точек входа
+      |   и #[+Keyword--YDID не]&nbsp;принадлежащие другим подкатегориям обработки #[+Term--YDID разметки].
+      | На данный момент #[+Keyword--YDID все] настройки этой подкатегории #[+Keyword--YDID необходимо] указывать
+      | #[+Keyphrase--YDID для каждого]
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI
+      }).Article-Link режима сборки проекта
+      |
+      | #[+Keyword--YDID отдельно].
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $markupProcessing:
+
+            $common:
+
+              $staticPreview:
+
+                # Определите здесь настройки для режима статического превью
+
+              $localDevelopment:
+
+                # Определите здесь настройки для режима локальной разработки
+
+              $testing:
+
+                # Определите здесь настройки для режима тестирования
+
+              $staging:
+
+                # Определите здесь настройки для режима инсценирования
+
+              $production:
+
+                # Определите здесь настройки для режима «продакшен»
+
+
+    p.Article-Paragraph.
+      Данная подкатегория включает в себя нижеследующие настройки.
+
+
+    //- ─── `secondsBetweenFileUpdatingAndStartingOfRebuilding` — ──────────────────────────────────────────────────────
+    //- ─── секунд между сохранением файла разметки и началом пересборки ───────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      innerHTML: localizedSectioning.common.$children.secondsBetweenFileUpdatingAndStartingOfRebuilding.$heading,
+      HTML_ID: localizedSectioning.common.$children.secondsBetweenFileUpdatingAndStartingOfRebuilding.$anchor
+    }).Article-Heading3
+
+    +PropertyMetadata--YDF_DK({
+      type: Number,
+      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+      defaultValue: 1
+    })
+
+    p.Article-Paragraph
+      | Определяет, сколько #[+Keyword--YDID секунд] должно пройти с момента сохранения #[+Keyword--YDID исходного]
+      |   #[+Term--YDID файла разметки] (то есть #[+Term--YDID Pug-файла]) до начала нового цикла обработки
+      |   #[+Term--YDID файлов разметки] включая преобразование из #[+ImportantEntity--YDID Pug] в
+      |   #[+ImportantEntity--YDID HTML].
+      | Актуально для
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI
+      }).Article-Link инкрементальных режимов сборки
+      |
+      | (#[+Term--YDID статическое превью], #[+Term--YDID локальная разработка]).
+
+    p.Article-Paragraph.
+      Даже если редактор кода или #[+Term--YDID интегрированная среда разработки] может сохранять несколько файлов
+        [+Keyword--YDID разом], #[+Keyphrase--YDID на самом деле] они сохраняются #[+Keyword--YDID не] одновременно, а
+        #[+Keyphrase--YDID с разницей в несколько #[+Term--YDID миллисекунд]].
+      Кроме того, обнаружение изменения статуса файлов соответствующими утилитами также происходит
+        #[+Keyphrase--YDID с небольшой, но задержкой].
+      Ввиду этого, #[+Keyphrase--YDID без специальных мер] будет #[+Keyword--YDID одна] пересборка
+        #[+Keyphrase--YDID на каждый сохранённый файл], что будет давать
+        #[+Keyphrase--YDID всё большую нагрузку на аппаратное обеспечение] по мере увеличения количества файлов,
+        пока станет невозможно осуещствлять разработку в нормальном режиме.
+      Чтобы это оптимизировать, необходимо подождать некоторое время после того, как один файл будет сохранён —
+        возможно вслед за ним через несколько #[+Term--YDID миллисекунд] будет замечено сохранение
+        #[+Keyword--YDID последующих] файлов.
+
+    p.Article-Paragraph.
+      В #[+ImportantEntity--YDID YDA]
+        #[+Keyphrase--YDID на #[+Keyword--YDID инкрементальных] #[+Term--YDID режимах сборки]] после сохранения
+        #[+Keyword--YDID одного] #[+Term--YDID Pug-файла] запускается таймер ожидания пересборки, который истекает через
+        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding] секунд.
+      Если #[+Keyword--YDID до] истечения этого таймера #[+Keyword--YDID не] будет сохранено
+        #[+Keyword--YDID ни одного] #[+Keyword__Contrast--YDID последующего] #[+Term--YDID Pug-файла], то запустится
+        новый цикл обработки #[+Term--YDID Pug-файлов].
+      Если же #[+Keyword--YDID до] истечения этого таймера будет сохранён #[+Keyword--YDID ещё] один
+        #[+Term--YDID Pug-файл], то таймер ожидания будет #[+Keyword--YDID перезапущен], и так до тех пор, пока в течение
+        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding]
+        #[+Keyword--YDID не] будет сохранено #[+Keyword--YDID ни] #[+Keyword__Contrast--YDID одного]
+        #[+Keyword--YDID последующего] #[+Term--YDID Pug-файла].
+
+    p.Article-Paragraph.
+      Значения #[+Keyphrase--YDID по умолчанию] #[+Keyword--YDID достаточно] #[+Keyphrase--YDID для начальной],
+        стадии разработки, когда #[+Keyword--YDID обычно] количество файлов невелико.
+      Однако когда количество файлов станет #[+Keyphrase--YDID порядка несколько десятков], может стать желательным
+        увеличить значение #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding].
+      Поскольку #[+Keyphrase--YDID по умолчанию] обнаружение изменений в #[+Term--YDID Pug-файлах] и начало обработки
+        каждого #[+Term--YDID Pug-файла] логируются, то Вы сможете заметить потребность в изменении значения
+        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding].
+
+
+    //- ─── `mustResolveResourcesPointersToRelativePaths` — ────────────────────────────────────────────────────────────
+    //- ─── нужно ли преобразовывать указатели на ресурсы к относительным путям ────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      innerHTML: localizedSectioning.common.$children.mustResolveResourcesPointersToRelativePaths.$heading,
+      HTML_ID: localizedSectioning.common.$children.mustResolveResourcesPointersToRelativePaths.$anchor
+    }).Article-Heading3
+
+    +PropertyMetadata--YDF_DK({
+      type: Boolean,
+      defaultValue: "(Зависит от режима сборки)"
+    })
+
+    p.Article-Paragraph
+      | Имеет отношении к функциональности
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI
+      }) преобразования указателей
+      |
+      | на
+      |
+      +Link--YDF({ internalURI: localizedRouting.terminology.$sectioning.resources.$URI }) ресурсы
+      | .
+      | #[+Keyphrase--YDID По умолчанию], #[+ImportantEntity--YDID YDA] попытается преобразовать #[+Term--YDID указатели]
+      |   на #[+Term--YDID ресурсы] к #[+Keyword--YDID абсолютным] #[+Term--YDID путям] для #[+Keyword--YDID всех]
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI
+      }).Article-Link режимов сборки
+      |
+      | #[+Keyword--YDID кроме] #[+Term--YDID статического превью], однако чтобы это сделать, для целевого
+      |   #[+Term--YDID режима сборки проекта] #[+Term--YDID должна] быть указана настройка
+      |
+      +SecondaryEntity__Code--YDID
+        | $projectBuilding.$commonSettings.publicDirectoriesRelativePaths[РЕЖИМ_СБОРКИ_ПРОЕКТА]
+      | , иначе будет выдано предупреждение.
+      | Если же Вы не&nbsp;хотите, чтобы #[+Term--YDID указатели на ресурсы] разрешались к #[+Keyword--YDID абсолютным]
+      |   #[+Term--YDID путям], установите #[+Term--YDID опции]
+      |   #[+ImportantEntity__Code--YDID mustResolveResourcesPointersToRelativePaths] значение
+      |   #[+ImportantEntity__Code--YDID true].
+
+    p.Article-Paragraph.
+      Принять решение о том, нужна ли Вам эта опция Вы должны на основе понимания разницы между
+        #[+Term--YDID абсолютными] и #[+Term--YDID относительными путями], а также на основе той цели, для которых Вы
+        пишите #[+Term--YDID разметку].
+
+  //-
+      h4.Article-Heading4  #[code buildingModeDependent] — настройки, зависящие от режима сборки
+
+      dl.Article-DescriptionList
+
+        dt Тип
+        dd object типа «ассоциативный массив»
+
+        dt Обязательность
+        dd Необязателен
+
+        dt Ключи
+        dd Должны быть режимом сборки проекта
+
+        dt Допустимые ключи
+        dd
+          ul.Article-UnorderedList
+            li STATIC_PREVIEW
+            li LOCAL_DEVELOPMENT
+            li TESTING
+            li STAGING
+            li PRODUCTION
+
+        dt Тип значения
+        dd Объект
+
+        dt Схема значения
+        dd
+          +CodeListing--YDF: :code_listing--yda
+            export type EntryPointsGroup =
+                SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
+                Readonly<{
+                  HTML_Validation?: EntryPointsGroup.HTML_Validation;
+                  accessibilityInspection?: EntryPointsGroup.AccessibilityInspection;
+                  convertToHandlebarsOnNonStaticPreviewModes?: boolean;
+                  buildingModeDependent: Readonly<{ [projectBuildingMode: string]: EntryPointsGroup.BuildingModeDependent; }>;
+                }>;
+
+
+      p.Article-Paragraph.
+        Настройки, зависящие от #[+Term--YDID режима сборки проекта], однако #[+Keyword--YDID общие] для
+          #[+Keyword__Contrast--YDID всех] #[+Term--YDID групп точек входа].
+        Не следует путать с настройками #[+ImportantEntity--YDID entryPointsGroups.entryPointsGroups.[GROUP_ID].buildingModeDependent],
+          которые зависят как от #[+Term--YDID группы точек входа], так и от #[+Term--YDID режима сборки проекта].
+
+
+      h3.Article-Heading3 #[code logging] — настройки логирования
+
+      dl.Article-DescriptionList
+
+        dt Тип
+        dd object
+
+        dt Обязательность
+        dd Необязательное
+
+      p.Article-Paragraph.
+        Определяет настройки логирования в терминал.
+
+
+      h4.Article-Heading4 #[code filesPaths] — пути файлов
+
+      dl.Article-DescriptionList
+
+        dt Тип
+        dd boolean
+
+        dt Значение по умолчанию
+        dd true
+
+      p.Article-Paragraph.
+        Выводит в консоль пути обрабатываемых файлов, относительные директории, в которой находится файл настроек YDA.
+
+      p.Article-Paragraph.
+        Поскольку при начале обработке Pug-файла должна быть какая-то обратная связь, то по умолчанию это логирование
+          включено.
+
+
+      h4.Article-Heading4 #[code filesCount] — число файлов
+
+      dl.Article-DescriptionList
+
+        dt Тип
+        dd boolean
+
+        dt Значение по умолчанию
+        dd false
+
+      p.Article-Paragraph.
+        Выводит в количество файлов, которое будет обработано в одном цикле сборки
+          (на режимах инкрементальной сборки таких циклов может быть сколь угодно много, и каждый раз с разным количеством
+          файлов).
+
+      p.Article-Paragraph.
+        По умолчанию имеет значение false, так как если файлов мало, то обычно достаточно вывести лишь пути обрабатываемых
+          файлов, а если файлов много, мало кто захочет проверять правильность этого числа.

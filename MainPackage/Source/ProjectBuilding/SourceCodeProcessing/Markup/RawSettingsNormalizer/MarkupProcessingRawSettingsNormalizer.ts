@@ -156,7 +156,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
     const explicitlySpecifiedMustResolveResourceReferencesToRelativePathsPropertyValue: boolean | undefined =
         this.markupProcessingSettings__fromFile__rawValid.common?.
           buildingModeDependent?.[this.consumingProjectBuildingMode]?.
-          mustResolveResourceReferencesToRelativePaths;
+          mustResolveResourcesPointersToRelativePaths;
 
     if (this.consumingProjectBuildingMode === ConsumingProjectBuildingModes.staticPreview) {
 

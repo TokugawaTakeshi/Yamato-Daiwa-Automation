@@ -1,0 +1,11 @@
+common:
+
+  $heading: "<code>$common</code> 一般設定"
+
+  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+
+    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> 構造設計記法（マークアップ）ファイル保存と再構成の間の秒数"
+
+  mustResolveResourcesPointersToRelativePaths:
+
+    $heading: "<code>mustResolveResourcesPointersToRelativePaths</code> 資源へのポインタを相対パスに変化する義務の真偽"

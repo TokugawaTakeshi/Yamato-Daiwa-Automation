@@ -1,6 +1,6 @@
 /* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
-import PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX from
-    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX";
+import PROCESSABLE_FILES_POINTER_ALIAS_PREFIX from
+    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILES_POINTER_ALIAS_PREFIX";
 
 /* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type StylesProcessingSettings__Normalized from "@StylesProcessing/StylesProcessingSettings__Normalized";
@@ -68,7 +68,7 @@ export default class StylesProcessingSettingsRepresentative extends GulpStreamBa
         (entryPointsGroupSettings: StylesProcessingSettings__Normalized.EntryPointsGroup):
             [string, StylesProcessingSettings__Normalized.EntryPointsGroup] =>
                 [
-                  `${ PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX }${ entryPointsGroupSettings.ID }`,
+                  `${ PROCESSABLE_FILES_POINTER_ALIAS_PREFIX }${ entryPointsGroupSettings.ID }`,
                   entryPointsGroupSettings
                 ]
       )

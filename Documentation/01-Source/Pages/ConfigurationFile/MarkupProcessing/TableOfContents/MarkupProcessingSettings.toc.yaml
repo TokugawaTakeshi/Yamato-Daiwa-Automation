@@ -1,0 +1,16 @@
+common:
+
+  $heading: `common.$heading`
+  $anchor: COMMON--SECTION
+
+  $children:
+
+    secondsBetweenFileUpdatingAndStartingOfRebuilding:
+
+      $heading: `common.secondsBetweenFileUpdatingAndStartingOfRebuilding.$heading`
+      $anchor: COMMON-PERIOD_BETWEEN_FILE_UPDATING_AND_STARTING_OF_REBUILDING--SECTION
+
+    mustResolveResourcesPointersToRelativePaths:
+
+      $heading: `common.mustResolveResourcesPointersToRelativePaths.$heading`
+      $anchor: COMMON-MUST_RESOLVE_RESOURCES_POINTERS_TO_RELATIVE_PATHS--SECTION

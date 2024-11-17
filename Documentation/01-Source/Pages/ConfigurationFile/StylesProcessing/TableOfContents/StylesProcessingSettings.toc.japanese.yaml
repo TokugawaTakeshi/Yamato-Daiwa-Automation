@@ -1,0 +1,7 @@
+common:
+
+  $heading: "<code>$common</code> 一般設定"
+
+  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+
+    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> 意匠設計記法（スタイル）ファイル保存と再構成の間の秒数"

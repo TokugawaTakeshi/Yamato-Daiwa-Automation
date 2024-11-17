@@ -21,21 +21,25 @@ functionality:
 
       $heading: "Basic Pug-to-HTML Transpiling"
 
-    resourcesReferencesResolving:
+    resourcesPointersResolving:
 
-      $heading: "Resources References Resolving"
+      $heading: "Resources Pointers Resolving"
 
 configuration:
 
   $heading: "Configuration"
 
+  common:
+
+    $heading: "<code>$common</code> — Common Settings"
+
   markupProcessing:
 
-    $heading: "<code>$markupProcessing</code> — Markup Processing Configuration"
+    $heading: "<code>$markupProcessing</code> — Markup Processing Settings"
 
   stylesProcessing:
 
-    $heading: "<code>$stylesProcessing</code> — Styles Processing"
+    $heading: "<code>$stylesProcessing</code> — Styles Processing Settings"
 
   outputPackageJSON_Generating:
 

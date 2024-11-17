@@ -1,8 +1,8 @@
 /* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import type ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
-import PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX from
-    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX";
+import PROCESSABLE_FILES_POINTER_ALIAS_PREFIX from
+    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILES_POINTER_ALIAS_PREFIX";
 
 /* ─── Default Settings ───────────────────────────────────────────────────────────────────────────────────────────── */
 import AssetsProcessingGenericSettings__Default from
@@ -97,7 +97,7 @@ abstract class AssetsProcessingRawSettingsNormalizer {
             alwaysForwardSlashSeparators: true
           });
 
-      const aliasForPathsResolution: string = PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX +
+      const aliasForPathsResolution: string = PROCESSABLE_FILES_POINTER_ALIAS_PREFIX +
           (assetsGroupSettings__rawValid.referenceCustomAliasName ?? groupID);
 
       const outputFilesBaseDirectoryAbsolutePathActualForCurrentProjectBuildingMode: string =

@@ -37,8 +37,7 @@ import SourceCodeSelectiveReprocessingHelper from "@Utils/SourceCodeSelectiveRep
 import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 import computeContentMD5_Checksum from "rev-hash";
 import HTML_Validator from "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
-import ResourcesReferencesResolverForHTML from
-    "@MarkupProcessing/Plugins/ResourcesReferencesResolverForHTML/ResourcesReferencesResolverForHTML";
+import PointersReferencesResolverForHTML from "./Plugins/PointersReferencesResolverForHTML/PointersReferencesResolverForHTML";
 import AccessibilityInspector from "@MarkupProcessing/Plugins/AccessibilityInspector/AccessibilityInspector";
 import ImagesAspectRatioAffixer from "@MarkupProcessing/Plugins/ImagesAspectRatioAffixer";
 import SpacesNormalizerForCJK_Text from "@MarkupProcessing/Plugins/SpacesNormalizerForCJK_Text";
@@ -480,7 +479,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
   }
 
   /* eslint-disable @typescript-eslint/member-ordering --
-   *  Static and non-static methods are following by the usage order. */
+   * From now, static and non-static methods are following by the usage order. */
   private async onOutputHTML_FileReady(
     processedEntryPointVinylFile: MarkupEntryPointVinylFile
   ): Promise<GulpStreamModifier.CompletionSignals> {
@@ -492,11 +491,11 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
     });
 
     let entryPointFileContent: string = processedEntryPointVinylFile.stringifiedContents;
-    const entryPointFileContentMD5Checksum: string = computeContentMD5_Checksum(entryPointFileContent);
+    const entryPointFileContentMD5_Checksum: string = computeContentMD5_Checksum(entryPointFileContent);
 
     let rootHTML_Element: HTMLElement = parseHTML(entryPointFileContent);
 
-    rootHTML_Element = ResourcesReferencesResolverForHTML.resolve({
+    rootHTML_Element = PointersReferencesResolverForHTML.resolve({
       rootHTML_Element,
       projectBuildingMasterConfigRepresentative: this.projectBuildingMasterConfigRepresentative,
       markupProcessingSettingsRepresentative: this.markupProcessingSettingsRepresentative,
@@ -546,7 +545,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
       if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.HTML_Validation.mustExecute) {
         HTML_Validator.validateAtBackgroundAndReportImmideatlyWithoutThrowingOfErrors({
           HTML_Code: entryPointFileContent,
-          HTML_CodeMD5Checksum: entryPointFileContentMD5Checksum,
+          HTML_CodeMD5Checksum: entryPointFileContentMD5_Checksum,
           targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
               entryPointFileContentRelativeToConsumingProjectRootDirectory
         });
@@ -555,7 +554,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
       if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.mustExecute) {
         AccessibilityInspector.inspectAtBackgroundAndReportImmideatlyWithoutThrowingOfErrors({
           HTML_Code: entryPointFileContent,
-          HTML_CodeMD5Checksum: entryPointFileContentMD5Checksum,
+          HTML_CodeMD5Checksum: entryPointFileContentMD5_Checksum,
           accessibilityStandard: processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.standard,
           targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
               entryPointFileContentRelativeToConsumingProjectRootDirectory
@@ -567,7 +566,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
       if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.HTML_Validation.mustExecute) {
         HTML_Validator.validateAtBackgroundWithoutReporting({
           HTML_Code: entryPointFileContent,
-          HTML_CodeMD5Checksum: entryPointFileContentMD5Checksum,
+          HTML_CodeMD5Checksum: entryPointFileContentMD5_Checksum,
           targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
               entryPointFileContentRelativeToConsumingProjectRootDirectory
         });
@@ -576,7 +575,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
       if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.mustExecute) {
         AccessibilityInspector.inspectAtBackgroundWithoutReporting({
           HTML_Code: entryPointFileContent,
-          HTML_CodeMD5Checksum: entryPointFileContentMD5Checksum,
+          HTML_CodeMD5Checksum: entryPointFileContentMD5_Checksum,
           accessibilityStandard: processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.standard,
           targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
               entryPointFileContentRelativeToConsumingProjectRootDirectory
@@ -742,5 +741,6 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
     }
 
   }
+  /* eslint-enable @typescript-eslint/member-ordering */
 
 }

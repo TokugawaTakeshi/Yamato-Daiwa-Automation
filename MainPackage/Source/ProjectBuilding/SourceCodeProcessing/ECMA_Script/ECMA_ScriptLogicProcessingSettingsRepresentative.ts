@@ -1,6 +1,6 @@
 /* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
-import PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX from
-    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX";
+import PROCESSABLE_FILES_POINTER_ALIAS_PREFIX from
+    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILES_POINTER_ALIAS_PREFIX";
 
 /* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
@@ -66,7 +66,7 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
         (entryPointsGroupSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup):
             [string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup] =>
                 [
-                  `${ PROCESSABLE_FILE_REFERENCE_ALIAS_PREFIX }${ entryPointsGroupSettings.ID }`,
+                  `${ PROCESSABLE_FILES_POINTER_ALIAS_PREFIX }${ entryPointsGroupSettings.ID }`,
                   entryPointsGroupSettings
                 ]
       )

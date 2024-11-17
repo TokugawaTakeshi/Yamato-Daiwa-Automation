@@ -36,7 +36,8 @@ import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 import StylesEntryPointVinylFile from "@StylesProcessing/StylesEntryPointVinylFile";
 import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
 import ContainerQueriesSyntaxNormalizerForStylus from
-      "@StylesProcessing/Plugins/ContainerQueriesSyntaxNormalizerForStylus/ContainerQueriesSyntaxNormalizerForStylus";
+    "@StylesProcessing/Plugins/ContainerQueriesSyntaxNormalizerForStylus/ContainerQueriesSyntaxNormalizerForStylus";
+import ResourcesPointersResolverForCSS from "@ProjectBuilding/Common/Plugins/ResourcesPointersResolverForCSS";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
@@ -233,7 +234,7 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
         pipe(
           GulpStreamModifier.modify({
             onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ StylesEntryPointVinylFile, StylesProcessor.onOutputCSS_FileReady ]
+              [ StylesEntryPointVinylFile, this.onOutputCSS_FileReady.bind(this) ]
             ])
           })
         ).
@@ -306,8 +307,8 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
 
 
   /* ━━━ Pipeline methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  /* eslint-disable-next-line @typescript-eslint/member-ordering --
-  * メソッドに依って「this」が必要に成ったり不要に成ったりしているが、メソッドは論理的な順番通り並べてある */
+  /* eslint-disable @typescript-eslint/member-ordering --
+   * From now, static and non-static methods are following by the usage order. */
   private async replacePlainVinylFileWithStylesEntryPointVinylFile(
     plainVinylFile: VinylFile, addNewFileToStream: GulpStreamModifier.NewFilesAdder
   ): Promise<GulpStreamModifier.CompletionSignals> {
@@ -324,7 +325,7 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
 
   }
 
-  private static async onOutputCSS_FileReady(
+  private async onOutputCSS_FileReady(
     processedEntryPointVinylFile: StylesEntryPointVinylFile
   ): Promise<GulpStreamModifier.CompletionSignals> {
 
@@ -348,8 +349,19 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
           )
         );
 
+    let entryPointFileContent: string = processedEntryPointVinylFile.stringifiedContents;
+
+    entryPointFileContent = ResourcesPointersResolverForCSS.resolve({
+      CSS_Code: entryPointFileContent,
+      absolutePathOfOutputDirectoryForParentFile: processedEntryPointVinylFile.outputDirectoryAbsolutePath,
+      projectBuildingMasterConfigRepresentative: this.projectBuildingMasterConfigRepresentative
+    });
+
+    processedEntryPointVinylFile.setContents(entryPointFileContent);
+
     return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
 
   }
+  /* eslint-enable @typescript-eslint/member-ordering */
 
 }

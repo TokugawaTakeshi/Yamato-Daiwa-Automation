@@ -31,18 +31,18 @@ functionality:
         #          $heading: `functionality.markupProcessing.basicPugToHTML_Transpiling.$heading`
         #          $URI: `@All/Functionality/MarkupProcessing/BasicPugToHTML_Transpiling/BasicPugToHTML_Transpiling.${ fileNameLocalizationExtensions }`
 
-        resourcesReferencesResolving:
+        resourcesPointersResolving:
 
-          $heading: `functionality.markupProcessing.resourcesReferencesResolving.$heading`
-          $URI: `@All/Functionality/MarkupProcessing/ResourcesReferencesResolving/ResourcesReferencesResolving.${ fileNameLocalizationExtensions }`
+          $heading: `functionality.markupProcessing.resourcesPointersResolving.$heading`
+          $URI: `@All/Functionality/MarkupProcessing/ResourcesPointersResolving/ResourcesPointersResolving.${ fileNameLocalizationExtensions }`
           $sectioning:
-            $specificationFileRelativePath: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.yaml
+            $specificationFileRelativePath: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesPointersResolving/TableOfContents/ResourcesPointersResolving.toc.yaml
             $localizations:
-              english: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.english.yaml
-              japanese: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.japanese.yaml
-              russian: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesReferencesResolving/TableOfContents/ResourcesReferencesResolving.toc.russian.yaml
+              english: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesPointersResolving/TableOfContents/ResourcesPointersResolving.toc.english.yaml
+              japanese: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesPointersResolving/TableOfContents/ResourcesPointersResolving.toc.japanese.yaml
+              russian: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesPointersResolving/TableOfContents/ResourcesPointersResolving.toc.russian.yaml
 
-# Functionality/MarkupProcessing/ResourcesReferencesResolving/ResourcesReferencesResolving.${ fileNameLocalizationExtensions }`
+# Functionality/MarkupProcessing/ResourcesPointersResolving/ResourcesPointersResolving.${ fileNameLocalizationExtensions }`
 
 #configuration:
 #
@@ -62,32 +62,37 @@ configurationFile:
 
   $children:
 
-#    commonSettings:
-#
-#      $heading: Common Settings
-#      $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/CommonSettings/CommonSettings.english.md
+    commonSettings:
+
+      $heading: `configuration.common.$heading`
+      $URI: `@All/ConfigurationFile/Common/CommonSettings.${ fileNameLocalizationExtensions }`
+      $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.yaml
+      $localizations:
+        english: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.english.yaml
+        japanese: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.japanese.yaml
+        russian: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.russian.yaml
 
     markupProcessing:
 
       $heading: `configuration.markupProcessing.$heading`
-      $URI: `@All/ConfigurationFile/MarkupProcessing/MarkupProcessingConfiguration.${ fileNameLocalizationExtensions }`
+      $URI: `@All/ConfigurationFile/MarkupProcessing/MarkupProcessingSettings.${ fileNameLocalizationExtensions }`
       $sectioning:
-        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingConfiguration.toc.yaml
+        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingSettings.toc.yaml
         $localizations:
-          english: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingConfiguration.toc.english.yaml
-          japanese: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingConfiguration.toc.japanese.yaml
-          russian: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingConfiguration.toc.russian.yaml
+          english: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingSettings.toc.english.yaml
+          japanese: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingSettings.toc.japanese.yaml
+          russian: 01-Source/Pages/ConfigurationFile/MarkupProcessing/TableOfContents/MarkupProcessingSettings.toc.russian.yaml
 
     stylesProcessing:
 
       $heading: `configuration.stylesProcessing.$heading`
-      $URI: `@All/ConfigurationFile/StylesProcessing/StylesProcessingConfiguration.${ fileNameLocalizationExtensions }`
+      $URI: `@All/ConfigurationFile/StylesProcessing/StylesProcessingSettings.${ fileNameLocalizationExtensions }`
       $sectioning:
-        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingConfiguration.toc.yaml
+        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingSettings.toc.yaml
         $localizations:
-          english: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingConfiguration.toc.english.yaml
-          japanese: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingConfiguration.toc.japanese.yaml
-          russian: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingConfiguration.toc.russian.yaml
+          english: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingSettings.toc.english.yaml
+          japanese: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingSettings.toc.japanese.yaml
+          russian: 01-Source/Pages/ConfigurationFile/StylesProcessing/TableOfContents/StylesProcessingSettings.toc.russian.yaml
 
     ECMAScriptLogicProcessing:
 

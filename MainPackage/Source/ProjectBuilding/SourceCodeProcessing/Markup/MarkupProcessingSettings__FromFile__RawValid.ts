@@ -17,6 +17,7 @@ import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extens
 
 type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
   common?: MarkupProcessingSettings__FromFile__RawValid.Common;
+  // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   linting?: MarkupProcessingSettings__FromFile__RawValid.Linting;
   importingFromTypeScript?: MarkupProcessingSettings__FromFile__RawValid.ImportingFromTypeScript;
   staticPreview?: MarkupProcessingSettings__FromFile__RawValid.StaticPreview;
@@ -35,11 +36,12 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
   export namespace Common {
     export type BuildingModeDependent = Readonly<{
       secondsBetweenFileUpdatingAndStartingOfRebuilding?: number;
-      mustResolveResourceReferencesToRelativePaths?: boolean;
+      mustResolveResourcesPointersToRelativePaths?: boolean;
     }>;
   }
 
 
+  // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   export type Linting = LintingSettings__FromFile__RawValid;
 
 
@@ -321,8 +323,8 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
                   required: false
                 },
 
-                $mustResolveResourceReferencesToRelativePaths: {
-                  newName: "mustResolveResourceReferencesToRelativePaths",
+                $mustResolveResourcesPointersToRelativePaths: {
+                  newName: "mustResolveResourcesPointersToRelativePaths",
                   type: Boolean,
                   required: false
                 }
@@ -337,6 +339,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
 
       },
 
+      // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       [markupProcessingPropertiesLocalization.linting.KEY]: {
         newName: "linting",
         preValidationModifications: nullToUndefined,
