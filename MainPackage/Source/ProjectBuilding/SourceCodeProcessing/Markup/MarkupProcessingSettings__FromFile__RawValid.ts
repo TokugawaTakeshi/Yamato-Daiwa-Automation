@@ -35,6 +35,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
   export namespace Common {
     export type BuildingModeDependent = Readonly<{
       secondsBetweenFileUpdatingAndStartingOfRebuilding?: number;
+      // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       mustResolveResourceReferencesToRelativePaths?: boolean;
     }>;
   }
@@ -321,6 +322,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
                   required: false
                 },
 
+                // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                 $mustResolveResourceReferencesToRelativePaths: {
                   newName: "mustResolveResourceReferencesToRelativePaths",
                   type: Boolean,
