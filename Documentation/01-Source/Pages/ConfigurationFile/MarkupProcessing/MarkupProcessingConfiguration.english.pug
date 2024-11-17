@@ -97,7 +97,7 @@ block append SpecificContent
 
 
       h4.Article-Heading4
-        code periodBetweenFileUpdatingAndRebuildingStarting__seconds
+        code secondsBetweenFileUpdatingAndStartingOfRebuilding
         |: The interval between last markup file has been saved and starting of rebuilding
 
       dl.Article-DescriptionList
@@ -132,24 +132,24 @@ block append SpecificContent
       p.Article-Paragraph.
         #[+Keyphrase--YDID In the incremental building modes] of the #[+ImportantEntity--YDID YDA], once single
           #[+Term--YDID Pug-file] has been saved, the rebuilding timer which elapses at
-          #[+ImportantEntity__Code--YDID periodBetweenFileUpdatingAndRebuildingStarting__seconds] #[+Term--YDID seconds]
+          #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding] #[+Term--YDID seconds]
           has been started.
         If #[+Keyword--YDID no] #[+Keyword__Contrast--YDID subsequent] #[+Term--YDID Pug-files] will be saved
           #[+Keyword--YDID until] the times elapsed, the new cycle of the processing of the #[+Term--YDID Pug-files] will start.
         And if one #[+Keyword--YDID more] #[+Term--YDID Pug-file] will be saved #[+Keyword--YDID until] the timer elapsed,
           this times will be restarted; it will continue while for the
-          #[+ImportantEntity__Code--YDID periodBetweenFileUpdatingAndRebuildingStarting__seconds] seconds
+          #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding] seconds
           #[+Keyword--YDID no] subsequent #[+Term--YDID Pug-файла] will be saved.
 
       p.Article-Paragraph.
         The #[+Keyword--YDID default] value is #[+Keyword__Contrast--YDID enough]
           #[+Keyphrase--YDID for the starting of the development phase] when the files quantity usually is not large.
         However as the files quantity will become to several tens, that increasing of
-          #[+ImportantEntity__Code--YDID periodBetweenFileUpdatingAndRebuildingStarting__seconds] could desired
+          #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding] could desired
           (the #[+Term--YDID fractional numbers] like #[+SecondaryEntity--YDID 1.5] are #[+Keyword--YDID allowed]).
         Because #[+Keyword--YDID as default] the detecting of the changed in the #[+Term--YDID Pug files] and the starting
           of the processing of each #[+Term--YDID Pug file] are being logged, you will notice the need for the changing of the
-          #[+ImportantEntity__Code--YDID periodBetweenFileUpdatingAndRebuildingStarting__seconds] if such need will occur.
+          #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding] if such need will occur.
 
 
       h4.Article-Heading4  #[code buildingModeDependent] — The common settings dependent on project building mode

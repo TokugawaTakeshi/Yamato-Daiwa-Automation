@@ -29,12 +29,12 @@ type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
 namespace MarkupProcessingSettings__FromFile__RawValid {
 
   export type Common = Readonly<{
-    periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number;
     buildingModeDependent?: Readonly<{ [projectBuildingMode: string]: Common.BuildingModeDependent | undefined; }>;
   }>;
 
   export namespace Common {
     export type BuildingModeDependent = Readonly<{
+      secondsBetweenFileUpdatingAndStartingOfRebuilding?: number;
       mustResolveResourceReferencesToRelativePaths?: boolean;
     }>;
   }
@@ -282,46 +282,53 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
 
         properties: {
 
-          $periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
-            newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
-            type: Number,
-            numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-            required: false
-          },
-          // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           $buildingModeDependent: {
 
             newName: "buildingModeDependent",
+
             type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+
             required: false,
-            allowedKeys: Object.values(ConsumingProjectBuildingModes),
+
             minimalEntriesCount: 1,
 
+            allowedKeys: [
+              "$staticPreview",
+              "$localDevelopment",
+              "$testing",
+              "$staging",
+              "$production"
+            ],
+
             keysRenamings: {
-              [localizedConsumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
-                  ConsumingProjectBuildingModes.staticPreview,
-              [localizedConsumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
-                  ConsumingProjectBuildingModes.localDevelopment,
-              [localizedConsumingProjectLocalizedPreDefinedBuildingModes.testing]:
-                  ConsumingProjectBuildingModes.testing,
-              [localizedConsumingProjectLocalizedPreDefinedBuildingModes.staging]:
-                  ConsumingProjectBuildingModes.staging,
-              [localizedConsumingProjectLocalizedPreDefinedBuildingModes.production]:
-                  ConsumingProjectBuildingModes.production
+              $staticPreview: ConsumingProjectBuildingModes.staticPreview,
+              $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
+              $testing: ConsumingProjectBuildingModes.testing,
+              $staging: ConsumingProjectBuildingModes.staging,
+              $production: ConsumingProjectBuildingModes.production
             },
 
             value: {
+
               type: Object,
+
               properties: {
-                [
-                  markupProcessingPropertiesLocalization.common.buildingModeDependent.
-                      mustResolveResourceReferencesToRelativePaths.KEY
-                ]: {
+
+                $secondsBetweenFileUpdatingAndStartingOfRebuilding: {
+                  newName: "secondsBetweenFileUpdatingAndStartingOfRebuilding",
+                  type: Number,
+                  numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                  required: false
+                },
+
+                $mustResolveResourceReferencesToRelativePaths: {
                   newName: "mustResolveResourceReferencesToRelativePaths",
                   type: Boolean,
                   required: false
                 }
+
               }
+
             }
 
           }

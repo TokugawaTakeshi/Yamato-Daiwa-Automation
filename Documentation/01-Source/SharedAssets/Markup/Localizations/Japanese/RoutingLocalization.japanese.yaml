@@ -31,8 +31,8 @@ configuration:
 
   markupProcessing:
 
-    $heading: "構造設計記法（マークアップ）処理設定"
+    $heading: "<code>$markupProcessing</code> — 構造設計記法（マークアップ）処理設定"
 
   stylesProcessing:
 
-    $heading: "意匠設計記法（スタイル）処理"
+    $heading: "<code>$stylesProcessing</code> — 意匠設計記法（スタイル）処理"

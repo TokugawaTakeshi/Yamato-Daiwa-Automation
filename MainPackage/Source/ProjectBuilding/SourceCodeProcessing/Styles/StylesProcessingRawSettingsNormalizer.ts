@@ -60,8 +60,12 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
             StylesProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
         supportedOutputFileNameExtensionsWithoutLeadingDots:
             StylesProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots,
-        waitingForSubsequentFilesWillBeSavedPeriod__seconds:
-            stylesProcessingSettings__fromFile__rawValid.common?.periodBetweenFileUpdatingAndRebuildingStarting__seconds ??
+        secondsBetweenFileUpdatingAndStartingOfRebuilding:
+            stylesProcessingSettings__fromFile__rawValid.
+                common?.
+                buildingModeDependent?.
+                [dataHoldingSelfInstance.consumingProjectBuildingMode]?.
+                secondsBetweenFileUpdatingAndStartingOfRebuilding ??
             StylesProcessingSettings__Default.periodBetweenFileUpdatingAndRebuildingStarting__seconds
       },
 

@@ -59,7 +59,7 @@ export default class StylesProcessingSettingsRepresentative extends GulpStreamBa
         supportedSourceFileNameExtensionsWithoutLeadingDots;
 
     this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS = normalizedStylesProcessingSettings.common.
-        waitingForSubsequentFilesWillBeSavedPeriod__seconds;
+        secondsBetweenFileUpdatingAndStartingOfRebuilding;
 
     this.entryPointsGroupsNormalizedSettingsMappedByReferences = new Map<
       string, StylesProcessingSettings__Normalized.EntryPointsGroup

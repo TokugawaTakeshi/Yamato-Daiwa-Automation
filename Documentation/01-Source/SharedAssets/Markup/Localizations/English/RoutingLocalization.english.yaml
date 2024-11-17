@@ -31,11 +31,11 @@ configuration:
 
   markupProcessing:
 
-    $heading: "Markup Processing Configuration"
+    $heading: "<code>$markupProcessing</code> — Markup Processing Configuration"
 
   stylesProcessing:
 
-    $heading: "Styles Processing"
+    $heading: "<code>$stylesProcessing</code> — Styles Processing"
 
   outputPackageJSON_Generating:
 

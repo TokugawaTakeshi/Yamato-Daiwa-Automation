@@ -20,7 +20,7 @@ block append Metadata
       metadata: {
         title: buildHTML_PageTitle("Настройки Обработки Стилей"),
         description:
-            "Описание конфигурации обработки стилей (исходный код: Pug, выходной код: HTML) в «Yamato Daiwa Automation» " +
+            "Описание конфигурации обработки стилей (исходный код: Stylus, выходной код: CSS) в «Yamato Daiwa Automation» " +
               "(сокращённо: «YDA», читается: «Уай-ди-эй»), Node.js-утилите для сборки проектов (клиентских веб-приложений, " +
               "серверных приложений, консольных утилит, библиотек).",
       },
@@ -163,3 +163,40 @@ block append SpecificContent
       }).Article-Link инкрементальных режимов сборки
       |
       | (#[+Term--YDID статическое превью], #[+Term--YDID локальная разработка]).
+
+    p.Article-Paragraph.
+      Даже если редактор кода или #[+Term--YDID интегрированная среда разработки] может сохранять несколько файлов
+        [+Keyword--YDID разом], #[+Keyphrase--YDID на самом деле] они сохраняются #[+Keyword--YDID не] одновременно, а
+        #[+Keyphrase--YDID с разницей в несколько #[+Term--YDID миллисекунд]].
+      Кроме того, обнаружение изменения статуса файлов соответствующими утилитами также происходит
+        #[+Keyphrase--YDID с небольшой, но задержкой].
+      Ввиду этого, #[+Keyphrase--YDID без специальных мер] будет #[+Keyword--YDID одна] пересборка
+        #[+Keyphrase--YDID на каждый сохранённый файл], что будет давать
+        #[+Keyphrase--YDID всё большую нагрузку на аппаратное обеспечение] по мере увеличения количества файлов,
+        пока станет невозможно осуещствлять разработку в нормальном режиме.
+      Чтобы это оптимизировать, необходимо подождать некоторое время после того, как один файл будет сохранён —
+        возможно вслед за ним через несколько #[+Term--YDID миллисекунд] будет замечено сохранение
+        #[+Keyword--YDID последующих] файлов.
+
+    p.Article-Paragraph.
+      В #[+ImportantEntity--YDID YDA]
+        #[+Keyphrase--YDID на #[+Keyword--YDID инкрементальных] #[+Term--YDID режимах сборки]] после сохранения
+        #[+Keyword--YDID одного] #[+Term--YDID Stylus-файла] запускается таймер ожидания пересборки, который истекает через
+        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding] секунд.
+      Если #[+Keyword--YDID до] истечения этого таймера #[+Keyword--YDID не] будет сохранено
+        #[+Keyword--YDID ни одного] #[+Keyword__Contrast--YDID последующего] #[+Term--YDID Stylus-файла], то запустится
+        новый цикл обработки #[+Term--YDID Stylus-файлов].
+      Если же #[+Keyword--YDID до] истечения этого таймера будет сохранён #[+Keyword--YDID ещё] один
+        #[+Term--YDID Stylus-файл], то таймер ожидания будет #[+Keyword--YDID перезапущен], и так до тех пор, пока в течение
+        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding]
+        #[+Keyword--YDID не] будет сохранено #[+Keyword--YDID ни] #[+Keyword__Contrast--YDID одного]
+        #[+Keyword--YDID последующего] #[+Term--YDID Stylus-файла].
+
+    p.Article-Paragraph.
+      Значения #[+Keyphrase--YDID по умолчанию] #[+Keyword--YDID достаточно] #[+Keyphrase--YDID для начальной],
+        стадии разработки, когда #[+Keyword--YDID обычно] количество файлов невелико.
+      Однако когда количество файлов станет #[+Keyphrase--YDID порядка несколько десятков], может стать желательным
+        увеличить значение #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding].
+      Поскольку #[+Keyphrase--YDID по умолчанию] обнаружение изменений в #[+Term--YDID Stylus-файлах] и начало обработки
+        каждого #[+Term--YDID Stylus-файла] логируются, то Вы сможете заметить потребность в изменении значения
+        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding].

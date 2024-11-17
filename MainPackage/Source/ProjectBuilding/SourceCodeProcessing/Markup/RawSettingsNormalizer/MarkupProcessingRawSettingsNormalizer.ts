@@ -91,8 +91,12 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
         mustResolveResourcesReferencesToAbsolutePath: dataHoldingSelfInstance.
             computeMustResolveResourcesReferencesToAbsolutePathPropertyValue(),
 
-        periodBetweenFileUpdatingAndRebuildingStarting__seconds:
-            markupProcessingSettings__fromFile__rawValid.common?.periodBetweenFileUpdatingAndRebuildingStarting__seconds ??
+        secondsBetweenFileUpdatingAndStartingOfRebuilding:
+            dataHoldingSelfInstance.markupProcessingSettings__fromFile__rawValid.
+                common?.
+                buildingModeDependent?.
+                [dataHoldingSelfInstance.consumingProjectBuildingMode]?.
+                secondsBetweenFileUpdatingAndStartingOfRebuilding ??
             MarkupProcessingSettings__Default.periodBetweenFileUpdatingAndRebuildingStarting__seconds
 
       },

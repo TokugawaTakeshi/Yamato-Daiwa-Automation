@@ -73,7 +73,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
         supportedSourceFileNameExtensionsWithoutLeadingDots;
 
     this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS = normalizedMarkupProcessingSettings.common.
-        periodBetweenFileUpdatingAndRebuildingStarting__seconds;
+        secondsBetweenFileUpdatingAndStartingOfRebuilding;
 
     this.entryPointsGroupsNormalizedSettingsMappedByReferences = new Map<
       string, MarkupProcessingSettings__Normalized.EntryPointsGroup

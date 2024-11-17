@@ -1,3 +1,7 @@
-schema:
+common:
 
-  $heading: "Schema"
+  $heading: "<code>$common</code> — Common Settings"
+
+  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+
+    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — seconds between file styles saving and starting of rebuilding"

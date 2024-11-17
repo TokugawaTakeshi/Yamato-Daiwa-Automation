@@ -6,7 +6,7 @@
 type StylesProcessingSettings__FromFile__RawValid = {
 
   common?: {
-    periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number;
+    secondsBetweenFileUpdatingAndStartingOfRebuilding?: number;
   };
 
   entryPointsGroups: {
@@ -56,7 +56,7 @@ type StylesProcessingSettings__FromFile__RawValid = {
 </dl>
 
 
-### `periodBetweenFileUpdatingAndRebuildingStarting__seconds` - The interval between last markup file has been saved and starting of rebuilding
+### `secondsBetweenFileUpdatingAndStartingOfRebuilding` - The interval between last markup file has been saved and starting of rebuilding
 
 <dl>
   <dt>Type</dt>
@@ -74,7 +74,7 @@ So, without any specific measures it will be one re-building per one changed fil
 The default value is enough for the starting of the development when the files quantity is not large, but as files
   quantity will become more, the increasing of default value could require.
 The detecting of the changes in file and rebuilding are being logged, so consider the increasing of
-  **periodBetweenFileUpdatingAndRebuildingStarting__seconds** if some files changes still being logged immediately after
+  **secondsBetweenFileUpdatingAndStartingOfRebuilding** if some files changes still being logged immediately after
   rebuilding started.
 
 

@@ -146,7 +146,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
 
       properties: {
 
-        [localization.KEY]: {
+        $projectBuilding: {
 
           newName: "projectBuilding",
           preValidationModifications: nullToUndefined,
@@ -166,7 +166,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               })
             },
 
-            [localization.enumerations.tasksIDs.markupProcessing]: {
+            $markupProcessing: {
               newName: "markupProcessing",
               preValidationModifications: nullToUndefined,
               type: Object,
@@ -181,7 +181,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
               })
             },
 
-            [localization.enumerations.tasksIDs.stylesProcessing]: {
+            $stylesProcessing: {
               newName: "stylesProcessing",
               preValidationModifications: nullToUndefined,
               type: Object,

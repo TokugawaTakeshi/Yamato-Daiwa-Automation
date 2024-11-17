@@ -30,7 +30,7 @@ namespace MarkupProcessingSettings__Normalized {
       SourceCodeProcessingGenericProperties__Normalized.Common &
       Readonly<{
         mustResolveResourcesReferencesToAbsolutePath: boolean;
-        periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
+        secondsBetweenFileUpdatingAndStartingOfRebuilding: number;
       }>;
 
 

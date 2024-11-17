@@ -1,3 +1,7 @@
-schema:
+common:
 
-  $heading: "Схема"
+  $heading: "<code>$common</code> — общие настройки"
+
+  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+
+    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — секунд между сохранением файла разметки и началом пересборки"

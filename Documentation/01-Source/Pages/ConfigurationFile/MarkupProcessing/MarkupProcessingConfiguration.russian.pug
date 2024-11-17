@@ -164,41 +164,42 @@ block append SpecificContent
       |
       | (#[+Term--YDID статическое превью], #[+Term--YDID локальная разработка]).
 
-      p.Article-Paragraph.
-        Даже если #[+Term--YDID интегрированная среда разработки] может сохранять несколько файлов #[+Keyword--YDID за раз],
-          #[+Keyphrase--YDID на самом деле] они сохраняются #[+Keyword--YDID не] одновременно, а
-          #[+Keyphrase--YDID с разницей в несколько #[+Term--YDID миллисекунд]].
-        Кроме того, обнаружение изменения статуса файлов соответствующей утилитой также происходит
-          #[+Keyphrase--YDID с небольшой, но задержкой].
-        Ввиду этого, #[+Keyphrase--YDID без специальных мер] будет #[+Keyword--YDID одна] пересборка
-          #[+Keyphrase--YDID на каждый сохранённый файл], что становится
-          #[+Keyphrase--YDID всё большим стрессом для аппаратного обеспечения] по мере возрастания количества файлов.
-        Чтобы это оптимизировать, необходимо подождать некоторое время после того, как один файл будет обновлён —
-          возможно вслед за ним через несколько #[+Term--YDID миллисекунд] будет замечено сохранение
-          #[+Keyword--YDID последующих] файлов.
+    p.Article-Paragraph.
+      Даже если редактор кода или #[+Term--YDID интегрированная среда разработки] может сохранять несколько файлов
+        [+Keyword--YDID разом], #[+Keyphrase--YDID на самом деле] они сохраняются #[+Keyword--YDID не] одновременно, а
+        #[+Keyphrase--YDID с разницей в несколько #[+Term--YDID миллисекунд]].
+      Кроме того, обнаружение изменения статуса файлов соответствующими утилитами также происходит
+        #[+Keyphrase--YDID с небольшой, но задержкой].
+      Ввиду этого, #[+Keyphrase--YDID без специальных мер] будет #[+Keyword--YDID одна] пересборка
+        #[+Keyphrase--YDID на каждый сохранённый файл], что будет давать
+        #[+Keyphrase--YDID всё большую нагрузку на аппаратное обеспечение] по мере увеличения количества файлов,
+        пока станет невозможно осуещствлять разработку в нормальном режиме.
+      Чтобы это оптимизировать, необходимо подождать некоторое время после того, как один файл будет сохранён —
+        возможно вслед за ним через несколько #[+Term--YDID миллисекунд] будет замечено сохранение
+        #[+Keyword--YDID последующих] файлов.
 
-      p.Article-Paragraph.
-        В #[+ImportantEntity--YDID YDA] #[+Keyphrase--YDID на инкрементальных режимах сборки] после сохранения
-          #[+Keyword--YDID одного] #[+Term--YDID Pug-файла] запускается таймер ожидания пересборки, который истекает через
-          #[+ImportantEntity__Code--YDID periodBetweenFileUpdatingAndRebuildingStarting__seconds] секунд.
-        Если #[+Keyword--YDID до] истечения этого таймера #[+Keyword--YDID не] будет сохранено
-          #[+Keyword--YDID ни одного] #[+Keyword__Contrast--YDID последующего] #[+Term--YDID Pug-файла], то запустится
-          новый цикл обработки #[+Term--YDID Pug-файлов].
-        Если же #[+Keyword--YDID до] истечения этого таймера будет сохранён #[+Keyword--YDID ещё] один
-          #[+Term--YDID Pug-файл], то таймер ожидания будет #[+Keyword--YDID перезапущен], и так до тех пор, пока в течение
-          #[+ImportantEntity__Code--YDID periodBetweenFileUpdatingAndRebuildingStarting__seconds]
-          #[+Keyword--YDID не] будет сохранено #[+Keyword--YDID ни] #[+Keyword__Contrast--YDID одного] последующего
-          #[+Term--YDID Pug-файла].
+    p.Article-Paragraph.
+      В #[+ImportantEntity--YDID YDA]
+        #[+Keyphrase--YDID на #[+Keyword--YDID инкрементальных] #[+Term--YDID режимах сборки]] после сохранения
+        #[+Keyword--YDID одного] #[+Term--YDID Pug-файла] запускается таймер ожидания пересборки, который истекает через
+        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding] секунд.
+      Если #[+Keyword--YDID до] истечения этого таймера #[+Keyword--YDID не] будет сохранено
+        #[+Keyword--YDID ни одного] #[+Keyword__Contrast--YDID последующего] #[+Term--YDID Pug-файла], то запустится
+        новый цикл обработки #[+Term--YDID Pug-файлов].
+      Если же #[+Keyword--YDID до] истечения этого таймера будет сохранён #[+Keyword--YDID ещё] один
+        #[+Term--YDID Pug-файл], то таймер ожидания будет #[+Keyword--YDID перезапущен], и так до тех пор, пока в течение
+        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding]
+        #[+Keyword--YDID не] будет сохранено #[+Keyword--YDID ни] #[+Keyword__Contrast--YDID одного]
+        #[+Keyword--YDID последующего] #[+Term--YDID Pug-файла].
 
-      p.Article-Paragraph.
-        Значения #[+Keyword--YDID по умолчанию] #[+Keyword__Contrast--YDID достаточно]
-          #[+Keyphrase--YDID для начальной стадии разработки], когда обычно количество файлов невелико.
-        Однако как только количество файлов станет порядка несколько десятков, может стать желательным увеличить значение
-          #[+ImportantEntity__Code--YDID periodBetweenFileUpdatingAndRebuildingStarting__seconds]
-          (#[+Keyword--YDID возможны] #[+ImportantEntity--YDID дробные числа], например #[+SecondaryEntity--YDID 1.5]).
-        Поскольку #[+Keyword--YDID по умолчанию] обнаружение изменений в #[+Term--YDID Pug-файлах] и начало обработки
-          каждого #[+Term--YDID Pug-файла] логируются, то Вы сможете заметить потребность в изменении значения
-          #[+ImportantEntity__Code--YDID periodBetweenFileUpdatingAndRebuildingStarting__seconds], если таковая возникнет.
+    p.Article-Paragraph.
+      Значения #[+Keyphrase--YDID по умолчанию] #[+Keyword--YDID достаточно] #[+Keyphrase--YDID для начальной],
+        стадии разработки, когда #[+Keyword--YDID обычно] количество файлов невелико.
+      Однако когда количество файлов станет #[+Keyphrase--YDID порядка несколько десятков], может стать желательным
+        увеличить значение #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding].
+      Поскольку #[+Keyphrase--YDID по умолчанию] обнаружение изменений в #[+Term--YDID Pug-файлах] и начало обработки
+        каждого #[+Term--YDID Pug-файла] логируются, то Вы сможете заметить потребность в изменении значения
+        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding].
 
     //-
       h4.Article-Heading4  #[code buildingModeDependent] — настройки, зависящие от режима сборки

@@ -1,4 +1,11 @@
-schema:
+common:
 
-  $heading: `schema.$heading`
-  $anchor: SCHEMA--SECTION
+  $heading: `common.$heading`
+  $anchor: COMMON--SECTION
+
+  $children:
+
+    secondsBetweenFileUpdatingAndStartingOfRebuilding:
+
+      $heading: `common.secondsBetweenFileUpdatingAndStartingOfRebuilding.$heading`
+      $anchor: COMMON-PERIOD_BETWEEN_FILE_UPDATING_AND_STARTING_OF_REBUILDING--SECTION

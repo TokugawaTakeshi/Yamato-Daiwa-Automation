@@ -21,7 +21,7 @@ namespace StylesProcessingSettings__Normalized {
   export type Common =
       SourceCodeProcessingGenericProperties__Normalized.Common &
       Readonly<{
-        waitingForSubsequentFilesWillBeSavedPeriod__seconds: number;
+        secondsBetweenFileUpdatingAndStartingOfRebuilding: number;
       }>;
 
 

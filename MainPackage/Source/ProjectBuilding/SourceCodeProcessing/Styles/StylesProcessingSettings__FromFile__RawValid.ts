@@ -18,7 +18,6 @@ import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extens
 
 type StylesProcessingSettings__FromFile__RawValid = Readonly<{
   common?: StylesProcessingSettings__FromFile__RawValid.Common;
-  // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   linting?: StylesProcessingSettings__FromFile__RawValid.Linting;
   entryPointsGroups: Readonly<{ [groupID: string]: StylesProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
   logging?: StylesProcessingSettings__FromFile__RawValid.Logging;
@@ -27,7 +26,15 @@ type StylesProcessingSettings__FromFile__RawValid = Readonly<{
 
 namespace StylesProcessingSettings__FromFile__RawValid {
 
-  export type Common = Readonly<{ periodBetweenFileUpdatingAndRebuildingStarting__seconds?: number; }>;
+  export type Common = Readonly<{
+    buildingModeDependent?: Readonly<{ [projectBuildingMode: string]: Common.BuildingModeDependent | undefined; }>;
+  }>;
+
+  export namespace Common {
+    export type BuildingModeDependent = Readonly<{
+      secondsBetweenFileUpdatingAndStartingOfRebuilding?: number;
+    }>;
+  }
 
 
   export type Linting = LintingSettings__FromFile__RawValid;
@@ -131,17 +138,63 @@ namespace StylesProcessingSettings__FromFile__RawValid {
       $common: {
 
         newName: "common",
+        preValidationModifications: nullToUndefined,
         type: Object,
         required: false,
-        preValidationModifications: nullToUndefined,
 
         properties: {
-          $periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
-            newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
-            type: Number,
-            numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-            required: false
+
+          $buildingModeDependent: {
+
+            newName: "buildingModeDependent",
+
+            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+
+            required: false,
+
+            minimalEntriesCount: 1,
+
+            allowedKeys: [
+              "$staticPreview",
+              "$localDevelopment",
+              "$testing",
+              "$staging",
+              "$production"
+            ],
+
+            keysRenamings: {
+              $staticPreview: ConsumingProjectBuildingModes.staticPreview,
+              $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
+              $testing: ConsumingProjectBuildingModes.testing,
+              $staging: ConsumingProjectBuildingModes.staging,
+              $production: ConsumingProjectBuildingModes.production
+            },
+
+            value: {
+
+              type: Object,
+
+              properties: {
+
+                $secondsBetweenFileUpdatingAndStartingOfRebuilding: {
+                  newName: "secondsBetweenFileUpdatingAndStartingOfRebuilding",
+                  type: Number,
+                  numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                  required: false
+                },
+
+                $mustResolveResourceReferencesToRelativePaths: {
+                  newName: "mustResolveResourceReferencesToRelativePaths",
+                  type: Boolean,
+                  required: false
+                }
+
+              }
+
+            }
+
           }
+
         }
 
       },

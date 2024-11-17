@@ -31,8 +31,8 @@ configuration:
 
   markupProcessing:
 
-    $heading: "Настройки обработки разметки"
+    $heading: "<code>$markupProcessing</code> — Настройки обработки разметки"
 
   stylesProcessing:
 
-    $heading: "Настройки обработки стилей"
+    $heading: "<code>$stylesProcessing</code> — Настройки обработки разметки"

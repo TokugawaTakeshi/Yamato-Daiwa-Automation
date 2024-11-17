@@ -1,3 +1,7 @@
-schema:
+common:
 
-  $heading: "スキーマ"
+  $heading: "<code>$common</code> 一般設定"
+
+  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+
+    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> 構造設計記法（マークアップ）ファイル保存と再構成の間の秒数"

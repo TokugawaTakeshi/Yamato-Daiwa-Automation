@@ -62,10 +62,10 @@ configurationFile:
 
   $children:
 
-    commonSettings:
-
-      $heading: Common Settings
-      $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/CommonSettings/CommonSettings.english.md
+#    commonSettings:
+#
+#      $heading: Common Settings
+#      $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/CommonSettings/CommonSettings.english.md
 
     markupProcessing:
 
