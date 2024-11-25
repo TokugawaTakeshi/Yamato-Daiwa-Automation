@@ -1,5 +1,5 @@
 import PointersReferencesResolverForHTML from
-    "@MarkupProcessing/Plugins/PointersReferencesResolverForHTML/PointersReferencesResolverForHTML";
+    "@MarkupProcessing/Plugins/ResourcesPointersResolverForHTML/ResourcesPointersResolverForHTML";
 import Localization = PointersReferencesResolverForHTML.Localization;
 
 

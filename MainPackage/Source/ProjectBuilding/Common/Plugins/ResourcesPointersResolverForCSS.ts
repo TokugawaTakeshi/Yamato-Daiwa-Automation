@@ -2,10 +2,19 @@
 import PLAIN_COPIED_FILES_POINTER_ALIAS_PREFIX from
     "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PLAIN_COPIED_FILES_POINTER_ALIAS_PREFIX";
 
+/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+import type ImagesProcessingSettings__Normalized from "@ImagesProcessing/ImagesProcessingSettings__Normalized";
+
+/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+import ResourcesPointersResolver from "@ProjectBuilding/Common/Plugins/ResourcesPointersResolver";
+
 /* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type PlainCopyingSettingsRepresentative from "@ProjectBuilding/PlainCopying/PlainCopyingSettingsRepresentative";
 import type ImagesProcessingSettingsRepresentative from "@ImagesProcessing/ImagesProcessingSettingsRepresentative";
+
+/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import ImagesProcessingSharedState from "@ImagesProcessing/ImagesProcessingSharedState";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
@@ -16,16 +25,18 @@ import {
   isNotUndefined,
   isNull,
   isNotNull,
-  type ReplacingOfMatchesWithRegularExpressionToDynamicValue
+  type ReplacingOfMatchesWithRegularExpressionToDynamicValue, createMapBasedOnOtherMap
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-abstract class ResourcesPointersResolverForCSS {
+abstract class ResourcesPointersResolverForCSS extends ResourcesPointersResolver {
 
   private static readonly aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap:
       ResourcesPointersResolverForCSS.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
           new Map<ResourcesPointersResolverForCSS.AliasedURI, ResourcesPointersResolverForCSS.OutputFileAbsolutePath>();
+  private static imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
+      new Map<string, string>();
 
   /* [ Theory ]
    * This class designed not only for CSS files but also for the CSS inside HTML fields.
@@ -51,6 +62,17 @@ abstract class ResourcesPointersResolverForCSS {
 
     const imagesProcessingSettingsRepresentative: ImagesProcessingSettingsRepresentative | undefined =
         projectBuildingMasterConfigRepresentative.imagesProcessingSettingsRepresentative;
+
+    if (ResourcesPointersResolverForCSS.imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+      ResourcesPointersResolverForCSS.imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+          createMapBasedOnOtherMap(
+            projectBuildingMasterConfigRepresentative.imagesProcessingSettingsRepresentative?.
+                relevantAssetsGroupsSettingsMappedBySourceFilesTopDirectoryAliasName ?? new Map(),
+            (
+              pathAlias: string, imagesGroupNormalizedSettings: ImagesProcessingSettings__Normalized.AssetsGroup
+            ): [ string, string ] => [ pathAlias, imagesGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath ]
+          );
+    }
 
     replaceMatchesWithRegularExpressionToDynamicValue({
       targetString: CSS_Code,
@@ -78,6 +100,7 @@ abstract class ResourcesPointersResolverForCSS {
             }) 
           }");`;
         }
+
 
         const segmentsOfPickedPath: Array<string> = explodeURI_PathToSegments(possiblyAliasedPath);
         const firstSegmentOfPickedPath: string | undefined = segmentsOfPickedPath[0];
@@ -120,6 +143,18 @@ abstract class ResourcesPointersResolverForCSS {
         }
 
 
+        resolvedAbsolutePath = ResourcesPointersResolverForCSS.resolveOutputResourceFileAbsolutePathIfPossible({
+          pickedPathOfTargetResourceFile: possiblyAliasedPath,
+          sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesPointersResolverForCSS.
+              imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
+          supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
+              imagesProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+          sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
+              ImagesProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
+          fileTypeForLogging__singularForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
+          fileTypeForLogging__pluralForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+        });
+
         if (isNull(resolvedAbsolutePath)) {
           return null;
         }
@@ -139,7 +174,6 @@ abstract class ResourcesPointersResolverForCSS {
 
       }
     });
-
 
     return CSS_Code;
 

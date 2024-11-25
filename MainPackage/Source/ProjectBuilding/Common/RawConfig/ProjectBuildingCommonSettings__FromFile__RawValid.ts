@@ -69,6 +69,7 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
         preValidationModifications: nullToUndefined,
         type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
         required: false,
+        minimalEntriesCount: 1,
 
         value: {
 

@@ -59,45 +59,45 @@ import type { ReplacingOfMatchesWithRegularExpressionToDynamicValue, WarningLog 
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-class PointersReferencesResolverForHTML {
+class ResourcesPointersResolverForHTML {
 
-  public static localization: PointersReferencesResolverForHTML.Localization =
+  public static localization: ResourcesPointersResolverForHTML.Localization =
       assetsPathsAliasesResolverForHTML_Localization__english;
 
 
   private static readonly aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap:
-      PointersReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
-          new Map<PointersReferencesResolverForHTML.AliasedURI, PointersReferencesResolverForHTML.OutputFileAbsolutePath>();
+      ResourcesPointersResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesPointersResolverForHTML.AliasedURI, ResourcesPointersResolverForHTML.OutputFileAbsolutePath>();
   private static markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
       new Map<string, string>();
 
   private static readonly aliasedURIsAndOutputStylesFilesAbsolutePathsCorrespondenceMap:
-      PointersReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
-          new Map<PointersReferencesResolverForHTML.AliasedURI, PointersReferencesResolverForHTML.OutputFileAbsolutePath>();
+      ResourcesPointersResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesPointersResolverForHTML.AliasedURI, ResourcesPointersResolverForHTML.OutputFileAbsolutePath>();
   private static stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
       new Map<string, string>();
 
   private static readonly aliasedURIsAndOutputScriptsFilesAbsolutePathsCorrespondenceMap:
-      PointersReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
-          new Map<PointersReferencesResolverForHTML.AliasedURI, PointersReferencesResolverForHTML.OutputFileAbsolutePath>();
+      ResourcesPointersResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesPointersResolverForHTML.AliasedURI, ResourcesPointersResolverForHTML.OutputFileAbsolutePath>();
   private static scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
       new Map<string, string>();
 
   private static readonly aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap:
-      PointersReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
-          new Map<PointersReferencesResolverForHTML.AliasedURI, PointersReferencesResolverForHTML.OutputFileAbsolutePath>();
+      ResourcesPointersResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesPointersResolverForHTML.AliasedURI, ResourcesPointersResolverForHTML.OutputFileAbsolutePath>();
   private static imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
       new Map<string, string>();
 
   private static readonly aliasedURIsAndOutputVideosFilesAbsolutePathsCorrespondenceMap:
-      PointersReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
-          new Map<PointersReferencesResolverForHTML.AliasedURI, PointersReferencesResolverForHTML.OutputFileAbsolutePath>();
+      ResourcesPointersResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesPointersResolverForHTML.AliasedURI, ResourcesPointersResolverForHTML.OutputFileAbsolutePath>();
   private static videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
       new Map<string, string>();
 
   private static readonly aliasedURIsAndOutputAudiosFilesAbsolutePathsCorrespondenceMap:
-      PointersReferencesResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
-          new Map<PointersReferencesResolverForHTML.AliasedURI, PointersReferencesResolverForHTML.OutputFileAbsolutePath>();
+      ResourcesPointersResolverForHTML.AliasedURIsAndOutputFilesAbsolutePathsCorrespondenceMap =
+          new Map<ResourcesPointersResolverForHTML.AliasedURI, ResourcesPointersResolverForHTML.OutputFileAbsolutePath>();
   private static audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
       new Map<string, string>();
 
@@ -112,9 +112,9 @@ class PointersReferencesResolverForHTML {
   private readonly plainCopyingSettingsRepresentative?: PlainCopyingSettingsRepresentative;
 
 
-  public static resolve(sourceData: PointersReferencesResolverForHTML.SourceData): HTML_Element {
+  public static resolve(sourceData: ResourcesPointersResolverForHTML.SourceData): HTML_Element {
 
-    return new PointersReferencesResolverForHTML(sourceData).
+    return new ResourcesPointersResolverForHTML(sourceData).
 
         resolveInternalLinks().
         resolveStylesheetsAliasedPaths().
@@ -135,7 +135,7 @@ class PointersReferencesResolverForHTML {
       projectBuildingMasterConfigRepresentative,
       markupProcessingSettingsRepresentative,
       absolutePathOfOutputDirectoryForTargetHTML_File
-    }: PointersReferencesResolverForHTML.SourceData
+    }: ResourcesPointersResolverForHTML.SourceData
   ) {
 
     this.rootHTML_Element = rootHTML_Element;
@@ -150,8 +150,8 @@ class PointersReferencesResolverForHTML {
 
     this.plainCopyingSettingsRepresentative = projectBuildingMasterConfigRepresentative.plainCopyingSettingsRepresentative;
 
-    if (PointersReferencesResolverForHTML.markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
-      PointersReferencesResolverForHTML.markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+    if (ResourcesPointersResolverForHTML.markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+      ResourcesPointersResolverForHTML.markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
           createMapBasedOnOtherMap(
             this.markupProcessingSettingsRepresentative.entryPointsGroupsNormalizedSettingsMappedByReferences,
             (
@@ -165,8 +165,8 @@ class PointersReferencesResolverForHTML {
         );
     }
 
-    if (PointersReferencesResolverForHTML.stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
-      PointersReferencesResolverForHTML.stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+    if (ResourcesPointersResolverForHTML.stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+      ResourcesPointersResolverForHTML.stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
           createMapBasedOnOtherMap(
             projectBuildingMasterConfigRepresentative.stylesProcessingSettingsRepresentative?.
                 entryPointsGroupsNormalizedSettingsMappedByReferences ?? new Map(),
@@ -182,9 +182,9 @@ class PointersReferencesResolverForHTML {
     }
 
     if (
-      PointersReferencesResolverForHTML.scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0
+      ResourcesPointersResolverForHTML.scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0
     ) {
-      PointersReferencesResolverForHTML.scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+      ResourcesPointersResolverForHTML.scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
           createMapBasedOnOtherMap(
             projectBuildingMasterConfigRepresentative.ECMA_ScriptLogicProcessingSettingsRepresentative?.
                 entryPointsGroupsNormalizedSettingsMappedByReferences ?? new Map(),
@@ -200,8 +200,8 @@ class PointersReferencesResolverForHTML {
           );
     }
 
-    if (PointersReferencesResolverForHTML.imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
-      PointersReferencesResolverForHTML.imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+    if (ResourcesPointersResolverForHTML.imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+      ResourcesPointersResolverForHTML.imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
           createMapBasedOnOtherMap(
             projectBuildingMasterConfigRepresentative.imagesProcessingSettingsRepresentative?.
                 relevantAssetsGroupsSettingsMappedBySourceFilesTopDirectoryAliasName ?? new Map(),
@@ -212,8 +212,8 @@ class PointersReferencesResolverForHTML {
     }
 
 
-    if (PointersReferencesResolverForHTML.videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
-      PointersReferencesResolverForHTML.videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+    if (ResourcesPointersResolverForHTML.videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+      ResourcesPointersResolverForHTML.videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
           createMapBasedOnOtherMap(
             projectBuildingMasterConfigRepresentative.fontsProcessingSettingsRepresentative?.
                 relevantAssetsGroupsSettingsMappedBySourceFilesTopDirectoryAliasName ?? new Map(),
@@ -223,9 +223,9 @@ class PointersReferencesResolverForHTML {
           );
     }
 
-    if (PointersReferencesResolverForHTML.audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
+    if (ResourcesPointersResolverForHTML.audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.size === 0) {
 
-      PointersReferencesResolverForHTML.audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
+      ResourcesPointersResolverForHTML.audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap =
           createMapBasedOnOtherMap(
             projectBuildingMasterConfigRepresentative.audiosProcessingSettingsRepresentative?.
                 relevantAssetsGroupsSettingsMappedBySourceFilesTopDirectoryAliasName ?? new Map(),
@@ -282,7 +282,7 @@ class PointersReferencesResolverForHTML {
     }
 
 
-    let resolvedAbsolutePath: string | null = PointersReferencesResolverForHTML.
+    let resolvedAbsolutePath: string | null = ResourcesPointersResolverForHTML.
         aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap.
         get(attributeValueContainingAliasedURI) ??
         null;
@@ -314,7 +314,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      PointersReferencesResolverForHTML.aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap.
+      ResourcesPointersResolverForHTML.aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap.
           set(attributeValueContainingAliasedURI, resolvedAbsolutePath);
 
       targetHTML_Element.setAttribute(targetHTML_ElementAttributeName, this.buildResourceFileFinalPath(resolvedAbsolutePath));
@@ -327,7 +327,7 @@ class PointersReferencesResolverForHTML {
     resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
       pickedPathOfTargetResourceFile: attributeValueContainingAliasedURI,
       sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap:
-          PointersReferencesResolverForHTML.markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
+          ResourcesPointersResolverForHTML.markupSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: this.markupProcessingSettingsRepresentative.
           supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap: MarkupProcessingSharedState.
@@ -343,7 +343,7 @@ class PointersReferencesResolverForHTML {
     }
 
 
-    PointersReferencesResolverForHTML.aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap.
+    ResourcesPointersResolverForHTML.aliasedURIsAndOutputMarkupFilesAbsolutePathsCorrespondenceMap.
         set(attributeValueContainingAliasedURI, resolvedAbsolutePath);
 
     targetHTML_Element.setAttribute(targetHTML_ElementAttributeName, this.buildResourceFileFinalPath(resolvedAbsolutePath));
@@ -371,7 +371,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      let resolvedAbsolutePath: string | null = PointersReferencesResolverForHTML.
+      let resolvedAbsolutePath: string | null = ResourcesPointersResolverForHTML.
           aliasedURIsAndOutputStylesFilesAbsolutePathsCorrespondenceMap.
           get(hrefAttributeValue) ??
           null;
@@ -403,7 +403,7 @@ class PointersReferencesResolverForHTML {
         }
 
 
-        PointersReferencesResolverForHTML.
+        ResourcesPointersResolverForHTML.
             aliasedURIsAndOutputStylesFilesAbsolutePathsCorrespondenceMap.
             set(hrefAttributeValue, resolvedAbsolutePath);
 
@@ -422,7 +422,7 @@ class PointersReferencesResolverForHTML {
       resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
         pickedPathOfTargetResourceFile: hrefAttributeValue,
         sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap:
-            PointersReferencesResolverForHTML.stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
+            ResourcesPointersResolverForHTML.stylesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
         supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: stylesProcessingSettingsRepresentative.
             supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
         sourceAndOutputFilesAbsolutePathsCorrespondenceMap: StylesProcessingSharedState.
@@ -436,7 +436,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      PointersReferencesResolverForHTML.
+      ResourcesPointersResolverForHTML.
           aliasedURIsAndOutputStylesFilesAbsolutePathsCorrespondenceMap.
           set(hrefAttributeValue, resolvedAbsolutePath);
 
@@ -469,7 +469,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      let resolvedAbsolutePath: string | null = PointersReferencesResolverForHTML.
+      let resolvedAbsolutePath: string | null = ResourcesPointersResolverForHTML.
           aliasedURIsAndOutputScriptsFilesAbsolutePathsCorrespondenceMap.
           get(srcAttributeValue) ??
           null;
@@ -501,7 +501,7 @@ class PointersReferencesResolverForHTML {
         }
 
 
-        PointersReferencesResolverForHTML.
+        ResourcesPointersResolverForHTML.
             aliasedURIsAndOutputScriptsFilesAbsolutePathsCorrespondenceMap.
             set(srcAttributeValue, resolvedAbsolutePath);
 
@@ -519,7 +519,7 @@ class PointersReferencesResolverForHTML {
 
       resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
         pickedPathOfTargetResourceFile: srcAttributeValue,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: PointersReferencesResolverForHTML.
+        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesPointersResolverForHTML.
             scriptsSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
         supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
             ECMA_ScriptLogicProcessingConfigRepresentative.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
@@ -536,7 +536,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      PointersReferencesResolverForHTML.
+      ResourcesPointersResolverForHTML.
           aliasedURIsAndOutputScriptsFilesAbsolutePathsCorrespondenceMap.
           set(srcAttributeValue, resolvedAbsolutePath);
 
@@ -609,7 +609,7 @@ class PointersReferencesResolverForHTML {
 
           const possiblyAliasedPath: string = matching.namedCapturingGroups.possiblyAliasedPath;
 
-          let resolvedAbsolutePath: string | null = PointersReferencesResolverForHTML.
+          let resolvedAbsolutePath: string | null = ResourcesPointersResolverForHTML.
               aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
               get(possiblyAliasedPath) ??
               null;
@@ -640,7 +640,7 @@ class PointersReferencesResolverForHTML {
             }
 
 
-            PointersReferencesResolverForHTML.
+            ResourcesPointersResolverForHTML.
                 aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
                 set(possiblyAliasedPath, resolvedAbsolutePath);
 
@@ -656,7 +656,7 @@ class PointersReferencesResolverForHTML {
 
           resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
             pickedPathOfTargetResourceFile: possiblyAliasedPath,
-            sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: PointersReferencesResolverForHTML.
+            sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesPointersResolverForHTML.
                 imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
             supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
                 imagesProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
@@ -672,7 +672,7 @@ class PointersReferencesResolverForHTML {
           }
 
 
-          PointersReferencesResolverForHTML.
+          ResourcesPointersResolverForHTML.
               aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
               set(possiblyAliasedPath, resolvedAbsolutePath);
 
@@ -708,7 +708,7 @@ class PointersReferencesResolverForHTML {
     }
 
 
-    let resolvedAbsolutePath: string | null = PointersReferencesResolverForHTML.
+    let resolvedAbsolutePath: string | null = ResourcesPointersResolverForHTML.
         aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
         get(targetHTML_ElementAttributeName) ??
         null;
@@ -739,7 +739,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      PointersReferencesResolverForHTML.
+      ResourcesPointersResolverForHTML.
           aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
           set(targetHTML_ElementAttributeValue, resolvedAbsolutePath);
 
@@ -760,7 +760,7 @@ class PointersReferencesResolverForHTML {
 
     resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
       pickedPathOfTargetResourceFile: targetHTML_ElementAttributeValue,
-      sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: PointersReferencesResolverForHTML.
+      sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesPointersResolverForHTML.
           imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
           imagesProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
@@ -775,7 +775,7 @@ class PointersReferencesResolverForHTML {
     }
 
 
-    PointersReferencesResolverForHTML.
+    ResourcesPointersResolverForHTML.
         aliasedURIsAndOutputImagesFilesAbsolutePathsCorrespondenceMap.
         set(targetHTML_ElementAttributeValue, resolvedAbsolutePath);
 
@@ -803,7 +803,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      let resolvedAbsolutePath: string | null = PointersReferencesResolverForHTML.
+      let resolvedAbsolutePath: string | null = ResourcesPointersResolverForHTML.
           aliasedURIsAndOutputVideosFilesAbsolutePathsCorrespondenceMap.
           get(srcAttributeValue) ??
           null;
@@ -835,7 +835,7 @@ class PointersReferencesResolverForHTML {
         }
 
 
-        PointersReferencesResolverForHTML.
+        ResourcesPointersResolverForHTML.
             aliasedURIsAndOutputVideosFilesAbsolutePathsCorrespondenceMap.
             set(srcAttributeValue, resolvedAbsolutePath);
 
@@ -852,7 +852,7 @@ class PointersReferencesResolverForHTML {
 
       resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
         pickedPathOfTargetResourceFile: srcAttributeValue,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: PointersReferencesResolverForHTML.
+        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesPointersResolverForHTML.
             videosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
         supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
             videosProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
@@ -867,7 +867,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      PointersReferencesResolverForHTML.
+      ResourcesPointersResolverForHTML.
           aliasedURIsAndOutputVideosFilesAbsolutePathsCorrespondenceMap.
           set(srcAttributeValue, resolvedAbsolutePath);
 
@@ -899,7 +899,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      let resolvedAbsolutePath: string | null = PointersReferencesResolverForHTML.
+      let resolvedAbsolutePath: string | null = ResourcesPointersResolverForHTML.
           aliasedURIsAndOutputAudiosFilesAbsolutePathsCorrespondenceMap.
           get(srcAttributeValue) ??
           null;
@@ -929,7 +929,7 @@ class PointersReferencesResolverForHTML {
         }
 
 
-        PointersReferencesResolverForHTML.
+        ResourcesPointersResolverForHTML.
             aliasedURIsAndOutputAudiosFilesAbsolutePathsCorrespondenceMap.
             set(srcAttributeValue, resolvedAbsolutePath);
 
@@ -947,7 +947,7 @@ class PointersReferencesResolverForHTML {
 
       resolvedAbsolutePath = this.resolveOutputResourceFileAbsolutePathIfPossible({
         pickedPathOfTargetResourceFile: srcAttributeValue,
-        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: PointersReferencesResolverForHTML.
+        sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ResourcesPointersResolverForHTML.
             audiosSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
         supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots:
             audiosProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
@@ -962,7 +962,7 @@ class PointersReferencesResolverForHTML {
       }
 
 
-      PointersReferencesResolverForHTML.
+      ResourcesPointersResolverForHTML.
           aliasedURIsAndOutputAudiosFilesAbsolutePathsCorrespondenceMap.
           set(srcAttributeValue, resolvedAbsolutePath);
 
@@ -1011,7 +1011,7 @@ class PointersReferencesResolverForHTML {
       if (isUndefined(sourceFilesTopDirectoryAbsolutePathOfCurrentAlias)) {
 
         Logger.logWarning(
-          PointersReferencesResolverForHTML.localization.generateUnknownResourceGroupReferenceWarningLog({
+          ResourcesPointersResolverForHTML.localization.generateUnknownResourceGroupReferenceWarningLog({
             fileType__pluralForm: fileTypeForLogging__pluralForm,
             firstPathSegment: firstSegmentOfPickedPath,
             pickedPathOfTargetResourceFile,
@@ -1064,7 +1064,7 @@ class PointersReferencesResolverForHTML {
         if (searchingResultsInSourceFilesAbsolutePathsAndOutputFilesActualPathsMap.size === 0) {
 
           Logger.logWarning(
-            PointersReferencesResolverForHTML.localization.
+            ResourcesPointersResolverForHTML.localization.
                 generateNoMatchingsForAliasedFilePathWithoutFilenameExtensionWarningLog({
                   pickedPathOfTargetResourceFile,
                   fileType__singularForm: fileTypeForLogging__pluralForm,
@@ -1097,7 +1097,7 @@ class PointersReferencesResolverForHTML {
       if (isUndefined(resolvedFileOutputAbsolutePath)) {
 
         Logger.logWarning(
-          PointersReferencesResolverForHTML.localization.generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog({
+          ResourcesPointersResolverForHTML.localization.generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog({
             pickedPathOfTargetResourceFile,
             fileType__singularForm: fileTypeForLogging__pluralForm
           })
@@ -1136,7 +1136,7 @@ class PointersReferencesResolverForHTML {
 }
 
 
-namespace PointersReferencesResolverForHTML {
+namespace ResourcesPointersResolverForHTML {
 
   export type SourceData = Readonly<{
     rootHTML_Element: HTML_Element;
@@ -1208,9 +1208,9 @@ namespace PointersReferencesResolverForHTML {
 }
 
 
-export default PointersReferencesResolverForHTML;
+export default ResourcesPointersResolverForHTML;
 
 
 /* It is the only way to extract the child namespace (no need to expose whole AccessibilityInspector for the localization
  * packages). See https://stackoverflow.com/a/73400523/4818123 */
-export import ResourcesReferencesResolverForHTML_Localization = PointersReferencesResolverForHTML.Localization;
+export import ResourcesReferencesResolverForHTML_Localization = ResourcesPointersResolverForHTML.Localization;

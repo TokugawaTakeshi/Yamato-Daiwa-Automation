@@ -50,3 +50,72 @@ block append SpecificContent
 
     //- ━━━ `$common` — Общие настройки ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
+
+    //- ━━━ `$selectiveExecutions` — Выборочные выполнения ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h2.Article-Heading2!= `<code>$selectiveExecutions</code> — Выборочные выполнения`
+
+    +PropertyMetadata--YDF_DK({
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+      required: false,
+      minimalEntriesCount: 1
+    })
+
+    p.Article-Paragraph
+      | #[+Term--YDID Объект] типа #[+Term--YDID «ассоциативный массив»], с помощью которого осуществляется
+      |   объявление
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.selectiveExecution.$URI
+      }).Article-Link выборочных выполнений
+      | .
+
+    p.Article-Paragraph.
+      Через #[+Keyword--YDID ключи] указываются #[+Keyword--YDID идентификаторы] #[+Term--YDID выборочных выполнений]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              StaticPreview:
+
+                # Конфигурация выборочного выполнения «StaticPreview» (подробности см. далее)
+
+              Application:
+
+                # Конфигурация выборочного выполнения «Application» (подробности см. далее)
+
+    p.Article-Paragraph
+      +Keyphrase--YDID.
+        После того, как #[+Keyword--YDID валидные] настройки #[+Term--YDID выборочных выполнений] определены
+      |   , при вызове #[+Term--YDID консольной утилиты] #[+ImportantEntity__Code--YDID yda] через #[+Term--YDID опцию]
+      |  #[+ImportantEntity__Code--YDID --selectiveExecution] можно указать
+      |  #[+Keyphrase--YDID один из объявленных в файле конфигурации] #[+Term--YDID идентификаторов]
+      |  #[+Term__Contrast--YDID выборочного выполнения]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }).
+        yda build --selectiveExecution Application --mode LOCAL_DEVELOPMENT
+
+    p.Article-Paragraph.
+      #[+Term--YDID Значения] же #[+Term--YDID ассоциативного массива] #[+ImportantEntity__Code--YDID $selectiveExecutions]
+        #[+Keyword--YDID должны] быть указаны в соответствие с приведёнными ниже правилами.
+
+
+    //- ─── Настройки выборочного выполнения ───────────────────────────────────────────────────────────────────────────
+    h2.Article-Heading2 Настройки выборочного выполнения
+
+    +ObjectTypeAbstract--YDF_DK({
+      typeName: "ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution",
+      localizedDescriptiveHeading: "Настройки выборочного выполнения",
+      propertiesSpecification: {
+        tasksAndSourceFilesSelection: {
+          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+          required: false,
+          minimalEntriesCount: 1
+        }
+      }
+    })

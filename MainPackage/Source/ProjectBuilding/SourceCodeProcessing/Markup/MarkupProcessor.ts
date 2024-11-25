@@ -37,7 +37,7 @@ import SourceCodeSelectiveReprocessingHelper from "@Utils/SourceCodeSelectiveRep
 import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 import computeContentMD5_Checksum from "rev-hash";
 import HTML_Validator from "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
-import PointersReferencesResolverForHTML from "./Plugins/PointersReferencesResolverForHTML/PointersReferencesResolverForHTML";
+import PointersReferencesResolverForHTML from "./Plugins/ResourcesPointersResolverForHTML/ResourcesPointersResolverForHTML";
 import AccessibilityInspector from "@MarkupProcessing/Plugins/AccessibilityInspector/AccessibilityInspector";
 import ImagesAspectRatioAffixer from "@MarkupProcessing/Plugins/ImagesAspectRatioAffixer";
 import SpacesNormalizerForCJK_Text from "@MarkupProcessing/Plugins/SpacesNormalizerForCJK_Text";
