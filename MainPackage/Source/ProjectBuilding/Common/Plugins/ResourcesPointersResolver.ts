@@ -33,6 +33,7 @@ abstract class ResourcesPointersResolver {
       sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
+      fileTypeForLogging__singularForm,
       fileTypeForLogging__pluralForm
     }: Readonly<{
       pickedPathOfTargetResourceFile: string;
@@ -60,13 +61,15 @@ abstract class ResourcesPointersResolver {
       if (isUndefined(sourceFilesTopDirectoryAbsolutePathOfCurrentAlias)) {
 
         Logger.logWarning(
-            ResourcesPointersResolver.localization.generateUnknownResourcesGroupWarningLog({
-            fileType__pluralForm: fileTypeForLogging__pluralForm,
-            firstPathSegment: firstSegmentOfPickedPath,
-            pickedPathOfTargetResourceFile,
-            formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: stringifyAndFormatArbitraryValue(
+          ResourcesPointersResolver.localization.generateUnknownResourcesGroupAliasWarningLog({
+            resourcesGroupAlias: firstSegmentOfPickedPath,
+            resourceFileType__singularForm: fileTypeForLogging__singularForm,
+            resourcePointer: pickedPathOfTargetResourceFile,
+            resourceFileType__pluralForm: fileTypeForLogging__pluralForm,
+            parentFilePathRelativeToConsumingProjectRootDirectory: "", // TODO
+            formattedResourcesGroupsAliasesAndCorrespondingAbsolutePathsMap: stringifyAndFormatArbitraryValue(
               Array.from(sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.entries())
-            )
+            ) // TODO Improve the formatting
           })
         );
 
@@ -114,13 +117,13 @@ abstract class ResourcesPointersResolver {
 
           Logger.logWarning(
             ResourcesPointersResolver.localization.
-                generateNoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog({
-                  pickedPathOfTargetResourceFile,
-                  fileType__singularForm: fileTypeForLogging__pluralForm,
-                  checkedAbsolutePaths__formatted: stringifyAndFormatArbitraryValue(
+                generateNoMatchesForResourceReferenceWihtoutExplicitSupportedFilenameExtensionWarningLog({
+                  resourcePointer: pickedPathOfTargetResourceFile,
+                  checkedAbsolutePathsOfTargetFilesFormattedList: stringifyAndFormatArbitraryValue(
                     possibleAbsolutePathsOfTargetSourceFileWithoutFragment
-                  )
-                })
+                  ),
+                  resourceFileType__singularForm: fileTypeForLogging__singularForm
+                }) // TODO Improve the formatting
           );
 
           return null;
@@ -145,9 +148,10 @@ abstract class ResourcesPointersResolver {
       if (isUndefined(resolvedFileOutputAbsolutePath)) {
 
         Logger.logWarning(
-          ResourcesPointersResolver.localization.generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog({
-            pickedPathOfTargetResourceFile,
-            fileType__singularForm: fileTypeForLogging__pluralForm
+          ResourcesPointersResolver.localization.generateFileNotFoundForResolvedResourceReferenceWarningLog({
+            resourcePointer: pickedPathOfTargetResourceFile,
+            resourceFileType__singularForm: fileTypeForLogging__singularForm,
+            resolvedFileAbsolutePath: sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension
           })
         );
 
@@ -172,15 +176,15 @@ namespace ResourcesPointersResolver {
 
   export type Localization = Readonly<{
 
-    generateUnknownResourcesGroupWarningLog: (
+    generateUnknownResourcesGroupAliasWarningLog: (
       templateVariables: Localization.UnknownResourcesGroupPointerWarningLog.TemplateVariables
     ) => Localization.UnknownResourcesGroupReferenceWarningLog;
 
-    generateNoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog: (
+    generateNoMatchesForResourceReferenceWihtoutExplicitSupportedFilenameExtensionWarningLog: (
       templateVariables: Localization.NoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog.TemplateVariables
     ) => Localization.NoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog;
 
-    generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog: (
+    generateFileNotFoundForResolvedResourceReferenceWarningLog: (
       templateVariables: Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog.TemplateVariables
     ) => Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog;
 
@@ -192,10 +196,12 @@ namespace ResourcesPointersResolver {
 
     export namespace UnknownResourcesGroupPointerWarningLog {
       export type TemplateVariables = Readonly<{
-        fileType__pluralForm: string;
-        pickedPathOfTargetResourceFile: string;
-        firstPathSegment: string;
-        formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: string;
+        resourcePointer: string;
+        resourcesGroupAlias: string;
+        resourceFileType__singularForm: string;
+        resourceFileType__pluralForm: string;
+        parentFilePathRelativeToConsumingProjectRootDirectory: string;
+        formattedResourcesGroupsAliasesAndCorrespondingAbsolutePathsMap: string;
       }>;
     }
 
@@ -205,9 +211,9 @@ namespace ResourcesPointersResolver {
 
     export namespace NoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog {
       export type TemplateVariables = Readonly<{
-        fileType__singularForm: string;
-        pickedPathOfTargetResourceFile: string;
-        checkedAbsolutePaths__formatted: string;
+        resourcePointer: string;
+        resourceFileType__singularForm: string;
+        checkedAbsolutePathsOfTargetFilesFormattedList: string;
       }>;
     }
 
@@ -217,8 +223,9 @@ namespace ResourcesPointersResolver {
 
     export namespace NoOutputFileExistingForSpecifiedSourceFilePathWarningLog {
       export type TemplateVariables = Readonly<{
-        fileType__singularForm: string;
-        pickedPathOfTargetResourceFile: string;
+        resourcePointer: string;
+        resourceFileType__singularForm: string;
+        resolvedFileAbsolutePath: string;
       }>;
     }
 

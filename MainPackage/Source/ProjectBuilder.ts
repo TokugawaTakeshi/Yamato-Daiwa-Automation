@@ -100,7 +100,6 @@ abstract class ProjectBuilder {
 
         Gulp.parallel([
           CompiledInlineTypeScriptImporterForPug.provideTypeScriptImportsForMarkupIfMust(masterConfigRepresentative),
-          StylesProcessor.provideStylesProcessingIfMust(masterConfigRepresentative),
           ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative),
           PlainCopier.providePlainCopierIfMust(masterConfigRepresentative)
         ]),
@@ -110,6 +109,8 @@ abstract class ProjectBuilder {
         FontsProcessor.provideFontsProcessingIfMust(masterConfigRepresentative),
         AudiosProcessor.provideAudiosProcessingIfMust(masterConfigRepresentative),
         VideosProcessor.provideVideosProcessingIfMust(masterConfigRepresentative),
+
+        StylesProcessor.provideStylesProcessingIfMust(masterConfigRepresentative),
 
         MarkupProcessor.provideMarkupProcessingIfMust(masterConfigRepresentative),
 

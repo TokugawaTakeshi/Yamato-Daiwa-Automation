@@ -105,17 +105,34 @@ block append SpecificContent
         #[+Keyword--YDID должны] быть указаны в соответствие с приведёнными ниже правилами.
 
 
-    //- ─── Настройки выборочного выполнения ───────────────────────────────────────────────────────────────────────────
-    h2.Article-Heading2 Настройки выборочного выполнения
+    //- ─── Настройки каждого выборочного выполнения ───────────────────────────────────────────────────────────────────
+    h2.Article-Heading2 Настройки каждого выборочного выполнения
 
     +ObjectTypeAbstract--YDF_DK({
       typeName: "ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution",
       localizedDescriptiveHeading: "Настройки выборочного выполнения",
       propertiesSpecification: {
         tasksAndSourceFilesSelection: {
-          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+          type: Object,
           required: false,
-          minimalEntriesCount: 1
+          minimalEntriesCount: 1,
+          properties: {
+            $markupProcessing: {
+              type: Array,
+              required: false,
+              element: {
+                type: String
+              }
+            }
+          }
+        },
+        browserLiveReloadingSetupID: {
+          type: String,
+          required: false
+        },
+        outputPackageJSON_Generating: {
+          type: String,
+          required: false
         }
       }
     })

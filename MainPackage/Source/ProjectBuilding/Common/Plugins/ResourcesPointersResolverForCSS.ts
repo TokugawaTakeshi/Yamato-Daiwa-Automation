@@ -74,7 +74,7 @@ abstract class ResourcesPointersResolverForCSS extends ResourcesPointersResolver
           );
     }
 
-    replaceMatchesWithRegularExpressionToDynamicValue({
+    return replaceMatchesWithRegularExpressionToDynamicValue({
       targetString: CSS_Code,
       regularExpressionWithCapturingGroups: /url\(["']?(?<possiblyAliasedPath>.+?)["']?\);?/gu,
       replacer: (
@@ -174,8 +174,6 @@ abstract class ResourcesPointersResolverForCSS extends ResourcesPointersResolver
 
       }
     });
-
-    return CSS_Code;
 
   }
 
