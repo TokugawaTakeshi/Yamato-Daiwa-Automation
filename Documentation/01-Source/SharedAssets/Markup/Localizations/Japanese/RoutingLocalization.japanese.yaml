@@ -25,18 +25,38 @@ functionality:
 
       $heading: "リソースへのポインタ解決"
 
+  browserLiveReloading:
+
+    $heading: "ブラウザー自動リロード"
+
+  distributablePackageJSON_Generating:
+
+    $heading: "納品専用package.jsonの生成"
+
 configuration:
 
   $heading: "コンフィグレーション"
 
   common:
 
-    $heading: "<code>$common</code>　一般設定"
+    $heading: "<code>$commonSettings</code> 一般設定"
 
   markupProcessing:
 
-    $heading: "<code>$markupProcessing</code>　構造設計記法（マークアップ）処理設定"
+    $heading: "<code>$markupProcessing</code> 構造設計記法（マークアップ）処理設定"
 
   stylesProcessing:
 
-    $heading: "<code>$stylesProcessing</code>　意匠設計記法（スタイル）処理"
+    $heading: "<code>$stylesProcessing</code> 意匠設計記法（スタイル）処理"
+
+  ECMAScriptLogicProcessing:
+
+    $heading: "<code>$ECMAScriptLogicProcessing</code> ECMAScript論理処理"
+
+  browserLiveReloading:
+
+    $heading: "<code>$browserLiveReloading</code> ブラウザタブ自動リロード設定"
+
+  imagesProcessing:
+
+    $heading: "<code>$imagesProcessing</code> 画像処理"

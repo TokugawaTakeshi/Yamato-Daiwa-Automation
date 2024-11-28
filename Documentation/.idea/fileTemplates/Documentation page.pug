@@ -26,17 +26,20 @@ block append Metadata
       ]
     });
 
-    RoutingEmulator.setCurrentRoute("${ROUTE}");
+    RoutingEmulator.setCurrentRoute("${ROUTE_PATH}");
 
     LanguageDropDownList__YDF_DK.setLinks({
-      japanese: "./${FILE_NAME_WITHOUT_EXTENSION}.japanese.html",
-      russian: "./${FILE_NAME_WITHOUT_EXTENSION}.russian.html"
+      japanese: routing.japanese.${ROUTE}.${DS}URI,
+      russian: routing.russian.${ROUTE}.${DS}URI
     });
 
-    const pageTableOfContents = localizedRouting.${ROUTE_PATH}.${DS}sectioning;
+    const {
+      ${DS}heading: topHeading,
+      ${DS}sectioning: localizedSectioning
+    } = localizedRouting.${ROUTE};
 
 
-block append HeadScriptsLinks
+block append HeadScripts
 
   if __IS_PRODUCTION_BUILDING_MODE__
 
@@ -47,27 +50,6 @@ block append SpecificContent
 
   article
 
-    // TODO Edit
-    +CallableExpressionScheme--YDF_DK({
-      technicalName: "${FILE_NAME_WITHOUT_EXTENSION}",
-      headingTag: "h1",
-      localizedDescriptiveHeading: "Makes the special, street magic",
-      parametersSpecification: [
-        {
-          localizedName: "Target string",
-          type: "string",
-          required: true,
-          genericTechnicalName: "targetString"
-        }
-      ],
-      returnedValue: "boolean"
-    })
-
-    +CodeViewer--YDF.Article-CodeViewer
-      +CodeViewer-TabPanel--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.TypeScript })
-
-        +CodeViewer-PartialListing--YDF: :code_listing--yda
-          console.log("OK");
-
-        +CodeViewer-Explanation--YDF.
-          This code outputs "OK" to console (thanks, cap).
+    //- TODO Edit top heading
+    //- ━━━ Top Heading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h1.Article-Heading1!= topHeading

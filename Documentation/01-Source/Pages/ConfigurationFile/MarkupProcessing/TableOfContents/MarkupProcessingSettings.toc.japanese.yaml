@@ -4,8 +4,8 @@ common:
 
   secondsBetweenFileUpdatingAndStartingOfRebuilding:
 
-    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> 構造設計記法（マークアップ）ファイル保存と再構成の間の秒数"
+    $heading: "<code>$secondsBetweenFileUpdatingAndStartingOfRebuilding</code> 構造設計記法（マークアップ）ファイル保存と再構成の間の秒数"
 
   mustResolveResourcesPointersToRelativePaths:
 
-    $heading: "<code>mustResolveResourcesPointersToRelativePaths</code> 資源へのポインタを相対パスに変化する義務の真偽"
+    $heading: "<code>$mustResolveResourcesPointersToRelativePaths</code> 資源へのポインタを相対パスに変化する義務の真偽"

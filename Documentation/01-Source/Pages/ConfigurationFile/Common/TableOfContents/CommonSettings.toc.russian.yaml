@@ -1,7 +1,23 @@
-common:
+selectiveExecutions:
 
-  $heading: "<code>$common</code> — общие настройки"
+  $heading: "<code>$selectiveExecutions</code> — Выборочные выполнения"
 
-  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+  settingUpOfEachItem:
 
-    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — секунд между сохранением файла стилей и началом пересборки"
+    $heading: "Настройки каждого выборочного выполнения"
+
+    tasksAndSourceFilesSelection:
+
+      $heading: "<code>$tasksAndSourceFilesSelection</code> — выборка задачи и исходных файлов"
+
+    browserLiveReloadingSetupID:
+
+      $heading: "<code>$browserLiveReloadingSetupID</code> — ID настроек автоматической перезагрузки вкладки браузера"
+
+    distributablePackageJSON_Generating:
+
+      $heading: "<code>$distributablePackageJSON_Generating</code> — Генерация файла «package.json» для дистрибутива"
+
+publicDirectoriesRelativePaths:
+
+  $heading: "<code>$publicDirectoriesRelativePaths</code> — Относительные пути публичных директорий"

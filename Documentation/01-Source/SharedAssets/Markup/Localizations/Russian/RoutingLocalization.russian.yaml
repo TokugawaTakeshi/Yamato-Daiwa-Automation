@@ -25,13 +25,21 @@ functionality:
 
       $heading: "Разрешение указателей на ресурсы"
 
+  browserLiveReloading:
+
+    $heading: "Автоматическая перезагрузка браузера"
+
+  distributablePackageJSON_Generating:
+
+    $heading: "Генерация файла «package.json» для дистрибутива"
+
 configuration:
 
   $heading: "Конфигурация"
 
   common:
 
-    $heading: "<code>$common</code> — Общие настройки"
+    $heading: "<code>$commonSettings</code> — Общие настройки"
 
   markupProcessing:
 
@@ -40,3 +48,15 @@ configuration:
   stylesProcessing:
 
     $heading: "<code>$stylesProcessing</code> — Настройки обработки стилей"
+
+  ECMAScriptLogicProcessing:
+
+    $heading: "<code>$ECMAScriptLogicProcessing</code> — Настройки обработки ECMAScript-логики"
+
+  imagesProcessing:
+
+    $heading: "<code>$imagesProcessing</code> — Настройки обработки изображений"
+
+  browserLiveReloading:
+
+    $heading: "<code>$browserLiveReloading</code> — Настройки автоматической перезагрузки вкладки браузера"

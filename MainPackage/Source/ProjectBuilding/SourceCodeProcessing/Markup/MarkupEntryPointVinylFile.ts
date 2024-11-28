@@ -23,7 +23,7 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
   public readonly pageStateDependentVariationData?: MarkupEntryPointVinylFile.PageStateDependentVariationData;
 
   private readonly pageStateDependentVariationsSpecification?: MarkupProcessingSettings__Normalized.StaticPreview.
-      PagesStateDependentVariationsSpecification.Page;
+      PagesVariations.StateDependent.Page;
 
 
   public constructor(
@@ -73,7 +73,7 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
 
     for (
       const [ derivedFileAbsolutePath, state ] of
-          Object.entries(this.pageStateDependentVariationsSpecification.derivedPagesAndStatesMap)
+          this.pageStateDependentVariationsSpecification.derivedPagesAndStatesMap.entries()
     ) {
 
       pageStateDependentVariations.push(new MarkupEntryPointVinylFile({
@@ -101,7 +101,7 @@ namespace MarkupEntryPointVinylFile {
     initialPlainVinylFile: VinylFile;
     actualEntryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup;
     pageStateDependentVariationsSpecification?: MarkupProcessingSettings__Normalized.StaticPreview.
-      PagesStateDependentVariationsSpecification.Page;
+        PagesVariations.StateDependent.Page;
     pageStateDependentVariationData?: PageStateDependentVariationData;
   }>;
 

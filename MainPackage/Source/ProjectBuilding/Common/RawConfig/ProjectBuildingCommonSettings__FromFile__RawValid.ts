@@ -3,8 +3,6 @@ import ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 /* ─── Raw Valid Configuration ────────────────────────────────────────────────────────────────────────────────────── */
-import type { ProjectBuildingTasksIDsForConfigFile__Localized } from
-    "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 import { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 
@@ -51,95 +49,95 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
     publicDirectoriesRelativePaths: Readonly<{ KEY: string; }>;
   }>;
 
-  export function getLocalizedPropertiesSpecification(
-    {
-      projectBuildingCommonSettingsLocalization,
-      tasksLocalizedIDs
-    }: Readonly<{
-      projectBuildingCommonSettingsLocalization: Localization;
-      tasksLocalizedIDs: ProjectBuildingTasksIDsForConfigFile__Localized;
-    }>
-  ): RawObjectDataProcessor.PropertiesSpecification {
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-    return {
+    $selectiveExecutions: {
 
-      [projectBuildingCommonSettingsLocalization.selectiveExecutions.KEY]: {
+      newName: "selectiveExecutions",
+      preValidationModifications: nullToUndefined,
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+      required: false,
+      minimalEntriesCount: 1,
 
-        newName: "selectiveExecutions",
-        preValidationModifications: nullToUndefined,
-        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-        required: false,
-        minimalEntriesCount: 1,
+      value: {
 
-        value: {
+        type: Object,
+        properties: {
 
-          type: Object,
-          properties: {
+          $tasksAndSourceFilesSelection: {
 
-            [projectBuildingCommonSettingsLocalization.selectiveExecutions.tasksAndSourceFilesSelection.KEY]: {
+            newName: "tasksAndSourceFilesSelection",
+            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+            required: true,
 
-              newName: "tasksAndSourceFilesSelection",
-              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-              required: true,
+            allowedKeys: [
+              "$markupProcessing",
+              "$stylesProcessing",
+              "$ECMA_ScriptLogicProcessing",
+              "$imagesProcessing",
+              "$fontsProcessing",
+              "$audiosProcessing",
+              "$videosProcessing",
+              "$plainCopying",
+              "$browserLiveReloading"
+            ],
 
-              allowedKeys: Object.values(tasksLocalizedIDs),
-              keysRenamings: {
-                [tasksLocalizedIDs.markupProcessing]: ProjectBuildingTasksIDsForConfigFile.markupProcessing,
-                [tasksLocalizedIDs.stylesProcessing]: ProjectBuildingTasksIDsForConfigFile.stylesProcessing,
-                [tasksLocalizedIDs.ECMA_ScriptLogicProcessing]: ProjectBuildingTasksIDsForConfigFile.
-                    ECMA_ScriptLogicProcessing,
-                [tasksLocalizedIDs.imagesProcessing]: ProjectBuildingTasksIDsForConfigFile.imagesProcessing,
-                [tasksLocalizedIDs.fontsProcessing]: ProjectBuildingTasksIDsForConfigFile.fontsProcessing,
-                [tasksLocalizedIDs.audiosProcessing]: ProjectBuildingTasksIDsForConfigFile.audiosProcessing,
-                [tasksLocalizedIDs.videosProcessing]: ProjectBuildingTasksIDsForConfigFile.videosProcessing,
-                [tasksLocalizedIDs.plainCopying]: ProjectBuildingTasksIDsForConfigFile.plainCopying,
-                [tasksLocalizedIDs.browserLiveReloading]: ProjectBuildingTasksIDsForConfigFile.browserLiveReloading
-              },
+            keysRenamings: {
+              $markupProcessing: ProjectBuildingTasksIDsForConfigFile.markupProcessing,
+              $stylesProcessing: ProjectBuildingTasksIDsForConfigFile.stylesProcessing,
+              $ECMA_ScriptLogicProcessing: ProjectBuildingTasksIDsForConfigFile.ECMA_ScriptLogicProcessing,
+              $imagesProcessing: ProjectBuildingTasksIDsForConfigFile.imagesProcessing,
+              $fontsProcessing: ProjectBuildingTasksIDsForConfigFile.fontsProcessing,
+              $audiosProcessing: ProjectBuildingTasksIDsForConfigFile.audiosProcessing,
+              $videosProcessing: ProjectBuildingTasksIDsForConfigFile.videosProcessing,
+              $plainCopying: ProjectBuildingTasksIDsForConfigFile.plainCopying,
+              $browserLiveReloading: ProjectBuildingTasksIDsForConfigFile.browserLiveReloading
+            },
 
-              value: {
+            value: {
 
-                type: Array,
-                minimalElementsCount: 1,
+              type: Array,
+              minimalElementsCount: 1,
 
-                element: {
-                  type: String,
-                  minimalCharactersCount: 1
-                }
+              element: {
+                type: String,
+                minimalCharactersCount: 1
               }
 
-            },
-
-            [projectBuildingCommonSettingsLocalization.selectiveExecutions.browserLiveReloadingSetupID.KEY]: {
-              newName: "browserLiveReloadingSetupID",
-              type: String,
-              required: false
-            },
-
-            [projectBuildingCommonSettingsLocalization.selectiveExecutions.outputPackageJSON_Generating.KEY]: {
-              newName: "outputPackageJSON_Generating",
-              type: Boolean,
-              required: false
             }
 
+          },
+
+          $browserLiveReloadingSetupID: {
+            newName: "browserLiveReloadingSetupID",
+            type: String,
+            required: false
+          },
+
+          $distributablePackageJSON_Generating: {
+            newName: "distributablePackageJSON_Generating",
+            type: Boolean,
+            required: false
           }
-        }
 
-      },
-
-      [projectBuildingCommonSettingsLocalization.publicDirectoriesRelativePaths.KEY]: {
-        newName: "publicDirectoriesRelativePaths",
-        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-        required: false,
-        allowedKeys: Object.values(ConsumingProjectBuildingModes),
-        value: {
-          type: String,
-          minimalCharactersCount: 1
         }
       }
 
-    };
+    },
 
-  }
+    $publicDirectoriesRelativePaths: {
+
+      newName: "publicDirectoriesRelativePaths",
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+      required: false,
+      allowedKeys: Object.values(ConsumingProjectBuildingModes),
+      value: {
+        type: String,
+        minimalCharactersCount: 1
+      }
+    }
+
+  };
 
 }
 

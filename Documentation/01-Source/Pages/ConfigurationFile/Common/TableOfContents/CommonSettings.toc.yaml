@@ -1,11 +1,33 @@
-common:
+selectiveExecutions:
 
-  $heading: `common.$heading`
-  $anchor: COMMON--SECTION
+  $heading: `selectiveExecutions.$heading`
+  $anchor: SELECTIVE_EXECUTIONS--SECTION
 
   $children:
 
-    secondsBetweenFileUpdatingAndStartingOfRebuilding:
+    settingUpOfEachItem:
 
-      $heading: `common.secondsBetweenFileUpdatingAndStartingOfRebuilding.$heading`
-      $anchor: COMMON-PERIOD_BETWEEN_FILE_UPDATING_AND_STARTING_OF_REBUILDING--SECTION
+      $heading: `selectiveExecutions.settingUpOfEachItem.$heading`
+      $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM--SECTION
+
+      $children:
+
+        tasksAndSourceFilesSelection:
+
+          $heading: `selectiveExecutions.settingUpOfEachItem.tasksAndSourceFilesSelection.$heading`
+          $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-TASKS_AND_SOURCE_FILES_SELECTION--SECTION
+
+        browserLiveReloadingSetupID:
+
+          $heading: `selectiveExecutions.settingUpOfEachItem.browserLiveReloadingSetupID.$heading`
+          $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-BROWSER_LIVE_RELOADING_SETUP_ID--SECTION
+
+        $distributablePackageJSON_Generating:
+
+          $heading: `selectiveExecutions.settingUpOfEachItem.distributablePackageJSON_Generating.$heading`
+          $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-OUTPUT_PACKAGE_JSON_GENERATING--SECTION
+
+publicDirectoriesRelativePaths:
+
+  $heading: `publicDirectoriesRelativePaths.$heading`
+  $anchor: PUBLIC_DIRECTORIES_RELATIVE_PATHS--SECTION

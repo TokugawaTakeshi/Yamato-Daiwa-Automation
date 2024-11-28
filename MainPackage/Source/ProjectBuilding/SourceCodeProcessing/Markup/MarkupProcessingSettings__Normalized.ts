@@ -7,7 +7,7 @@ import type SourceCodeProcessingGenericProperties__Normalized from
 import type LintingSettings__Normalized from "@ProjectBuilding/Common/NormalizedConfig/LintingSettings__Normalized";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
-import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
+import type { ArbitraryObject, LineSeparators } from "@yamato-daiwa/es-extensions";
 
 
 type MarkupProcessingSettings__Normalized = Readonly<{
@@ -46,7 +46,7 @@ namespace MarkupProcessingSettings__Normalized {
 
 
   export type StaticPreview = Readonly<{
-    stateDependentPagesVariationsSpecification: StaticPreview.StateDependentPagesVariationsSpecification;
+    pagesVariations: StaticPreview.PagesVariations;
     importsFromStaticDataFiles: StaticPreview.ImportsFromStaticDataFiles;
   }>;
 
@@ -57,13 +57,6 @@ namespace MarkupProcessingSettings__Normalized {
     }>;
 
     export type ImportsFromStaticDataFiles = Readonly<{ [variableName: string]: unknown; }>;
-
-    export namespace PagesStateDependentVariationsSpecification {
-      export type Page = Readonly<{
-        stateVariableName: string;
-        derivedPagesAndStatesMap: Readonly<{ [derivedFileAbsolutePath: string]: ArbitraryObject; }>;
-      }>;
-    }
 
   }
 

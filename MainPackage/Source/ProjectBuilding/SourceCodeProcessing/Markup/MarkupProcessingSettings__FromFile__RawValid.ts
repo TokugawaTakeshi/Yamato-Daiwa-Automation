@@ -12,7 +12,7 @@ import type LintingSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/LintingSettings__FromFile__RawValid";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
-import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
+import { RawObjectDataProcessor, LineSeparators, nullToUndefined } from "@yamato-daiwa/es-extensions";
 
 
 type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
@@ -626,6 +626,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
                 type: Boolean,
                 required: false
               }
+
             }
 
           }

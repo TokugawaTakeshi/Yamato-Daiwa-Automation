@@ -4,8 +4,8 @@ common:
 
   secondsBetweenFileUpdatingAndStartingOfRebuilding:
 
-    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — секунд между сохранением файла разметки и началом пересборки"
+    $heading: "<code>$secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — секунд между сохранением файла разметки и началом пересборки"
 
   mustResolveResourcesPointersToRelativePaths:
 
-    $heading: "<code>mustResolveResourcesPointersToRelativePaths</code> — нужно ли преобразовывать указатели на ресурсы к относительным путям"
+    $heading: "<code>$mustResolveResourcesPointersToRelativePaths</code> — нужно ли преобразовывать указатели на ресурсы к относительным путям"

@@ -4,4 +4,4 @@ common:
 
   secondsBetweenFileUpdatingAndStartingOfRebuilding:
 
-    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — seconds between file styles saving and starting of rebuilding"
+    $heading: "<code$>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — seconds between file styles saving and starting of rebuilding"

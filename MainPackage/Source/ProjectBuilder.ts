@@ -1,8 +1,8 @@
-/* --- Restrictions ------------------------------------------------------------------------------------------------- */
+/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import type ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* --- Raw valid config --------------------------------------------------------------------------------------------- */
+/* ─── Raw Valid Config ───────────────────────────────────────────────────────────────────────────────────────────── */
 import ProjectBuildingConfig__FromFile__RawValid from
     "./ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid";
 import ProjectBuildingConfigDefaultLocalization__FromFile__RawValid from
@@ -13,7 +13,7 @@ import type ProjectBuildingConfig__Normalized from "./ProjectBuilding/ProjectBui
 import ProjectBuilderRawConfigNormalizer from "./ProjectBuilding/ProjectBuilderRawConfigNormalizer";
 import ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 
-/* --- Actuators ---------------------------------------------------------------------------------------------------- */
+/* ─── Tasks Runners ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
 import MarkupSourceCodeLinter from "@MarkupProcessing/Subtasks/Linting/MarkupSourceCodeLinter";
 import CompiledInlineTypeScriptImporterForPug from "@MarkupProcessing/Subtasks/CompiledTypeScriptImporterForPug";
@@ -30,16 +30,16 @@ import LocalDevelopmentServerOrchestrator from
 import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
 import OutputPackageJSON_Generator from "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_Generator";
 
-/* --- Applied utils ------------------------------------------------------------------------------------------------ */
+/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
 import FilesMasterWatcher from "@ProjectBuilding/FilesWatching/Watchers/FilesMasterWatcher";
 
-/* --- General utils ------------------------------------------------------------------------------------------------ */
+/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
   RawObjectDataProcessor,
   Logger,
   InvalidConfigError,
-  isNeitherUndefinedNorNull
+  isNeitherUndefinedNorNull, UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
 
 
@@ -91,48 +91,57 @@ abstract class ProjectBuilder {
 
     const GULP_TASK_NAME: string = "BUILD_PROJECT";
 
-    Gulp.task(GULP_TASK_NAME, Gulp.parallel([
+    Gulp.task(
 
-      MarkupSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative),
-      ECMA_ScriptSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative),
+      GULP_TASK_NAME,
 
-      Gulp.series([
+      Gulp.parallel([
 
-        Gulp.parallel([
-          CompiledInlineTypeScriptImporterForPug.provideTypeScriptImportsForMarkupIfMust(masterConfigRepresentative),
+        MarkupSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative),
+        ECMA_ScriptSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative),
+
+        Gulp.series([
+
+          Gulp.parallel([
+            CompiledInlineTypeScriptImporterForPug.provideTypeScriptImportsForMarkupIfMust(masterConfigRepresentative),
+            ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative),
+            PlainCopier.providePlainCopierIfMust(masterConfigRepresentative)
+          ]),
+
+          /* [ Theory ] The following 4 tasks are heavy thus it is better to not run them at parallel. */
+          ImagesProcessor.provideImagesProcessingIfMust(masterConfigRepresentative),
+          FontsProcessor.provideFontsProcessingIfMust(masterConfigRepresentative),
+          AudiosProcessor.provideAudiosProcessingIfMust(masterConfigRepresentative),
+          VideosProcessor.provideVideosProcessingIfMust(masterConfigRepresentative),
+
+          /* [ Theory ] The styles needs the images and fonts be processed. */
           StylesProcessor.provideStylesProcessingIfMust(masterConfigRepresentative),
-          ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative),
-          PlainCopier.providePlainCopierIfMust(masterConfigRepresentative)
-        ]),
 
-        /* 〔 理論 〕 何方でも重たいので、"Gulp.parallel"に結合しない方が良い。 */
-        ImagesProcessor.provideImagesProcessingIfMust(masterConfigRepresentative),
-        FontsProcessor.provideFontsProcessingIfMust(masterConfigRepresentative),
-        AudiosProcessor.provideAudiosProcessingIfMust(masterConfigRepresentative),
-        VideosProcessor.provideVideosProcessingIfMust(masterConfigRepresentative),
+          /* [ Theory ] The markup needs all previously mentioned resources be processed. */
+          MarkupProcessor.provideMarkupProcessingIfMust(masterConfigRepresentative),
 
-        MarkupProcessor.provideMarkupProcessingIfMust(masterConfigRepresentative),
+          BrowserLiveReloader.provideBrowserLiveReloadingIfMust(masterConfigRepresentative),
+          OutputPackageJSON_Generator.generateIfMust(masterConfigRepresentative),
 
-        BrowserLiveReloader.provideBrowserLiveReloadingIfMust(masterConfigRepresentative),
-        OutputPackageJSON_Generator.generateIfMust(masterConfigRepresentative),
+          Gulp.parallel([
+            FilesMasterWatcher.watchIfMust(masterConfigRepresentative),
+            LocalDevelopmentServerOrchestrator.orchestrateIfMust(masterConfigRepresentative)
+          ])
 
-        Gulp.parallel([
-          FilesMasterWatcher.watchIfMust(masterConfigRepresentative),
-          LocalDevelopmentServerOrchestrator.orchestrateIfMust(masterConfigRepresentative)
         ])
 
       ])
 
-    ]));
+    );
 
     Gulp.task(GULP_TASK_NAME)?.(
       (error?: Error | null): void => {
         if (isNeitherUndefinedNorNull(error)) {
           Logger.logError({
-            errorType: "UnhandledGulpPipelinesError",
-            title: "Unhandled Gulp pipelines error",
-            description: "Unhandled in Gulp pipelines error occurred",
-            occurrenceLocation: "ProjectBuilder.buildProject(namedParameters)",
+            errorType: UnexpectedEventError.NAME,
+            title: UnexpectedEventError.localization.defaultTitle,
+            description: "The following unexpected error has crashed the Gulp pipeline:",
+            occurrenceLocation: "ProjectBuilder.buildProject(compoundParameter)",
             caughtError: error
           });
         }

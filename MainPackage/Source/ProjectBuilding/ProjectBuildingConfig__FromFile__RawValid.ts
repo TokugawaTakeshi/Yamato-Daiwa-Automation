@@ -90,11 +90,6 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
       outputPathTransformationsSettings: OutputDirectoryPathTransformationsSettings__FromFile__RawValid.Localization;
     }>;
 
-    commonSettings: Readonly<{
-      KEY: string;
-      properties: ProjectBuildingCommonSettings__FromFile__RawValid.Localization;
-    }>;
-
     tasks: Readonly<{
       markupProcessing: MarkupProcessingSettings__FromFile__RawValid.Localization;
       stylesProcessing: StylesProcessingSettings__FromFile__RawValid.Localization;
@@ -155,15 +150,12 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
 
           properties: {
 
-            [localization.commonSettings.KEY]: {
+            $commonSettings: {
               newName: "commonSettings",
               preValidationModifications: nullToUndefined,
               type: Object,
               required: false,
-              properties: ProjectBuildingCommonSettings__FromFile__RawValid.getLocalizedPropertiesSpecification({
-                projectBuildingCommonSettingsLocalization: localization.commonSettings.properties,
-                tasksLocalizedIDs: localization.enumerations.tasksIDs
-              })
+              properties: ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification
             },
 
             $markupProcessing: {

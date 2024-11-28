@@ -4,4 +4,4 @@ common:
 
   secondsBetweenFileUpdatingAndStartingOfRebuilding:
 
-    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> 意匠設計記法（スタイル）ファイル保存と再構成の間の秒数"
+    $heading: "<code>$secondsBetweenFileUpdatingAndStartingOfRebuilding</code> 意匠設計記法（スタイル）ファイル保存と再構成の間の秒数"

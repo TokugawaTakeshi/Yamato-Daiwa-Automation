@@ -354,7 +354,16 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
     entryPointFileContent = ResourcesPointersResolverForCSS.resolve({
       CSS_Code: entryPointFileContent,
       absolutePathOfOutputDirectoryForParentFile: processedEntryPointVinylFile.outputDirectoryAbsolutePath,
-      projectBuildingMasterConfigRepresentative: this.projectBuildingMasterConfigRepresentative
+      projectBuildingMasterConfigRepresentative: this.projectBuildingMasterConfigRepresentative,
+      logging: {
+        parentFileAbsolutePath: ImprovedPath.joinPathSegments(
+          [
+            processedEntryPointVinylFile.outputDirectoryAbsolutePath,
+            processedEntryPointVinylFile.basename
+          ],
+          { alwaysForwardSlashSeparators: true }
+        )
+      }
     });
 
     processedEntryPointVinylFile.setContents(entryPointFileContent);

@@ -14,7 +14,6 @@ import {
   isNull,
   isUndefined,
   Logger,
-  stringifyAndFormatArbitraryValue,
   type WarningLog
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
@@ -33,14 +32,21 @@ abstract class ResourcesPointersResolver {
       sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap,
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap,
-      fileTypeForLogging__pluralForm
+      logging: {
+        parentFileAbsolutePath,
+        fileTypeForLogging__singularForm,
+        fileTypeForLogging__pluralForm
+      }
     }: Readonly<{
       pickedPathOfTargetResourceFile: string;
       sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string>;
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap: ReadonlyMap<string, string>;
-      fileTypeForLogging__singularForm: string;
-      fileTypeForLogging__pluralForm: string;
+      logging: Readonly<{
+        parentFileAbsolutePath: string;
+        fileTypeForLogging__singularForm: string;
+        fileTypeForLogging__pluralForm: string;
+      }>;
     }>
   ): string | null {
 
@@ -60,13 +66,21 @@ abstract class ResourcesPointersResolver {
       if (isUndefined(sourceFilesTopDirectoryAbsolutePathOfCurrentAlias)) {
 
         Logger.logWarning(
-            ResourcesPointersResolver.localization.generateUnknownResourcesGroupWarningLog({
-            fileType__pluralForm: fileTypeForLogging__pluralForm,
-            firstPathSegment: firstSegmentOfPickedPath,
-            pickedPathOfTargetResourceFile,
-            formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: stringifyAndFormatArbitraryValue(
-              Array.from(sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.entries())
-            )
+          ResourcesPointersResolver.localization.generateUnknownResourcesGroupAliasWarningLog({
+            resourcesGroupAlias: firstSegmentOfPickedPath,
+            resourceFileType__singularForm: fileTypeForLogging__singularForm,
+            resourcePointer: pickedPathOfTargetResourceFile,
+            resourceFileType__pluralForm: fileTypeForLogging__pluralForm,
+            parentFileAbsolutePath,
+            formattedResourcesGroupsAliasesAndCorrespondingAbsolutePathsMap: Array.
+                from(sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap.entries()).
+                map(
+                  (
+                    [ sourceFilesTopDirectoriesAlias, sourceFilesTopDirectoryAbsolutePath ]: Readonly<[ string, string ]>
+                  ): string =>
+                      ` ● ${ sourceFilesTopDirectoriesAlias }: ${ sourceFilesTopDirectoryAbsolutePath }`
+                ).
+                join("\n")
           })
         );
 
@@ -114,12 +128,14 @@ abstract class ResourcesPointersResolver {
 
           Logger.logWarning(
             ResourcesPointersResolver.localization.
-                generateNoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog({
-                  pickedPathOfTargetResourceFile,
-                  fileType__singularForm: fileTypeForLogging__pluralForm,
-                  checkedAbsolutePaths__formatted: stringifyAndFormatArbitraryValue(
-                    possibleAbsolutePathsOfTargetSourceFileWithoutFragment
-                  )
+                generateNoMatchesForResourceReferenceWihtoutExplicitSupportedFileNameExtensionWarningLog({
+                  resourcePointer: pickedPathOfTargetResourceFile,
+                  formattedListOfCheckedAbsolutePathsOfTargetFiles:
+                    possibleAbsolutePathsOfTargetSourceFileWithoutFragment.map(
+                        (possibleAbsolutePathOfTargetSourceFileWithoutFragment: string): string =>
+                            ` ● ${ possibleAbsolutePathOfTargetSourceFileWithoutFragment }`
+                    ).join("\n"),
+                  resourceFileType__singularForm: fileTypeForLogging__singularForm
                 })
           );
 
@@ -145,9 +161,10 @@ abstract class ResourcesPointersResolver {
       if (isUndefined(resolvedFileOutputAbsolutePath)) {
 
         Logger.logWarning(
-          ResourcesPointersResolver.localization.generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog({
-            pickedPathOfTargetResourceFile,
-            fileType__singularForm: fileTypeForLogging__pluralForm
+          ResourcesPointersResolver.localization.generateFileNotFoundForResolvedResourceReferenceWarningLog({
+            resourcePointer: pickedPathOfTargetResourceFile,
+            resourceFileType__singularForm: fileTypeForLogging__singularForm,
+            resolvedFileAbsolutePath: sourceFileComputedAbsolutePathPossiblyWithoutFileNameExtension
           })
         );
 
@@ -172,15 +189,15 @@ namespace ResourcesPointersResolver {
 
   export type Localization = Readonly<{
 
-    generateUnknownResourcesGroupWarningLog: (
+    generateUnknownResourcesGroupAliasWarningLog: (
       templateVariables: Localization.UnknownResourcesGroupPointerWarningLog.TemplateVariables
     ) => Localization.UnknownResourcesGroupReferenceWarningLog;
 
-    generateNoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog: (
-      templateVariables: Localization.NoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog.TemplateVariables
+    generateNoMatchesForResourceReferenceWihtoutExplicitSupportedFileNameExtensionWarningLog: (
+      templateVariables: Localization.NoMatchesForAliasedFilePathWithoutFileNameExtensionWarningLog.TemplateVariables
     ) => Localization.NoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog;
 
-    generateNoOutputFileExistingForSpecifiedSourceFilePathWarningLog: (
+    generateFileNotFoundForResolvedResourceReferenceWarningLog: (
       templateVariables: Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog.TemplateVariables
     ) => Localization.NoOutputFileExistingForSpecifiedSourceFilePathWarningLog;
 
@@ -192,10 +209,12 @@ namespace ResourcesPointersResolver {
 
     export namespace UnknownResourcesGroupPointerWarningLog {
       export type TemplateVariables = Readonly<{
-        fileType__pluralForm: string;
-        pickedPathOfTargetResourceFile: string;
-        firstPathSegment: string;
-        formattedSourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: string;
+        resourcePointer: string;
+        resourcesGroupAlias: string;
+        resourceFileType__singularForm: string;
+        resourceFileType__pluralForm: string;
+        parentFileAbsolutePath: string;
+        formattedResourcesGroupsAliasesAndCorrespondingAbsolutePathsMap: string;
       }>;
     }
 
@@ -203,11 +222,11 @@ namespace ResourcesPointersResolver {
     export type NoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog =
         Readonly<Pick<WarningLog, "title" | "description">>;
 
-    export namespace NoMatchesForAliasedFilePathWithoutFilenameExtensionWarningLog {
+    export namespace NoMatchesForAliasedFilePathWithoutFileNameExtensionWarningLog {
       export type TemplateVariables = Readonly<{
-        fileType__singularForm: string;
-        pickedPathOfTargetResourceFile: string;
-        checkedAbsolutePaths__formatted: string;
+        resourcePointer: string;
+        resourceFileType__singularForm: string;
+        formattedListOfCheckedAbsolutePathsOfTargetFiles: string;
       }>;
     }
 
@@ -217,8 +236,9 @@ namespace ResourcesPointersResolver {
 
     export namespace NoOutputFileExistingForSpecifiedSourceFilePathWarningLog {
       export type TemplateVariables = Readonly<{
-        fileType__singularForm: string;
-        pickedPathOfTargetResourceFile: string;
+        resourcePointer: string;
+        resourceFileType__singularForm: string;
+        resolvedFileAbsolutePath: string;
       }>;
     }
 

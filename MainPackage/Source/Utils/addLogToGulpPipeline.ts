@@ -3,8 +3,27 @@ import type VinylFile from "vinyl";
 import GulpStreamModifier from "@Utils/GulpStreamModifier";
 
 
+/**
+ * @example
+ * Gulp.
+ *     src( ... ).
+ *     // ...
+ *     pipe(
+ *       addLogToGulpPipeline(
+ *         (file): void => {
+ *           Logger.logGeneric({
+ *             title: "After prettifying",
+ *             description: file.contents?.toString() ?? ""
+ *           });
+ *         },
+ *         file => file.path.includes("HelloWorldTutorialPage")
+ *       )
+ *     ).
+ *     // ...
+ *     pipe(Gulp.dest( ... );
+ */
 export default function addLogToGulpPipeline(
-  loggingFunction: () => void,
+  loggingFunction: (file: VinylFile) => void,
   condition?: (file: VinylFile) => boolean
 ): Stream.Transform {
 
@@ -16,7 +35,7 @@ export default function addLogToGulpPipeline(
       }
 
 
-      loggingFunction();
+      loggingFunction(file);
 
       return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
 

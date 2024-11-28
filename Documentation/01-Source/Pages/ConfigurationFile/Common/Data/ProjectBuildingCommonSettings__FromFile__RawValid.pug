@@ -1,0 +1,103 @@
+-
+
+  const ProjectBuildingCommonSettings__FromFile__RawValid = {
+
+    propertiesSpecification: {
+
+      $selectiveExecutions: {
+
+        newName: "selectiveExecutions",
+        preValidationModifications: nullToUndefined,
+        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+        required: false,
+        minimalEntriesCount: 1,
+
+        value: {
+
+          type: Object,
+          properties: {
+
+            $tasksAndSourceFilesSelection: {
+
+              newName: "tasksAndSourceFilesSelection",
+              type: {
+                name: "ProjectBuildingCommonSettings__FromFile__RawValid.ProjectBuilderTasksAndSourceFilesSelection",
+                anchorOrURI: localizedRouting.configurationFile.$children.commonSettings.$sectioning.
+                    selectiveExecutions.$children.settingUpOfEachItem.$children.tasksAndSourceFilesSelection.$URI
+              },
+              /* [ Originally ] { type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues } */
+              required: true,
+
+              allowedKeys: [
+                "$markupProcessing",
+                "$stylesProcessing",
+                "$ECMA_ScriptLogicProcessing",
+                "$imagesProcessing",
+                "$fontsProcessing",
+                "$audiosProcessing",
+                "$videosProcessing",
+                "$plainCopying"
+              ],
+
+              keysRenamings: {
+                $markupProcessing: "markupProcessing",
+                $stylesProcessing: "stylesProcessing",
+                $ECMA_ScriptLogicProcessing: "ECMA_ScriptLogicProcessing",
+                $imagesProcessing: "imagesProcessing",
+                $fontsProcessing: "fontsProcessing",
+                $audiosProcessing: "audiosProcessing",
+                $videosProcessing: "videosProcessing",
+                $plainCopying: "plainCopying"
+              },
+
+              value: {
+
+                type: Array,
+                minimalElementsCount: 1,
+
+                element: {
+                  type: String,
+                  minimalCharactersCount: 1
+                }
+
+              }
+
+            },
+
+            $browserLiveReloadingSetupID: {
+              newName: "browserLiveReloadingSetupID",
+              type: String,
+              required: false
+            },
+
+            $distributablePackageJSON_Generating: {
+              newName: "distributablePackageJSON_Generating",
+              type: Boolean,
+              required: false
+            }
+
+          }
+        }
+
+      },
+
+      $publicDirectoriesRelativePaths: {
+
+        newName: "publicDirectoriesRelativePaths",
+        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+        required: false,
+        allowedKeys: [
+          "$localDevelopment",
+          "$testing",
+          "$staging",
+          "$production"
+        ],
+        value: {
+          type: String,
+          minimalCharactersCount: 1
+        }
+      }
+
+    }
+
+  };

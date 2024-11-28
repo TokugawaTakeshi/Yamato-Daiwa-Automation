@@ -154,9 +154,9 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
   /* ━━━ Static preview ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   public getStateDependentVariationsForEntryPointWithAbsolutePath(
     targetFileAbsolutePath: string
-  ): MarkupProcessingSettings__Normalized.StaticPreview.PagesStateDependentVariationsSpecification.Page | undefined {
-    return this.staticPreviewSettings.
-        stateDependentPagesVariationsSpecification[replaceDoubleBackslashesWithForwardSlashes(targetFileAbsolutePath)];
+  ): MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.StateDependent.Page | undefined {
+    return this.staticPreviewSettings.pagesVariations.stateDependent.
+        get(replaceDoubleBackslashesWithForwardSlashes(targetFileAbsolutePath));
   }
 
   public get staticDataForStaticPreview(): MarkupProcessingSettings__Normalized.StaticPreview.ImportsFromStaticDataFiles {

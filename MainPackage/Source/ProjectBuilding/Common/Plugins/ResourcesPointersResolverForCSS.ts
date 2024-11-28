@@ -46,11 +46,17 @@ abstract class ResourcesPointersResolverForCSS extends ResourcesPointersResolver
     {
       CSS_Code,
       absolutePathOfOutputDirectoryForParentFile,
-      projectBuildingMasterConfigRepresentative
+      projectBuildingMasterConfigRepresentative,
+      logging: {
+        parentFileAbsolutePath
+      }
     }: Readonly<{
       CSS_Code: string;
       absolutePathOfOutputDirectoryForParentFile: string;
       projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+      logging: Readonly<{
+        parentFileAbsolutePath: string;
+      }>;
     }>
   ): string {
 
@@ -74,7 +80,7 @@ abstract class ResourcesPointersResolverForCSS extends ResourcesPointersResolver
           );
     }
 
-    replaceMatchesWithRegularExpressionToDynamicValue({
+    return replaceMatchesWithRegularExpressionToDynamicValue({
       targetString: CSS_Code,
       regularExpressionWithCapturingGroups: /url\(["']?(?<possiblyAliasedPath>.+?)["']?\);?/gu,
       replacer: (
@@ -151,8 +157,11 @@ abstract class ResourcesPointersResolverForCSS extends ResourcesPointersResolver
               imagesProcessingSettingsRepresentative.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
           sourceAndOutputFilesAbsolutePathsCorrespondenceMap:
               ImagesProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
-          fileTypeForLogging__singularForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
-          fileTypeForLogging__pluralForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM
+          logging: {
+            fileTypeForLogging__singularForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
+            fileTypeForLogging__pluralForm: imagesProcessingSettingsRepresentative.TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM,
+            parentFileAbsolutePath
+          }
         });
 
         if (isNull(resolvedAbsolutePath)) {
@@ -174,8 +183,6 @@ abstract class ResourcesPointersResolverForCSS extends ResourcesPointersResolver
 
       }
     });
-
-    return CSS_Code;
 
   }
 

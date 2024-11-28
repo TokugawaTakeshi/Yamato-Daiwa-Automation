@@ -11,14 +11,13 @@ import type MarkupProcessingSettings__FromFile__RawValid from
     "@MarkupProcessing/MarkupProcessingSettings__FromFile__RawValid";
 
 /* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 import type SourceCodeProcessingGenericProperties__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
-import type MarkupProcessingSettings__Normalized from
-    "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 
-/* ─── Settings normalizers ───────────────────────────────────────────────────────────────────────────────────────── */
+/* ─── Settings Normalizers ───────────────────────────────────────────────────────────────────────────────────────── */
 import SourceCodeProcessingRawSettingsNormalizer from
     "@ProjectBuilding/Common/RawSettingsNormalizers/SourceCodeProcessingRawSettingsNormalizer";
 import RoutingSettingsNormalizer from "@MarkupProcessing/RawSettingsNormalizer/RoutingSettingsNormalizer";
@@ -39,7 +38,6 @@ import {
 } from "@yamato-daiwa/es-extensions";
 import type { ArbitraryObject, WarningLog } from "@yamato-daiwa/es-extensions";
 import { ObjectDataFilesProcessor, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
-import type Mutable from "@UtilsIncubator/Types/Mutable";
 
 /* ─── Localization ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import markupProcessingRawSettingsNormalizerLocalization__english from
@@ -110,8 +108,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
           } : null,
 
       staticPreview: {
-        stateDependentPagesVariationsSpecification: dataHoldingSelfInstance.
-            normalizeStaticPreviewStateDependentPageVariationsSpecification(),
+        pagesVariations: dataHoldingSelfInstance.normalizeStaticPreviewPagesVariationsSettings(),
         importsFromStaticDataFiles: dataHoldingSelfInstance.normalizeImportsFromStaticDataFiles()
       },
 
@@ -252,185 +249,213 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
     };
   }
 
-  private normalizeStaticPreviewStateDependentPageVariationsSpecification(): MarkupProcessingSettings__Normalized.
-      StaticPreview.StateDependentPagesVariationsSpecification
+  private normalizeStaticPreviewPagesVariationsSettings(): MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations
   /* eslint-disable-next-line @stylistic/brace-style -- In this case, the Allman style more readable. */
   {
 
-    const staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath: string | undefined =
-        this.markupProcessingSettings__fromFile__rawValid.staticPreview?.
-            stateDependentPagesVariationsSpecificationFileRelativePath;
+    const staticPreviewPageVariationsSettings:
+        MarkupProcessingSettings__FromFile__RawValid.StaticPreview.PageVariations | undefined =
+            this.markupProcessingSettings__fromFile__rawValid.staticPreview?.pagesVariations;
+
+    const stateDependentPagesVariationsMetadata: MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.
+        StateDependent = new Map();
 
     if (
-      isUndefined(staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath) ||
+      isUndefined(staticPreviewPageVariationsSettings) ||
       this.consumingProjectBuildingMode !== ConsumingProjectBuildingModes.staticPreview
     ) {
-      return {};
+      return {
+        stateDependent: stateDependentPagesVariationsMetadata
+      };
     }
 
 
-    const staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath: string = ImprovedPath.joinPathSegments(
-      [ this.consumingProjectRootDirectoryAbsolutePath, staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath ],
-      { alwaysForwardSlashSeparators: true }
-    );
+    if (isNotUndefined(staticPreviewPageVariationsSettings.stateDependent)) {
 
-    /* [ Approach ] Currently, the `RawObjectDataProcessor` thus `ObjectDataFilesProcessor` are ignoring and not keep the
-     *      data which validation rules has not been specified. In this case, the state variable is such data. */
-    let rawData: unknown;
-
-    try {
-
-      rawData = ObjectDataFilesProcessor.processFile({
-        filePath: staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath,
-        synchronously: true
-      });
-
-    } catch (error: unknown) {
-
-      Logger.throwErrorAndLog({
-        errorInstance: new FileReadingFailedError({
-          customMessage: MarkupProcessingRawSettingsNormalizer.localization.
-              generateStaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedMessage({
-                staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath
-              })
-        }),
-        title: FileReadingFailedError.localization.defaultTitle,
-        occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-            "normalizeStaticPreviewStateDependentPageVariationsSpecification()",
-        innerError: error
-      });
-
-    }
-
-
-    if (!isArbitraryObject(rawData)) {
-
-      Logger.logError({
-        errorType: InvalidExternalDataError.NAME,
-        title: InvalidExternalDataError.localization.defaultTitle,
-        description: PoliteErrorsMessagesBuilder.buildMessage(
-          MarkupProcessingRawSettingsNormalizer.localization.
-              generateStaticPreviewStateDependentPagesVariationsSpecificationIsNotTheObjectErrorLog({
-                staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath,
-                stringifiedRawData: stringifyAndFormatArbitraryValue(rawData),
-                rawDataActualType: typeof rawData
-              })
-        ),
-        occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-            "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
-      });
-
-      return {};
-
-    }
-
-
-    const staticPreviewStateDependentPageVariationsData: Mutable<
-      MarkupProcessingSettings__Normalized.StaticPreview.StateDependentPagesVariationsSpecification
-    > = {};
-
-    for (
-      const [ markupSourceFileRelativePath__possiblyWithoutExtension, stateDependentPageVariationsData ] of
-      Object.entries(rawData)
-    ) {
-
-      const markupSourceFileRelativePath: string = appendLastFileNameExtension({
-        targetPath: markupSourceFileRelativePath__possiblyWithoutExtension,
-        targetFileNameExtensionWithOrWithoutLeadingDot: "pug",
-        mustAppendDuplicateEvenIfTargetLastFileNameExtensionAlreadyPresentsAtSpecifiedPath: false
-      });
-
-      if (!isArbitraryObject(stateDependentPageVariationsData)) {
-        Logger.throwErrorAndLog({
-          errorInstance: new InvalidExternalDataError({
-            customMessage: MarkupProcessingRawSettingsNormalizer.localization.
-              generateInvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayMessage({
-                staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath,
-                invalidEntryKey: markupSourceFileRelativePath,
-                invalidEntryValueType: typeof stateDependentPageVariationsData,
-                invalidEntryStringifiedValue: stringifyAndFormatArbitraryValue(stateDependentPageVariationsData)
-              })
-          }),
-          title: InvalidExternalDataError.localization.defaultTitle,
-          occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-              "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
-        });
-      }
-
-
-      if (!isNonEmptyString(stateDependentPageVariationsData.stateObjectTypeVariableName)) {
-        Logger.throwErrorAndLog({
-          errorInstance: new InvalidExternalDataError({
-            customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableNameMessage({
-              targetMarkupFileRelativePath: markupSourceFileRelativePath,
-              stringifiedValueOfSpecifiedVariableNameProperty:
-                  stringifyAndFormatArbitraryValue(stateDependentPageVariationsData.stateObjectTypeVariableName),
-              specifiedTypeOfVariableNameProperty: typeof stateDependentPageVariationsData.stateObjectTypeVariableName
-            })
-          }),
-          title: InvalidExternalDataError.localization.defaultTitle,
-          occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-              "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
-        });
-      }
-
-
-      if (!isArbitraryObject(stateDependentPageVariationsData.variations)) {
-        Logger.throwErrorAndLog({
-          errorInstance: new InvalidExternalDataError({
-            customMessage: MarkupProcessingRawSettingsNormalizer.localization.
-                generateInvalidPageStateDependentVariationsSpecificationMessage({
-                  targetMarkupFileRelativePath: markupSourceFileRelativePath,
-                  actualType: typeof stateDependentPageVariationsData.variations,
-                  actualStringifiedValue: stringifyAndFormatArbitraryValue(stateDependentPageVariationsData.variations)
-                })
-          }),
-          title: InvalidExternalDataError.localization.defaultTitle,
-          occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-              "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
-        });
-      }
-
-
-      const markupSourceFileFileAbsolutePath: string = ImprovedPath.joinPathSegments(
-        [ this.consumingProjectRootDirectoryAbsolutePath, markupSourceFileRelativePath ],
+      const variationsByStatesSpecificationFileAbsolutePath: string = ImprovedPath.joinPathSegments(
+        [
+          this.consumingProjectRootDirectoryAbsolutePath,
+          staticPreviewPageVariationsSettings.stateDependent.specificationFileRelativePath
+        ],
         { alwaysForwardSlashSeparators: true }
       );
 
-      const derivedPagesAndStatesMap: { [derivedFileAbsolutePath: string]: ArbitraryObject; } = {};
+      /* [ Approach ] Currently, the `RawObjectDataProcessor` thus `ObjectDataFilesProcessor` are ignoring and not keep
+       *      the data which validation rules has not been specified. In this case, the state dependent object is
+       *      such data. */
+      let rawPagesStateDependentVariationsSpecification: unknown;
 
-      for (const [ postfix, state ] of Object.entries(stateDependentPageVariationsData.variations)) {
+      try {
 
-        const derivedFileAbsolutePath: string =
-            `${ removeAllFileNameExtensions(markupSourceFileFileAbsolutePath) }${ postfix }.pug`;
+        rawPagesStateDependentVariationsSpecification = ObjectDataFilesProcessor.processFile({
+          filePath: variationsByStatesSpecificationFileAbsolutePath,
+          schema: ObjectDataFilesProcessor.SupportedSchemas.YAML,
+          synchronously: true
+        });
 
-        if (!isArbitraryObject(state)) {
+      } catch (error: unknown) {
+
+        Logger.throwErrorAndLog({
+          errorInstance: new FileReadingFailedError({
+            customMessage: MarkupProcessingRawSettingsNormalizer.localization.
+                generateStaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedMessage({
+                  staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath:
+                  variationsByStatesSpecificationFileAbsolutePath
+                })
+          }),
+          title: FileReadingFailedError.localization.defaultTitle,
+          occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
+              "normalizeStaticPreviewPagesVariationsSettings()",
+          innerError: error
+        });
+
+      }
+
+      if (!isArbitraryObject(rawPagesStateDependentVariationsSpecification)) {
+
+        Logger.logError({
+          errorType: InvalidExternalDataError.NAME,
+          title: InvalidExternalDataError.localization.defaultTitle,
+          description: PoliteErrorsMessagesBuilder.buildMessage(
+              MarkupProcessingRawSettingsNormalizer.localization.
+              generateStaticPreviewStateDependentPagesVariationsSpecificationIsNotTheObjectErrorLog({
+                staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath:
+                    variationsByStatesSpecificationFileAbsolutePath,
+                stringifiedRawData: stringifyAndFormatArbitraryValue(rawPagesStateDependentVariationsSpecification),
+                rawDataActualType: typeof rawPagesStateDependentVariationsSpecification
+              })
+          ),
+          occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
+              "normalizeStaticPreviewPagesVariationsSettings()"
+        });
+
+        return {
+          stateDependent: stateDependentPagesVariationsMetadata
+        };
+
+      }
+
+
+      for (
+        const [ markupEntryPointSourceFileRelativePath__possiblyWithoutExtension, stateDependentPageVariationsData ] of
+            Object.entries(rawPagesStateDependentVariationsSpecification)
+      ) {
+
+        const markupEntryPointSourceFileRelativePath: string = appendLastFileNameExtension({
+          targetPath: markupEntryPointSourceFileRelativePath__possiblyWithoutExtension,
+          targetFileNameExtensionWithOrWithoutLeadingDot: "pug",
+          mustAppendDuplicateEvenIfTargetLastFileNameExtensionAlreadyPresentsAtSpecifiedPath: false
+        });
+
+        if (!isArbitraryObject(stateDependentPageVariationsData)) {
           Logger.throwErrorAndLog({
             errorInstance: new InvalidExternalDataError({
-              customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableMessage({
-                targetMarkupFileRelativePath: markupSourceFileRelativePath,
-                actualStringifiedValue: stringifyAndFormatArbitraryValue(state),
-                actualType: typeof state
+              customMessage: MarkupProcessingRawSettingsNormalizer.localization.
+                generateInvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayMessage({
+                  staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath:
+                      staticPreviewPageVariationsSettings.stateDependent.specificationFileRelativePath,
+                  invalidEntryKey: markupEntryPointSourceFileRelativePath,
+                  invalidEntryValueType: typeof stateDependentPageVariationsData,
+                  invalidEntryStringifiedValue: stringifyAndFormatArbitraryValue(stateDependentPageVariationsData)
+                })
+            }),
+            title: InvalidExternalDataError.localization.defaultTitle,
+            occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
+                "normalizeStaticPreviewPagesVariationsSettings()"
+          });
+        }
+
+
+        if (!isNonEmptyString(stateDependentPageVariationsData.$stateObjectTypeVariableName)) {
+          Logger.throwErrorAndLog({
+            errorInstance: new InvalidExternalDataError({
+              customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableNameMessage({
+                targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
+                stringifiedValueOfSpecifiedVariableNameProperty:
+                    stringifyAndFormatArbitraryValue(stateDependentPageVariationsData.$stateObjectTypeVariableName),
+                specifiedTypeOfVariableNameProperty: typeof stateDependentPageVariationsData.$stateObjectTypeVariableName
               })
             }),
             title: InvalidExternalDataError.localization.defaultTitle,
             occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-                "normalizeStaticPreviewStateDependentPageVariationsSpecification()"
+                "normalizeStaticPreviewPagesVariationsSettings()"
           });
         }
 
-        derivedPagesAndStatesMap[derivedFileAbsolutePath] = state;
+
+        if (!isArbitraryObject(stateDependentPageVariationsData.$stateDependentVariations)) {
+          Logger.throwErrorAndLog({
+            errorInstance: new InvalidExternalDataError({
+              customMessage: MarkupProcessingRawSettingsNormalizer.localization.
+              generateInvalidPageStateDependentVariationsSpecificationMessage({
+                targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
+                actualType: typeof stateDependentPageVariationsData.$stateDependentVariations,
+                actualStringifiedValue:
+                    stringifyAndFormatArbitraryValue(stateDependentPageVariationsData.$stateDependentVariations)
+              })
+            }),
+            title: InvalidExternalDataError.localization.defaultTitle,
+            occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
+                "normalizeStaticPreviewPagesVariationsSettings()"
+          });
+        }
+
+        const markupSourceFileFileAbsolutePath: string = ImprovedPath.joinPathSegments(
+          [ this.consumingProjectRootDirectoryAbsolutePath, markupEntryPointSourceFileRelativePath ],
+          { alwaysForwardSlashSeparators: true }
+        );
+
+        const derivedPagesAndStatesMap: Map<
+          MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.StateDependent.DerivedFileAbsolutePath,
+          ArbitraryObject
+        > = new Map();
+
+        for (
+          const [ fineNamePostfix, stateData ] of
+              Object.entries(stateDependentPageVariationsData.$stateDependentVariations)
+        ) {
+
+          const derivedFileAbsolutePath: string =
+              `${ removeAllFileNameExtensions(markupSourceFileFileAbsolutePath) }${ fineNamePostfix }.pug`;
+
+          if (!isArbitraryObject(stateData)) {
+            Logger.throwErrorAndLog({
+              errorInstance: new InvalidExternalDataError({
+                customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableMessage({
+                  targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
+                  actualStringifiedValue: stringifyAndFormatArbitraryValue(stateData),
+                  actualType: typeof stateData
+                })
+              }),
+              title: InvalidExternalDataError.localization.defaultTitle,
+              occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
+                  "normalizeStaticPreviewPagesVariationsSettings()"
+            });
+          }
+
+          derivedPagesAndStatesMap.set(derivedFileAbsolutePath, stateData);
+
+        }
+
+        stateDependentPagesVariationsMetadata.set(
+          ImprovedPath.joinPathSegments(
+            [ this.consumingProjectRootDirectoryAbsolutePath, markupEntryPointSourceFileRelativePath ],
+            { alwaysForwardSlashSeparators: true }
+          ),
+          {
+            stateVariableName: stateDependentPageVariationsData.$stateObjectTypeVariableName,
+            derivedPagesAndStatesMap
+          }
+        );
 
       }
 
-      staticPreviewStateDependentPageVariationsData[markupSourceFileFileAbsolutePath] = {
-        stateVariableName: stateDependentPageVariationsData.stateObjectTypeVariableName,
-        derivedPagesAndStatesMap
-      };
-
     }
 
-    return staticPreviewStateDependentPageVariationsData;
+
+    return {
+      stateDependent: stateDependentPagesVariationsMetadata
+    };
 
   }
 

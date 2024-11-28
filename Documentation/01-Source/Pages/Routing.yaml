@@ -42,6 +42,28 @@ functionality:
               japanese: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesPointersResolving/TableOfContents/ResourcesPointersResolving.toc.japanese.yaml
               russian: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesPointersResolving/TableOfContents/ResourcesPointersResolving.toc.russian.yaml
 
+    browserLiveReloading:
+
+      $heading: `functionality.browserLiveReloading.$heading`
+      $URI: `@All/Functionality/BrowserLiveReloading/BrowserLiveReloading.${ fileNameLocalizationExtensions }`
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/Functionality/BrowserLiveReloading/TableOfContents/BrowserLiveReloading.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/Functionality/BrowserLiveReloading/TableOfContents/BrowserLiveReloading.toc.english.yaml
+          japanese: 01-Source/Pages/Functionality/BrowserLiveReloading/TableOfContents/BrowserLiveReloading.toc.japanese.yaml
+          russian: 01-Source/Pages/Functionality/BrowserLiveReloading/TableOfContents/BrowserLiveReloading.toc.russian.yaml
+
+    distributablePackageJSON_Generating:
+
+      $heading: `functionality.distributablePackageJSON_Generating.$heading`
+      $URI: `@All/Functionality/DistributablePackageJSON_Generating/DistributablePackageJSON_Generating.${ fileNameLocalizationExtensions }`
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/Functionality/DistributablePackageJSON_Generating/TableOfContents/DistributablePackageJSON_Generating.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/Functionality/DistributablePackageJSON_Generating/TableOfContents/DistributablePackageJSON_Generating.toc.english.yaml
+          japanese: 01-Source/Pages/Functionality/DistributablePackageJSON_Generating/TableOfContents/DistributablePackageJSON_Generating.toc.japanese.yaml
+          russian: 01-Source/Pages/Functionality/DistributablePackageJSON_Generating/TableOfContents/DistributablePackageJSON_Generating.toc.russian.yaml
+
 # Functionality/MarkupProcessing/ResourcesPointersResolving/ResourcesPointersResolving.${ fileNameLocalizationExtensions }`
 
 #configuration:
@@ -50,10 +72,10 @@ functionality:
 #
 #  $children:
 #
-#    outputPackageJSON_Generating:
+#    distributablePackageJSON_Generating:
 #
-#      $heading: `configuration.outputPackageJSON_Generating.$heading`
-#      $URI: `@All/Configuration/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingConfiguration.${ fileNameLocalizationExtensions }`
+#      $heading: `configuration.distributablePackageJSON_Generating.$heading`
+#      $URI: `@All/Configuration/distributablePackageJSON_Generating/distributablePackageJSON_GeneratingConfiguration.${ fileNameLocalizationExtensions }`
 
 
 configurationFile:
@@ -66,11 +88,12 @@ configurationFile:
 
       $heading: `configuration.common.$heading`
       $URI: `@All/ConfigurationFile/Common/CommonSettings.${ fileNameLocalizationExtensions }`
-      $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.yaml
-      $localizations:
-        english: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.english.yaml
-        japanese: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.japanese.yaml
-        russian: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.russian.yaml
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.english.yaml
+          japanese: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.japanese.yaml
+          russian: 01-Source/Pages/ConfigurationFile/Common/TableOfContents/CommonSettings.toc.russian.yaml
 
     markupProcessing:
 
@@ -96,13 +119,41 @@ configurationFile:
 
     ECMAScriptLogicProcessing:
 
-      $heading: ECMAScript Logic Processing
-      $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/ECMA_ScriptProcessing/ECMA_ScriptProcessing.md
+      $heading: `configuration.ECMAScriptLogicProcessing.$heading`
+      $URI: `@All/ConfigurationFile/ECMAScriptLogicProcessing/ECMAScriptLogicProcessing.${ fileNameLocalizationExtensions }`
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/ECMAScriptLogicProcessing/TableOfContents/ECMAScriptLogicProcessing.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/ConfigurationFile/ECMAScriptLogicProcessing/TableOfContents/ECMAScriptLogicProcessing.toc.english.yaml
+          japanese: 01-Source/Pages/ConfigurationFile/ECMAScriptLogicProcessing/TableOfContents/ECMAScriptLogicProcessing.toc.japanese.yaml
+          russian: 01-Source/Pages/ConfigurationFile/ECMAScriptLogicProcessing/TableOfContents/ECMAScriptLogicProcessing.toc.russian.yaml
+
+    imagesProcessing:
+
+      $heading: `configuration.imagesProcessing.$heading`
+      $URI: `@All/ConfigurationFile/ImagesProcessing/ImagesProcessingSettings.${ fileNameLocalizationExtensions }`
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/ImagesProcessing/TableOfContents/ImagesProcessingSettings.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/ConfigurationFile/ImagesProcessing/TableOfContents/ImagesProcessingSettings.toc.english.yaml
+          japanese: 01-Source/Pages/ConfigurationFile/ImagesProcessing/TableOfContents/ImagesProcessingSettings.toc.japanese.yaml
+          russian: 01-Source/Pages/ConfigurationFile/ImagesProcessing/TableOfContents/ImagesProcessingSettings.toc.russian.yaml
 
     plainCopying:
 
       $heading: Plain Copying
       $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/PlainCopying/PlainCopying.md
+
+    browserLiveReloading:
+
+      $heading: `configuration.browserLiveReloading.$heading`
+      $URI: `@All/ConfigurationFile/BrowserLiveReloading/BrowserLiveReloadingSettings.${ fileNameLocalizationExtensions }`
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/BrowserLiveReloading/TableOfContents/BrowserLiveReloadingSettings.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/ConfigurationFile/BrowserLiveReloading/TableOfContents/BrowserLiveReloadingSettings.toc.english.yaml
+          japanese: 01-Source/Pages/ConfigurationFile/BrowserLiveReloading/TableOfContents/BrowserLiveReloadingSettings.toc.japanese.yaml
+          russian: 01-Source/Pages/ConfigurationFile/BrowserLiveReloading/TableOfContents/BrowserLiveReloadingSettings.toc.russian.yaml
 
 CLI:
 

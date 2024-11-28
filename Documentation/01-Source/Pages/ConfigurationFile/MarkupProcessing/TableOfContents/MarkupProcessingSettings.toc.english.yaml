@@ -4,8 +4,8 @@ common:
 
   secondsBetweenFileUpdatingAndStartingOfRebuilding:
 
-    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code>"
+    $heading: "<code>$secondsBetweenFileUpdatingAndStartingOfRebuilding</code>"
 
   mustResolveResourcesPointersToRelativePaths:
 
-    $heading: "<code>mustResolveResourcesPointersToRelativePaths</code>"
+    $heading: "<code>$mustResolveResourcesPointersToRelativePaths</code>"

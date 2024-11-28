@@ -92,22 +92,6 @@ const ProjectBuildingConfigFromFileDefaultLocalization: ProjectBuildingConfig__F
 
   },
 
-  commonSettings: {
-
-    KEY: "commonSettings",
-
-    properties: {
-      selectiveExecutions: {
-        KEY: "selectiveExecutions",
-        tasksAndSourceFilesSelection: { KEY: "tasksAndSourceFilesSelection" },
-        browserLiveReloadingSetupID: { KEY: "browserLiveReloadingSetupID" },
-        outputPackageJSON_Generating: { KEY: "outputPackageJSON_Generating" }
-      },
-      publicDirectoriesRelativePaths: { KEY: "publicDirectoriesRelativePaths" }
-    }
-
-  },
-
   tasks: {
 
     markupProcessing: {

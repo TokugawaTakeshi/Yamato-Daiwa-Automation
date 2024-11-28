@@ -25,13 +25,21 @@ functionality:
 
       $heading: "Resources Pointers Resolving"
 
+  browserLiveReloading:
+
+    $heading: "Browser Live Reloading"
+
+  distributablePackageJSON_Generating:
+
+    $heading: "Output package.json Generating"
+
 configuration:
 
   $heading: "Configuration"
 
   common:
 
-    $heading: "<code>$common</code> — Common Settings"
+    $heading: "<code>$commonSettings</code> — Common Settings"
 
   markupProcessing:
 
@@ -40,6 +48,18 @@ configuration:
   stylesProcessing:
 
     $heading: "<code>$stylesProcessing</code> — Styles Processing Settings"
+
+  ECMAScriptLogicProcessing:
+
+    $heading: "<code>$ECMAScriptLogicProcessing</code> — ECMAScript Logic Processing Settings"
+
+  imagesProcessing:
+
+    $heading: "<code>$imagesProcessing</code> — Images Processing Settings"
+
+  browserLiveReloading:
+
+    $heading: "<code>$browserLiveReloading</code> — Browser Live Reloading Settings"
 
   outputPackageJSON_Generating:
 

@@ -21,10 +21,9 @@ import MarkupProcessingSharedState from "@MarkupProcessing/MarkupProcessingShare
 /* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
 import type VinylFile from "vinyl";
-import gulpIf from "gulp-if";
 import gulpData from "gulp-data";
 import gulpPug from "gulp-pug";
-import gulpHTML_Prettify from "gulp-html-prettify";
+import JSBeautify from "js-beautify";
 
 /* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import PugPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/PugPreProcessorSpecialist";
@@ -55,7 +54,9 @@ import {
   isNotNull,
   explodeStringToLines,
   getLineSeparatorType,
-  extractFileNameWithoutLastExtension
+  extractFileNameWithoutLastExtension,
+  SpaceCharacters,
+  splitString
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath, ImprovedGlob } from "@yamato-daiwa/es-extensions-nodejs";
 import { parse as parseHTML } from "node-html-parser";
@@ -293,11 +294,11 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
         ).
 
         pipe(
-          gulpIf(
-            (markupFile: VinylFile): boolean => markupFile instanceof MarkupEntryPointVinylFile &&
-                markupFile.actualEntryPointsGroupSettings.outputCodeFormatting.mustExecute,
-            gulpHTML_Prettify({ indent_char: " ", indent_size: 2 })
-          )
+          GulpStreamModifier.modify({
+            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
+              [ MarkupEntryPointVinylFile, MarkupProcessor.formatOnMinifyContentIfMust ]
+            ])
+          })
         ).
 
         pipe(
@@ -320,7 +321,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
   }
 
 
-  /* ━━━ Pipeline methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ━━━ Pipeline Methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   private async replacePlainVinylFileWithMarkupEntryPointVinylFile(
     plainVinylFile: VinylFile, addNewFileToStream: GulpStreamModifier.NewFilesAdder
   ): Promise<GulpStreamModifier.CompletionSignals> {
@@ -709,7 +710,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
           );
 
       const entryPointStateDependentVariations: MarkupProcessingSettings__Normalized.StaticPreview.
-          PagesStateDependentVariationsSpecification.Page | undefined =
+          PagesVariations.StateDependent.Page | undefined =
           this.markupProcessingSettingsRepresentative.
               getStateDependentVariationsForEntryPointWithAbsolutePath(markupSourceFileAbsolutePath);
 
