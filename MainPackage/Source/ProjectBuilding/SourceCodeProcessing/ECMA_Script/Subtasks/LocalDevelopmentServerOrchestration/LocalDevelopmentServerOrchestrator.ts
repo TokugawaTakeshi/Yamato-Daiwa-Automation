@@ -14,8 +14,7 @@ import ECMA_ScriptLogicProcessingSharedState from "@ECMA_ScriptProcessing/ECMA_S
 import provideServerAutomaticStartingAndRestarting from "gulp-nodemon";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
-import { isNull, isUndefined } from "@yamato-daiwa/es-extensions";
-import getExpectedToBeExistingMapValue from "@UtilsIncubator/Map/getExpectedToBeExistingMapValue";
+import { getExpectedToBeNonUndefinedMapValue, isNull, isUndefined } from "@yamato-daiwa/es-extensions";
 
 
 export default class LocalDevelopmentServerOrchestrator {
@@ -42,7 +41,7 @@ export default class LocalDevelopmentServerOrchestrator {
 
     return (callback: (error?: Error | null) => void): void => {
 
-      const targetFile: string = getExpectedToBeExistingMapValue(
+      const targetFile: string = getExpectedToBeNonUndefinedMapValue(
         ECMA_ScriptLogicProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
         localDevelopmentServerOrchestrationSettings.targetSourceFileAbsolutePath
       );

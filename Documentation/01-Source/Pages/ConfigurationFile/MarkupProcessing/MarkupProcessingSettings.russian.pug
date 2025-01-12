@@ -114,23 +114,23 @@ block append SpecificContent
 
               $staticPreview:
 
-                # Определите здесь настройки для режима статического превью
+                # Определите здесь общие настройки для режима статического превью (см. ниже)
 
               $localDevelopment:
 
-                # Определите здесь настройки для режима локальной разработки
+                # Определите здесь общие настройки для режима локальной разработки (см. ниже)
 
               $testing:
 
-                # Определите здесь настройки для режима тестирования
+                # Определите здесь общие настройки для режима тестирования (см. ниже)
 
               $staging:
 
-                # Определите здесь настройки для режима инсценирования
+                # Определите здесь общие настройки для режима инсценирования (см. ниже)
 
               $production:
 
-                # Определите здесь настройки для режима «продакшен»
+                # Определите здесь общие настройки для режима «продакшен» (см. ниже)
 
 
     p.Article-Paragraph.
@@ -166,23 +166,22 @@ block append SpecificContent
 
     p.Article-Paragraph.
       Даже если редактор кода или #[+Term--YDID интегрированная среда разработки] может сохранять несколько файлов
-        [+Keyword--YDID разом], #[+Keyphrase--YDID на самом деле] они сохраняются #[+Keyword--YDID не] одновременно, а
-        #[+Keyphrase--YDID с разницей в несколько #[+Term--YDID миллисекунд]].
+        #[+Keyword--YDID разом], #[+Keyphrase--YDID на самом деле] они сохраняются #[+Keyword--YDID не] одновременно, а
+        #[+Keyphrase--YDID с разницей в #[+Keyword--YDID доли] #[+Term--YDID секунды]].
       Кроме того, обнаружение изменения статуса файлов соответствующими утилитами также происходит
         #[+Keyphrase--YDID с небольшой, но задержкой].
       Ввиду этого, #[+Keyphrase--YDID без специальных мер] будет #[+Keyword--YDID одна] пересборка
         #[+Keyphrase--YDID на каждый сохранённый файл], что будет давать
         #[+Keyphrase--YDID всё большую нагрузку на аппаратное обеспечение] по мере увеличения количества файлов,
         пока станет невозможно осуещствлять разработку в нормальном режиме.
-      Чтобы это оптимизировать, необходимо подождать некоторое время после того, как один файл будет сохранён —
-        возможно вслед за ним через несколько #[+Term--YDID миллисекунд] будет замечено сохранение
-        #[+Keyword--YDID последующих] файлов.
+      Чтобы это оптимизировать, необходимо немного подождать после того, как один файл будет сохранён —
+        возможно вслед за ним будет замечено сохранение #[+Keyword--YDID последующих] файлов.
 
     p.Article-Paragraph.
       В #[+ImportantEntity--YDID YDA]
         #[+Keyphrase--YDID на #[+Keyword--YDID инкрементальных] #[+Term--YDID режимах сборки]] после сохранения
         #[+Keyword--YDID одного] #[+Term--YDID Pug-файла] запускается таймер ожидания пересборки, который истекает через
-        #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding] секунд.
+        количество #[+Term--YDID секунд], которые и определяются этой настройкой.
       Если #[+Keyword--YDID до] истечения этого таймера #[+Keyword--YDID не] будет сохранено
         #[+Keyword--YDID ни одного] #[+Keyword__Contrast--YDID последующего] #[+Term--YDID Pug-файла], то запустится
         новый цикл обработки #[+Term--YDID Pug-файлов].
@@ -193,7 +192,7 @@ block append SpecificContent
         #[+Keyword--YDID последующего] #[+Term--YDID Pug-файла].
 
     p.Article-Paragraph.
-      Значения #[+Keyphrase--YDID по умолчанию] #[+Keyword--YDID достаточно] #[+Keyphrase--YDID для начальной],
+      Значения #[+Keyphrase--YDID по умолчанию] #[+Keyword--YDID достаточно] #[+Keyphrase--YDID для начальной]
         стадии разработки, когда #[+Keyword--YDID обычно] количество файлов невелико.
       Однако когда количество файлов станет #[+Keyphrase--YDID порядка несколько десятков], может стать желательным
         увеличить значение #[+ImportantEntity__Code--YDID secondsBetweenFileUpdatingAndStartingOfRebuilding].
@@ -227,7 +226,13 @@ block append SpecificContent
       +Link--YDF({ internalURI: localizedRouting.terminology.$sectioning.resources.$URI }) ресурсы
       | .
       | #[+Keyphrase--YDID По умолчанию], #[+ImportantEntity--YDID YDA] попытается преобразовать #[+Term--YDID указатели]
-      |   на #[+Term--YDID ресурсы] к #[+Keyword--YDID абсолютным] #[+Term--YDID путям] для #[+Keyword--YDID всех]
+      |   на #[+Term--YDID ресурсы] к
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.importantForYDA_ExistingTerms.$children.publicPathAndShortenedAbsolutePath.$URI
+      }) укороченным абсолютным путям
+      |
+      | для #[+Keyword--YDID всех]
       |
       +Link--YDF({
         internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI
@@ -248,6 +253,16 @@ block append SpecificContent
       Принять решение о том, нужна ли Вам эта опция Вы должны на основе понимания разницы между
         #[+Term--YDID абсолютными] и #[+Term--YDID относительными путями], а также на основе той цели, для которых Вы
         пишите #[+Term--YDID разметку].
+    p.Article-Paragraph
+      | Принять решение о том, нужна ли Вам эта опция Вы должны на основе понимания разницы между
+      |   #[+Term--YDID абсолютными] и #[+Term--YDID относительными путями], а также на основе той цели, для которых Вы
+      |   пишите #[+Term--YDID разметку].
+      | Эта разница была подробно рассмотрена в
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI
+      }) статье о разрешении указателей на ресурсы
+      | .
 
   //-
       h4.Article-Heading4  #[code buildingModeDependent] — настройки, зависящие от режима сборки

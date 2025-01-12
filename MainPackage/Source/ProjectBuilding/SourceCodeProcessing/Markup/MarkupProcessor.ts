@@ -676,12 +676,24 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
   /* ━━━ Helpers ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   private initializeSourceAndOutputFilesAbsolutePathsCorrespondenceMap(): void {
 
+    const localeDependentPagesVariationsSettings:
+        MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.LocaleDependent | undefined =
+            this.markupProcessingSettingsRepresentative.localeDependentPagesVariationsSettings;
+
+    const localesData:
+        MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.LocaleDependent.LocalesData =
+            localeDependentPagesVariationsSettings?.locales ?? new Map();
+
     for (
       const markupSourceFileAbsolutePath of ImprovedGlob.getFilesAbsolutePathsSynchronously(
         this.markupProcessingSettingsRepresentative.initialRelevantEntryPointsSourceFilesAbsolutePaths,
         { alwaysForwardSlashSeparators: true }
       )
     ) {
+
+      const areLocaleDependentVariationsRequiredForCurrentFile: boolean =
+          localesData.size > 0 &&
+          localeDependentPagesVariationsSettings?.excludedFilesAbsolutePaths.includes(markupSourceFileAbsolutePath) === false;
 
       const markupEntryPointsGroupSettingsActualForCurrentFile: MarkupProcessingSettings__Normalized.EntryPointsGroup =
           this.markupProcessingSettingsRepresentative.
@@ -693,45 +705,51 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
             mustPrependDotToFileNameExtension: false
           });
 
-      MarkupProcessingSharedState.
-          entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
-          set(
-            markupSourceFileAbsolutePath,
-            ImprovedPath.joinPathSegments(
-              [
-                MarkupProcessingSettingsRepresentative.computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
-                  markupSourceFileAbsolutePath, markupEntryPointsGroupSettingsActualForCurrentFile
-                ),
-                `${ extractFileNameWithoutLastExtension(markupSourceFileAbsolutePath) }.` +
-                    outputFileNameWithLastExtensionWithLeadingDot
-              ],
-              { alwaysForwardSlashSeparators: true }
-            )
+      const outputDirectoryForCurrentMarkupFileAndDerivedOnes: string = MarkupProcessingSettingsRepresentative.
+          computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
+            markupSourceFileAbsolutePath, markupEntryPointsGroupSettingsActualForCurrentFile
           );
 
-      const entryPointStateDependentVariations: MarkupProcessingSettings__Normalized.StaticPreview.
-          PagesVariations.StateDependent.Page | undefined =
-          this.markupProcessingSettingsRepresentative.
-              getStateDependentVariationsForEntryPointWithAbsolutePath(markupSourceFileAbsolutePath);
+      if (areLocaleDependentVariationsRequiredForCurrentFile) {
 
-      if (isUndefined(entryPointStateDependentVariations)) {
-        continue;
-      }
+        for (const localeData of localesData.values()) {
 
+          MarkupProcessingSharedState.
+              entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
+              set(
+                addPenultimateFileNameExtension({
+                  targetPath: markupSourceFileAbsolutePath,
+                  targetFileNamePenultimateExtensionWithOrWithoutLeadingDot:
+                      localeData.outputFileInterimNameExtensionWithoutDot,
+                  mustAppendDuplicateEvenIfTargetPenultimateFileNameExtensionAlreadyExist: true,
+                  mustAppendLastFileNameExtensionInsteadIfThereIsNoOne: true
+                }),
+                ImprovedPath.joinPathSegments(
+                  [
+                    outputDirectoryForCurrentMarkupFileAndDerivedOnes,
+                    [
+                      extractFileNameWithoutLastExtension(markupSourceFileAbsolutePath),
+                      localeData.outputFileInterimNameExtensionWithoutDot,
+                      outputFileNameWithLastExtensionWithLeadingDot
+                    ].join(".")
+                  ],
+                  { alwaysForwardSlashSeparators: true }
+                )
+              );
 
-      for (const derivedSourceFileAbsolutePath of Object.keys(entryPointStateDependentVariations.derivedPagesAndStatesMap)) {
+        }
+
+      } else {
 
         MarkupProcessingSharedState.
             entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
             set(
-              derivedSourceFileAbsolutePath,
+              markupSourceFileAbsolutePath,
               ImprovedPath.joinPathSegments(
                 [
-                  MarkupProcessingSettingsRepresentative.
-                  computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
-                    markupSourceFileAbsolutePath, markupEntryPointsGroupSettingsActualForCurrentFile
-                  ),
-                  `${ extractFileNameWithoutLastExtension(derivedSourceFileAbsolutePath) }.html`
+                  outputDirectoryForCurrentMarkupFileAndDerivedOnes,
+                  `${ extractFileNameWithoutLastExtension(markupSourceFileAbsolutePath) }.` +
+                      outputFileNameWithLastExtensionWithLeadingDot
                 ],
                 { alwaysForwardSlashSeparators: true }
               )
@@ -739,7 +757,68 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
       }
 
+      const entryPointStateDependentVariations: MarkupProcessingSettings__Normalized.StaticPreview.
+          PagesVariations.StateDependent.Page | undefined =
+          this.markupProcessingSettingsRepresentative.
+              getStateDependentVariationsForEntryPointWithAbsolutePath(markupSourceFileAbsolutePath);
+
+      for (
+        const derivedSourceFileAbsolutePath of
+            (entryPointStateDependentVariations?.derivedPagesAndStatesMap ?? new Map<string, string>()).keys()
+      ) {
+
+        if (areLocaleDependentVariationsRequiredForCurrentFile) {
+
+          for (const localeData of localesData.values()) {
+
+            MarkupProcessingSharedState.
+                entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
+                set(
+                  addPenultimateFileNameExtension({
+                    targetPath: derivedSourceFileAbsolutePath,
+                    targetFileNamePenultimateExtensionWithOrWithoutLeadingDot:
+                    localeData.outputFileInterimNameExtensionWithoutDot,
+                    mustAppendDuplicateEvenIfTargetPenultimateFileNameExtensionAlreadyExist: true,
+                    mustAppendLastFileNameExtensionInsteadIfThereIsNoOne: true
+                  }),
+                  ImprovedPath.joinPathSegments(
+                    [
+                      outputDirectoryForCurrentMarkupFileAndDerivedOnes,
+                      [
+                        extractFileNameWithoutLastExtension(derivedSourceFileAbsolutePath),
+                        localeData.outputFileInterimNameExtensionWithoutDot,
+                        "html"
+                      ].join(".")
+                    ],
+                    { alwaysForwardSlashSeparators: true }
+                  )
+                );
+
+          }
+
+        } else {
+
+          MarkupProcessingSharedState.
+              entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
+              set(
+                derivedSourceFileAbsolutePath,
+                ImprovedPath.joinPathSegments(
+                  [
+                    outputDirectoryForCurrentMarkupFileAndDerivedOnes,
+                    `${ extractFileNameWithoutLastExtension(derivedSourceFileAbsolutePath) }.html`
+                  ],
+                  { alwaysForwardSlashSeparators: true }
+                )
+              );
+
+        }
+
+      }
+
     }
+
+  }
+
 
   }
   /* eslint-enable @typescript-eslint/member-ordering */

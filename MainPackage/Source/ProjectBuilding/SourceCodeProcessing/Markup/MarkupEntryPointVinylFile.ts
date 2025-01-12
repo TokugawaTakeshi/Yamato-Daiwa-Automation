@@ -22,15 +22,16 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
 
   public readonly pageStateDependentVariationData?: MarkupEntryPointVinylFile.PageStateDependentVariationData;
 
-  private readonly pageStateDependentVariationsSpecification?: MarkupProcessingSettings__Normalized.StaticPreview.
-      PagesVariations.StateDependent.Page;
+  private readonly markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
+
+  private readonly pageStateDependentVariationsSpecification?:
+      MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.StateDependent.Page;
 
 
   public constructor(
     {
       initialPlainVinylFile,
-      actualEntryPointsGroupSettings,
-      pageStateDependentVariationsSpecification,
+      markupProcessingSettingsRepresentative,
       pageStateDependentVariationData
     }: MarkupEntryPointVinylFile.ConstructorParameter
   ) {
@@ -42,19 +43,22 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
     });
 
     this.sourceAbsolutePath = ImprovedPath.replacePathSeparatorsToForwardSlashes(initialPlainVinylFile.path);
-    this.actualEntryPointsGroupSettings = actualEntryPointsGroupSettings;
+
+    this.markupProcessingSettingsRepresentative = markupProcessingSettingsRepresentative;
+
+    this.actualEntryPointsGroupSettings = this.markupProcessingSettingsRepresentative.
+        getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(initialPlainVinylFile.path);
 
     this.outputDirectoryAbsolutePath = MarkupProcessingSettingsRepresentative.
         computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
           this.sourceAbsolutePath, this.actualEntryPointsGroupSettings
         );
 
+    this.pageStateDependentVariationsSpecification = this.markupProcessingSettingsRepresentative.
+        getStateDependentVariationsForEntryPointWithAbsolutePath(initialPlainVinylFile.path);
 
-    if (isNotUndefined(pageStateDependentVariationsSpecification)) {
-
-      this.pageStateDependentVariationsSpecification = pageStateDependentVariationsSpecification;
-      this.pageStateDependentVariationData = { [pageStateDependentVariationsSpecification.stateVariableName]: {} };
-
+    if (isNotUndefined(this.pageStateDependentVariationsSpecification)) {
+      this.pageStateDependentVariationData = { [this.pageStateDependentVariationsSpecification.stateVariableName]: {} };
     } else if (isNotUndefined(pageStateDependentVariationData)) {
       this.pageStateDependentVariationData = pageStateDependentVariationData;
     }
@@ -62,7 +66,21 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
   }
 
 
-  public forkStaticPreviewStateDependentVariationsIfAny(): Array<MarkupEntryPointVinylFile> {
+  public forkVariationsForStaticPreviewIfAnyAndStaticPreviewBuildingMode(): Array<MarkupEntryPointVinylFile> {
+
+    const pageVariations: Array<MarkupEntryPointVinylFile> = [];
+
+    const localeDependentPagesVariationsSettings:
+        MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.LocaleDependent | undefined =
+            this.markupProcessingSettingsRepresentative.localeDependentPagesVariationsSettings;
+
+    const localesData:
+        MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.LocaleDependent.LocalesData =
+            localeDependentPagesVariationsSettings?.locales ?? new Map();
+
+    const areLocaleDependentVariationsRequiredForCurrentFile: boolean =
+        localesData.size > 0 &&
+        localeDependentPagesVariationsSettings?.excludedFilesAbsolutePaths.includes(this.sourceAbsolutePath) === false;
 
     if (isUndefined(this.pageStateDependentVariationsSpecification)) {
       return [];
@@ -88,7 +106,7 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
 
     }
 
-    return pageStateDependentVariations;
+    return pageVariations;
 
   }
 
@@ -99,7 +117,7 @@ namespace MarkupEntryPointVinylFile {
 
   export type ConstructorParameter = Readonly<{
     initialPlainVinylFile: VinylFile;
-    actualEntryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup;
+    markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
     pageStateDependentVariationsSpecification?: MarkupProcessingSettings__Normalized.StaticPreview.
         PagesVariations.StateDependent.Page;
     pageStateDependentVariationData?: PageStateDependentVariationData;
