@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $sectioning: localizedSectioning,
+      $heading: topHeading
+    } = localizedRouting.functionality.$children.markupProcessing.$children.resourcesPointersResolving;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("資源への参考の解決"),
+        title: buildHTML_PageTitle(topHeading),
         description: ""
       },
       stylesSheetsURIs: [
@@ -24,11 +29,11 @@ block append Metadata
       ]
     });
 
-    RoutingEmulator.setCurrentRoute("functionality.$children.markupProcessing.$children.resourcesPointersResolving");
+    RoutingEmulator.setCurrentRoute("functionality.markupProcessing.resourcesPointersResolving");
 
     LanguageDropDownList__YDF_DK.setLinks({
-      english: "./ResourcesPointersResolving.english.html",
-      russian: "./ResourcesPointersResolving.russian.html",
+      english: routing.english.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI,
+      russian: routing.russian.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI
     });
 
 
@@ -43,4 +48,9 @@ block append SpecificContent
 
   article
 
-    h1.Article-Heading1 ポインタへのの解決
+    //- ━━━ Разрешение указателей на ресурсы ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h1.Article-Heading1= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })

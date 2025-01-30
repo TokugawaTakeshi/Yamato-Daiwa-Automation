@@ -39,7 +39,7 @@ abstract class LinterLikeTaskExecutor<SourceFileCheckingIssue extends ParsedJSON
 
   protected readonly ABSOLUTE_PATH_OF_FILE_WITH_CACHED_RESULTS_OF_SOURCE_FILES_CHECKING: string;
   protected readonly specificationOfFileContentWithCachedResultsOfSourceFilesChecking:
-      RawObjectDataProcessor.FixedKeyAndValuesTypeObjectDataSpecification;
+      RawObjectDataProcessor.FixedSchemaObjectTypeDataSpecification;
   protected readonly sourceFilesCheckingCachedResults: LinterLikeTaskExecutor.CachedCheckingResults<SourceFileCheckingIssue>;
 
   protected readonly targetFilesGlobSelectors: ReadonlyArray<string>;
@@ -489,7 +489,7 @@ namespace LinterLikeTaskExecutor {
         targetFilesGlobSelectors: ReadonlyArray<string>;
         sourceFilesCachedCheckingResults: Readonly<{
           fileNameWithExtension: string;
-          contentSpecification: RawObjectDataProcessor.FixedKeyAndValuesTypeObjectDataSpecification;
+          contentSpecification: RawObjectDataProcessor.FixedSchemaObjectTypeDataSpecification;
           emptyValue: CachedCheckingResults<CheckingIssue>;
         }>;
         logging: Logging;

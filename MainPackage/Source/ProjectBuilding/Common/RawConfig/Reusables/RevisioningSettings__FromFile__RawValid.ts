@@ -9,33 +9,24 @@ type RevisioningSettings__FromFile__RawValid = Readonly<{
 
 namespace RevisioningSettings__FromFile__RawValid {
 
-  export type Localization = Readonly<{
-    disable: Readonly<{ KEY: string; }>;
-    contentHashPostfixSeparator: Readonly<{ KEY: string; }>;
-  }>;
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-  export function getLocalizedPropertiesSpecification(
-    revisioningLocalization: Localization
-  ): RawObjectDataProcessor.PropertiesSpecification {
+    $disable: {
+      newName: "disable",
+      type: Boolean,
+      isUndefinedForbidden: false,
+      isNullForbidden: true
+    },
 
-    return {
+    $contentHashPostfixSeparator: {
+      newName: "contentHashPostfixSeparator",
+      type: String,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      minimalCharactersCount: 1
+    }
 
-      [revisioningLocalization.disable.KEY]: {
-        newName: "disable",
-        type: Boolean,
-        required: false
-      },
-
-      [revisioningLocalization.contentHashPostfixSeparator.KEY]: {
-        newName: "contentHashPostfixSeparator",
-        type: String,
-        required: false,
-        minimalCharactersCount: 1
-      }
-
-    };
-
-  }
+  };
 
 }
 

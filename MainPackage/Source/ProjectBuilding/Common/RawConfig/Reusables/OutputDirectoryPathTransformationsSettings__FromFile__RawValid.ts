@@ -10,48 +10,43 @@ type OutputDirectoryPathTransformationsSettings__FromFile__RawValid = Readonly<{
 
 namespace OutputDirectoryPathTransformationsSettings__FromFile__RawValid {
 
-  export type Localization = Readonly<{
-    segmentsWhichMustBeRemoved: Readonly<{ KEY: string; }>;
-    segmentsWhichLastDuplicatesMustBeRemoved: Readonly<{ KEY: string; }>;
-    segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved: Readonly<{ KEY: string; }>;
-  }>;
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-  export function getLocalizedPropertiesSpecification(
-    outputDirectoryPathTransformationsSettingsLocalization: Localization
-  ): RawObjectDataProcessor.PropertiesSpecification {
-
-    return {
-
-      [outputDirectoryPathTransformationsSettingsLocalization.segmentsWhichMustBeRemoved.KEY]: {
-        newName: "segmentsWhichMustBeRemoved",
-        type: Array,
-        required: false,
-        element: {
-          type: String,
-          minimalCharactersCount: 1
-        }
-      },
-
-      [outputDirectoryPathTransformationsSettingsLocalization.segmentsWhichLastDuplicatesMustBeRemoved.KEY]: {
-        newName: "segmentsWhichLastDuplicatesMustBeRemoved",
-        type: Array,
-        required: false,
-        element: {
-          type: String,
-          minimalCharactersCount: 1
-        }
-      },
-
-      [outputDirectoryPathTransformationsSettingsLocalization.segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved.KEY]: {
-        newName: "segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved",
-        type: Number,
-        numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-        required: false
+    $segmentsWhichMustBeRemoved: {
+      newName: "segmentsWhichMustBeRemoved",
+      type: Array,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      areUndefinedElementsForbidden: true,
+      areNullElementsForbidden: true,
+      element: {
+        type: String,
+        minimalCharactersCount: 1
       }
+    },
 
-    };
+    $segmentsWhichLastDuplicatesMustBeRemoved: {
+      newName: "segmentsWhichLastDuplicatesMustBeRemoved",
+      type: Array,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      areUndefinedElementsForbidden: true,
+      areNullElementsForbidden: true,
+      element: {
+        type: String,
+        minimalCharactersCount: 1
+      }
+    },
 
-  }
+    $segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved: {
+      newName: "segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved",
+      type: Number,
+      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+      isUndefinedForbidden: false,
+      isNullForbidden: true
+    }
+
+  };
 
 }
 

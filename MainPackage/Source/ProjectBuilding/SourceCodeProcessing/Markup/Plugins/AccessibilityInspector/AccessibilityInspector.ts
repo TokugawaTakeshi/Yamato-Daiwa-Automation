@@ -90,55 +90,67 @@ class AccessibilityInspector {
   private readonly relativePathsOfFilesWhichHasBeenInspectedCurrentDuringExecution: Set<string> = new Set<string>();
 
   private static readonly cachedInspectionsResultsFileContentSpecification: RawObjectDataProcessor.
-      AssociativeArrayOfUniformValuesTypeDataSpecification =
-      {
-        nameForLogging: "AccessibilityInspector.CachedInspectionResultsFileContentSpecification",
-        subtype: RawObjectDataProcessor.ObjectSubtypes.associativeArray,
-        value: {
-          type: Object,
-          properties: {
-            contentMD5Checksum: {
-              type: String,
-              required: true
-            },
-            issues: {
-              type: Array,
-              required: true,
-              element: {
-                type: Object,
-                properties: {
-                  ID: {
-                    type: String,
-                    required: true
-                  },
-                  codeFragment: {
+      AssociativeArrayTypeDataSpecification =
+          {
+            nameForLogging: "AccessibilityInspector.CachedInspectionResultsFileContentSpecification",
+            subtype: RawObjectDataProcessor.ObjectSubtypes.associativeArray,
+            areUndefinedTypeValuesForbidden: true,
+            areNullTypeValuesForbidden: true,
+            value: {
+              type: Object,
+              properties: {
+                contentMD5Checksum: {
+                  type: String,
+                  isUndefinedForbidden: true,
+                  isNullForbidden: true
+                },
+                issues: {
+                  type: Array,
+                  isUndefinedForbidden: true,
+                  isNullForbidden: true,
+                  areUndefinedElementsForbidden: true,
+                  areNullElementsForbidden: true,
+                  element: {
                     type: Object,
-                    required: true,
                     properties: {
-                      beforeHighlighting: {
+                      ID: {
                         type: String,
-                        required: true
+                        isUndefinedForbidden: true,
+                        isNullForbidden: true
                       },
-                      highlighted: {
-                        type: String,
-                        required: true
+                      codeFragment: {
+                        type: Object,
+                        isUndefinedForbidden: true,
+                        isNullForbidden: true,
+                        properties: {
+                          beforeHighlighting: {
+                            type: String,
+                            isUndefinedForbidden: true,
+                            isNullForbidden: true
+                          },
+                          highlighted: {
+                            type: String,
+                            isUndefinedForbidden: true,
+                            isNullForbidden: true
+                          },
+                          afterHighlighting: {
+                            type: String,
+                            isUndefinedForbidden: true,
+                            isNullForbidden: true
+                          }
+                        }
                       },
-                      afterHighlighting: {
+                      message: {
                         type: String,
-                        required: true
+                        isUndefinedForbidden: true,
+                        isNullForbidden: true
                       }
                     }
-                  },
-                  message: {
-                    type: String,
-                    required: true
                   }
                 }
               }
             }
-          }
-        }
-      };
+          };
 
   private waitingForStaringOfWritingOfCacheFileWithInspectionsResults: NodeJS.Timeout | null = null;
   private static readonly WAITING_FOR_STARING_OF_WRITING_OF_CACHE_FILE_WITH_VALIDATION_RESULTS_PERIOD__SECONDS: number = 1;
@@ -165,6 +177,8 @@ class AccessibilityInspector {
 
   /* ━━━ Public static methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   /* ─── Initialization ───────────────────────────────────────────────────────────────────────────────────────────── */
+
+  /* [ Specification ] Could not be async because intended to be used ini non-async methods. */
   public static beginInitialization(configuration: AccessibilityInspector.Configuration): void {
 
     AccessibilityInspector.hasInitializationStarted = true;
@@ -216,7 +230,7 @@ class AccessibilityInspector {
 
   /* ─── Inspection ───────────────────────────────────────────────────────────────────────────────────────────────── */
   /** @description Designed for the modes with incremental building. */
-  public static inspectAtBackgroundAndReportImmideatlyWithoutThrowingOfErrors(
+  public static inspectAtBackgroundAndReportImmediatelyWithoutThrowingOfErrors(
     singleFileAccessibilityCheckingOrder: AccessibilityInspector.SingleFileAccessibilityCheckingOrder
   ): void {
 
@@ -228,7 +242,7 @@ class AccessibilityInspector {
 
           return selfSoleInstance.inspectSingleFile({
             ...singleFileAccessibilityCheckingOrder,
-            mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime: true
+            mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime: true
           });
 
         }).
@@ -241,7 +255,7 @@ class AccessibilityInspector {
               description: "The error has been caught during the execution of asynchronous method \"inspectSingleFile\", " +
                   "while expected that all errors has been handled inside this method.",
               occurrenceLocation: "AccessibilityInspector." +
-                  "inspectAtBackgroundAndReportImmideatlyWithoutThrowingOfErrors(singleFileAccessibilityCheckingOrder)",
+                  "inspectAtBackgroundAndReportImmediatelyWithoutThrowingOfErrors(singleFileAccessibilityCheckingOrder)",
               caughtError: error
             });
           }
@@ -260,7 +274,7 @@ class AccessibilityInspector {
           selfSoleInstance.inspectionsInProgressForProductionLikeModes.push(
             selfSoleInstance.inspectSingleFile({
               ...singleFileAccessibilityCheckingOrder,
-              mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime: false
+              mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime: false
             })
           );
         }).
@@ -407,11 +421,11 @@ class AccessibilityInspector {
       HTML_CodeMD5Checksum,
       targetHTML_FilePathRelativeToConsumingProjectRootDirectory,
       accessibilityStandard,
-      mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime
+      mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime
     }:
         AccessibilityInspector.SingleFileAccessibilityCheckingOrder &
         Readonly<{
-          mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime: boolean;
+          mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime: boolean;
         }>
   ): Promise<void> {
 
@@ -423,7 +437,7 @@ class AccessibilityInspector {
       this.relativePathsOfFilesWhichHasBeenInspectedCurrentDuringExecution.
           add(targetHTML_FilePathRelativeToConsumingProjectRootDirectory);
 
-      if (mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime) {
+      if (mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime) {
 
         this.logInspectionResultsForSingleFile({
           targetHTML_FilePathRelativeToConsumingProjectRootDirectory,
@@ -470,7 +484,7 @@ class AccessibilityInspector {
 
     const inspectionTimeMeasuringStopwatch: Stopwatch = new Stopwatch().startOrRestart();
 
-    if (mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime) {
+    if (mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime) {
       this.relativePathsOfFilesWhichIsBeingInspected.add(targetHTML_FilePathRelativeToConsumingProjectRootDirectory);
     }
 
@@ -496,7 +510,7 @@ class AccessibilityInspector {
         caughtError: error
       });
 
-      if (mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime) {
+      if (mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime) {
         this.relativePathsOfFilesWhichIsBeingInspected.delete(targetHTML_FilePathRelativeToConsumingProjectRootDirectory);
       }
 
@@ -524,7 +538,7 @@ class AccessibilityInspector {
         caughtError: error
       });
 
-      if (mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime) {
+      if (mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime) {
         this.relativePathsOfFilesWhichIsBeingInspected.delete(targetHTML_FilePathRelativeToConsumingProjectRootDirectory);
       }
 
@@ -547,7 +561,17 @@ class AccessibilityInspector {
           browser: this.webBrowser,
 
           /* [ Reference ] https://stackoverflow.com/a/76537290/4818123 */
-          ignoreUrl: true
+          ignoreUrl: true,
+
+          ignore: [
+
+            /* [ Specification ]
+             * Being the part of markup processing functionality, the AccessibilityInspector indented to be used only for
+             *   inspection of the accessibility of HTML code. The issues like contract ratio could not be simply fixed
+             *   because requires the involving of designer and/or customer.. */
+            "WCAG2AAA.Principle1.Guideline1_4.1_4_6.G17.Fail"
+
+          ]
 
         }
       );
@@ -563,7 +587,7 @@ class AccessibilityInspector {
         caughtError: error
       });
 
-      if (mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime) {
+      if (mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime) {
         this.relativePathsOfFilesWhichIsBeingInspected.delete(targetHTML_FilePathRelativeToConsumingProjectRootDirectory);
       }
 
@@ -605,7 +629,7 @@ class AccessibilityInspector {
     this.relativePathsOfFilesWhichHasBeenInspectedCurrentDuringExecution.
         add(targetHTML_FilePathRelativeToConsumingProjectRootDirectory);
 
-    if (!mustLogIssuesImmideatlyAndSaveCacheToFileDuringDowntime) {
+    if (!mustLogIssuesImmediatelyAndSaveCacheToFileDuringDowntime) {
       return;
     }
 
@@ -885,8 +909,8 @@ class AccessibilityInspector {
 
         ...isNonEmptyString(issue.codeFragment.beforeHighlighting) ? [ issue.codeFragment.beforeHighlighting ] : [],
         ...isNonEmptyString(issue.codeFragment.beforeHighlighting) && isNonEmptyString(issue.codeFragment.afterHighlighting) ?
-            Logger.highlightText(issue.codeFragment.highlighted) :
-            issue.codeFragment.highlighted,
+            [ Logger.highlightText(issue.codeFragment.highlighted) ] :
+            [ issue.codeFragment.highlighted ],
         ...isNonEmptyString(issue.codeFragment.afterHighlighting) ? [ issue.codeFragment.afterHighlighting ] : [],
         "\n",
 

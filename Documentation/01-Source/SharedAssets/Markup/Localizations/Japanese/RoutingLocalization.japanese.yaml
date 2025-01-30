@@ -21,9 +21,33 @@ functionality:
 
       $heading: "PugからHTMLへ基本変換"
 
+    HTML_Validation:
+
+      $heading: "出力HTMコード妥当性検問"
+
+    accessibilityChecking:
+
+      $heading: "出力HTMLコードアクセサビリチ検問"
+
     resourcesPointersResolving:
 
-      $heading: "リソースへのポインタ解決"
+      $heading: "リソースへのポインター解決"
+
+    importingFromTypeScript:
+
+      $heading: "TypeScriptからのインポート"
+
+    localization:
+
+      $heading: "多言語化"
+
+    staticPreview:
+
+      $heading: "静的プレビュー"
+
+      stateDependentPagesVariations:
+
+        $heading: "状態毎のページ変形"
 
   browserLiveReloading:
 
@@ -47,16 +71,24 @@ configuration:
 
   stylesProcessing:
 
-    $heading: "<code>$stylesProcessing</code> 意匠設計記法（スタイル）処理"
+    $heading: "<code>$stylesProcessing</code> 意匠設計記法（スタイル）処理設計"
 
   ECMAScriptLogicProcessing:
 
-    $heading: "<code>$ECMAScriptLogicProcessing</code> ECMAScript論理処理"
+    $heading: "<code>$ECMAScriptLogicProcessing</code> ECMAScript論理処理設計"
+
+  imagesProcessing:
+
+    $heading: "<code>$imagesProcessing</code> 画像処理設計"
+
+  plainCopying:
+
+    $heading: "<code>$plainCopying</code> 一般コピー設計"
 
   browserLiveReloading:
 
     $heading: "<code>$browserLiveReloading</code> ブラウザタブ自動リロード設定"
 
-  imagesProcessing:
+consoleLineInterface:
 
-    $heading: "<code>$imagesProcessing</code> 画像処理"
+  $heading: コマンドラインインターフェース(CLI)

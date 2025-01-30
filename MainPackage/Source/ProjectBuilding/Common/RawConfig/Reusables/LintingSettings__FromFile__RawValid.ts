@@ -9,31 +9,24 @@ type LintingSettings__FromFile__RawValid = Readonly<{
 
 namespace LintingSettings__FromFile__RawValid {
 
-  export type Localization = Readonly<{
-    presetFileRelativePath: Readonly<{ KEY: string; }>;
-    disable: Readonly<{ KEY: string; }>;
-  }>;
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-  export function getLocalizedPropertiesSpecification(
-    lintingCommonSettingsLocalization: Localization
-  ): RawObjectDataProcessor.PropertiesSpecification {
-    return {
+    $presetFileRelativePath: {
+      newName: "presetFileRelativePath",
+      type: String,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      minimalCharactersCount: 1
+    },
 
-      [lintingCommonSettingsLocalization.presetFileRelativePath.KEY]: {
-        newName: "presetFileRelativePath",
-        type: String,
-        required: false,
-        minimalCharactersCount: 1
-      },
+    $disable: {
+      newName: "disable",
+      type: Boolean,
+      isUndefinedForbidden: false,
+      isNullForbidden: true
+    }
 
-      [lintingCommonSettingsLocalization.disable.KEY]: {
-        newName: "disable",
-        type: Boolean,
-        required: false
-      }
-
-    };
-  }
+  };
 
 }
 

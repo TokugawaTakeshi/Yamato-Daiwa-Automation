@@ -1,0 +1,42 @@
+extends ../../node_modules/@yamato-daiwa/frontend/PagesTemplates/StaticPreviewAnywherePageTemplate.pug
+
+
+block append Metadata
+
+  -
+
+    StaticPreviewAnywherePage__YDF.configure({
+
+      metadata: {
+        title: "Pages State Dependent Variations Test"
+      },
+
+      topHeading: "Pages State Dependent Variations Test",
+
+      tableOfContents: [
+
+        {
+
+          title: "Products List",
+          linksList: [
+            { label: "English", URI: "@Pages/Product/List/ProductsListPage.english" },
+            { label: "Japanese", URI: "@Pages/Product/List/ProductsListPage.japanese" }
+          ],
+          progressStatus: StaticPreviewAnywherePage__YDF.PageDevelopmentProgressStatuses.implementationInProgress,
+
+        },
+
+        {
+
+          title: "Product Details",
+          linksList: [
+            { label: "English", URI: "@Pages/Product/Details/ProductDetailsPage.english" },
+            { label: "Japanese", URI: "@Pages/Product/Details/ProductDetailsPage.japanese" }
+          ],
+          progressStatus: StaticPreviewAnywherePage__YDF.PageDevelopmentProgressStatuses.implementationInProgress
+
+        }
+
+      ]
+
+    });

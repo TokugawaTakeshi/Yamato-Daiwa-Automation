@@ -5,12 +5,202 @@ common:
 
   $children:
 
-    secondsBetweenFileUpdatingAndStartingOfRebuilding:
+    # ━━━ Common ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    localization:
 
-      $heading: `common.secondsBetweenFileUpdatingAndStartingOfRebuilding.$heading`
-      $anchor: COMMON-PERIOD_BETWEEN_FILE_UPDATING_AND_STARTING_OF_REBUILDING--SECTION
+      $heading: `common.localization.$heading`
+      $anchor: COMMON-LOCALIZATION--SECTION
 
-    mustResolveResourcesPointersToRelativePaths:
+      $children:
 
-      $heading: `common.mustResolveResourcesPointersToRelativePaths.$heading`
-      $anchor: COMMON-MUST_RESOLVE_RESOURCES_POINTERS_TO_RELATIVE_PATHS--SECTION
+        stringResourcesFileRelativePath:
+
+          $heading: `common.localization.stringResourcesFileRelativePath.$heading`
+          $anchor: COMMON-LOCALIZATION-STRING_RESOURCES_FILE_RELATIVE_PATH--SECTION
+
+        localizedStringResourcesConstantName:
+
+          $heading: `common.localization.localizedStringResourcesConstantName.$heading`
+          $anchor: COMMON-LOCALIZATION-LOCALIZED_STRING_RESOURCES_CONSTANT_NAME--SECTION
+
+        localeConstantName:
+
+          $heading: `common.localization.localeConstantName.$heading`
+          $anchor: COMMON-LOCALIZATION-LOCALE_CONSTANT_NAME--SECTION
+
+        nameOfConstantForInterpolationToLangHTML_Attribute:
+
+          $heading: `common.localization.nameOfConstantForInterpolationToLangHTML_Attribute.$heading`
+          $anchor: COMMON-LOCALIZATION-NAME_OF_CONSTANT_FOR_INTERPOLATION_TO_LANG_HTML_ATTRIBUTE--SECTION
+
+        locales:
+
+          $heading: `common.localization.locales.$heading`
+          $anchor: COMMON-LOCALIZATION-LOCALES--SECTION
+
+          $children:
+
+            outputFileInterimNameExtensionWithoutDot:
+
+              $heading: `common.localization.locales.outputFileInterimNameExtensionWithoutDot.$heading`
+              $anchor: "COMMON-LOCALIZATION-LOCALES-OUTPUT_FILE_INTERIM_NAME_EXTENSION_WITHOUT_DOT--SECTION"
+
+            localeConstantValue:
+
+              $heading: `common.localization.locales.localeConstantValue.$heading`
+              $anchor: "COMMON-LOCALIZATION-LOCALES-LOCALE_CONSTANT_VALUE--SECTION"
+
+            keyInLocalizedStringResourcesObject:
+
+              $heading: `common.localization.locales.keyInLocalizedStringResourcesObject.$heading`
+              $anchor: "COMMON-LOCALIZATION-LOCALES-KEY_IN_LOCALIZED_STRING_RESOURCES_OBJECT--SECTION"
+
+            valueOfConstantForInterpolationToLangHTML_Attribute:
+
+              $heading: `common.localization.locales.valueOfConstantForInterpolationToLangHTML_Attribute.$heading`
+              $anchor: "COMMON-LOCALIZATION-LOCALES-VALUE_OF_CONSTANT_FOR_INTERPOLATION_TO_LANG_HTML_ATTRIBUTE--SECTION"
+
+        excludedFilesPathsRelativeRelativeToProjectRootDirectory:
+
+          $heading: `common.localization.excludedFilesPathsRelativeRelativeToProjectRootDirectory.$heading`
+          $anchor: COMMON-LOCALIZATION-EXCLUDED_FILES_PATHS_RELATIVE_RELATIVE_TO_PROJECT_ROOT_DIRECTORY--SECTION
+
+#  # ━━━ Static Preview ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  staticPreview:
+#
+#    $heading: `staticPreview.$heading`
+#    $anchor: STATIC_PREVIEW--SECTION
+#
+#    $children:
+#
+#      stateDependentPagesVariations:
+#
+#        $heading: `staticPreview.stateDependentPagesVariations.$heading`
+#        $anchor: STATIC_PREVIEW-STATE_DEPENDENT_PAGES_VARIATIONS--SECTION
+#
+#        $children:
+#
+#          specificationFileRelativePath:
+#
+#            $heading: `staticPreview.stateDependentPagesVariations.specificationFileRelativePath.$heading`
+#            $anchor: STATIC_PREVIEW-STATE_DEPENDENT_PAGES_VARIATIONS-SPECIFICATION_FILE_RELATIVE_PATH--SECTION
+#
+#      importsFromStaticDataFiles:
+#
+#        $heading: `staticPreview.importsFromStaticDataFiles.$heading`
+#        $anchor: STATIC_PREVIEW-IMPORTS_FROM_STATIC_DATA_FILES--SECTION
+#
+#        $children:
+#
+#          importedVariableName:
+#
+#            $heading: `staticPreview.importsFromStaticDataFiles.importedVariableName.$heading`
+#            $anchor: STATIC_PREVIEW-IMPORTS_FROM_STATIC_DATA_FILES-IMPORTED_VARIABLE_NAME--SECTION
+#
+#          fileRelativePath:
+#
+#            $heading: `staticPreview.importsFromStaticDataFiles.fileRelativePath.$heading`
+#            $anchor: STATIC_PREVIEW-IMPORTS_FROM_STATIC_DATA_FILES-FILE_RELATIVE_PATH--SECTION
+#
+#
+#  # ━━━ Linting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  linting:
+#
+#    $heading: `linting.$heading`
+#    $anchor: LINTING--SECTION
+#
+#    $children:
+#
+#      presetFileRelativePath:
+#
+#        $heading: `linting.presetFileRelativePath.$heading`
+#        $anchor: LINTING-PRESET_FILE_RELATIVE_PATH--SECTION
+#
+#      disable:
+#
+#        $heading: `linting.disable.$heading`
+#        $anchor: LINTING-DISABLE--SECTION
+#
+#
+#  # ━━━ Importing From TypeScript ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  importingFromTypeScript:
+#
+#    $heading: `importingFromTypeScript.$heading`
+#    $anchor: IMPORTING_FROM_TYPE_SCRIPT--SECTION
+#
+#    $children:
+#
+#      typeScriptConfigurationFileRelativePath:
+#
+#        $heading: `importingFromTypeScript.typeScriptConfigurationFileRelativePath.$heading`
+#        $anchor: IMPORTING_FROM_TYPE_SCRIPT-TYPE_SCRIPT_CONFIGURATION_FILE_RELATIVE_PATH--SECTION
+#
+#      importedNamespace:
+#
+#        $heading: `importingFromTypeScript.importedNamespace.$heading`
+#        $anchor: IMPORTING_FROM_TYPE_SCRIPT-IMPORTED_NAMESPACE--SECTION
+#
+#      sourceFileRelativePath:
+#
+#        $heading: `importingFromTypeScript.sourceFileRelativePath.$heading`
+#        $anchor: IMPORTING_FROM_TYPE_SCRIPT-SOURCE_FILE_RELATIVE_PATH--SECTION
+#
+#
+#  # ━━━ Importing from JavaScript ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  importingFromJavaScript:
+#
+#    $heading: `importingFromJavaScript.$heading`
+#    $anchor: IMPORTING_FROM_JAVA_SCRIPT--SECTION
+#
+#    $children:
+#
+#      sourceFileRelativePath:
+#
+#        $heading: `importingFromJavaScript.sourceFileRelativePath.$heading`
+#        $anchor: IMPORTING_FROM_JAVA_SCRIPT-SOURCE_FILE_RELATIVE_PATH--SECTION
+#
+#      nameOfGlobalConstantForStoringOfImports:
+#
+#        $heading: `importingFromJavaScript.nameOfGlobalConstantForStoringOfImports.$heading`
+#        $anchor: IMPORTING_FROM_JAVA_SCRIPT-NAME_OF_GLOBAL_CONSTANT_FOR_STORING_OF_IMPORTS--SECTION
+#
+#
+#  # ━━━ Routing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  routing:
+#
+#    $heading: `routing.$heading`
+#    $anchor: ROUTING--SECTION
+#
+#    $children:
+#
+#      specificationFileRelativePath:
+#
+#        $heading: `routing.specificationFileRelativePath.$heading`
+#        $anchor: ROUTING-SPECIFICATION_FILE_RELATIVE_PATH--SECTION
+#
+#      variable:
+#
+#        $heading: `routing.variable.$heading`
+#        $anchor: ROUTING-VARIABLE--SECTION
+#
+#      localizations:
+#
+#        $heading: `routing.localizations.$heading`
+#        $anchor: ROUTING-LOCALIZATIONS--SECTION
+#
+#    buildingModeDependent:
+#
+#      $heading: `common.buildingModeDependent.$heading`
+#      $anchor: COMMON-BUILDING_MODE_DEPENDENT--SECTION
+#
+#      $children:
+#
+#        secondsBetweenFileUpdatingAndStartingOfRebuilding:
+#
+#          $heading: `common.buildingModeDependent.secondsBetweenFileUpdatingAndStartingOfRebuilding.$heading`
+#          $anchor: COMMON-BUILDING_MODE_DEPENDENT-PERIOD_BETWEEN_FILE_UPDATING_AND_STARTING_OF_REBUILDING--SECTION
+#
+#        mustResolveResourcesPointersToRelativePaths:
+#
+#          $heading: `common.buildingModeDependent.mustResolveResourcesPointersToRelativePaths.$heading`
+#          $anchor: COMMON-BUILDING_MODE_DEPENDENT-MUST_RESOLVE_RESOURCES_POINTERS_TO_RELATIVE_PATHS--SECTION

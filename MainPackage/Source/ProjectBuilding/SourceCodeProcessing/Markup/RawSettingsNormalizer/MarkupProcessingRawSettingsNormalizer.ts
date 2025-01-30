@@ -27,6 +27,7 @@ import {
   appendLastFileNameExtension,
   removeAllFileNameExtensions,
   stringifyAndFormatArbitraryValue,
+  removeMultipleElementsFromSetByPredicate,
   isArbitraryObject,
   isNonEmptyString,
   isUndefined,
@@ -37,6 +38,7 @@ import {
   PoliteErrorsMessagesBuilder
 } from "@yamato-daiwa/es-extensions";
 import type { ArbitraryObject, WarningLog } from "@yamato-daiwa/es-extensions";
+import isSubdirectory from "@UtilsIncubator/NodeJS/isSubdirectory";
 import { ObjectDataFilesProcessor, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 /* ─── Localization ───────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -55,6 +57,10 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
 
   private readonly markupProcessingSettings__fromFile__rawValid: MarkupProcessingSettings__FromFile__RawValid;
+
+  private readonly unusedCommonlyExcludedFromLocalizationEntryPointsSourceFilesAbsolutePaths: Set<string>;
+
+  private commonStringResources?: ArbitraryObject;
 
 
   public static normalize(
@@ -107,6 +113,12 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
                 normalizeImportingFromTypeScriptSettings(markupProcessingSettings__fromFile__rawValid.importingFromTypeScript)
           } : null,
 
+      ...isNotUndefined(markupProcessingSettings__fromFile__rawValid.importingFromJavaScript) ?
+          {
+            importingFromJavaScript: dataHoldingSelfInstance.
+                normalizeImportingFromJavaScriptSettings(markupProcessingSettings__fromFile__rawValid.importingFromJavaScript)
+          } : null,
+
       staticPreview: {
         pagesVariations: dataHoldingSelfInstance.normalizeStaticPreviewPagesVariationsSettings(),
         importsFromStaticDataFiles: dataHoldingSelfInstance.normalizeImportsFromStaticDataFiles()
@@ -118,7 +130,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
           routes: RoutingSettingsNormalizer.normalize({
             routingSettings__fromFile__rawValid: markupProcessingSettings__fromFile__rawValid.routing,
             projectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
-            absolutePathsOfSectioningToCache: new Set<string>() // TODO Replace mock
+            absolutePathsOfSectioningToCache: new Set<string>()
           })
         }
       } : null,
@@ -143,8 +155,30 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
         SourceCodeProcessingRawSettingsNormalizer.ConstructorParameter &
         Readonly<{ markupProcessingSettings__fromFile__rawValid: MarkupProcessingSettings__FromFile__RawValid; }>
   ) {
+
     super(constructorParameter);
+
     this.markupProcessingSettings__fromFile__rawValid = constructorParameter.markupProcessingSettings__fromFile__rawValid;
+
+    this.unusedCommonlyExcludedFromLocalizationEntryPointsSourceFilesAbsolutePaths = new Set(
+      (
+        this.markupProcessingSettings__fromFile__rawValid.
+            common?.
+            localization?.
+            excludedFilesPathsRelativeRelativeToProjectRootDirectory ??
+        []
+      ).map(
+        (excludedFilePathRelativeRelativeToProjectRootDirectory: string): string =>
+            ImprovedPath.joinPathSegments(
+              [
+                constructorParameter.projectBuildingCommonSettings__normalized.projectRootDirectoryAbsolutePath,
+                excludedFilePathRelativeRelativeToProjectRootDirectory
+              ],
+              { alwaysForwardSlashSeparators: true }
+            )
+      )
+    );
+
   }
 
 
@@ -152,8 +186,8 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
     const explicitlySpecifiedMustResolveResourceReferencesToRelativePathsPropertyValue: boolean | undefined =
         this.markupProcessingSettings__fromFile__rawValid.common?.
-          buildingModeDependent?.[this.consumingProjectBuildingMode]?.
-          mustResolveResourcesPointersToRelativePaths;
+            buildingModeDependent?.[this.consumingProjectBuildingMode]?.
+            mustResolveResourcesPointersToRelativePaths;
 
     if (this.consumingProjectBuildingMode === ConsumingProjectBuildingModes.staticPreview) {
 
@@ -243,9 +277,23 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
             { alwaysForwardSlashSeparators: true }
           ),
       sourceFileAbsolutePath,
-      importedNamespace: importingFromTypeScriptSettings__fromFile__rawValid.importedNamespace,
-      nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected:
-          importingFromTypeScriptSettings__fromFile__rawValid.nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected
+      importedNamespace: importingFromTypeScriptSettings__fromFile__rawValid.importedNamespace
+    };
+
+  }
+
+  private normalizeImportingFromJavaScriptSettings(
+    experimental1Settings__fromFile__rawValid: MarkupProcessingSettings__FromFile__RawValid.ImportingFromJavaScript
+  ): MarkupProcessingSettings__Normalized.ImportingFromJavaScript {
+    return {
+      sourceFileAbsolutePath: ImprovedPath.joinPathSegments(
+        [
+          this.consumingProjectRootDirectoryAbsolutePath,
+          experimental1Settings__fromFile__rawValid.sourceFileRelativePath
+        ],
+        { alwaysForwardSlashSeparators: true }
+      ),
+      nameOfGlobalConstantForStoringOfImports: experimental1Settings__fromFile__rawValid.nameOfGlobalConstantForStoringOfImports
     };
   }
 
@@ -253,127 +301,174 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
   /* eslint-disable-next-line @stylistic/brace-style -- In this case, the Allman style more readable. */
   {
 
-    const staticPreviewPageVariationsSettings:
-        MarkupProcessingSettings__FromFile__RawValid.StaticPreview.PageVariations | undefined =
-            this.markupProcessingSettings__fromFile__rawValid.staticPreview?.pagesVariations;
+    const stateDependentPagesVariationsSettings:
+        MarkupProcessingSettings__FromFile__RawValid.StaticPreview.StateDependentPageVariations | undefined =
+            this.markupProcessingSettings__fromFile__rawValid.staticPreview?.stateDependentPagesVariations;
 
     const stateDependentPagesVariationsMetadata: MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.
         StateDependent = new Map();
 
     if (
-      isUndefined(staticPreviewPageVariationsSettings) ||
+      isUndefined(stateDependentPagesVariationsSettings) ||
       this.consumingProjectBuildingMode !== ConsumingProjectBuildingModes.staticPreview
     ) {
-      return {
-        stateDependent: stateDependentPagesVariationsMetadata
-      };
+      return { stateDependent: stateDependentPagesVariationsMetadata };
     }
 
 
-    if (isNotUndefined(staticPreviewPageVariationsSettings.stateDependent)) {
+    const variationsByStatesSpecificationFileAbsolutePath: string = ImprovedPath.joinPathSegments(
+      [
+        this.consumingProjectRootDirectoryAbsolutePath,
+        stateDependentPagesVariationsSettings.specificationFileRelativePath
+      ],
+      { alwaysForwardSlashSeparators: true }
+    );
 
-      const variationsByStatesSpecificationFileAbsolutePath: string = ImprovedPath.joinPathSegments(
-        [
-          this.consumingProjectRootDirectoryAbsolutePath,
-          staticPreviewPageVariationsSettings.stateDependent.specificationFileRelativePath
-        ],
-        { alwaysForwardSlashSeparators: true }
-      );
+    /* [ Approach ] Currently, the `RawObjectDataProcessor` thus `ObjectDataFilesProcessor` are ignoring and not keep
+     *      the data which validation rules has not been specified. In this case, the state dependent object is
+     *      such data. */
+    let rawPagesStateDependentVariationsSpecification: unknown;
 
-      /* [ Approach ] Currently, the `RawObjectDataProcessor` thus `ObjectDataFilesProcessor` are ignoring and not keep
-       *      the data which validation rules has not been specified. In this case, the state dependent object is
-       *      such data. */
-      let rawPagesStateDependentVariationsSpecification: unknown;
+    try {
 
-      try {
+      rawPagesStateDependentVariationsSpecification = ObjectDataFilesProcessor.processFile({
+        filePath: variationsByStatesSpecificationFileAbsolutePath,
+        schema: ObjectDataFilesProcessor.SupportedSchemas.YAML,
+        synchronously: true
+      });
 
-        rawPagesStateDependentVariationsSpecification = ObjectDataFilesProcessor.processFile({
-          filePath: variationsByStatesSpecificationFileAbsolutePath,
-          schema: ObjectDataFilesProcessor.SupportedSchemas.YAML,
-          synchronously: true
-        });
+    } catch (error: unknown) {
 
-      } catch (error: unknown) {
-
-        Logger.throwErrorAndLog({
-          errorInstance: new FileReadingFailedError({
-            customMessage: MarkupProcessingRawSettingsNormalizer.localization.
-                generateStaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedMessage({
-                  staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath:
-                  variationsByStatesSpecificationFileAbsolutePath
-                })
-          }),
-          title: FileReadingFailedError.localization.defaultTitle,
-          occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-              "normalizeStaticPreviewPagesVariationsSettings()",
-          innerError: error
-        });
-
-      }
-
-      if (!isArbitraryObject(rawPagesStateDependentVariationsSpecification)) {
-
-        Logger.logError({
-          errorType: InvalidExternalDataError.NAME,
-          title: InvalidExternalDataError.localization.defaultTitle,
-          description: PoliteErrorsMessagesBuilder.buildMessage(
-              MarkupProcessingRawSettingsNormalizer.localization.
-              generateStaticPreviewStateDependentPagesVariationsSpecificationIsNotTheObjectErrorLog({
-                staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath:
-                    variationsByStatesSpecificationFileAbsolutePath,
-                stringifiedRawData: stringifyAndFormatArbitraryValue(rawPagesStateDependentVariationsSpecification),
-                rawDataActualType: typeof rawPagesStateDependentVariationsSpecification
+      Logger.throwErrorAndLog({
+        errorInstance: new FileReadingFailedError({
+          customMessage: MarkupProcessingRawSettingsNormalizer.localization.
+              generateStaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedMessage({
+                staticPreviewStateDependentPagesVariationsSpecificationFileAbsolutePath:
+                variationsByStatesSpecificationFileAbsolutePath
               })
-          ),
+        }),
+        title: FileReadingFailedError.localization.defaultTitle,
+        occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
+            "normalizeStaticPreviewPagesVariationsSettings()",
+        innerError: error
+      });
+
+    }
+
+    if (!isArbitraryObject(rawPagesStateDependentVariationsSpecification)) {
+
+      Logger.logError({
+        errorType: InvalidExternalDataError.NAME,
+        title: InvalidExternalDataError.localization.defaultTitle,
+        description: PoliteErrorsMessagesBuilder.buildMessage(
+            MarkupProcessingRawSettingsNormalizer.localization.
+            generateStaticPreviewStateDependentPagesVariationsSpecificationIsNotTheObjectErrorLog({
+              staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath:
+                  variationsByStatesSpecificationFileAbsolutePath,
+              stringifiedRawData: stringifyAndFormatArbitraryValue(rawPagesStateDependentVariationsSpecification),
+              rawDataActualType: typeof rawPagesStateDependentVariationsSpecification
+            })
+        ),
+        occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
+            "normalizeStaticPreviewPagesVariationsSettings()"
+      });
+
+      return {
+        stateDependent: stateDependentPagesVariationsMetadata
+      };
+
+    }
+
+
+    for (
+      const [ markupEntryPointSourceFileRelativePath__possiblyWithoutExtension, stateDependentPageVariationsData ] of
+          Object.entries(rawPagesStateDependentVariationsSpecification)
+    ) {
+
+      const markupEntryPointSourceFileRelativePath: string = appendLastFileNameExtension({
+        targetPath: markupEntryPointSourceFileRelativePath__possiblyWithoutExtension,
+        targetFileNameExtensionWithOrWithoutLeadingDot: "pug",
+        mustAppendDuplicateEvenIfTargetLastFileNameExtensionAlreadyPresentsAtSpecifiedPath: false
+      });
+
+      if (!isArbitraryObject(stateDependentPageVariationsData)) {
+        Logger.throwErrorAndLog({
+          errorInstance: new InvalidExternalDataError({
+            customMessage: MarkupProcessingRawSettingsNormalizer.localization.
+              generateInvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayMessage({
+                staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath:
+                    stateDependentPagesVariationsSettings.specificationFileRelativePath,
+                invalidEntryKey: markupEntryPointSourceFileRelativePath,
+                invalidEntryValueType: typeof stateDependentPageVariationsData,
+                invalidEntryStringifiedValue: stringifyAndFormatArbitraryValue(stateDependentPageVariationsData)
+              })
+          }),
+          title: InvalidExternalDataError.localization.defaultTitle,
           occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
               "normalizeStaticPreviewPagesVariationsSettings()"
         });
-
-        return {
-          stateDependent: stateDependentPagesVariationsMetadata
-        };
-
       }
 
+
+      if (!isNonEmptyString(stateDependentPageVariationsData.$stateObjectTypeVariableName)) {
+        Logger.throwErrorAndLog({
+          errorInstance: new InvalidExternalDataError({
+            customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableNameMessage({
+              targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
+              stringifiedValueOfSpecifiedVariableNameProperty:
+                  stringifyAndFormatArbitraryValue(stateDependentPageVariationsData.$stateObjectTypeVariableName),
+              specifiedTypeOfVariableNameProperty: typeof stateDependentPageVariationsData.$stateObjectTypeVariableName
+            })
+          }),
+          title: InvalidExternalDataError.localization.defaultTitle,
+          occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
+              "normalizeStaticPreviewPagesVariationsSettings()"
+        });
+      }
+
+
+      if (!isArbitraryObject(stateDependentPageVariationsData.$stateDependentVariations)) {
+        Logger.throwErrorAndLog({
+          errorInstance: new InvalidExternalDataError({
+            customMessage: MarkupProcessingRawSettingsNormalizer.localization.
+            generateInvalidPageStateDependentVariationsSpecificationMessage({
+              targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
+              actualType: typeof stateDependentPageVariationsData.$stateDependentVariations,
+              actualStringifiedValue:
+                  stringifyAndFormatArbitraryValue(stateDependentPageVariationsData.$stateDependentVariations)
+            })
+          }),
+          title: InvalidExternalDataError.localization.defaultTitle,
+          occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
+              "normalizeStaticPreviewPagesVariationsSettings()"
+        });
+      }
+
+      const markupSourceFileFileAbsolutePath: string = ImprovedPath.joinPathSegments(
+        [ this.consumingProjectRootDirectoryAbsolutePath, markupEntryPointSourceFileRelativePath ],
+        { alwaysForwardSlashSeparators: true }
+      );
+
+      const derivedPagesAndStatesMap: Map<
+        MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.StateDependent.DerivedFileAbsolutePath,
+        ArbitraryObject
+      > = new Map();
 
       for (
-        const [ markupEntryPointSourceFileRelativePath__possiblyWithoutExtension, stateDependentPageVariationsData ] of
-            Object.entries(rawPagesStateDependentVariationsSpecification)
+        const [ fineNamePostfix, stateData ] of
+            Object.entries(stateDependentPageVariationsData.$stateDependentVariations)
       ) {
 
-        const markupEntryPointSourceFileRelativePath: string = appendLastFileNameExtension({
-          targetPath: markupEntryPointSourceFileRelativePath__possiblyWithoutExtension,
-          targetFileNameExtensionWithOrWithoutLeadingDot: "pug",
-          mustAppendDuplicateEvenIfTargetLastFileNameExtensionAlreadyPresentsAtSpecifiedPath: false
-        });
+        const derivedFileAbsolutePath: string =
+            `${ removeAllFileNameExtensions(markupSourceFileFileAbsolutePath) }${ fineNamePostfix }.pug`;
 
-        if (!isArbitraryObject(stateDependentPageVariationsData)) {
+        if (!isArbitraryObject(stateData)) {
           Logger.throwErrorAndLog({
             errorInstance: new InvalidExternalDataError({
-              customMessage: MarkupProcessingRawSettingsNormalizer.localization.
-                generateInvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayMessage({
-                  staticPreviewStateDependentPagesVariationsSpecificationFileRelativePath:
-                      staticPreviewPageVariationsSettings.stateDependent.specificationFileRelativePath,
-                  invalidEntryKey: markupEntryPointSourceFileRelativePath,
-                  invalidEntryValueType: typeof stateDependentPageVariationsData,
-                  invalidEntryStringifiedValue: stringifyAndFormatArbitraryValue(stateDependentPageVariationsData)
-                })
-            }),
-            title: InvalidExternalDataError.localization.defaultTitle,
-            occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-                "normalizeStaticPreviewPagesVariationsSettings()"
-          });
-        }
-
-
-        if (!isNonEmptyString(stateDependentPageVariationsData.$stateObjectTypeVariableName)) {
-          Logger.throwErrorAndLog({
-            errorInstance: new InvalidExternalDataError({
-              customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableNameMessage({
+              customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableMessage({
                 targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
-                stringifiedValueOfSpecifiedVariableNameProperty:
-                    stringifyAndFormatArbitraryValue(stateDependentPageVariationsData.$stateObjectTypeVariableName),
-                specifiedTypeOfVariableNameProperty: typeof stateDependentPageVariationsData.$stateObjectTypeVariableName
+                actualStringifiedValue: stringifyAndFormatArbitraryValue(stateData),
+                actualType: typeof stateData
               })
             }),
             title: InvalidExternalDataError.localization.defaultTitle,
@@ -382,73 +477,20 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
           });
         }
 
-
-        if (!isArbitraryObject(stateDependentPageVariationsData.$stateDependentVariations)) {
-          Logger.throwErrorAndLog({
-            errorInstance: new InvalidExternalDataError({
-              customMessage: MarkupProcessingRawSettingsNormalizer.localization.
-              generateInvalidPageStateDependentVariationsSpecificationMessage({
-                targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
-                actualType: typeof stateDependentPageVariationsData.$stateDependentVariations,
-                actualStringifiedValue:
-                    stringifyAndFormatArbitraryValue(stateDependentPageVariationsData.$stateDependentVariations)
-              })
-            }),
-            title: InvalidExternalDataError.localization.defaultTitle,
-            occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-                "normalizeStaticPreviewPagesVariationsSettings()"
-          });
-        }
-
-        const markupSourceFileFileAbsolutePath: string = ImprovedPath.joinPathSegments(
-          [ this.consumingProjectRootDirectoryAbsolutePath, markupEntryPointSourceFileRelativePath ],
-          { alwaysForwardSlashSeparators: true }
-        );
-
-        const derivedPagesAndStatesMap: Map<
-          MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.StateDependent.DerivedFileAbsolutePath,
-          ArbitraryObject
-        > = new Map();
-
-        for (
-          const [ fineNamePostfix, stateData ] of
-              Object.entries(stateDependentPageVariationsData.$stateDependentVariations)
-        ) {
-
-          const derivedFileAbsolutePath: string =
-              `${ removeAllFileNameExtensions(markupSourceFileFileAbsolutePath) }${ fineNamePostfix }.pug`;
-
-          if (!isArbitraryObject(stateData)) {
-            Logger.throwErrorAndLog({
-              errorInstance: new InvalidExternalDataError({
-                customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableMessage({
-                  targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
-                  actualStringifiedValue: stringifyAndFormatArbitraryValue(stateData),
-                  actualType: typeof stateData
-                })
-              }),
-              title: InvalidExternalDataError.localization.defaultTitle,
-              occurrenceLocation: "MarkupProcessingRawSettingsNormalizer." +
-                  "normalizeStaticPreviewPagesVariationsSettings()"
-            });
-          }
-
-          derivedPagesAndStatesMap.set(derivedFileAbsolutePath, stateData);
-
-        }
-
-        stateDependentPagesVariationsMetadata.set(
-          ImprovedPath.joinPathSegments(
-            [ this.consumingProjectRootDirectoryAbsolutePath, markupEntryPointSourceFileRelativePath ],
-            { alwaysForwardSlashSeparators: true }
-          ),
-          {
-            stateVariableName: stateDependentPageVariationsData.$stateObjectTypeVariableName,
-            derivedPagesAndStatesMap
-          }
-        );
+        derivedPagesAndStatesMap.set(derivedFileAbsolutePath, stateData);
 
       }
+
+      stateDependentPagesVariationsMetadata.set(
+        ImprovedPath.joinPathSegments(
+          [ this.consumingProjectRootDirectoryAbsolutePath, markupEntryPointSourceFileRelativePath ],
+          { alwaysForwardSlashSeparators: true }
+        ),
+        {
+          stateVariableName: stateDependentPageVariationsData.$stateObjectTypeVariableName,
+          derivedPagesAndStatesMap
+        }
+      );
 
     }
 
@@ -465,7 +507,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
     for (
       const importFromStaticDataFile of
-      this.markupProcessingSettings__fromFile__rawValid.staticPreview?.importsFromStaticDataFiles ?? []
+          this.markupProcessingSettings__fromFile__rawValid.staticPreview?.importsFromStaticDataFiles ?? []
     ) {
 
       let importedData: unknown;
@@ -509,11 +551,20 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
         EntryPointsGroup.BuildingModeDependent =
             entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode];
 
+    const outputFormat: MarkupProcessingRestrictions.OutputFormats =
+        entryPointsGroupSettings__rawValid.outputFormat ??
+        MarkupProcessingSettings__Default.outputFormat;
+
     return {
 
       ...entryPointsGroupGenericSettings__normalized,
 
-      outputFormat: entryPointsGroupSettings__rawValid.outputFormat ?? MarkupProcessingSettings__Default.outputFormat,
+      outputFormat,
+
+      localization: this.normalizeEntryPointsGroupLocalizationsSettings(
+        entryPointsGroupGenericSettings__normalized.sourceFilesTopDirectoryAbsolutePath,
+        entryPointsGroupSettings__rawValid.localization
+      ),
 
       HTML_Validation: {
 
@@ -579,11 +630,226 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
       },
 
       outputCodeFormatting: {
-        mustExecute: settingsActualForCurrentProjectBuildingMode.outputCodeFormatting?.disable === true ? false :
-          MarkupProcessingSettings__Default.outputCodeFormatting.mustExecute(this.consumingProjectBuildingMode)
+        mustExecute: settingsActualForCurrentProjectBuildingMode.outputCodeFormatting?.enable === true ?
+            true :
+            MarkupProcessingSettings__Default.outputCodeFormatting.mustExecute({
+              consumingProjectBuildingMode: this.consumingProjectBuildingMode,
+              outputFormat
+            }),
+        indentationString:
+            settingsActualForCurrentProjectBuildingMode.outputCodeFormatting?.indentationString ??
+            MarkupProcessingSettings__Default.outputCodeFormatting.indentationString,
+        lineSeparators:
+            settingsActualForCurrentProjectBuildingMode.outputCodeFormatting?.lineSeparators ??
+            MarkupProcessingSettings__Default.outputCodeFormatting.lineSeparators,
+        mustGuaranteeTrailingEmptyLine:
+            settingsActualForCurrentProjectBuildingMode.outputCodeFormatting?.mustGuaranteeTrailingEmptyLine ??
+            MarkupProcessingSettings__Default.outputCodeFormatting.mustGuaranteeTrailingEmptyLine,
+        mustIndentHeadAndBodyTags:
+            settingsActualForCurrentProjectBuildingMode.outputCodeFormatting?.mustIndentHeadAndBodyTags ??
+            MarkupProcessingSettings__Default.outputCodeFormatting.mustIndentHeadAndBodyTags
+      },
+
+      outputCodeMinifying: {
+        mustExecute: settingsActualForCurrentProjectBuildingMode.outputCodeMinifying?.enable === true ?
+            true :
+            MarkupProcessingSettings__Default.outputCodeMinifying.mustExecute({
+              consumingProjectBuildingMode: this.consumingProjectBuildingMode,
+              outputFormat
+            }),
+        attributesExtraWhitespacesCollapsing:
+            settingsActualForCurrentProjectBuildingMode.outputCodeMinifying?.attributesExtraWhitespacesCollapsing ??
+            MarkupProcessingSettings__Default.outputCodeMinifying.attributesExtraWhitespacesCollapsing,
+        attributesValuesDeduplication:
+            settingsActualForCurrentProjectBuildingMode.outputCodeMinifying?.attributesValuesDeduplication ??
+            MarkupProcessingSettings__Default.outputCodeMinifying.attributesValuesDeduplication,
+        commentsRemoving:
+            settingsActualForCurrentProjectBuildingMode.outputCodeMinifying?.commentsRemoving ??
+            MarkupProcessingSettings__Default.outputCodeMinifying.commentsRemoving
       }
 
     };
+
+  }
+
+  private normalizeEntryPointsGroupLocalizationsSettings(
+    sourceFilesTopDirectoryAbsolutePath: string,
+    entryPointGroupLocalizationSettings__rawValid?: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup.Localization
+  ): MarkupProcessingSettings__Normalized.EntryPointsGroup.Localization {
+
+    const localizedStringResourcesConstantName: string | undefined =
+        entryPointGroupLocalizationSettings__rawValid?.localizedStringResourcesConstantName ??
+        this.markupProcessingSettings__fromFile__rawValid.common?.localization?.localizedStringResourcesConstantName;
+
+    const localeConstantName: string | undefined =
+        entryPointGroupLocalizationSettings__rawValid?.localeConstantName ??
+        this.markupProcessingSettings__fromFile__rawValid.common?.localization?.localeConstantName;
+
+    const nameOfConstantForInterpolationToLangHTML_Attribute: string | undefined =
+        entryPointGroupLocalizationSettings__rawValid?.nameOfConstantForInterpolationToLangHTML_Attribute ??
+        this.markupProcessingSettings__fromFile__rawValid.common?.localization?.
+            nameOfConstantForInterpolationToLangHTML_Attribute;
+
+    if (
+      isUndefined(this.commonStringResources) &&
+          isNotUndefined(this.markupProcessingSettings__fromFile__rawValid.common?.localization?.stringResourcesFileRelativePath)
+    ) {
+      this.commonStringResources = this.getStringResourcesFromFile(
+        this.markupProcessingSettings__fromFile__rawValid.common.localization.stringResourcesFileRelativePath
+      );
+    }
+
+    const entryPointGroupStringResources: ArbitraryObject | undefined =
+        isNotUndefined(entryPointGroupLocalizationSettings__rawValid?.stringResourcesFileRelativePath) ?
+            this.getStringResourcesFromFile(entryPointGroupLocalizationSettings__rawValid.stringResourcesFileRelativePath) :
+            this.commonStringResources;
+
+    const locales: Map<
+      MarkupProcessingSettings__Normalized.EntryPointsGroup.Localization.LocaleKey,
+      MarkupProcessingSettings__Normalized.EntryPointsGroup.Localization.LocaleData
+    > = new Map();
+
+    for (
+      const [
+        localeKey,
+        {
+          outputFileInterimNameExtensionWithoutDot,
+          localeConstantValue,
+          keyInLocalizedStringResourcesObject,
+          valueOfConstantForInterpolationToLangHTML_Attribute
+        }
+      ] of Object.entries(this.markupProcessingSettings__fromFile__rawValid.common?.localization?.locales ?? {})
+    ) {
+      locales.set(
+        localeKey,
+        {
+          outputFileInterimNameExtensionWithoutDot,
+          ...isNotUndefined(entryPointGroupStringResources) && isNotUndefined(keyInLocalizedStringResourcesObject) ? {
+            stringResources: entryPointGroupStringResources[keyInLocalizedStringResourcesObject]
+          } : null,
+          ...isNotUndefined(localeConstantValue) ? { localeConstantValue } : null,
+          ...isNotUndefined(valueOfConstantForInterpolationToLangHTML_Attribute) ?
+              { valueOfConstantForInterpolationToLangHTML_Attribute } : null
+        }
+      );
+    }
+
+    for (
+      const [
+        localeKey,
+        {
+          outputFileInterimNameExtensionWithoutDot,
+          localeConstantValue,
+          keyInLocalizedStringResourcesObject,
+          valueOfConstantForInterpolationToLangHTML_Attribute
+        }
+      ] of Object.entries(entryPointGroupLocalizationSettings__rawValid?.locales ?? {})) {
+
+      const normalizedLocaleToOverride:
+          MarkupProcessingSettings__Normalized.EntryPointsGroup.Localization.LocaleData | undefined =
+              locales.get(localeKey);
+
+      locales.set(
+        localeKey,
+        {
+          ...normalizedLocaleToOverride ?? null,
+          outputFileInterimNameExtensionWithoutDot,
+          ...isNotUndefined(entryPointGroupStringResources) && isNotUndefined(keyInLocalizedStringResourcesObject) ? {
+            stringResources: entryPointGroupStringResources[keyInLocalizedStringResourcesObject]
+          } : null,
+          ...isNotUndefined(localeConstantValue) ? { localeConstantValue } : null,
+          ...isNotUndefined(valueOfConstantForInterpolationToLangHTML_Attribute) ?
+              { valueOfConstantForInterpolationToLangHTML_Attribute } : null
+
+        }
+      );
+
+    }
+
+    return {
+
+      ...isNotUndefined(localizedStringResourcesConstantName) ? { localizedStringResourcesConstantName } : null,
+
+      ...isNotUndefined(localeConstantName) ? { localeConstantName } : null,
+
+      ...isNotUndefined(nameOfConstantForInterpolationToLangHTML_Attribute) ?
+          { nameOfConstantForInterpolationToLangHTML_Attribute } : null,
+
+      locales,
+
+      excludedFilesAbsolutePaths:
+          (
+            entryPointGroupLocalizationSettings__rawValid?.
+            excludedFilesPathsRelativeToSourcesFilesTopDirectory?.
+            map(
+              (excludedFilePathRelativeRelativeToSourcesFileTopDirectory: string): string => ImprovedPath.joinPathSegments(
+                [ sourceFilesTopDirectoryAbsolutePath, excludedFilePathRelativeRelativeToSourcesFileTopDirectory ],
+                { alwaysForwardSlashSeparators: true }
+              )
+            ) ??
+            []
+          ).
+
+            concat(
+              Array.from(
+                removeMultipleElementsFromSetByPredicate({
+                  targetSet: this.unusedCommonlyExcludedFromLocalizationEntryPointsSourceFilesAbsolutePaths,
+                  predicate: (commonlyExcludedFromLocalizationEntryPointsSourceFileAbsolutePath: string): boolean =>
+                      isSubdirectory({
+                        whichPath: commonlyExcludedFromLocalizationEntryPointsSourceFileAbsolutePath,
+                        ofWhichPath: sourceFilesTopDirectoryAbsolutePath
+                      })
+                }).removedElements
+              )
+            )
+
+    };
+
+  }
+
+  private getStringResourcesFromFile(stringResourcesFileRelativePath: string): ArbitraryObject {
+
+    const stringResourcesFileAbsolutePath: string = ImprovedPath.joinPathSegments(
+      [ this.consumingProjectRootDirectoryAbsolutePath, stringResourcesFileRelativePath ],
+      { alwaysForwardSlashSeparators: true }
+    );
+
+    let stringResources: unknown;
+
+    try {
+
+      stringResources = ObjectDataFilesProcessor.processFile({
+        filePath: stringResourcesFileAbsolutePath,
+        synchronously: true
+      });
+
+    } catch (error: unknown) {
+
+      Logger.throwErrorAndLog({
+        errorInstance: new FileReadingFailedError({
+          customMessage: `Unable to read the file with string resources at "${ stringResourcesFileAbsolutePath }".`
+        }),
+        title: FileReadingFailedError.localization.defaultTitle,
+        occurrenceLocation: "markupProcessingRawSettingsNormalizer." +
+            "getStringResourcesFromFileIfExist(stringResourcesFileRelativePath)",
+        innerError: error
+      });
+
+    }
+
+    if (!isArbitraryObject(stringResources)) {
+      Logger.throwErrorAndLog({
+        errorInstance: new InvalidExternalDataError({
+          customMessage: `The content of string resources files "${ stringResourcesFileAbsolutePath }" is not an object.`
+        }),
+        title: InvalidExternalDataError.localization.defaultTitle,
+        occurrenceLocation: "markupProcessingRawSettingsNormalizer." +
+            "getStringResourcesFromFileIfExist(stringResourcesFileRelativePath)"
+      });
+    }
+
+
+    return stringResources;
 
   }
 

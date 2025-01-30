@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.ECMAScriptLogicProcessing;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Обработка ECMAScript-логики"),
+        title: buildHTML_PageTitle(topHeading),
         description: ""
       },
       stylesSheetsURIs: [
@@ -27,14 +32,9 @@ block append Metadata
     RoutingEmulator.setCurrentRoute("configurationFile.ECMAScriptLogicProcessing");
 
     LanguageDropDownList__YDF_DK.setLinks({
-      english: "./ECMAScriptLogicProcessing.english.html",
-      japanese: "./ECMAScriptLogicProcessing.japanese.html"
+      english: routing.english.configurationFile.$children.ECMAScriptLogicProcessing.$URI,
+      japanese: routing.japanese.configurationFile.$children.ECMAScriptLogicProcessing.$URI,
     });
-
-    const {
-      $heading: topHeading,
-      $sectioning: localizedSectioning
-    } = localizedRouting.configurationFile.$children.ECMAScriptLogicProcessing;
 
 
 block append HeadScripts
@@ -50,3 +50,7 @@ block append SpecificContent
 
     //- ━━━ `$ECMAScriptLogicProcessing` — Настройки обработки ESMAScript-логики ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })

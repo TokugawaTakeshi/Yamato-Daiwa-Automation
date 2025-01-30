@@ -1,5 +1,6 @@
-import type OutputDirectoryPathTransformationsSettings__FromFile__RawValid from
+import OutputDirectoryPathTransformationsSettings__FromFile__RawValid from
     "./OutputDirectoryPathTransformationsSettings__FromFile__RawValid";
+
 import type { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
 
 
@@ -11,41 +12,24 @@ type ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__Raw
 
 namespace ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid {
 
-  export type Localization = Readonly<{
-    KEY: string;
-    outputTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
-    outputPathTransformations: Readonly<{ KEY: string; }>;
-  }>;
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-  export function getLocalizedPropertiesSpecification(
-    {
-      resourceFileOutputBuildingModeDependentSettingsLocalization,
-      outputDirectoryPathTransformationsPropertiesLocalizedSpecification
-    }: Readonly<{
-      resourceFileOutputBuildingModeDependentSettingsLocalization: Localization;
-      outputDirectoryPathTransformationsPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
-    }>
+    $outputTopDirectoryRelativePath: {
+      newName: "outputTopDirectoryRelativePath",
+      type: String,
+      isUndefinedForbidden: false,
+      isNullForbidden: true
+    },
 
-  ): RawObjectDataProcessor.PropertiesSpecification {
+    $outputPathTransformations: {
+      newName: "outputPathTransformations",
+      type: Object,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      properties: OutputDirectoryPathTransformationsSettings__FromFile__RawValid.propertiesSpecification
+    }
 
-    return {
-
-      [resourceFileOutputBuildingModeDependentSettingsLocalization.outputTopDirectoryRelativePath.KEY]: {
-        newName: "outputTopDirectoryRelativePath",
-        type: String,
-        required: true
-      },
-
-      [resourceFileOutputBuildingModeDependentSettingsLocalization.outputPathTransformations.KEY]: {
-        newName: "outputPathTransformations",
-        type: Object,
-        required: false,
-        properties: outputDirectoryPathTransformationsPropertiesLocalizedSpecification
-      }
-
-    };
-
-  }
+  };
 
 }
 

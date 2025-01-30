@@ -32,12 +32,14 @@ import {
   Logger,
   isNotUndefined,
   isNeitherUndefinedNorNull,
-  isUndefined
+  isUndefined,
+  isArbitraryObject
 } from "@yamato-daiwa/es-extensions";
 import { FileNotFoundError, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+import requireFromString from "require-from-string";
 
 
-export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsBasedTaskExecutor {
+export default class CompiledTypeScriptImporterForPug extends GulpStreamsBasedTaskExecutor {
 
   protected readonly logging: GulpStreamsBasedTaskExecutor.Logging = {
     pathsOfFilesWillBeProcessed: false,
@@ -69,10 +71,10 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
       return createImmediatelyEndingEmptyStream();
     }
 
-    const dataHoldingSelfInstance: CompiledInlineTypeScriptImporterForPug = new CompiledInlineTypeScriptImporterForPug(
-      projectBuildingMasterConfigRepresentative,
-      importingFromTypeScriptSettings
-    );
+    const dataHoldingSelfInstance: CompiledTypeScriptImporterForPug =
+      new CompiledTypeScriptImporterForPug(
+        projectBuildingMasterConfigRepresentative, importingFromTypeScriptSettings
+      );
 
     return (callback: () => void): NodeJS.ReadWriteStream => dataHoldingSelfInstance.provideTypeScriptImports(callback);
 
@@ -130,7 +132,7 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
           webpackContext: projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
         });
 
-    this.webpackConfiguration = CompiledInlineTypeScriptImporterForPug.
+    this.webpackConfiguration = CompiledTypeScriptImporterForPug.
         getWebpackEntryObjectRespectiveToSpecifiedEntryPointsGroupSettings({
           webpackEntryPointDefinition,
           compiledTypeScriptImportingSettings,
@@ -175,20 +177,29 @@ export default class CompiledInlineTypeScriptImporterForPug extends GulpStreamsB
             onStreamStartedEventCommonHandler: async (vinylFile: VinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
 
               const outputJavaScriptCode: string = extractStringifiedContentFromVinylFile(vinylFile);
+              const imported: unknown = requireFromString(outputJavaScriptCode);
 
-              MarkupProcessingSharedState.importingFromTypeScriptPugCodeGenerator =
-                  (
-                    {
-                      indentString,
-                      lineSeparator,
-                      initialIndentationDepth__numerationFrom0
-                    }: MarkupProcessingSharedState.ImportingFromTypeScriptPugCodeGenerator.CompoundParameter
-                  ): string =>
-                      `${ indentString.repeat(initialIndentationDepth__numerationFrom0) }-${ lineSeparator.repeat(2) }` +
-                      indentString.repeat(initialIndentationDepth__numerationFrom0 + 1) +
-                      `${ outputJavaScriptCode }${ lineSeparator.repeat(2) }` +
-                      indentString.repeat(initialIndentationDepth__numerationFrom0 + 1) +
-                      `const ${ this.importedNamespaceName } = global.${ this.importedNamespaceName }.default;`;
+              if (!isArbitraryObject(imported)) {
+
+                /* [ Theory ] The subsequent invocation of the callback will be ignored. */
+                callback();
+
+                return Promise.resolve(GulpStreamModifier.CompletionSignals.REMOVING_FILE_FROM_STREAM);
+
+              }
+
+
+              if (!isArbitraryObject(imported.default)) {
+
+                /* [ Theory ] The subsequent invocation of the callback will be ignored. */
+                callback();
+
+                return Promise.resolve(GulpStreamModifier.CompletionSignals.REMOVING_FILE_FROM_STREAM);
+
+              }
+
+
+              MarkupProcessingSharedState.importsFromTypeScript = { [this.importedNamespaceName]: imported.default };
 
               /* [ Theory ] The subsequent invocation of the callback will be ignored. */
               callback();

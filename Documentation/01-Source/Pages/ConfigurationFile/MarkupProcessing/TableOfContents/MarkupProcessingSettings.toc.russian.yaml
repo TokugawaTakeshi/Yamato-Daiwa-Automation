@@ -1,11 +1,83 @@
 common:
 
-  $heading: "<code>$common</code> — общие настройки"
+  $heading: "<code>$common</code> — Общие настройки"
 
-  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+  localization:
 
-    $heading: "<code>$secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — секунд между сохранением файла разметки и началом пересборки"
+    $heading: "<code>$localization</code> — Общие настройки локализации"
 
-  mustResolveResourcesPointersToRelativePaths:
+    stringResourcesFileRelativePath:
 
-    $heading: "<code>$mustResolveResourcesPointersToRelativePaths</code> — нужно ли преобразовывать указатели на ресурсы к относительным путям"
+      $heading: "<code>$stringResourcesFileRelativePath</code> — Относительный путь к файлу строковых ресурсов"
+
+    localizedStringResourcesConstantName:
+
+      $heading: "<code>$localizedStringResourcesConstantName</code> — Имя константы локализованных строковых ресурсов"
+
+    localeConstantName:
+
+      $heading: "<code>$localeConstantName</code> — Имя константы локали"
+
+    nameOfConstantForInterpolationToLangHTML_Attribute:
+
+      $heading: "<code>$nameOfConstantForInterpolationToLangHTML_Attribute</code> — Имя константы для заполнения HTML-аттрибута «lang»"
+
+    locales:
+
+      $heading: "<code>$locales</code> — Локали"
+
+      outputFileInterimNameExtensionWithoutDot:
+
+        $heading: "<code>outputFileInterimNameExtensionWithoutDot</code> — Промежуточное расширение имени файла без точки"
+
+      localeConstantValue:
+
+        $heading: "<code>localeConstantValue</code> — Значение константы локали"
+
+      keyInLocalizedStringResourcesObject:
+
+        $heading: "<code>keyInLocalizedStringResourcesObject</code> — Ключ в объекте локализованных строковых ресурсов"
+
+      valueOfConstantForInterpolationToLangHTML_Attribute:
+
+        $heading: "<code>valueOfConstantForInterpolationToLangHTML_Attribute</code> — Значение константы для подстановки в значение аттрибута \"lang\""
+
+    excludedFilesPathsRelativeRelativeToProjectRootDirectory:
+
+      $heading: "<code>$excludedFilesPathsRelativeRelativeToProjectRootDirectory</code> — Относительные корневой директории проекта пути исключённых файлов"
+
+#linting:
+#
+#  $heading: "<code>linting</code> — настройки линтинга"
+#
+#staticPreview:
+#
+#  $heading: "<code>$staticPreview</code> — настройки статического превью"
+#
+#  pagesVariations:
+#
+#    $heading: "<code>$pagesVariations</code> — настройки вариацией страниц"
+#
+#    stateDependent:
+#
+#      $heading: "<code>$stateDependent</code> — настройки зависящих от состояния вариацией страниц"
+#
+#      configurationFile:
+#
+#        $heading: "Файл конфигурации"
+#
+#    localeDependent:
+#
+#      $heading: "<code>$localeDependent</code> — настройки зависящих от локализации вариаций страниц"
+#
+#buildingModeDependent:
+#
+#  $heading: "<code>$buildingModeDependent</code> — Общие настройки зависящие от режима сборки проекта"
+#
+#  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+#
+#    $heading: "<code>$secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — секунд между сохранением файла разметки и началом пересборки"
+#
+#  mustResolveResourcesPointersToRelativePaths:
+#
+#    $heading: "<code>$mustResolveResourcesPointersToRelativePaths</code> — нужно ли преобразовывать указатели на ресурсы к относительным путям"

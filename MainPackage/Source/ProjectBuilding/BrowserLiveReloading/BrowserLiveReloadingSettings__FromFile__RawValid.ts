@@ -1,5 +1,5 @@
 /* --- General utils ------------------------------------------------------------------------------------------------ */
-import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
+import { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
 
 
 type BrowserLiveReloadingSettings__FromFile__RawValid = Readonly<{
@@ -10,7 +10,6 @@ type BrowserLiveReloadingSettings__FromFile__RawValid = Readonly<{
 
 namespace BrowserLiveReloadingSettings__FromFile__RawValid {
 
-  /* === Types ====================================================================================================== */
   export type Setups = Readonly<{ [setupID: string]: Setup; }>;
 
   export type Setup = Readonly<{
@@ -55,234 +54,217 @@ namespace BrowserLiveReloadingSettings__FromFile__RawValid {
   }>;
 
 
-  /* === Localization =============================================================================================== */
-  export type Localization = Readonly<{
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-    setups: Readonly<{
+    $setups: {
 
-      KEY: string;
+      newName: "setups",
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+      isUndefinedForbidden: true,
+      isNullForbidden: true,
+      areUndefinedTypeValuesForbidden: true,
+      areNullTypeValuesForbidden: true,
+      minimalEntriesCount: 1,
 
-      localServer: Readonly<{
-        KEY: string;
-        rootDirectoryRelativePath: Readonly<{ KEY: string; }>;
-        ignoredFilesAndDirectoriesRelativePaths: Readonly<{ KEY: string; }>;
-        customPort: Readonly<{ KEY: string; }>;
-        customStartingFileNameWithExtension: Readonly<{ KEY: string; }>;
-        HTTPS: Readonly<{
-          KEY: string;
-          SSL_KeyRelativePath: Readonly<{ KEY: string; }>;
-          SSL_CertificateRelativePath: Readonly<{ KEY: string; }>;
-        }>;
-        useCORS: Readonly<{ KEY: string; }>;
-      }>;
+      value: {
 
-      proxy: Readonly<{ KEY: string; }>;
-
-      openInBrowsers: Readonly<{ KEY: string; }>;
-
-      browserSyncUserInterface: Readonly<{
-        KEY: string;
-        disable: Readonly<{ KEY: string; }>;
-        customPort: Readonly<{ KEY: string; }>;
-      }>;
-
-      periodBetweenFileUpdatingAndBrowserReloading__seconds: Readonly<{ KEY: string; }>;
-
-    }>;
-
-    logging: Readonly<{
-      KEY: string;
-      outputFileChangeDetection: Readonly<{ KEY: string; }>;
-      browserTabWillBeReloadedSoon: Readonly<{ KEY: string; }>;
-      browsersyncConnection: Readonly<{ KEY: string; }>;
-    }>;
-  }>;
-
-  export function getLocalizedPropertiesSpecification(
-    browserLiveReloadingSettingsLocalization: Localization
-  ): RawObjectDataProcessor.PropertiesSpecification {
-
-    return {
-
-      [browserLiveReloadingSettingsLocalization.setups.KEY]: {
-
-        newName: "setups",
-        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-        required: true,
-        minimalEntriesCount: 1,
-
-        value: {
-
-          type: Object,
-          properties: {
-
-            [browserLiveReloadingSettingsLocalization.setups.localServer.KEY]: {
-
-              newName: "localServer",
-              type: Object,
-              required: true,
-              properties: {
-
-                [browserLiveReloadingSettingsLocalization.setups.localServer.rootDirectoryRelativePath.KEY]: {
-                  newName: "rootDirectoryRelativePath",
-                  type: String,
-                  required: true,
-                  minimalCharactersCount: 1
-                },
-
-                [browserLiveReloadingSettingsLocalization.setups.localServer.ignoredFilesAndDirectoriesRelativePaths.KEY]: {
-                  newName: "ignoredFilesAndDirectoriesRelativePaths",
-                  type: Array,
-                  required: false,
-                  preValidationModifications: nullToUndefined,
-                  element: {
-                    type: String,
-                    minimalCharactersCount: 1
-                  }
-                },
-
-                [browserLiveReloadingSettingsLocalization.setups.localServer.customPort.KEY]: {
-                  newName: "customPort",
-                  type: Number,
-                  numbersSet: RawObjectDataProcessor.NumbersSets.nonNegativeInteger,
-                  required: false,
-                  maximalValue: 65536
-                },
-
-                [browserLiveReloadingSettingsLocalization.setups.localServer.customStartingFileNameWithExtension.KEY]: {
-                  newName: "customStartingFileNameWithExtension",
-                  type: String,
-                  required: false,
-                  minimalCharactersCount: 1
-                },
-
-                [browserLiveReloadingSettingsLocalization.setups.localServer.HTTPS.KEY]: {
-
-                  newName: "HTTPS",
-                  type: Object,
-                  required: false,
-                  preValidationModifications: nullToUndefined,
-
-                  properties: {
-
-                    [browserLiveReloadingSettingsLocalization.setups.localServer.HTTPS.SSL_KeyRelativePath.KEY]: {
-                      type: String,
-                      required: true,
-                      minimalCharactersCount: 1
-                    },
-
-                    [browserLiveReloadingSettingsLocalization.setups.localServer.HTTPS.SSL_CertificateRelativePath.KEY]: {
-                      type: String,
-                      required: true,
-                      minimalCharactersCount: 1
-                    }
-
-                  }
-
-                },
-
-                [browserLiveReloadingSettingsLocalization.setups.localServer.useCORS.KEY]: {
-                  newName: "useCORS",
-                  type: Boolean,
-                  required: false
-                }
-              }
-            },
-
-            [browserLiveReloadingSettingsLocalization.setups.proxy.KEY]: {
-              newName: "proxy",
-              type: String,
-              required: false,
-              minimalCharactersCount: 1
-            },
-
-            [browserLiveReloadingSettingsLocalization.setups.openInBrowsers.KEY]: {
-
-              newName: "openInBrowsers",
-              type: RawObjectDataProcessor.ValuesTypesIDs.oneOf,
-              required: false,
-
-              alternatives: [
-                {
-                  type: Array,
-                  minimalElementsCount: 1,
-                  element: {
-                    type: String,
-                    minimalCharactersCount: 1
-                  }
-                },
-                {
-                  type: String,
-                  minimalCharactersCount: 1
-                }
-              ]
-            },
-
-            [browserLiveReloadingSettingsLocalization.setups.browserSyncUserInterface.KEY]: {
-
-              newName: "browserSyncUserInterface",
-              type: Object,
-              required: false,
-              preValidationModifications: nullToUndefined,
-
-              properties: {
-
-                [browserLiveReloadingSettingsLocalization.setups.browserSyncUserInterface.customPort.KEY]: {
-                  newName: "customPort",
-                  type: Number,
-                  numbersSet: RawObjectDataProcessor.NumbersSets.nonNegativeInteger,
-                  required: false,
-                  maximalValue: 65536
-                },
-
-                [browserLiveReloadingSettingsLocalization.setups.browserSyncUserInterface.disable.KEY]: {
-                  newName: "disable",
-                  type: Boolean,
-                  required: false
-                }
-              }
-            },
-
-            [browserLiveReloadingSettingsLocalization.setups.periodBetweenFileUpdatingAndBrowserReloading__seconds.KEY]: {
-              newName: "periodBetweenFileUpdatingAndBrowserReloading__seconds",
-              type: Number,
-              required: false,
-              numbersSet: RawObjectDataProcessor.NumbersSets.anyRealNumber
-            }
-          }
-        }
-      },
-
-      [browserLiveReloadingSettingsLocalization.logging.KEY]: {
-
-        newName: "logging",
         type: Object,
-        required: false,
-        preValidationModifications: nullToUndefined,
-
         properties: {
 
-          [browserLiveReloadingSettingsLocalization.logging.outputFileChangeDetection.KEY]: {
-            newName: "outputFileChangeDetection",
-            type: Boolean,
-            required: false
+          $localServer: {
+
+            newName: "localServer",
+            type: Object,
+            isUndefinedForbidden: true,
+            isNullForbidden: true,
+            properties: {
+
+              $rootDirectoryRelativePath: {
+                newName: "rootDirectoryRelativePath",
+                type: String,
+                isUndefinedForbidden: true,
+                isNullForbidden: true,
+                minimalCharactersCount: 1
+              },
+
+              $ignoredFilesAndDirectoriesRelativePaths: {
+                newName: "ignoredFilesAndDirectoriesRelativePaths",
+                type: Array,
+                isUndefinedForbidden: false,
+                mustTransformNullToUndefined: true,
+                areUndefinedElementsForbidden: true,
+                areNullElementsForbidden: true,
+                element: {
+                  type: String,
+                  minimalCharactersCount: 1
+                }
+              },
+
+              $customPort: {
+                newName: "customPort",
+                type: Number,
+                numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero,
+                isUndefinedForbidden: false,
+                isNullForbidden: true,
+                maximalValue: 65536
+              },
+
+              $customStartingFileNameWithExtension: {
+                newName: "customStartingFileNameWithExtension",
+                type: String,
+                isUndefinedForbidden: false,
+                isNullForbidden: true,
+                minimalCharactersCount: 1
+              },
+
+              $HTTPS: {
+
+                newName: "HTTPS",
+                type: Object,
+                isUndefinedForbidden: false,
+                mustTransformNullToUndefined: true,
+
+                properties: {
+
+                  $SSL_KeyRelativePath: {
+                    newName: "SSL_KeyRelativePath",
+                    type: String,
+                    isUndefinedForbidden: true,
+                    isNullForbidden: true,
+                    minimalCharactersCount: 1
+                  },
+
+                  $SSL_CertificateRelativePath: {
+                    newName: "SSL_CertificateRelativePath",
+                    type: String,
+                    isUndefinedForbidden: true,
+                    isNullForbidden: true,
+                    minimalCharactersCount: 1
+                  }
+
+                }
+
+              },
+
+              $useCORS: {
+                newName: "useCORS",
+                type: Boolean,
+                isUndefinedForbidden: false,
+                isNullForbidden: true
+              }
+
+            }
+
           },
 
-          [browserLiveReloadingSettingsLocalization.logging.browserTabWillBeReloadedSoon.KEY]: {
-            newName: "browserTabWillBeReloadedSoon",
-            type: Boolean,
-            required: false
+          $proxy: {
+            newName: "proxy",
+            type: String,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+            minimalCharactersCount: 1
           },
 
-          [browserLiveReloadingSettingsLocalization.logging.browsersyncConnection.KEY]: {
-            newName: "browsersyncConnection",
-            type: Boolean,
-            required: false
+          $openInBrowsers: {
+
+            newName: "openInBrowsers",
+            type: RawObjectDataProcessor.ValuesTypesIDs.polymorphic,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+
+            alternatives: [
+              {
+                type: Array,
+                areUndefinedElementsForbidden: true,
+                areNullElementsForbidden: true,
+                minimalElementsCount: 1,
+                element: {
+                  type: String,
+                  minimalCharactersCount: 1
+                }
+              },
+              {
+                type: String,
+                minimalCharactersCount: 1
+              }
+            ]
+          },
+
+          $browserSyncUserInterface: {
+
+            newName: "browserSyncUserInterface",
+            type: Object,
+            isUndefinedForbidden: false,
+            mustTransformNullToUndefined: true,
+
+            properties: {
+
+              $customPort: {
+                newName: "customPort",
+                type: Number,
+                numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero,
+                isUndefinedForbidden: false,
+                isNullForbidden: true,
+                maximalValue: 65536
+              },
+
+              $disable: {
+                newName: "disable",
+                type: Boolean,
+                isUndefinedForbidden: false,
+                isNullForbidden: true
+              }
+
+            }
+
+          },
+
+          $periodBetweenFileUpdatingAndBrowserReloading__seconds: {
+            newName: "periodBetweenFileUpdatingAndBrowserReloading__seconds",
+            type: Number,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+            numbersSet: RawObjectDataProcessor.NumbersSets.anyRealNumber
           }
         }
       }
-    };
-  }
+    },
+
+    $logging: {
+
+      newName: "logging",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $outputFileChangeDetection: {
+          newName: "outputFileChangeDetection",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
+
+        $browserTabWillBeReloadedSoon: {
+          newName: "browserTabWillBeReloadedSoon",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
+
+        $browsersyncConnection: {
+          newName: "browsersyncConnection",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        }
+      }
+
+    }
+
+  };
+
 }
 
 

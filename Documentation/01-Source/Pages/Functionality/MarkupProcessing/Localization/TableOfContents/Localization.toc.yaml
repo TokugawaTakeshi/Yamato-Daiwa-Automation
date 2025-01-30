@@ -1,0 +1,16 @@
+providingOfStringResources:
+
+  $heading: `providingOfStringResources.$heading`
+  $anchor: PROVIDING_OF_STRING_RESOURCES--SECTION
+
+  $children:
+
+    viaTypeScript:
+
+      $heading: `providingOfStringResources.viaTypeScript.$heading`
+      $anchor: PROVIDING_OF_STRING_RESOURCES-VIA_TYPE_SCRIPT--SECTION
+
+    viaJSON_Files:
+
+      $heading: `providingOfStringResources.viaJSON_Files.$heading`
+      $anchor: PROVIDING_OF_STRING_RESOURCES-VIA_JSON_FILES--SECTION

@@ -7,7 +7,7 @@ import { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
-import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
+import { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
 
 
 type ProjectBuildingCommonSettings__FromFile__RawValid = Readonly<{
@@ -23,7 +23,7 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
   export type SelectiveExecution = Readonly<{
     tasksAndSourceFilesSelection: ProjectBuilderTasksAndSourceFilesSelection;
     browserLiveReloadingSetupID?: string;
-    outputPackageJSON_Generating?: boolean;
+    distributablePackageJSON_Generating?: boolean;
   }>;
 
   type ProjectBuilderTasksAndSourceFilesSelection = Readonly<{
@@ -38,25 +38,16 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
   }>;
 
 
-  /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  export type Localization = Readonly<{
-    selectiveExecutions: Readonly<{
-      KEY: string;
-      tasksAndSourceFilesSelection: Readonly<{ KEY: string; }>;
-      browserLiveReloadingSetupID: Readonly<{ KEY: string; }>;
-      outputPackageJSON_Generating: Readonly<{ KEY: string; }>;
-    }>;
-    publicDirectoriesRelativePaths: Readonly<{ KEY: string; }>;
-  }>;
-
   export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
     $selectiveExecutions: {
 
       newName: "selectiveExecutions",
-      preValidationModifications: nullToUndefined,
-      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-      required: false,
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+      areUndefinedTypeValuesForbidden: true,
+      areNullTypeValuesForbidden: true,
       minimalEntriesCount: 1,
 
       value: {
@@ -67,8 +58,11 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
           $tasksAndSourceFilesSelection: {
 
             newName: "tasksAndSourceFilesSelection",
-            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-            required: true,
+            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+            isUndefinedForbidden: true,
+            isNullForbidden: true,
+            areUndefinedTypeValuesForbidden: true,
+            areNullTypeValuesForbidden: true,
 
             allowedKeys: [
               "$markupProcessing",
@@ -98,6 +92,8 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
 
               type: Array,
               minimalElementsCount: 1,
+              areUndefinedElementsForbidden: true,
+              areNullElementsForbidden: true,
 
               element: {
                 type: String,
@@ -111,13 +107,15 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
           $browserLiveReloadingSetupID: {
             newName: "browserLiveReloadingSetupID",
             type: String,
-            required: false
+            isUndefinedForbidden: false,
+            isNullForbidden: true
           },
 
           $distributablePackageJSON_Generating: {
             newName: "distributablePackageJSON_Generating",
             type: Boolean,
-            required: false
+            isUndefinedForbidden: false,
+            isNullForbidden: true
           }
 
         }
@@ -128,13 +126,31 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
     $publicDirectoriesRelativePaths: {
 
       newName: "publicDirectoriesRelativePaths",
-      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-      required: false,
-      allowedKeys: Object.values(ConsumingProjectBuildingModes),
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+      areUndefinedTypeValuesForbidden: true,
+      areNullTypeValuesForbidden: true,
+
+      allowedKeys: [
+        "$localDevelopment",
+        "$testing",
+        "$staging",
+        "$production"
+      ],
+
+      keysRenamings: {
+        $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
+        $testing: ConsumingProjectBuildingModes.testing,
+        $staging: ConsumingProjectBuildingModes.staging,
+        $production: ConsumingProjectBuildingModes.production
+      },
+
       value: {
         type: String,
         minimalCharactersCount: 1
       }
+
     }
 
   };

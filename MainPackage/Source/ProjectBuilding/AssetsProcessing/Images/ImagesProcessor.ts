@@ -111,11 +111,12 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
         pipe(super.handleErrorIfItWillOccur()).
         pipe(super.logProcessedFilesIfMust()).
 
-         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
+        pipe(
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
           })
         ).
+
 
         pipe(
           gulpIf(
@@ -131,18 +132,14 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ AssetVinylFile, GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust
           })
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ AssetVinylFile, ImagesProcessor.postProcessFile ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: ImagesProcessor.postProcessFile
           })
         ).
 

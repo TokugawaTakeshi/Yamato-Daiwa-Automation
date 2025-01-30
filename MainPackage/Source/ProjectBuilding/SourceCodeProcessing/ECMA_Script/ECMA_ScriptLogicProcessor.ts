@@ -119,10 +119,8 @@ class ECMA_ScriptLogicProcessor {
             new Map();
 
     for (
-      const [ index, ECMA_ScriptLogicEntryPointsGroupSettings ] of
-          Array.from(
-            this.ECMA_ScriptLogicProcessingConfigRepresentative.relevantEntryPointsGroupsSettings.values()
-          ).entries()
+      const ECMA_ScriptLogicEntryPointsGroupSettings of
+          this.ECMA_ScriptLogicProcessingConfigRepresentative.relevantEntryPointsGroupsSettings.values()
     ) {
 
       const entryPointsSourceFilesAbsolutePaths: ReadonlyArray<string> = ImprovedGlob.getFilesAbsolutePathsSynchronously(
@@ -149,8 +147,7 @@ class ECMA_ScriptLogicProcessor {
           entryPointsSourceFilesAbsolutePaths,
           ECMA_ScriptLogicEntryPointsGroupSettings,
           ECMA_ScriptLogicProcessingConfigRepresentative: this.ECMA_ScriptLogicProcessingConfigRepresentative,
-          masterConfigRepresentative: this.projectBuildingMasterConfigRepresentative,
-          mustProvideTypeScriptTypeChecking: index === 0
+          masterConfigRepresentative: this.projectBuildingMasterConfigRepresentative
         })
       );
 

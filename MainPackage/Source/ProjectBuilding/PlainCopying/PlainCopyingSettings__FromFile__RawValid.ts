@@ -3,14 +3,11 @@ import ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 /* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
-import type ConsumingProjectPreDefinedBuildingModes__Localized from
-    "@ProjectBuilding/Common/RawConfig/Enumerations/ConsumingProjectPreDefinedBuildingModes__Localized";
-import type OutputDirectoryPathTransformationsSettings__FromFile__RawValid from
+import OutputDirectoryPathTransformationsSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/OutputDirectoryPathTransformationsSettings__FromFile__RawValid";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
-import { RawObjectDataProcessor, nullToUndefined, isUndefined } from "@yamato-daiwa/es-extensions";
-import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
+import { RawObjectDataProcessor, isUndefined } from "@yamato-daiwa/es-extensions";
 
 
 type PlainCopyingSettings__FromFile__RawValid = Readonly<{
@@ -71,6 +68,8 @@ namespace PlainCopyingSettings__FromFile__RawValid {
         Readonly<{
           sourceTopDirectoryRelativePath: string;
           fileNameLastExtensions?: ReadonlyArray<string>;
+          excludeSubdirectoriesRelativePaths?: ReadonlyArray<string>;
+          excludeFilesRelativePaths?: ReadonlyArray<string>;
           buildingModeDependent: Readonly<{
             [projectBuildingMode in ConsumingProjectBuildingModes]: Plural.BuildingModeDependent | undefined;
           }>;
@@ -95,225 +94,220 @@ namespace PlainCopyingSettings__FromFile__RawValid {
 
   }
 
-  /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  export type Localization = Readonly<{
+  /* ━━━ Properties Specification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-    filesGroups: Readonly<{ KEY: string; }>;
+    $filesGroups: {
 
-    sourceFileRelativePath: Readonly<{ KEY: string; }>;
-    sourceTopDirectoryRelativePath: Readonly<{
-      KEY: string;
-      REQUIREMENT_CONDITION_DESCRIPTION: string;
-    }>;
+      newName: "filesGroups",
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+      isUndefinedForbidden: true,
+      isNullForbidden: true,
+      areUndefinedTypeValuesForbidden: true,
+      areNullTypeValuesForbidden: true,
+      minimalEntriesCount: 1,
 
-    fileNameLastExtensions: Readonly<{ KEY: string; }>;
+      value: {
 
-    aliasName: Readonly<{ KEY: string; }>;
+        type: Object,
+        properties: {
 
-    buildingModeDependent: Readonly<{
+          /* ─── Common ─────────────────────────────────────────────────────────────────────────────────────────── */
+          $aliasName: {
+            newName: "aliasName",
+            type: String,
+            isUndefinedForbidden: false,
+            isNullForbidden: true
+          },
 
-      KEY: string;
+          /* ─── Singular ───────────────────────────────────────────────────────────────────────────────────────── */
+          $sourceFileRelativePath: {
+            newName: "sourceFileRelativePath",
+            type: String,
+            isUndefinedForbidden: false,
+            isNullForbidden: true
+          },
 
-      outputDirectoryRelativePath: Readonly<{ KEY: string; }>;
-      outputTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
-      revisioning: Readonly<{
-        KEY: string;
-        enable: Readonly<{ KEY: string; }>;
-        contentHashPostfixSeparator: Readonly<{ KEY: string; }>;
-      }>;
+          /* ─── Plural ─────────────────────────────────────────────────────────────────────────────────────────── */
+          $sourceTopDirectoryRelativePath: {
+            newName: "sourceTopDirectoryRelativePath",
+            type: String,
+            undefinedForbiddenIf: {
+              predicate: (
+                { rawData__currentObjectDepth: filesGroup }:
+                    RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+              ): boolean => isUndefined(filesGroup.$sourceFileRelativePath),
+              descriptionForLogging: "\"$sourceFileRelativePath\" not undefined"
+            },
+            isNullForbidden: true
+          },
 
-      newFileNameWithExtension: Readonly<{ KEY: string; }>;
-
-      filesRenamings: Readonly<{
-        KEY: string;
-        pathRelativeToSourceDirectory: Readonly<{ KEY: string; }>;
-        newFileNameWithExtension: Readonly<{ KEY: string; }>;
-      }>;
-
-      outputDirectoryPathTransformations: Readonly<{ KEY: string; }>;
-
-    }>;
-
-  }>;
-
-  export function getLocalizedPropertiesSpecification(
-    {
-      plainCopyingLocalization,
-      consumingProjectLocalizedPreDefinedBuildingModes,
-      outputDirectoryPathTransformationsPropertiesLocalizedSpecification
-    }: Readonly<{
-      plainCopyingLocalization: Localization;
-      consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-      outputDirectoryPathTransformationsPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
-    }>
-  ): RawObjectDataProcessor.PropertiesSpecification {
-
-    return {
-
-      [plainCopyingLocalization.filesGroups.KEY]: {
-
-        newName: "filesGroups",
-        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-        required: true,
-        minimalEntriesCount: 1,
-
-        value: {
-
-          type: Object,
-          properties: {
-
-            /* ─── Common ─────────────────────────────────────────────────────────────────────────────────────────── */
-            [plainCopyingLocalization.aliasName.KEY]: {
-              newName: "aliasName",
-              preValidationModifications: nullToUndefined,
+          $fileNameLastExtensions: {
+            newName: "fileNameLastExtensions",
+            type: Array,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+            areUndefinedElementsForbidden: true,
+            areNullElementsForbidden: true,
+            element: {
               type: String,
-              required: false
-            },
+              minimalCharactersCount: 1
+            }
+          },
 
-            /* ─── Singular ───────────────────────────────────────────────────────────────────────────────────────── */
-            [plainCopyingLocalization.sourceFileRelativePath.KEY]: {
-              newName: "sourceFileRelativePath",
+          $excludeSubdirectoriesRelativePaths: {
+            newName: "excludeSubdirectoriesRelativePaths",
+            type: Array,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+            areUndefinedElementsForbidden: true,
+            areNullElementsForbidden: true,
+            element: {
               type: String,
-              required: false
-            },
+              minimalCharactersCount: 1
+            }
+          },
 
-            /* ─── Plural ─────────────────────────────────────────────────────────────────────────────────────────── */
-            [plainCopyingLocalization.sourceTopDirectoryRelativePath.KEY]: {
-              newName: "sourceTopDirectoryRelativePath",
+          $excludeFilesRelativePaths: {
+            newName: "excludeFilesRelativePaths",
+            type: Array,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+            areUndefinedElementsForbidden: true,
+            areNullElementsForbidden: true,
+            element: {
               type: String,
-              requiredIf: {
-                predicate: (filesGroup: ArbitraryObject): boolean =>
-                    isUndefined(filesGroup[plainCopyingLocalization.sourceFileRelativePath.KEY]),
-                descriptionForLogging: plainCopyingLocalization.sourceTopDirectoryRelativePath.
-                    REQUIREMENT_CONDITION_DESCRIPTION
-              }
+              minimalCharactersCount: 1
+            }
+          },
+
+          $buildingModeDependent: {
+
+            newName: "buildingModeDependent",
+            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+            isUndefinedForbidden: true,
+            isNullForbidden: true,
+            areUndefinedTypeValuesForbidden: true,
+            areNullTypeValuesForbidden: true,
+            minimalEntriesCount: 1,
+
+            allowedKeys: [
+              "$staticPreview",
+              "$localDevelopment",
+              "$testing",
+              "$staging",
+              "$production"
+            ],
+
+            keysRenamings: {
+              $staticPreview: ConsumingProjectBuildingModes.staticPreview,
+              $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
+              $testing: ConsumingProjectBuildingModes.testing,
+              $staging: ConsumingProjectBuildingModes.staging,
+              $production: ConsumingProjectBuildingModes.production
             },
 
-            [plainCopyingLocalization.fileNameLastExtensions.KEY]: {
-              newName: "fileNameLastExtensions",
-              type: Array,
-              required: false,
-              element: {
-                type: String,
-                minimalCharactersCount: 1
-              }
-            },
+            value: {
 
-            [plainCopyingLocalization.buildingModeDependent.KEY]: {
+              type: Object,
 
-              newName: "buildingModeDependent",
-              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-              required: true,
-              allowedKeys: Object.values(ConsumingProjectBuildingModes),
-              minimalEntriesCount: 1,
+              properties: {
 
-              keysRenamings: {
-                [consumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
-                    ConsumingProjectBuildingModes.staticPreview,
-                [consumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
-                    ConsumingProjectBuildingModes.localDevelopment,
-                [consumingProjectLocalizedPreDefinedBuildingModes.testing]:
-                    ConsumingProjectBuildingModes.testing,
-                [consumingProjectLocalizedPreDefinedBuildingModes.staging]:
-                    ConsumingProjectBuildingModes.staging,
-                [consumingProjectLocalizedPreDefinedBuildingModes.production]:
-                    ConsumingProjectBuildingModes.production
-              },
+                /* ─── Common ───────────────────────────────────────────────────────────────────────────────────── */
+                $revisioning: {
 
-              value: {
+                  newName: "revisioning",
+                  type: Object,
+                  isUndefinedForbidden: false,
+                  mustTransformNullToUndefined: true,
+                  properties: {
 
-                type: Object,
+                    $enable: {
+                      newName: "enable",
+                      type: Boolean,
+                      isUndefinedForbidden: false,
+                      isNullForbidden: true
+                    },
 
-                properties: {
+                    $contentHashPostfixSeparator: {
+                      newName: "contentHashPostfixSeparator",
+                      type: String,
+                      isUndefinedForbidden: false,
+                      isNullForbidden: true,
+                      minimalCharactersCount: 1
+                    }
 
-                  /* ─── Common ───────────────────────────────────────────────────────────────────────────────────── */
-                  [plainCopyingLocalization.buildingModeDependent.revisioning.KEY]: {
+                  }
 
-                    newName: "revisioning",
+                },
+
+                /* ─── Singular ─────────────────────────────────────────────────────────────────────────────────── */
+                $outputDirectoryRelativePath: {
+                  newName: "outputDirectoryRelativePath",
+                  type: String,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true
+                },
+
+                $newFileNameWithExtension: {
+                  newName: "newFileNameWithExtension",
+                  type: String,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true,
+                  minimalCharactersCount: 1
+                },
+
+                /* ─── Plural ───────────────────────────────────────────────────────────────────────────────────── */
+                $outputTopDirectoryRelativePath: {
+                  newName: "outputTopDirectoryRelativePath",
+                  type: String,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true
+                },
+
+                $filesRenamings: {
+
+                  newName: "filesRenamings",
+                  type: Array,
+                  isUndefinedForbidden: false,
+                  mustTransformNullToUndefined: true,
+                  areUndefinedElementsForbidden: true,
+                  areNullElementsForbidden: true,
+
+                  element: {
+
                     type: Object,
-                    required: false,
-                    preValidationModifications: nullToUndefined,
+
                     properties: {
 
-                      [plainCopyingLocalization.buildingModeDependent.revisioning.enable.KEY]: {
-                        newName: "enable",
-                        type: Boolean,
-                        required: false
+                      $pathRelativeToSourceDirectory: {
+                        newName: "pathRelativeToSourceDirectory",
+                        type: String,
+                        isUndefinedForbidden: true,
+                        isNullForbidden: true,
+                        minimalCharactersCount: 1
                       },
 
-                      [plainCopyingLocalization.buildingModeDependent.revisioning.contentHashPostfixSeparator.KEY]: {
-                        newName: "contentHashPostfixSeparator",
+                      $newFileNameWithExtension: {
+                        newName: "newFileNameWithExtension",
                         type: String,
-                        required: false,
+                        isUndefinedForbidden: true,
+                        isNullForbidden: true,
                         minimalCharactersCount: 1
                       }
 
                     }
 
-                  },
-
-                  /* ─── Singular ─────────────────────────────────────────────────────────────────────────────────── */
-                  [plainCopyingLocalization.buildingModeDependent.outputDirectoryRelativePath.KEY]: {
-                    newName: "outputDirectoryRelativePath",
-                    type: String,
-                    required: false
-                  },
-
-                  [plainCopyingLocalization.buildingModeDependent.newFileNameWithExtension.KEY]: {
-                    newName: "newFileNameWithExtension",
-                    type: String,
-                    required: false,
-                    minimalCharactersCount: 1
-                  },
-
-                  /* ─── Plural ───────────────────────────────────────────────────────────────────────────────────── */
-                  [plainCopyingLocalization.buildingModeDependent.outputTopDirectoryRelativePath.KEY]: {
-                    newName: "outputTopDirectoryRelativePath",
-                    type: String,
-                    required: false
-                  },
-
-                  [plainCopyingLocalization.buildingModeDependent.filesRenamings.KEY]: {
-
-                    newName: "filesRenamings",
-                    type: Array,
-                    required: false,
-                    preValidationModifications: nullToUndefined,
-
-                    element: {
-
-                      type: Object,
-
-                      properties: {
-
-                        [plainCopyingLocalization.buildingModeDependent.filesRenamings.pathRelativeToSourceDirectory.KEY]: {
-                          newName: "pathRelativeToSourceDirectory",
-                          type: String,
-                          required: true,
-                          minimalCharactersCount: 1
-                        },
-
-                        [plainCopyingLocalization.buildingModeDependent.filesRenamings.newFileNameWithExtension.KEY]: {
-                          newName: "newFileNameWithExtension",
-                          type: String,
-                          required: true,
-                          minimalCharactersCount: 1
-                        }
-
-                      }
-
-                    }
-
-                  },
-
-                  [plainCopyingLocalization.buildingModeDependent.outputDirectoryPathTransformations.KEY]: {
-                    newName: "outputDirectoryPathTransformations",
-                    type: Object,
-                    required: false,
-                    preValidationModifications: nullToUndefined,
-                    properties: outputDirectoryPathTransformationsPropertiesLocalizedSpecification
                   }
 
+                },
+
+                $outputDirectoryPathTransformations: {
+                  newName: "outputDirectoryPathTransformations",
+                  type: Object,
+                  isUndefinedForbidden: false,
+                  mustTransformNullToUndefined: true,
+                  properties: OutputDirectoryPathTransformationsSettings__FromFile__RawValid.propertiesSpecification
                 }
 
               }
@@ -326,9 +320,9 @@ namespace PlainCopyingSettings__FromFile__RawValid {
 
       }
 
-    };
+    }
 
-  }
+  };
 
 }
 

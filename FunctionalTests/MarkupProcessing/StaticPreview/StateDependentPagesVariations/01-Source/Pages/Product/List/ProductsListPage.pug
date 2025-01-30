@@ -1,0 +1,45 @@
+doctype html
+
+
+block Requirements
+
+  - const $$pageStringResources = IMPORTS_FROM_TYPESCRIPT.stringResources.pages.products.list[$$LOCALE];
+
+
+html(lang=$$HTML_TAG_LANG_ATTRIBUTE_VALUE)
+
+  head
+
+    title= $$pageStringResources.metadata.title
+
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+
+
+  body
+
+    h1= $$pageStringResources.topHeading
+
+    if $$productsListPagePageStatesSimulations.loading
+
+      p= $$pageStringResources.stateMessages.loading
+
+    else if $$productsListPagePageStatesSimulations.error
+
+      p= $$pageStringResources.stateMessages.error
+
+    else if $$productsListPagePageStatesSimulations.noItems
+
+      p= $$pageStringResources.stateMessages.noItems
+
+    else if $$productsListPagePageStatesSimulations.noSearchResults
+
+      p= $$pageStringResources.stateMessages.noSearchResults
+
+    else
+
+      ul
+
+        each productNumber in Array.from(new Array(3).keys())
+
+          li= `${ $$pageStringResources.labels.product } ${ productNumber }`

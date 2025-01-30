@@ -109,24 +109,20 @@ export default class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
         pipe(super.logProcessedFilesIfMust()).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
           })
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ AssetVinylFile, GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust
           })
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ AssetVinylFile, VideosProcessor.postProcessFile ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: VideosProcessor.postProcessFile
           })
         ).
 

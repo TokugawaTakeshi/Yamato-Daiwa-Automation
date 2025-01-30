@@ -3,15 +3,13 @@ import ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 /* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
-import type ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid from
+import ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid";
-import type ConsumingProjectPreDefinedBuildingModes__Localized from
-    "@ProjectBuilding/Common/RawConfig/Enumerations/ConsumingProjectPreDefinedBuildingModes__Localized";
-import type RevisioningSettings__FromFile__RawValid from
+import RevisioningSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/RevisioningSettings__FromFile__RawValid";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
-import { RawObjectDataProcessor, nullToUndefined } from "@yamato-daiwa/es-extensions";
+import { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
 
 
 namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
@@ -45,139 +43,99 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
   }>;
 
 
-  /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  export type Localization = {
+  /* ━━━ Properties Specification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-    common: Readonly<{
-      KEY: string;
-      periodBetweenFileUpdatingAndRebuildingStarting__seconds: Readonly<{ KEY: string; }>;
-    }>;
+    $common: {
 
-    assetsGroups: Readonly<{
+      newName: "common",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
 
-      KEY: string;
+      properties: {
 
-      sourceFilesTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
-      referenceCustomAliasName: Readonly<{ KEY: string; }>;
-
-      buildingModeDependent:
-          ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid.Localization &
-          Readonly<{
-            revisioning: Readonly<{ KEY: string; }>;
-          }>;
-
-    }>;
-
-    logging: Readonly<{
-      KEY: string;
-      filesPaths: Readonly<{ KEY: string; }>;
-      filesCount: Readonly<{ KEY: string; }>;
-      filesWatcherEvents: Readonly<{ KEY: string; }>;
-    }>;
-
-  };
-
-  export function getLocalizedPropertiesSpecification(
-    {
-      assetsProcessingSettingsGenericPropertiesLocalization,
-      revisioningPropertiesLocalizedSpecification,
-      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
-      consumingProjectLocalizedPreDefinedBuildingModes
-    }: Readonly<{
-      assetsProcessingSettingsGenericPropertiesLocalization: Localization;
-      revisioningPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
-      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.
-          PropertiesSpecification;
-      consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-    }>
-  ): RawObjectDataProcessor.PropertiesSpecification {
-
-    return {
-
-      [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.KEY]: {
-
-        newName: "common",
-        preValidationModifications: nullToUndefined,
-        type: Object,
-        required: true,
-
-        properties: {
-
-          [
-            assetsProcessingSettingsGenericPropertiesLocalization.common.
-                periodBetweenFileUpdatingAndRebuildingStarting__seconds.KEY
-          ]: {
-            newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
-            type: Number,
-            required: false,
-            numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
-          }
-
+        $periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
+          newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
+          type: Number,
+          isUndefinedForbidden: false,
+          isNullForbidden: true,
+          numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
         }
 
-      },
+      }
 
-      [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.KEY]: {
+    },
 
-        newName: "assetsGroups",
-        preValidationModifications: nullToUndefined,
-        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-        required: true,
+    $assetsGroups: {
 
-        value: {
+      newName: "assetsGroups",
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+      isUndefinedForbidden: true,
+      isNullForbidden: true,
+      areUndefinedTypeValuesForbidden: true,
+      areNullTypeValuesForbidden: true,
 
-          type: Object,
-          properties: {
+      value: {
 
-            [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.sourceFilesTopDirectoryRelativePath.KEY]: {
-              newName: "sourceFilesTopDirectoryRelativePath",
-              type: String,
-              required: true,
-              minimalCharactersCount: 1
+        type: Object,
+        properties: {
+
+          $sourceFilesTopDirectoryRelativePath: {
+            newName: "sourceFilesTopDirectoryRelativePath",
+            type: String,
+            isUndefinedForbidden: true,
+            isNullForbidden: true,
+            minimalCharactersCount: 1
+          },
+
+          $sourceFilesTopDirectoryPathAliasForReferencingFromHTML: {
+            newName: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML",
+            type: String,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+            minimalCharactersCount: 1
+          },
+
+          $buildingModeDependent: {
+
+            newName: "buildingModeDependent",
+            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+            isUndefinedForbidden: true,
+            isNullForbidden: true,
+            minimalEntriesCount: 1,
+            areUndefinedTypeValuesForbidden: true,
+            areNullTypeValuesForbidden: true,
+
+            allowedKeys: [
+              "$staticPreview",
+              "$localDevelopment",
+              "$testing",
+              "$staging",
+              "$production"
+            ],
+
+            keysRenamings: {
+              $staticPreview: ConsumingProjectBuildingModes.staticPreview,
+              $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
+              $testing: ConsumingProjectBuildingModes.testing,
+              $staging: ConsumingProjectBuildingModes.staging,
+              $production: ConsumingProjectBuildingModes.production
             },
 
-            [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.referenceCustomAliasName.KEY]: {
-              newName: "sourceFilesTopDirectoryPathAliasForReferencingFromHTML",
-              type: String,
-              required: false,
-              minimalCharactersCount: 1
-            },
+            value: {
 
-            [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.buildingModeDependent.KEY]: {
+              type: Object,
+              properties: {
 
-              newName: "buildingModeDependent",
-              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-              required: true,
-              minimalEntriesCount: 1,
+                ...ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid.propertiesSpecification,
 
-              keysRenamings: {
-                [consumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
-                    ConsumingProjectBuildingModes.staticPreview,
-                [consumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
-                    ConsumingProjectBuildingModes.localDevelopment,
-                [consumingProjectLocalizedPreDefinedBuildingModes.testing]:
-                    ConsumingProjectBuildingModes.testing,
-                [consumingProjectLocalizedPreDefinedBuildingModes.staging]:
-                    ConsumingProjectBuildingModes.staging,
-                [consumingProjectLocalizedPreDefinedBuildingModes.production]:
-                    ConsumingProjectBuildingModes.production
-              },
-
-              value: {
-
-                type: Object,
-                properties: {
-
-                  ...entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
-
-                  [assetsProcessingSettingsGenericPropertiesLocalization.assetsGroups.buildingModeDependent.revisioning.KEY]: {
-                    newName: "revisioning",
-                    type: Object,
-                    required: false,
-                    preValidationModifications: nullToUndefined,
-                    properties: revisioningPropertiesLocalizedSpecification
-                  }
-
+                $revisioning: {
+                  newName: "revisioning",
+                  type: Object,
+                  isUndefinedForbidden: false,
+                  mustTransformNullToUndefined: true,
+                  properties: RevisioningSettings__FromFile__RawValid.propertiesSpecification
                 }
 
               }
@@ -188,42 +146,45 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
 
         }
 
-      },
+      }
 
-      [assetsProcessingSettingsGenericPropertiesLocalization.logging.KEY]: {
+    },
 
-        newName: "logging",
-        type: Object,
-        required: false,
-        preValidationModifications: nullToUndefined,
+    $logging: {
 
-        properties: {
+      newName: "logging",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
 
-          [assetsProcessingSettingsGenericPropertiesLocalization.logging.filesPaths.KEY]: {
-            newName: "filesPaths",
-            type: Boolean,
-            required: false
-          },
+      properties: {
 
-          [assetsProcessingSettingsGenericPropertiesLocalization.logging.filesCount.KEY]: {
-            newName: "filesCount",
-            type: Boolean,
-            required: false
-          },
+        $filesPaths: {
+          newName: "filesPaths",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
 
-          [assetsProcessingSettingsGenericPropertiesLocalization.logging.filesWatcherEvents.KEY]: {
-            newName: "filesWatcherEvents",
-            type: Boolean,
-            required: false
-          }
+        $filesCount: {
+          newName: "filesCount",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
 
+        $filesWatcherEvents: {
+          newName: "filesWatcherEvents",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
         }
 
       }
 
-    };
+    }
 
-  }
+  };
 
 }
 

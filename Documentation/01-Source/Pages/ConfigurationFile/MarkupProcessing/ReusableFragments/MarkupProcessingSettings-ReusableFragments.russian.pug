@@ -1,0 +1,511 @@
+mixin LocalizedStringResourcesJSON_FileCodeListingExample
+
+  +CodeViewer--YDF
+    +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.JSON }).
+      {
+        "$$english": {
+          "pages": {
+            "products": {
+              "list": {
+                "metadata": {
+                  "title": "Products List — ACME Store"
+                },
+                "topHeading": "Products List"
+              },
+              "details": {
+                "metadata": {
+                  "title": "Product Details — ACME Store"
+                },
+                "topHeading": "Product Details"
+              }
+            }
+          }
+        },
+        "$$russian": {
+          "pages": {
+            "products": {
+              "list": {
+                "metadata": {
+                  "title": "Список продуктов — Магазин «Рога и Копыта»"
+                },
+                "topHeading": "Список продуктов"
+              },
+              "details": {
+                "metadata": {
+                  "title": "Описание товара — Магазин «Рога и Копыта»"
+                },
+                "topHeading": "Описание товара"
+              }
+            }
+          }
+        }
+      }
+
+
+mixin Localization-stringResourcesFileRelativePath--PropertyDescription()
+
+  p.Article-Paragraph
+    | #[+Keyword--YDID Относительный] #[+Term--YDID путь] к #[+Term--YDID JSON-файлу], в котором хранятся
+    |   #[+Term--YDID строковые ресурсы].
+    | #[+Keyword--YDID Необходимо] указать #[+Keyword__Contrast--YDID если] #[+Term--YDID локализованные строковые ресурсы]
+    |   хранятся в #[+Term--YDID JSON-файле], но это
+    |
+    +Link--YDF({
+      internalURI: localizedRouting.functionality.$children.markupProcessing.$children.localization.$sectioning.
+          providingOfStringResources.$children.viaTypeScript.$URI
+    }) не&nbsp;единственный способ
+    |
+    | обеспечения локализованных #[+Term--YDID строковых ресурсов], предлагаемый #[+ImportantEntity--YDID YDA].
+
+  p.Article-Paragraph.
+    Предполагается, что #[+Term--YDID ключами] #[+Keyword--YDID верхнего] уровня #[+Term--YDID JSON-объекта] являются
+      #[+Term--YDID строки], соответствующие #[+Term--YDID локалям], такие как #[+SecondaryEntity__Code--YDID russian],
+      #[+SecondaryEntity__Code--YDID ru], #[+SecondaryEntity__Code--YDID en-US] и так далее.
+    Особых правил на эти ключи #[+Keyword--YDID не]&nbsp;налагается, но сокращений наподобие
+      #[+SecondaryEntity__Code--YDID ru] #[+Keyword--YDID рекомендуется] #[+Keyword__Contrast--YDID избегать], так как
+      они могут совпадать с сокращениями другого смысла и запутывать, а если #[+Term--YDID локалей] много, то некоторые
+      разработчики вообще могут не&nbsp;понять, что это #[+Term--YDID локаль].
+
+  p.Article-Paragraph.
+    В качестве #[+Term--YDID значений] же #[+Keyword--YDID должны] быть указаны #[+Keyword--YDID дочерние]
+      #[+Term--YDID объекты], #[+Keyphrase--YDID каждый из которых #[+Keyword--YDID обязан]] подчиняться
+      #[+Keyword--YDID единой] структуре:
+
+  +LocalizedStringResourcesJSON_FileCodeListingExample
+
+  p.Article-Paragraph.
+    Структура #[+Keyword--YDID дочерних] #[+Term--YDID объектов] в принципе может быть
+      #[+Keyphrase--YDID любой, которая валидна с точки зрения формата #[+ImportantEntity--YDID JSON]], в частности
+      может быть #[+Keyphrase--YDID сколько угодно] уровней вложенности #[+Term--YDID объектов] — данные будут
+      инъектированы в #[+ImportantEntity--YDID Pug] в таком виде, в каком они определены и #[+Term--YDID десериализованы]
+      с помощью #[+ImportantEntity__Code--YDID JSON.parse()].
+    Тем не&nbsp;менее, если использовать данный #[+Term--YDID JSON-файл] по назначению, то
+      #[+Keyphrase--YDID в большинстве случаев] там будут #[+Keyword--YDID только] #[+Keyword__Contrast--YDID дочерние]
+      #[+Term--YDID объекты] #[+Keyword--YDID и] #[+Keyword__Contrast--YDID строчные] #[+Term--YDID свойства] как в
+      примере выше.
+
+  +AdmonitionBlock--YDF({
+    SVG_Icon: true,
+    geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+    decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning
+  })
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID Одного только] указания #[+ImportantEntity__Code--YDID $stringResourcesFileRelativePath]
+        #[+Keyword--YDID недостаточно] для того, чтобы #[+Term--YDID строковые ресурсы] были инъектированы в
+        #[+ImportantEntity--YDID Pug], поскольку #[+Keyword--YDID непонятно], в какую #[+Term--YDID переменную]
+        эти #[+Term--YDID строковые ресурсы] нужно сохранять и согласно каким правилам на основе одного входного
+        #[+Term--YDID Pug-файла] создавать несколько выходных #[+Term--YDID HTML-файлов].
+      #[+Keyphrase--YDID Как минимум], необходимо указать также:
+
+    ol.Article-OrderedList
+
+      li.
+        Имя #[+Term--YDID переменной] через #[+Term--YDID свойство]
+          #[+ImportantEntity__Code--YDID $localeConstantName], в которую будут инъектированы
+          #[+Term--YDID строковые ресурсы] #[+Keyphrase--YDID для конкретной локали] (другими словами,
+          #[+Keyphrase--YDID один из] #[+Term--YDID объектов] #[+Keyword--YDID второго] уровня, определённых
+          в #[+Term--YDID JSON-файле]).
+
+      li.
+        Какие #[+Term--YDID расширения] будут добавлены именам #[+Keyword--YDID выходных] локализованных
+          #[+Term--YDID HTML-файлов] и какие #[+Term--YDID ключи] из #[+Term--YDID JSON-файла] будут им
+          соответствовать.
+        И то, и другое нужно будет задать через #[+Term--YDID ассоциативный массив]
+          #[+ImportantEntity__Code--YDID $locales].
+
+
+mixin Localization-localizedStringResourcesConstantName--PropertyDescription(properties)
+
+  -
+    /** @type { boolean } */
+    const { isCommonSettings } = properties;
+
+  p.Article-Paragraph.
+    Имя #[+Term--YDID константы], в которую будут сохранены #[+Term--YDID строковые ресурсы]
+      #[+Keyphrase--YDID для нужной локали] и затем инъектированы в #[+ImportantEntity--YDID Pug].
+
+  p.Article-Paragraph.
+    Например, пусть #[+Term--YDID файл] с #[+Term__Contrast--YDID путём]
+      #[+SecondaryEntity--YDID 01-Source/LocalizedStringResources.json]
+      #[+Keyphrase--YDID относительно корня проекта] имеет следующее #[+Term--YDID JSON-содержимое]:
+
+  +LocalizedStringResourcesJSON_FileCodeListingExample
+
+  p.Article-Paragraph.
+    Тогда, при ниже приведённых настройках:
+
+  if isCommonSettings
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $markupProcessing:
+
+            $common:
+
+              $localization:
+
+                $stringResourcesFileRelativePath: 01-Source/LocalizedStringResources.json
+                $localizedStringResourcesConstantName: $$localizedStringResources
+
+                $locales:
+
+                  english:
+                    $outputFileInterimNameExtensionWithoutDot: english
+                    $keyInLocalizedStringResourcesObject: $$english
+
+                  russian:
+                    $outputFileInterimNameExtensionWithoutDot: russian
+                    $keyInLocalizedStringResourcesObject: $$russian
+
+  else
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $markupProcessing:
+
+            $entryPointsGroups:
+
+              Pages:
+
+                $localization:
+
+                  $stringResourcesFileRelativePath: StaticPreview/StringResources.json
+                  $localizedStringResourcesConstantName: $$localizedStringResources
+
+                  $locales:
+
+                    english:
+
+                      $outputFileInterimNameExtensionWithoutDot: english
+                      $keyInLocalizedStringResourcesObject: $$english
+
+                    russian:
+
+                      $outputFileInterimNameExtensionWithoutDot: russian
+                      $keyInLocalizedStringResourcesObject: $$russian
+
+
+  p.Article-Paragraph
+
+    if isCommonSettings
+
+      | #[+Keyphrase--YDID во всех] #[+Term--YDID Pug-файлах]
+
+    else
+      | во всех #[+Term--YDID Pug-файлах]
+      |
+      +Keyphrase--YDID #[+Term--YDID группы точек входа] #[+SecondaryEntity__Code--YDID Pages]
+
+    |   будет доступна #[+Keyword--YDID глобальная] #[+Term--YDID переменная]
+    |   #[+SecondaryEntity__Code--YDID $$localizedStringResources].
+    | Значением её будет #[+Keyphrase--YDID один из] #[+Keyword--YDID дочерних] объектов из приведённого
+    |   выше #[+Term--YDID JSON-файла] в зависимости от #[+Term--YDID локали] страницы:
+
+  +CodeViewer--YDF
+    +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Pug }).
+      doctype html
+
+
+      block Requirements
+
+        - const pageStringResources = $$localizedStringResources.pages.products.list;
+
+
+      html(lang=$$LANGUAGE_TAG)
+
+        head
+
+          title= pageStringResources.metadata.title
+
+          meta(charset="utf-8")
+          meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+
+
+        body
+
+          h1= pageStringResources.topHeading
+
+  +AdmonitionBlock--YDF({
+    SVG_Icon: true,
+    geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+    decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.guidance
+  }).
+    Настройки, обеспечивающие инъекцию #[+Term--YDID константы] #[+SecondaryEntity__Code--YDID $$LANGUAGE_TAG] здесь
+      опущены чтобы сконцентрировать внимание на #[+SecondaryEntity__Code--YDID $stringResourcesFileRelativePath] и
+      #[+SecondaryEntity__Code--YDID $localizedStringResourcesConstantName], но будут в соответствующем разделе.
+
+
+mixin Localization-localeConstantName--PropertyDescription
+
+  p.Article-Paragraph.
+    Хотя #[+Term--YDID строковые ресурсы] в #[+Term__Contrast--YDID Pug-файл] инжектируются на нужном языке,
+      может потребоваться программно узнать текущую #[+Term--YDID локаль].
+    Например это потребуется сделать, если нужно вызывать одну #[+Term--YDID Pug-примесей] в зависимости от
+      #[+Term--YDID локали]:
+
+  +CodeViewer--YDF
+    +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Pug }).
+
+      case $$LOCALE
+
+        when "ENGLISH"
+
+          +Description__English
+
+        when "RUSSIAN"
+
+          +Description__Russian
+
+  p.Article-Paragraph.
+    Для того, чтобы реализовать изложенный принцип, нужно:
+
+  ol.Article-OrderedList
+
+    li Указать имя #[+Term--YDID константы], в которое будет сохранено нужное значение #[+Term--YDID локали]
+    li Указать её значения #[+Keyphrase--YDID для каждой #[+Term--YDID локали]]
+
+  p.Article-Paragraph.
+    #[+Keyword--YDID Первое] как раз и осуществляется через указание #[+ImportantEntity__Code--YDID $localeConstantName].
+    #[+Keyword--YDID Второй] же пункт следует осуществить, указав возможные значения через
+      #[+Term--YDID ассоциативный массив] #[+ImportantEntity__Code--YDID $locales].
+
+
+mixin Localization-nameOfConstantForInterpolationToLangHTML_Attribute--PropertyDescription
+
+  p.Article-Paragraph.
+    #[+Keyword--YDID Валидная] #[+Term--YDID HTML-страница] подразумевает указание значения #[+Term--YDID аттрибуту]
+      #[+ImportantEntity__Code--YDID lang] у #[+Term--YDID тэга] #[+ImportantEntity__Code--YDID html].
+    Однако поскольку при использовании функциональности локализации в #[+ImportantEntity--YDID YDA]
+      #[+Keyphrase--YDID для каждой страницы] будет #[+Keyword--YDID один] #[+Keyword__Contrast--YDID исходный]
+      #[+Term--YDID Pug-файл] #[+Keyphrase--YDID на все локализации], то #[+Keyword--YDID вместо] статического значения
+      этого #[+Term--YDID аттрибута] #[+Keyword--YDID необходимо] указать #[+Term--YDID константу], которую
+      инициализирует #[+ImportantEntity--YDID YDA] в ходе выполнения:
+
+  +CodeViewer--YDF
+    +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Pug }).
+      doctype html
+
+      html(lang=$$LANGUAGE_TAG)
+
+  p.Article-Paragraph.
+    Имя этой #[+Term--YDID константы] (в примере выше это #[+SecondaryEntity__Code--YDID $$LANGUAGE_TAG]) указывается
+      через #[+ImportantEntity__Code--YDID $nameOfConstantForInterpolationToLangHTML_Attribute], а её возможные
+      значения — через #[+Term--YDID ассоциативный массив] #[+ImportantEntity__Code--YDID $locales].
+
+
+mixin Localization-locales--PropertyDescription
+
+  p.Article-Paragraph.
+    #[+Term--YDID Ассоциативный массив] с #[+Keyword--YDID объектными] #[+Term--YDID значениями].
+
+  ul.Article-UnorderedList
+
+    li.
+
+      #[+Term--YDID Ключами] могут быть #[+Keyword--YDID любые] строки, однако качественное именование должно
+        чётко передавать, что ключи соответствуют #[+Term--YDID локалям], потому сокращения наподобие
+        #[+SecondaryEntity__Code--YDID ru] или #[+SecondaryEntity__Code--YDID en] #[+Keyword--YDID не]&nbsp;рекомендуются.
+
+    li.
+
+      #[+Keyword--YDID Значениями] являются #[+Term--YDID объекты], #[+Term__Contrast--YDID свойства] описаны ниже.
+
+
+mixin Localization-locales-outputFileInterimNameExtensionWithoutDot--PropertyDescription
+
+  p.Article-Paragraph.
+    При использовании функциональности #[+Term--YDID локализации] в #[+ImportantEntity--YDID YDA],
+      #[+Keyphrase--YDID для каждой страницы] будет #[+Keyword--YDID один] #[+Keyword__Contrast--YDID исходный]
+      #[+Term--YDID файл] #[+Keyphrase--YDID вне зависимости от того, сколько #[+Term--YDID локалей]].
+    Однако поскольку #[+Keyword--YDID выходных] #[+Term--YDID файлов] будет #[+SecondaryEntity__Code--YDID несколько]
+      в зависимости от количества #[+Term--YDID локалей], то их имена #[+Keyword--YDID должны] чем-либо отличаться
+      несмотря на наличие общей части.
+    Для этого, #[+ImportantEntity--YDID YDA] добавит #[+Keyword--YDID выходным] #[+Term--YDID файлам]
+      #[+Keyword--YDID промежуточное] #[+Term--YDID расширение имени], которое #[+Keyword--YDID необходимо] указать через
+      данное #[+Term--YDID свойство] — #[+ImportantEntity__Code--YDID $outputFileInterimNameExtensionWithoutDot].
+    Например, если имя #[+Keyword--YDID исходного] #[+Term--YDID файла] — #[+SecondaryEntity--YDID TopPage.pug], то при
+      указании #[+Term--YDID свойству] #[+ImportantEntity__Code--YDID $outputFileInterimNameExtensionWithoutDot] значения
+      #[+SecondaryEntity__Code--YDID russian] имя #[+Keyword--YDID выходного] #[+Term--YDID файла] будет
+      #[+SecondaryEntity--YDID TopPage.russian.html].
+    Аналогично и для других локалей.
+
+
+mixin Localization-locales-localeConstantValue--PropertyDescription(properties)
+
+  -
+    /** @type { boolean } */
+    const { isCommonSettings } = properties;
+
+  p.Article-Paragraph.
+    Соответствующее текущей #[+Term--YDID локали] значение #[+Term--YDID константы], имя которой было указано в
+      #[+ImportantEntity--YDID $localeConstantName].
+
+  p.Article-Paragraph.
+    Например, при приведённых ниже настройках в #[+Term--YDID Pug-код] будет инъектирована #[+Keyword--YDID глобальная]
+      #[+Term--YDID константа] #[+SecondaryEntity__Code--YDID $$LOCALE], которая может принимать значения
+      #[+SecondaryEntity__Code--YDID "ENGLISH"] или #[+SecondaryEntity__Code--YDID "RUSSIAN"]:
+
+  if isCommonSettings
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $markupProcessing:
+
+            $common:
+
+              $localization:
+
+                $localeConstantName: $$LOCALE
+
+                $locales:
+
+                  english:
+
+                    $outputFileInterimNameExtensionWithoutDot: english
+                    $localeConstantValue: ENGLISH
+
+                  russian:
+
+                    $outputFileInterimNameExtensionWithoutDot: russian
+                    $localeConstantValue: RUSSIAN
+
+  else
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $markupProcessing:
+
+            $entryPointsGroups:
+
+              Pages:
+
+                $localization:
+
+                  $localeConstantName: $$LOCALE
+
+                  $locales:
+
+                    english:
+
+                      $outputFileInterimNameExtensionWithoutDot: english
+                      $localeConstantValue: ENGLISH
+
+                    russian:
+
+                      $outputFileInterimNameExtensionWithoutDot: russian
+                      $localeConstantValue: RUSSIAN
+
+
+mixin Localization-locales-keyInLocalizedStringResourcesObject--PropertyDescription(properties)
+
+  -
+    /** @type { boolean } */
+    const { isCommonSettings } = properties;
+
+  p.Article-Paragraph.
+    #[+Term--YDID Ключ] #[+Keyword--YDID верхнего] уровня #[+Term--YDID объекта], определённого в
+      #[+Term--YDID JSON-файле], #[+Term__Contrast--YDID путь] которого #[+Keyword--YDID должен] быть указан через
+      #[+ImportantEntity__Code--YDID $stringResourcesFileRelativePath].
+    #[+Term--YDID Значение], соответствующее этому #[+Term--YDID ключу], будет сохранено в #[+Keyword--YDID глобальную]
+      #[+Term--YDID константу], имя которой #[+Keyword--YDID должно] быть указано через
+      #[+ImportantEntity__Code--YDID $localizedStringResourcesConstantName].
+
+  p.Article-Paragraph.
+    Допустим по #[+Term--YDID пути] #[+SecondaryEntity__Code--YDID StaticPreview/StringResources.json] относительно
+      корневой директории проекта находится #[+Term--YDID JSON-файл] со следующим содержимым:
+
+  +LocalizedStringResourcesJSON_FileCodeListingExample
+
+  p.Article-Paragraph.
+    Для того, чтобы #[+Keyword--YDID глобальная] #[+Term--YDID константа]
+      #[+ImportantEntity__Code--YDID $$localizedStringResources] была проинициализирована верным значением,
+      #[+Term--YDID свойству] #[+ImportantEntity__Code--YDID $keyInLocalizedStringResourcesObject]
+      #[+Keyword--YDID должно] быть указано одной из значений, упомянутом в приведённом выше
+      #[+SecondaryEntity__Code--YDID StaticPreview/StringResources.json], то есть
+      #[+SecondaryEntity__Code--YDID $$english] или #[+SecondaryEntity__Code--YDID $$russian], каждый в соответствии
+      с нужной #[+Term--YDID локалью]:
+
+  if isCommonSettings
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $markupProcessing:
+
+            $common:
+
+              $localization:
+
+                $stringResourcesFileRelativePath: 01-Source/LocalizedStringResources.json
+                $localizedStringResourcesConstantName: $$localizedStringResources
+
+                $locales:
+
+                  english:
+
+                    $outputFileInterimNameExtensionWithoutDot: english
+                    $keyInLocalizedStringResourcesObject: $$english
+
+                  russian:
+
+                    $outputFileInterimNameExtensionWithoutDot: russian
+                    $keyInLocalizedStringResourcesObject: $$russian
+
+  else
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+
+
+mixin Localization-locales-valueOfConstantForInterpolationToLangHTML_Attribute--PropertyDescription(properties)
+
+  -
+    /** @type { boolean } */
+    const { isCommonSettings } = properties;
+
+  p.Article-Paragraph.
+    Соответствующее текущей #[+Term--YDID локали] значение #[+Keyword--YDID глобальной] #[+Term--YDID константы], имя
+      которой было указано в #[+ImportantEntity--YDID $nameOfConstantForInterpolationToLangHTML_Attribute].
+
+  p.Article-Paragraph.
+    Например, при следующих настройках в зависимости от #[+Term--YDID локали] будет инъектирована
+      #[+Keyword--YDID глобальная] #[+Term--YDID константа]
+      #[+SecondaryEntity__Code--YDID $$HTML_TAG_LANG_ATTRIBUTE_VALUE] со значением
+      #[+SecondaryEntity__Code--YDID "en"] или #[+SecondaryEntity__Code--YDID "ru"] в зависимости от
+      #[+Term--YDID локали].
+
+  if isCommonSettings
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $markupProcessing:
+
+            $common:
+
+              $localization:
+
+                $nameOfConstantForInterpolationToLangHTML_Attribute: $$HTML_TAG_LANG_ATTRIBUTE_VALUE
+
+                $locales:
+
+                  english:
+
+                    $outputFileInterimNameExtensionWithoutDot: english
+                    $valueOfConstantForInterpolationToLangHTML_Attribute: en
+
+                  russian:
+
+                    $outputFileInterimNameExtensionWithoutDot: russian
+                    $valueOfConstantForInterpolationToLangHTML_Attribute: ru

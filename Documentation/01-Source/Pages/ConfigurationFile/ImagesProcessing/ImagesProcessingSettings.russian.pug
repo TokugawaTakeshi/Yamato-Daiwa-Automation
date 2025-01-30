@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.imagesProcessing;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("ImagesProcessingSettings"),
+        title: buildHTML_PageTitle(topHeading),
         description: ""
       },
       stylesSheetsURIs: [
@@ -27,14 +32,9 @@ block append Metadata
     RoutingEmulator.setCurrentRoute("configurationFile.imagesProcessing");
 
     LanguageDropDownList__YDF_DK.setLinks({
-      english: "./ImagesProcessingSettings.english.html",
-      japanese: "./ImagesProcessingSettings.japanese.html"
+      english: routing.english.configurationFile.$children.imagesProcessing.$URI,
+      japanese: routing.japanese.configurationFile.$children.imagesProcessing.$URI,
     });
-
-    const {
-      $heading: topHeading,
-      $sectioning: localizedSectioning
-    } = localizedRouting.configurationFile.$children.imagesProcessing;
 
 
 block append HeadScripts
@@ -50,3 +50,7 @@ block append SpecificContent
 
     //- ━━━ `$imagesProcessing` — Настройки обработки изображений ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })

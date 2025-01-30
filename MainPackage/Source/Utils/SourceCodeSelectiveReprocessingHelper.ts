@@ -1,4 +1,4 @@
-/* eslint max-depth: [ warn, 4 ] */
+/* eslint max-depth: [ warn, 4 ] -- Maybe extracting to methods is possible, but it will be too many parameters. */
 
 import {
   Logger,
@@ -31,54 +31,71 @@ class SourceCodeSelectiveReprocessingHelper {
 
   private static readonly DEBUGGING_MODE: boolean = false;
   private static readonly cachedMetadataFileContentSpecification: RawObjectDataProcessor.
-      FixedKeyAndValuesTypeObjectDataSpecification =
-    {
-      nameForLogging: "SourceCodeSelectiveReprocessingHelper.CachedRawMetadata",
-      subtype: RawObjectDataProcessor.ObjectSubtypes.fixedKeyAndValuePairsObject,
-      properties: {
-        entryPoints: {
-          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-          required: true,
-          value: {
-            type: Object,
+      FixedSchemaObjectTypeDataSpecification =
+          {
+            nameForLogging: "SourceCodeSelectiveReprocessingHelper.CachedRawMetadata",
+            subtype: RawObjectDataProcessor.ObjectSubtypes.fixedSchema,
             properties: {
-              modificationDate__ISO8601: {
-                type: String,
-                required: true
+              entryPoints: {
+                type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+                isUndefinedForbidden: true,
+                isNullForbidden: true,
+                areUndefinedTypeValuesForbidden: true,
+                areNullTypeValuesForbidden: true,
+                value: {
+                  type: Object,
+                  properties: {
+                    modificationDate__ISO8601: {
+                      type: String,
+                      isUndefinedForbidden: false,
+                      isNullForbidden: true
+                    },
+                    directChildrenFilesRelativePaths: {
+                      type: Array,
+                      areUndefinedElementsForbidden: true,
+                      areNullElementsForbidden: true,
+                      isUndefinedForbidden: true,
+                      isNullForbidden: true,
+                      element: { type: String }
+                    }
+                  }
+                }
               },
-              directChildrenFilesRelativePaths: {
-                type: Array,
-                required: true,
-                element: { type: String }
+              childrenFiles: {
+                type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+                isUndefinedForbidden: true,
+                isNullForbidden: true,
+                areUndefinedTypeValuesForbidden: true,
+                areNullTypeValuesForbidden: true,
+                value: {
+                  type: Object,
+                  properties: {
+                    modificationDate__ISO8601: {
+                      type: String,
+                      isUndefinedForbidden: true,
+                      isNullForbidden: true
+                    },
+                    directChildrenFilesRelativePaths: {
+                      type: Array,
+                      isUndefinedForbidden: true,
+                      isNullForbidden: true,
+                      areUndefinedElementsForbidden: true,
+                      areNullElementsForbidden: true,
+                      element: { type: String }
+                    },
+                    parentEntryPointsRelativePaths: {
+                      type: Array,
+                      isUndefinedForbidden: true,
+                      isNullForbidden: true,
+                      areUndefinedElementsForbidden: true,
+                      areNullElementsForbidden: true,
+                      element: { type: String }
+                    }
+                  }
+                }
               }
             }
-          }
-        },
-        childrenFiles: {
-          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-          required: true,
-          value: {
-            type: Object,
-            properties: {
-              modificationDate__ISO8601: {
-                type: String,
-                required: true
-              },
-              directChildrenFilesRelativePaths: {
-                type: Array,
-                required: true,
-                element: { type: String }
-              },
-              parentEntryPointsRelativePaths: {
-                type: Array,
-                required: true,
-                element: { type: String }
-              }
-            }
-          }
-        }
-      }
-    };
+          };
 
   private readonly entryPointsMetadata: SourceCodeSelectiveReprocessingHelper.EntryPointsMetadata = new Map();
   private readonly isEntryPoint: (targetFileAbsolutePath: string) => boolean;
@@ -92,6 +109,8 @@ class SourceCodeSelectiveReprocessingHelper {
   private readonly CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH: string;
   private readonly CACHED_METADATA_FILE_ABSOLUTE_PATH: string;
   private readonly TARGET_FILES_TYPE_IN_SINGULAR_FORM: string;
+
+  private currentChainOfRelativePathsInFilesTree: Array<string> = [];
 
 
   /* ━━━ Constructor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -113,9 +132,9 @@ class SourceCodeSelectiveReprocessingHelper {
     this.scanFilesHierarchyTreeForEntryPoints(
       new Set(
         initializationProperties.initialEntryPointsSourceFilesAbsolutePaths.map(
-          (entryPointFileAbsolutePath__potentiallyWithOperationingSystemDependentPathSeparators: string): string =>
+          (entryPointFileAbsolutePath__potentiallyWithOperatingSystemDependentPathSeparators: string): string =>
               ImprovedPath.replacePathSeparatorsToForwardSlashes(
-                entryPointFileAbsolutePath__potentiallyWithOperationingSystemDependentPathSeparators
+                entryPointFileAbsolutePath__potentiallyWithOperatingSystemDependentPathSeparators
               )
         )
       )
@@ -397,22 +416,24 @@ class SourceCodeSelectiveReprocessingHelper {
 
       }
 
-      Logger.logGeneric({
-        mustOutputIf: SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
-        badge: { customText: "Debug" },
-        title: "SourceCodeSelectiveReprocessingHelper, Entry Point Analysis Complete.",
-        description: entryPointPathRelativeToConsumingProjectRootDirectory__forwardSlashSeparators,
-        additionalData: cachedMetadataOfCurrentEntryPoint
-      });
-
       for (
         const absolutePathOfDirectExistingChildFileOfCurrentEntryPoint__forwardSlashSeparators of
             absolutePathsOfExistingDirectChildrenFilesOfCurrentEntryPoint__forwardSlashSeparators
       ) {
 
+        const childFileRelativePath__forwardSlashSeparators: string = ImprovedPath.computeRelativePath({
+          basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+          comparedPath: absolutePathOfDirectExistingChildFileOfCurrentEntryPoint__forwardSlashSeparators,
+          alwaysForwardSlashSeparators: true
+        });
+
+        this.currentChainOfRelativePathsInFilesTree[this.currentChainOfRelativePathsInFilesTree.length] =
+            childFileRelativePath__forwardSlashSeparators;
+
         this.updateMetadataForExistingChildFile({
           targetChildFileAbsolutePath__forwardSlashSeparators:
               absolutePathOfDirectExistingChildFileOfCurrentEntryPoint__forwardSlashSeparators,
+          targetChildFileRelativePath__forwardSlashSeparators: childFileRelativePath__forwardSlashSeparators,
           parentEntryPointAbsolutePath__forwardSlashSeparators: entryPointAbsolutePath__forwardSlashSeparators
         });
 
@@ -703,39 +724,24 @@ class SourceCodeSelectiveReprocessingHelper {
   private updateMetadataForExistingChildFile(
     {
       targetChildFileAbsolutePath__forwardSlashSeparators,
+      targetChildFileRelativePath__forwardSlashSeparators,
       parentEntryPointAbsolutePath__forwardSlashSeparators
     }: Readonly<{
       targetChildFileAbsolutePath__forwardSlashSeparators: string;
+      targetChildFileRelativePath__forwardSlashSeparators: string;
       parentEntryPointAbsolutePath__forwardSlashSeparators: string;
     }>
   ): void {
 
-    const targetChildFileRelativePath__forwardSlashSeparators: string = ImprovedPath.computeRelativePath({
-      basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
-      comparedPath: targetChildFileAbsolutePath__forwardSlashSeparators,
-      alwaysForwardSlashSeparators: true
-    });
-
     const cachedMetadataOfCurrentChildFile: SourceCodeSelectiveReprocessingHelper.ChildFileMetadata | undefined =
         this.childrenFilesMetadata.get(targetChildFileRelativePath__forwardSlashSeparators);
-
-    Logger.logGeneric({
-      mustOutputIf: SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
-      badge: { customText: "Debug" },
-      title: "SourceCodeSelectiveReprocessingHelper, Updating of Children Files Metadata",
-      description: targetChildFileRelativePath__forwardSlashSeparators,
-      additionalData: {
-        absolutePathsOfAffiliatedFilesWhichHasBeenScannedDuringCurrentPass:
-            this.absolutePathsOfChildrenFilesWhichHasBeenScannedDuringCurrentPass
-      }
-    });
 
     /* [ Approach ] If the child file has been scanned it must be in the `childrenFilesMetadata` however for the
     *    TypeScript type checking the non-undefined check of "cachedMetadataOfCurrentAffiliatedFile" additionally
     *    required. */
     if (
       this.absolutePathsOfChildrenFilesWhichHasBeenScannedDuringCurrentPass.
-          has(targetChildFileRelativePath__forwardSlashSeparators) &&
+          has(targetChildFileAbsolutePath__forwardSlashSeparators) &&
       isNotUndefined(cachedMetadataOfCurrentChildFile)
     ) {
 
@@ -798,7 +804,15 @@ class SourceCodeSelectiveReprocessingHelper {
         }
 
         absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators = new Set(
-          Array.from(cachedMetadataOfCurrentChildFile.directChildrenFilesRelativePaths)
+          Array.
+                from(cachedMetadataOfCurrentChildFile.directChildrenFilesRelativePaths).
+                map(
+                  (directChildFileRelativePath: string): string =>
+                      ImprovedPath.joinPathSegments([
+                        this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+                        directChildFileRelativePath
+                      ])
+                )
         );
 
       }
@@ -833,18 +847,38 @@ class SourceCodeSelectiveReprocessingHelper {
     }
 
     this.absolutePathsOfChildrenFilesWhichHasBeenScannedDuringCurrentPass.
-        add(targetChildFileRelativePath__forwardSlashSeparators);
+        add(targetChildFileAbsolutePath__forwardSlashSeparators);
 
     for (
       const absolutePathOfExistingAffiliatedFileOfTargetOne__forwardSlashSeparators of
-            absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators
+          absolutePathsOfExistingChildrenFilesOfTargetOne__forwardSlashSeparators
     ) {
+
+      const relativePathOfChildrenFileOfTargetOne__forwardSlashSeparators: string = ImprovedPath.computeRelativePath({
+        basePath: this.CONSUMING_PROJECT_ROOT_DIRECTORY_ABSOLUTE_PATH,
+        comparedPath: absolutePathOfExistingAffiliatedFileOfTargetOne__forwardSlashSeparators,
+        alwaysForwardSlashSeparators: true
+      });
+
+      if (this.currentChainOfRelativePathsInFilesTree.includes(relativePathOfChildrenFileOfTargetOne__forwardSlashSeparators)) {
+        continue;
+      }
+
+
+      this.currentChainOfRelativePathsInFilesTree[this.currentChainOfRelativePathsInFilesTree.length] =
+          relativePathOfChildrenFileOfTargetOne__forwardSlashSeparators;
+
       this.updateMetadataForExistingChildFile({
         targetChildFileAbsolutePath__forwardSlashSeparators:
             absolutePathOfExistingAffiliatedFileOfTargetOne__forwardSlashSeparators,
+        targetChildFileRelativePath__forwardSlashSeparators:
+            relativePathOfChildrenFileOfTargetOne__forwardSlashSeparators,
         parentEntryPointAbsolutePath__forwardSlashSeparators
       });
+
     }
+
+    this.currentChainOfRelativePathsInFilesTree.pop();
 
   }
 
@@ -863,6 +897,16 @@ class SourceCodeSelectiveReprocessingHelper {
           cachedMetadataOfTargetChildFile.directChildrenFilesRelativePaths
     ) {
 
+      if (
+        this.currentChainOfRelativePathsInFilesTree.
+            includes(relativePathsOfDirectChildFileOfCurrentOne__forwardSlashSeparators)
+      ) {
+        continue;
+      }
+
+      this.currentChainOfRelativePathsInFilesTree[this.currentChainOfRelativePathsInFilesTree.length] =
+          relativePathsOfDirectChildFileOfCurrentOne__forwardSlashSeparators;
+
       const cachedMetadataOfChildFileOfCurrentOne: SourceCodeSelectiveReprocessingHelper.ChildFileMetadata | undefined =
           this.childrenFilesMetadata.get(relativePathsOfDirectChildFileOfCurrentOne__forwardSlashSeparators);
 
@@ -880,6 +924,8 @@ class SourceCodeSelectiveReprocessingHelper {
       });
 
     }
+
+    this.currentChainOfRelativePathsInFilesTree.pop();
 
   }
 

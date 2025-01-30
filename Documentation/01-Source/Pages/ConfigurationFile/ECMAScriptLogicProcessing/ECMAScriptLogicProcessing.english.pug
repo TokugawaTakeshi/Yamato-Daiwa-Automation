@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.ECMAScriptLogicProcessing;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("ECMAScript Logic Processing"),
+        title: buildHTML_PageTitle(topHeading),
         description: ""
       },
       stylesSheetsURIs: [
@@ -31,11 +36,6 @@ block append Metadata
       russian: routing.russian.configurationFile.$children.ECMAScriptLogicProcessing.$URI
     });
 
-    const {
-      $heading: topHeading,
-      $sectioning: localizedSectioning
-    } = localizedRouting.configurationFile.$children.ECMAScriptLogicProcessing;
-
 
 block append HeadScripts
 
@@ -50,3 +50,7 @@ block append SpecificContent
 
     //- ━━━ `$ECMAScriptLogicProcessing` — ECMAScript Logic Processing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })

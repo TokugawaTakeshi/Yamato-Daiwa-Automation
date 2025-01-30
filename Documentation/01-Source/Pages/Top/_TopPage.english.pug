@@ -11,9 +11,11 @@ block append Metadata
 
   -
 
+    const { $heading: topHeading } = localizedRouting.top;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Top Page"),
+        title: buildHTML_PageTitle(topHeading),
         description:
             "Node.js utility \"Yamato Daiwa Automation\" (abbreviation: \"YDA\") in the high-level project building " +
               "tool such as client and server applications, console applications, the libraries for browser JavaScript" +

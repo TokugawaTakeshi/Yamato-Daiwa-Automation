@@ -1,7 +1,23 @@
-common:
+selectiveExecutions:
 
-  $heading: "<code>$common</code> 一般設定"
+  $heading: "<code>$selectiveExecutions</code> 選択的実行"
 
-  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+  settingUpOfEachItem:
 
-    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> 意匠設計記法（スタイル）ファイル保存と再構成の間の秒数"
+    $heading: "選択的実行毎設定"
+
+    tasksAndSourceFilesSelection:
+
+      $heading: "<code>$tasksAndSourceFilesSelection</code> 課題・ソースファイルの選択"
+
+    browserLiveReloadingSetupID:
+
+      $heading: "<code>$browserLiveReloadingSetupID</code> ブラウザータブ自動リロード設定ID"
+
+    distributablePackageJSON_Generating:
+
+      $heading: "<code>$distributablePackageJSON_Generating</code> 成果物専用「package.json」ファイルの精鋭"
+
+publicDirectoriesRelativePaths:
+
+  $heading: "<code>$publicDirectoriesRelativePaths</code> 構成モード毎パブリックディジタルの早退パス"

@@ -1,6 +1,78 @@
 common:
 
-  $heading: "<code>$common</code> 一般設定"
+  $heading: "<code>$common</code> 共通設定"
+
+  localization:
+
+    $heading: "<code>$localization</code> 多言語化共通設定"
+
+    stringResourcesFileRelativePath:
+
+      $heading: "<code>$stringResourcesFileRelativePath</code> 局地化文字列資源ファイル相対パス"
+
+    localizedStringResourcesConstantName:
+
+      $heading: "<code>$localizedStringResourcesConstantName</code> 局地化文字列資源定数名"
+
+    localeConstantName:
+
+      $heading: "<code>$localeConstantName</code>"
+
+    nameOfConstantForInterpolationToLangHTML_Attribute:
+
+      $heading: "<code>$nameOfConstantForInterpolationToLangHTML_Attribute</code>"
+
+    locales:
+
+      $heading: "<code>$locales</code>"
+
+      outputFileInterimNameExtensionWithoutDot:
+
+        $heading: "<code>outputFileInterimNameExtensionWithoutDot</code>"
+
+      localeConstantValue:
+
+        $heading: "<code>localeConstantValue</code>"
+
+      keyInLocalizedStringResourcesObject:
+
+        $heading: "<code>keyInLocalizedStringResourcesObject</code>"
+
+      valueOfConstantForInterpolationToLangHTML_Attribute:
+
+        $heading: "<code>valueOfConstantForInterpolationToLangHTML_Attribute</code>"
+
+    excludedFilesPathsRelativeRelativeToProjectRootDirectory:
+
+      $heading: "<code>$excludedFilesPathsRelativeRelativeToProjectRootDirectory</code>"
+
+linting:
+
+  $heading: "<code>linting</code> リンティング設定"
+
+staticPreview:
+
+  $heading: "<code>$staticPreview</code> 静的プレビュー設定"
+
+  pagesVariations:
+
+    $heading: "<code>$pagesVariations</code> ページ変形設定"
+
+    stateDependent:
+
+      $heading: "<code>$stateDependent</code> ステート依存ページ変形設定"
+
+      configurationFile:
+
+        $heading: "設定ファイル"
+
+    localeDependent:
+
+      $heading: "<code>$localeDependent</code> 局地以前ページ変形設定"
+
+buildingModeDependent:
+
+  $heading: "<code>$buildingModeDependent</code> プロジェクト構成モード依存共通設定"
 
   secondsBetweenFileUpdatingAndStartingOfRebuilding:
 

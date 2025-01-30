@@ -1,0 +1,38 @@
+{
+  "$$english": {
+    "pages": {
+      "products": {
+        "list": {
+          "metadata": {
+            "title": "Products List — ACME Store"
+          },
+          "topHeading": "Products List"
+        },
+        "details": {
+          "metadata": {
+            "title": "Product Details — ACME Store"
+          },
+          "topHeading": "Product Details"
+        }
+      }
+    }
+  },
+  "$$japanese": {
+    "pages": {
+      "products": {
+        "list": {
+          "metadata": {
+            "title": "商品一覧 ｜ ACMEストア"
+          },
+          "topHeading": "商品一覧"
+        },
+        "details": {
+          "metadata": {
+            "title": "商品詳細 ｜ ACMEストア"
+          },
+          "topHeading": "商品詳細"
+        }
+      }
+    }
+  }
+}

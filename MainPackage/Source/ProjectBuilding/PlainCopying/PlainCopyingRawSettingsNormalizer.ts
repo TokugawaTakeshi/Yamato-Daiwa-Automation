@@ -45,15 +45,18 @@ export default class PlainCopyingRawSettingsNormalizer {
   public static normalize(
     {
       plainCopyingSettings__fromFile__rawValid,
-      commonSettings__normalized
+      commonSettings__normalized: {
+        tasksAndSourceFilesSelection,
+        projectRootDirectoryAbsolutePath,
+        projectBuildingMode
+      }
     }: Readonly<{
       plainCopyingSettings__fromFile__rawValid: PlainCopyingSettings__FromFile__RawValid;
       commonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
     }>
   ): PlainCopyingSettings__Normalized {
 
-    const explicitlySpecifiedActualFilesGroupsIDs: ReadonlyArray<string> =
-        commonSettings__normalized.tasksAndSourceFilesSelection?.plainCopying ?? [];
+    const explicitlySpecifiedActualFilesGroupsIDs: ReadonlyArray<string> = tasksAndSourceFilesSelection?.plainCopying ?? [];
 
 
     const filesGroups: { [groupID: string]: PlainCopyingSettings__Normalized.FilesGroup; } = {};
@@ -77,7 +80,7 @@ export default class PlainCopyingRawSettingsNormalizer {
 
         const filesSingularGroupSettingsActualForCurrentProjectBuildingMode__rawValid__fromFile:
             PlainCopyingSettings__FromFile__RawValid.FilesGroup.Singular.BuildingModeDependent | undefined =
-            filesGroup__rawValid__fromFile.buildingModeDependent[commonSettings__normalized.projectBuildingMode];
+            filesGroup__rawValid__fromFile.buildingModeDependent[projectBuildingMode];
 
         if (isUndefined(filesSingularGroupSettingsActualForCurrentProjectBuildingMode__rawValid__fromFile)) {
           continue;
@@ -85,7 +88,7 @@ export default class PlainCopyingRawSettingsNormalizer {
 
 
         filesGroups[filesGroupID] = PlainCopyingRawSettingsNormalizer.normalizeFilesSingularGroupSettings({
-          projectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+          projectRootDirectoryAbsolutePath,
           sourceFileRelativePath: filesGroup__rawValid__fromFile.sourceFileRelativePath,
           aliasName,
           filesSingularGroupSettingsActualForCurrentProjectBuildingMode__rawValid__fromFile
@@ -95,7 +98,7 @@ export default class PlainCopyingRawSettingsNormalizer {
 
         const filesPluralGroupSettingsActualForCurrentProjectBuildingMode__rawValid__fromFile:
             PlainCopyingSettings__FromFile__RawValid.FilesGroup.Plural.BuildingModeDependent | undefined =
-            filesGroup__rawValid__fromFile.buildingModeDependent[commonSettings__normalized.projectBuildingMode];
+            filesGroup__rawValid__fromFile.buildingModeDependent[projectBuildingMode];
 
         if (isUndefined(filesPluralGroupSettingsActualForCurrentProjectBuildingMode__rawValid__fromFile)) {
           continue;
@@ -103,10 +106,14 @@ export default class PlainCopyingRawSettingsNormalizer {
 
 
         filesGroups[filesGroupID] = PlainCopyingRawSettingsNormalizer.normalizeFilesPluralGroupSettings({
-            projectRootDirectoryAbsolutePath: commonSettings__normalized.projectRootDirectoryAbsolutePath,
+            projectRootDirectoryAbsolutePath,
             sourceTopDirectoryRelativePath: filesGroup__rawValid__fromFile.sourceTopDirectoryRelativePath,
             fileNameLastExtensions: filesGroup__rawValid__fromFile.fileNameLastExtensions,
             aliasName,
+            excludedSubdirectoriesPathsRelativeToAssetsGroupSourceTopDirectory:
+                filesGroup__rawValid__fromFile.excludeSubdirectoriesRelativePaths,
+            excludedFilesPathsRelativeToAssetsGroupSourceTopDirectory:
+                filesGroup__rawValid__fromFile.excludeFilesRelativePaths,
             filesPluralGroupSettingsActualForCurrentProjectBuildingMode__rawValid__fromFile
           });
 
@@ -189,12 +196,16 @@ export default class PlainCopyingRawSettingsNormalizer {
       projectRootDirectoryAbsolutePath,
       sourceTopDirectoryRelativePath,
       fileNameLastExtensions,
+      excludedSubdirectoriesPathsRelativeToAssetsGroupSourceTopDirectory = [],
+      excludedFilesPathsRelativeToAssetsGroupSourceTopDirectory = [],
       aliasName,
       filesPluralGroupSettingsActualForCurrentProjectBuildingMode__rawValid__fromFile
     }: Readonly<{
       projectRootDirectoryAbsolutePath: string;
       sourceTopDirectoryRelativePath: string;
       fileNameLastExtensions?: ReadonlyArray<string>;
+      excludedSubdirectoriesPathsRelativeToAssetsGroupSourceTopDirectory?: ReadonlyArray<string>;
+      excludedFilesPathsRelativeToAssetsGroupSourceTopDirectory?: ReadonlyArray<string>;
       aliasName: string;
       filesPluralGroupSettingsActualForCurrentProjectBuildingMode__rawValid__fromFile:
           PlainCopyingSettings__FromFile__RawValid.FilesGroup.Plural.BuildingModeDependent;
@@ -215,7 +226,6 @@ export default class PlainCopyingRawSettingsNormalizer {
       { alwaysForwardSlashSeparators: true }
     );
 
-
     const sourceAndOutputFilesAbsolutePathsCorrespondenceMapForCurrentGroup: Map<string, string> = new Map<string, string>();
 
     for (
@@ -225,7 +235,25 @@ export default class PlainCopyingRawSettingsNormalizer {
               ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
                 basicDirectoryPath: sourceTopDirectoryAbsolutePath,
                 fileNamesExtensions: fileNameLastExtensions
-              })
+              }),
+              ...excludedSubdirectoriesPathsRelativeToAssetsGroupSourceTopDirectory.map(
+                (excludedSubdirectoryPathRelativeToAssetsGroupSourceTopDirectory: string): string =>
+                    ImprovedGlob.buildExcludingOfDirectoryWithSubdirectoriesGlobSelector(
+                      ImprovedPath.joinPathSegments(
+                        [ sourceTopDirectoryAbsolutePath, excludedSubdirectoryPathRelativeToAssetsGroupSourceTopDirectory ],
+                        { alwaysForwardSlashSeparators: true }
+                      )
+                    )
+              ),
+              ...excludedFilesPathsRelativeToAssetsGroupSourceTopDirectory.map(
+                (excludedFilePathRelativeToAssetsGroupSourceTopDirectory: string): string =>
+                  ImprovedGlob.includingGlobSelectorToExcludingOne(
+                    ImprovedPath.joinPathSegments(
+                      [ sourceTopDirectoryAbsolutePath, excludedFilePathRelativeToAssetsGroupSourceTopDirectory ],
+                      { alwaysForwardSlashSeparators: true }
+                    )
+                  )
+              )
             ],
             { alwaysForwardSlashSeparators: true }
           )
@@ -258,7 +286,7 @@ export default class PlainCopyingRawSettingsNormalizer {
       const outputFileNameWithExtensions: string = PlainCopyingRawSettingsNormalizer.computeOutputFileNameWithExtensions({
         initialFileNameWithExtensions: extractFileNameWithAllExtensionsFromPath({
           targetPath: sourceFileAbsolutePath,
-          mustThrowErrorIfLastPathSegmentHasNoDots: true
+          mustThrowErrorIfLastPathSegmentHasNoDots: false
         }),
         sourceTopDirectoryAbsolutePath,
         sourceFileAbsolutePath,

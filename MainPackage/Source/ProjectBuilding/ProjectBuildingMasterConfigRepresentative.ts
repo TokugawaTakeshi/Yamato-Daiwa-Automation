@@ -197,6 +197,14 @@ export default class ProjectBuildingMasterConfigRepresentative {
     return this.commonSettings.projectBuildingMode === ConsumingProjectBuildingModes.production;
   }
 
+  public get isProductionLikeBuildingMode(): boolean {
+    return [
+      ConsumingProjectBuildingModes.testing,
+      ConsumingProjectBuildingModes.staging,
+      ConsumingProjectBuildingModes.production
+    ].includes(this.commonSettings.projectBuildingMode);
+  }
+
 
   /* --- Tasks execution requirement -------------------------------------------------------------------------------- */
   /* eslint-disable @stylistic/brace-style -- In this case the Allman style provides symmetry. */

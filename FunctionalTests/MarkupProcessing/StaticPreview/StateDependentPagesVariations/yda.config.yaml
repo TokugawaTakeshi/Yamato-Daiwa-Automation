@@ -1,0 +1,72 @@
+$projectBuilding:
+
+  $markupProcessing:
+
+    $common:
+      $buildingModeDependent:
+        $production:
+          $mustResolveResourcesPointersToRelativePaths: true
+
+    $importingFromTypeScript:
+      $importedNamespace: IMPORTS_FROM_TYPESCRIPT
+      $sourceFileRelativePath: 01-Source/ExportsForPug.ts
+      $nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected: Requirements
+
+    $staticPreview:
+      $stateDependentPagesVariations:
+        $specificationFileRelativePath: 01-Source/StaticPreview/PagesStateDependentVariations.yaml
+
+    $entryPointsGroups:
+
+      StaticPreview:
+
+        $singleEntryPointSourceFileRelativePath: 01-Source/StaticPreview/StaticPreviewAnywherePage.pug
+
+        $buildingModeDependent:
+          $staticPreview:
+            $outputTopDirectoryRelativePath: 02-StaticPreviewBuild
+
+      Pages:
+
+        $sourceFilesTopDirectoryRelativePath: 01-Source/Pages
+
+        $partialsRecognition:
+          $excludeSubdirectoriesWithPrefixes: "_"
+          $excludeFilesWithPrefixes: "_"
+
+        $buildingModeDependent:
+          $staticPreview:
+            $outputTopDirectoryRelativePath: 02-StaticPreviewBuild
+          $production:
+            $outputTopDirectoryRelativePath: 03-ProductionBuild
+
+        $localization:
+
+          $localeConstantName: $$LOCALE
+          $nameOfConstantForInterpolationToLangHTML_Attribute: $$HTML_TAG_LANG_ATTRIBUTE_VALUE
+
+          $locales:
+
+            english:
+              $outputFileInterimNameExtensionWithoutDot: english
+              $localeConstantValue: ENGLISH
+              $valueOfConstantForInterpolationToLangHTML_Attribute: en
+
+            japanese:
+              $outputFileInterimNameExtensionWithoutDot: japanese
+              $localeConstantValue: JAPANESE
+              $valueOfConstantForInterpolationToLangHTML_Attribute: ja
+
+          $excludedFilesPathsRelativeToSourcesFilesTopDirectory:
+            - TermsOfUse.pug
+
+  $browserLiveReloading:
+
+    $setups:
+
+      StaticPreview:
+
+        $localServer:
+
+          $rootDirectoryRelativePath: 02-StaticPreviewBuild
+          $customStartingFileNameWithExtension: StaticPreviewAnywherePage.html

@@ -118,13 +118,15 @@ export default abstract class ESLintSpecialist {
       {
         subtype: RawObjectDataProcessor.ObjectSubtypes.indexedArray,
         nameForLogging: "ESLint ignoring patterns",
+        areUndefinedElementsForbidden: true,
+        areNullElementsForbidden: true,
         element: {
           type: String
         }
       }
     );
 
-    if (processingResult.rawDataIsInvalid) {
+    if (processingResult.isRawDataInvalid) {
 
       Logger.logError({
         errorType: InvalidExternalDataError.NAME,

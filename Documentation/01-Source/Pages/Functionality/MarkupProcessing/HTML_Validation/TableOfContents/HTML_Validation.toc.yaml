@@ -1,0 +1,15 @@
+level1_1:
+  $heading: `level1_1.$heading`
+  $anchor: LEVEL1_1--SECTION"
+
+level1_2:
+
+  $heading: `level1_2.$heading`
+  $anchor: LEVEL1_2--SECTION
+
+  $children:
+
+    level2_1:
+    
+      $heading: `level1_2.level2_1.$heading`
+      $anchor: LEVEL2_1--SECTION

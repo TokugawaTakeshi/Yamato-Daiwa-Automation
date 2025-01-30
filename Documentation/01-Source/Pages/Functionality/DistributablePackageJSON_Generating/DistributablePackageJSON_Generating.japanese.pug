@@ -11,10 +11,15 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.functionality.$children.distributablePackageJSON_Generating;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("納品専用package.jsonの生成"),
-        description: "TODO"
+        title: buildHTML_PageTitle(topHeading),
+        description: ""
       },
       stylesSheetsURIs: [
         "$CommonStyles",
@@ -31,11 +36,6 @@ block append Metadata
       russian: routing.russian.functionality.$children.distributablePackageJSON_Generating.$URI
     });
 
-    const {
-      $heading: topHeading,
-      $sectioning: localizedSectioning
-    } = localizedRouting.functionality.$children.distributablePackageJSON_Generating;
-
 
 block append HeadScripts
 
@@ -50,3 +50,7 @@ block append SpecificContent
 
     //- ━━━ 納品専用package.jsonの生成 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })

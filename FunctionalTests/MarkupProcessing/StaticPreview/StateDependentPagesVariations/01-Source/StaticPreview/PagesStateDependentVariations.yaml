@@ -1,0 +1,10 @@
+01-Source/Pages/Product/List/ProductsListPage.pug:
+
+  $stateObjectTypeVariableName: "$$productsListPagePageStatesSimulations"
+
+  $stateDependentVariations:
+
+    __Loading: { loading: true }
+    __Error: { error: true }
+    __NoItems: { noItems: true }
+    __NoSearchResults: { noSearchResults: true }

@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.functionality.$children.distributablePackageJSON_Generating;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Генерация package.json для дистрибутива"),
+        title: buildHTML_PageTitle(topHeading),
         description: ""
       },
       stylesSheetsURIs: [
@@ -31,11 +36,6 @@ block append Metadata
       japanese: routing.japanese.functionality.$children.distributablePackageJSON_Generating.$URI
     });
 
-    const {
-      $heading: topHeading,
-      $sectioning: localizedSectioning
-    } = localizedRouting.functionality.$children.distributablePackageJSON_Generating;
-
 
 block append HeadScripts
 
@@ -50,3 +50,7 @@ block append SpecificContent
 
     //- ━━━ Генерация package.json для дистрибутива ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })

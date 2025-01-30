@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.markupProcessing;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Markup Processing Settings"),
+        title: buildHTML_PageTitle(topHeading),
         description:
             "The description of the configuration of the markup (source code: Pug, output code: HTML) processing in the " +
               "\"Yamato Daiwa Automation\" (abbreviation: \"YDA\"), the Node.js utility for the projects " +
@@ -34,11 +39,6 @@ block append Metadata
       russian: routing.russian.configurationFile.$children.markupProcessing.$URI
     });
 
-    const {
-      $heading: topHeading,
-      $sectioning: localizedSectioning
-    } = localizedRouting.configurationFile.$children.markupProcessing;
-
 
 block append HeadScripts
 
@@ -53,6 +53,10 @@ block append SpecificContent
 
     //- ━━━ `$markupProcessing` — Markup Processing Settings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })
     //- TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     //-
       p.Article-Paragraph.

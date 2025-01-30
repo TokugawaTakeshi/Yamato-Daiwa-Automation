@@ -21,9 +21,33 @@ functionality:
 
       $heading: "Basic Pug-to-HTML Transpiling"
 
+    HTML_Validation:
+
+      $heading: "Output HTML Code Validation"
+
+    accessibilityChecking:
+
+      $heading: "Checking of Output HTML Code Accessibility"
+
     resourcesPointersResolving:
 
       $heading: "Resources Pointers Resolving"
+
+    importingFromTypeScript:
+
+      $heading: "Importing from TypeScript"
+
+    localization:
+
+      $heading: "Localization"
+
+    staticPreview:
+
+      $heading: "Static Preview"
+
+      stateDependentPagesVariations:
+
+        $heading: "State Dependent Pages Variations"
 
   browserLiveReloading:
 
@@ -31,7 +55,7 @@ functionality:
 
   distributablePackageJSON_Generating:
 
-    $heading: "Output package.json Generating"
+    $heading: "Distributable package.json Generating"
 
 configuration:
 
@@ -57,6 +81,10 @@ configuration:
 
     $heading: "<code>$imagesProcessing</code> — Images Processing Settings"
 
+  plainCopying:
+
+    $heading: "<code>$plainCopying</code> — Plain Copying Settings"
+
   browserLiveReloading:
 
     $heading: "<code>$browserLiveReloading</code> — Browser Live Reloading Settings"
@@ -64,3 +92,7 @@ configuration:
   outputPackageJSON_Generating:
 
     $heading: "Output package.json Generating"
+
+consoleLineInterface:
+
+  $heading: Console Line Interface

@@ -20,7 +20,6 @@ import Webpack from "webpack";
 import type { Configuration as WebpackConfiguration } from "webpack";
 import type TypeScript from "typescript";
 import { VueLoaderPlugin as VueLoaderWebpackPlugin } from "vue-loader";
-import ForkTS_CheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import provideAccessToNodeJS_ExternalDependencies from "webpack-node-externals";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -50,14 +49,12 @@ export default abstract class WebpackConfigGenerator {
       entryPointsSourceFilesAbsolutePaths,
       ECMA_ScriptLogicEntryPointsGroupSettings: entryPointsGroupSettings,
       ECMA_ScriptLogicProcessingConfigRepresentative,
-      masterConfigRepresentative,
-      mustProvideTypeScriptTypeChecking
+      masterConfigRepresentative
     }: Readonly<{
       entryPointsSourceFilesAbsolutePaths: ReadonlyArray<string>;
       ECMA_ScriptLogicEntryPointsGroupSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup;
       ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
       masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
-      mustProvideTypeScriptTypeChecking: boolean;
     }>
   ): WebpackConfiguration {
 
@@ -109,7 +106,6 @@ export default abstract class WebpackConfigGenerator {
     const distributingSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup.Distributing | undefined =
         entryPointsGroupSettings.distributing;
 
-    // TODO Is entryPointsGroupSettings.directoriesAliasesAndCorrespondingAbsolutePathsMap related
     return {
 
       name: entryPointsGroupSettings.ID,
@@ -177,7 +173,7 @@ export default abstract class WebpackConfigGenerator {
 
                 case SupportedECMA_ScriptRuntimesTypes.pug: return "umd";
 
-                default: {
+                case SupportedECMA_ScriptRuntimesTypes.webWorker: {
 
                   Logger.throwErrorAndLog({
                     errorInstance: new UnexpectedEventError(
@@ -244,6 +240,9 @@ export default abstract class WebpackConfigGenerator {
             options: {
 
               configFile: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
+
+              /* [ Performance Optimization ] Type checking is been executed externally and once for all files. */
+              transpileOnly: false,
 
               /* [ Theory ] This option allows TypeScript to process the code extracted from a single file component.
                * [ Reference ] https://github.com/Microsoft/TypeScript-Vue-Starter#single-file-components */
@@ -401,28 +400,6 @@ export default abstract class WebpackConfigGenerator {
           } : null
 
         }),
-
-        /* < === Temporary ========================================================================================== */
-        ...mustProvideTypeScriptTypeChecking ?
-            [
-              new ForkTS_CheckerWebpackPlugin({
-                typescript: {
-
-                  /* [ Theory ] Webpack's "context" is default, but generally "tsconfig.json" could be not in same directory */
-                  configFile: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
-
-                  extensions: {
-                    vue: {
-                      enabled: true,
-                      compiler: "@vue/compiler-sfc"
-                    }
-                  }
-                }
-              })
-            ] :
-            [],
-
-        /* === Temporary > ========================================================================================== */
 
         new VueLoaderWebpackPlugin()
 

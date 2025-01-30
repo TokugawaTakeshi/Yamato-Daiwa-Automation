@@ -232,10 +232,8 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ StylesEntryPointVinylFile, this.onOutputCSS_FileReady.bind(this) ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: this.onOutputCSS_FileReady.bind(this)
           })
         ).
 

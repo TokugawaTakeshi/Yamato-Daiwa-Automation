@@ -1,0 +1,217 @@
+extends ../../../node_modules/@yamato-daiwa/programming_documentation/Layouts/TwoColumns/TwoColumnsLayout.pug
+
+
+block append Requirements
+
+  include ../../SharedAssets/Markup/SharedAssets.russian.pug
+  include ../../SharedComponents/SharedComponents.russian.pug
+
+
+block append Metadata
+
+  -
+
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.consoleLineInterface;
+
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle(topHeading),
+        description: ""
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
+    });
+
+    RoutingEmulator.setCurrentRoute("consoleLineInterface");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: routing.english.consoleLineInterface.$URI,
+      japanese: routing.japanese.consoleLineInterface.$URI
+    });
+
+
+block append HeadScripts
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  article
+
+    //- ━━━ Консольный интерфейс ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h1.Article-Heading1!= topHeading
+
+    p.Article-Paragraph.
+      Как и многие другие утилиты для сборки проектов, #[+ImportantEntity--YDID YDA] запускается с помощью
+        #[+Term--YDID консоли], при этом #[+Keyword--YDID необходимо] #[+Keyword__Contrast--YDID предварительно] заполнить
+        файл конфигурации (обычно это #[+ImportantEntity--YDID yda.config.yaml]).
+      На данный момент #[+Term--YDID консольный интерфейс] #[+ImportantEntity--YDID YDA] предельно прост —
+        #[+ImportantEntity--YDID 1] #[+Term--YDID команда], #[+ImportantEntity--YDID 3] #[+Term--YDID опции], при этом
+        #[+ImportantEntity--YDID 1] #[+Keyword--YDID обязательная].
+
+    p.Article-Paragraph.
+      Вызов из консоли утилиты #[+ImportantEntity--YDID YDA] начинается с #[+ImportantEntity__Code--YDID yda], что вполне
+        логично.
+      При этом, как и в случае с другими консольными утилитами, #[+Keyphrase--YDID одной только] установки
+        #[+ImportantEntity--YDID YDA] в #[+Term--YDID проект] (обычно с помощью #[+Term--YDID команды]
+        #[+ImportantEntity__Code--YDID npm install @yamato-daiwa/automation -D]) #[+Keyword--YDID недостаточно] для того,
+        чтобы такие #[+Term--YDID терминалы] как #[+SecondaryEntity--YDID CMD] или
+        #[+SecondaryEntity__Code--YDID PowerShell] распознали #[+Term--YDID команду] #[+ImportantEntity__Code--YDID yda].
+      Здесь часто предлагают выполнить #[+Term--YDID глобальную установку] (#[+SecondaryEntity__Code--YDID npm install]
+        с #[+Term--YDID флагом] #[+SecondaryEntity__Code--YDID -g]), но в то же время такой тип установки часто
+        #[+Keyword--YDID не]&nbsp;рекомендуется, поскольку одна зависимость на несколько #[+Term--YDID проектов] может
+        стать причиной будущих проблем, таких как потребность в разных #[+Term--YDID версиях].
+      Куда более лучший вариант — вызов #[+ImportantEntity--YDID yda] посредством #[+Term--YDID npm-скриптов], объявленных
+        в файле #[+ImportantEntity__Code--YDID package.json] проекта:
+
+    +CodeViewer--YDF({ title: "package.json" })
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.JSON }).
+        {
+          "private": true,
+          "scripts": {
+            "build": "yda build --mode PRODUCTION"
+          },
+          "devDependencies": {
+            "@yamato-daiwa/automation": "0.7.0"
+          }
+        }
+
+    p.Article-Paragraph.
+      При наличии файла #[+ImportantEntity--YDID package.json] с приведённым выше содержимым и установленных
+        #[+Term--YDID npm-зависимостях], #[+Term__Contrast--YDID сборку проекта] можно запустить #[+Term--YDID командой],
+        #[+ImportantEntity__Code--YDID npm run build], при этом #[+ImportantEntity__Code--YDID npm] знает, что
+        утилиту #[+ImportantEntity__Code--YDID yda] надо искать ниже #[+ImportantEntity__Code--YDID node_modules].
+
+
+    //- ─── Основная команда утилиты ───────────────────────────────────────────────────────────────────────────────────
+    h2.Article-Heading2 Основная команда утилиты
+
+    p.Article-Paragraph.
+      Команда #[+ImportantEntity--YDID build] является #[+Term__Contrast--YDID командой по умолчанию], а потому
+        #[+ImportantEntity__Code--YDID yda build] можно сократить до #[+ImportantEntity__Code--YDID yda], при этом
+        #[+Keyword--YDID необходимо] указать #[+Keyphrase--YDID как минимум] #[+ImportantEntity--YDID 1] опцию —
+        #[+ImportantEntity__Code--YDID --mode], например:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }).
+        yda --mode PRODUCTION
+
+
+    //- ─── Опции ──────────────────────────────────────────────────────────────────────────────────────────────────────
+    h3.Article-Heading3 Опции
+
+    p.Article-Paragraph.
+      На данный момент предлагается #[+Keyword--YDID всего] #[+ImportantEntity--YDID 3], при этом
+        #[+ImportantEntity--YDID 1] из них — #[+ImportantEntity__Code--YDID --mode] — #[+Keyword--YDID обязательная].
+      Довольно часто используется #[+Term--YDID опция] #[+ImportantEntity__Code--YDID selectiveExecution], а
+        #[+ImportantEntity__Code--YDID configurationFile] — разве только в случае, если Вас не&nbsp;устраивает имя
+        #[+Term--YDID файла конфигурации] по умолчанию — #[+ImportantEntity__Code--YDID yda.config.yaml].
+
+
+    //- ─── `mode` ─────────────────────────────────────────────────────────────────────────────────────────────────────
+    h4.Article-Heading4!= "<code>mode</code> — Режим сборки проекта"
+
+    +PropertyMetadata--YDF_DK({
+      type: String,
+      required: true,
+      allowedAlternatives: [ "STATIC_PREVIEW", "LOCAL_DEVELOPMENT", "TESTING", "STAGING", "PRODUCTION" ]
+    })
+
+    p.Article-Paragraph
+      | Используется для указания
+      |
+      +Link--YDF({ internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI }) режима сборки проекта
+      | .
+      | Поскольку в #[+ImportantEntity--YDID YDA] #[+Keyword--YDID отсутствует]
+      |   #[+Term--YDID режим сборки проекта по умолчанию], то данная #[+Term--YDID опция] является
+      |   #[+Keyword--YDID обязательной].
+      | #[+Term--YDID Значением опции] может быть только #[+Keyphrase--YDID один из] следующих вариантов:
+
+    dl.Article-DescriptionList
+
+      dt STATIC_PREVIEW
+      dd Режим статического превью
+
+      dt LOCAL_DEVELOPMENT
+      dd Режим локальной разработки
+
+      dt TESTING
+      dd Режим тестирования
+
+      dt STAGING
+      dd Режим инсценировки (стэйджинг)
+
+      dt PRODUCTION
+      dd Режим эксплуатации (продакшен)
+
+    p.Article-Paragraph.
+      Возможно использование сокращения #[+ImportantEntity__Code--YDID -m] вместо #[+Term--YDID ключа опции]
+        #[+ImportantEntity__Code--YDID --mode]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }).
+        yda -m PRODUCTION
+
+
+    //- ─── `selectiveExecution` ───────────────────────────────────────────────────────────────────────────────────────
+    h4.Article-Heading4!= "<code>selectiveExecution</code> — Выборочное выполнение"
+
+    +PropertyMetadata--YDF_DK({
+      type: String,
+      required: false
+    })
+
+    p.Article-Paragraph
+      | Используется для указания
+      |
+      +Link--YDF({ internalURI: localizedRouting.terminology.$sectioning.selectiveExecution.$URI }) выборочного выполнения
+      |  , при этом для корректной #[+Term--YDID сборки проекта] указанный идентификатор
+      |  #[+Term--YDID выборочного выполнения] #[+Keyword--YDID должен] быть #[+Keyword--YDID предварительно] объявлен
+      |  в файле конфигурации (обычно это #[+ImportantEntity--YDID yda.config.yaml]).
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }).
+        yda --selectingExecution application --mode PRODUCTION
+
+    ul.Article-UnorderedList
+
+      li.
+        Поскольку для средних и больших проектов наличие #[+Term--YDID выборочных выполнений] является нормой, то данная
+          опция хотя и #[+Keyword--YDID необязательная], но довольно популярная.
+
+      li.
+        Возможно использование сокращения #[+ImportantEntity__Code--YDID -s] вместо #[+Term--YDID ключа опции]
+          #[+ImportantEntity__Code--YDID --selectiveExecution]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }).
+        yda -s application -m PRODUCTION
+
+
+    //- ─── `configurationFile` ────────────────────────────────────────────────────────────────────────────────────────
+    h4.Article-Heading4!= "<code>configurationFile</code> — Файл конфигурации"
+
+    +PropertyMetadata--YDF_DK({
+      type: String,
+      required: false
+    })
+
+    p.Article-Paragraph.
+      Если Вас по какой-либо причине не&nbsp;устраивает имя файла конфигурации по умолчанию
+        (#[+ImportantEntity--YDID yda.config.yaml] #[+Keyword--YDID или] #[+ImportantEntity--YDID yda.config.yml]),
+        то при запуске #[+ImportantEntity--YDID YDA] необходимо указать желаемое имя файла с помощью опции
+        #[+ImportantEntity__Code--YDID --configurationFile] (сокращение: #[+ImportantEntity__Code--YDID -c]):
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }).
+        yda --mode PRODUCTION --configurationFile yda.yaml

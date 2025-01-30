@@ -2,10 +2,82 @@ common:
 
   $heading: "<code>$common</code> — Common Settings"
 
-  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+  localization:
 
-    $heading: "<code>$secondsBetweenFileUpdatingAndStartingOfRebuilding</code>"
+    $heading: "<code>$localization</code> — Localization Common Setting"
 
-  mustResolveResourcesPointersToRelativePaths:
+    stringResourcesFileRelativePath:
 
-    $heading: "<code>$mustResolveResourcesPointersToRelativePaths</code>"
+      $heading: "<code>$stringResourcesFileRelativePath</code>"
+
+    localizedStringResourcesConstantName:
+
+      $heading: "<code>$localizedStringResourcesConstantName</code>"
+
+    localeConstantName:
+
+      $heading: "<code>$localeConstantName</code>"
+
+    nameOfConstantForInterpolationToLangHTML_Attribute:
+
+      $heading: "<code>$nameOfConstantForInterpolationToLangHTML_Attribute</code>"
+
+    locales:
+
+      $heading: "<code>$locales</code>"
+
+      outputFileInterimNameExtensionWithoutDot:
+
+        $heading: "<code>outputFileInterimNameExtensionWithoutDot</code>"
+
+      localeConstantValue:
+
+        $heading: "<code>localeConstantValue</code>"
+
+      keyInLocalizedStringResourcesObject:
+
+        $heading: "<code>keyInLocalizedStringResourcesObject</code>"
+
+      valueOfConstantForInterpolationToLangHTML_Attribute:
+
+        $heading: "<code>valueOfConstantForInterpolationToLangHTML_Attribute</code>"
+
+    excludedFilesPathsRelativeRelativeToProjectRootDirectory:
+
+      $heading: "<code>$excludedFilesPathsRelativeRelativeToProjectRootDirectory</code>"
+
+#linting:
+#
+#  $heading: "<code>linting</code> — Linting Settings"
+#
+#staticPreview:
+#
+#  $heading: "<code>$staticPreview</code> — Static Preview Settings"
+#
+#  pagesVariations:
+#
+#    $heading: "<code>$pagesVariations</code> — Pages Variations Settings"
+#
+#    stateDependent:
+#
+#      $heading: "<code>$stateDependent</code> — State Dependent Pages Variations Settings"
+#
+#      configurationFile:
+#
+#        $heading: "Configuration File"
+#
+#    localeDependent:
+#
+#      $heading: "<code>$localeDependent</code> — Locale Dependent Pages Variations Settings"
+#
+#buildingModeDependent:
+#
+#  $heading: "<code>$buildingModeDependent</code> — Building Mode Dependent Common Settings"
+#
+#  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+#
+#    $heading: "<code>$secondsBetweenFileUpdatingAndStartingOfRebuilding</code>"
+#
+#  mustResolveResourcesPointersToRelativePaths:
+#
+#    $heading: "<code>$mustResolveResourcesPointersToRelativePaths</code>"

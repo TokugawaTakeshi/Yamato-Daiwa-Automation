@@ -1,0 +1,11 @@
+providingOfStringResources:
+
+  $heading: "文字列資源の確保"
+
+  viaTypeScript:
+
+    $heading: "TypeScriptで文字列資源の確保"
+
+  viaJSON_Files:
+
+    $heading: "JSONファイルで文字列資源の確保"

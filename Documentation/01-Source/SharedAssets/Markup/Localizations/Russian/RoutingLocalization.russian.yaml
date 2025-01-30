@@ -21,9 +21,33 @@ functionality:
 
       $heading: "Базовый транспайлинг из Pug в HTML"
 
+    HTML_Validation:
+
+      $heading: "Валидация выходного HTML-кода"
+
+    accessibilityChecking:
+
+      $heading: "Проверка выходного HTML-кода на доступность"
+
     resourcesPointersResolving:
 
       $heading: "Разрешение указателей на ресурсы"
+
+    importingFromTypeScript:
+
+      $heading: "Импортирование из TypeScript"
+
+    localization:
+
+      $heading: "Локализация"
+
+    staticPreview:
+
+      $heading: "Статическое превью"
+
+      stateDependentPagesVariations:
+
+        $heading: "Вариации страниц по состояниям"
 
   browserLiveReloading:
 
@@ -57,6 +81,14 @@ configuration:
 
     $heading: "<code>$imagesProcessing</code> — Настройки обработки изображений"
 
+  plainCopying:
+
+    $heading: "<code>$plainCopying</code> — Настройки простого копирования"
+
   browserLiveReloading:
 
     $heading: "<code>$browserLiveReloading</code> — Настройки автоматической перезагрузки вкладки браузера"
+
+consoleLineInterface:
+
+  $heading: Консольный интерфейс

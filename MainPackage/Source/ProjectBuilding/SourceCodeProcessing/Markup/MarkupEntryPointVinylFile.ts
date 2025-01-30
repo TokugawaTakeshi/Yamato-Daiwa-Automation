@@ -1,16 +1,25 @@
-/* ─── Normalized settings ───────────────────────────────────────────────────────────────────────────────────────── */
+/* ─── Normalized Settings ───────────────────────────────────────────────────────────────────────────────────────── */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 
-/* ─── Settings representatives ──────────────────────────────────────────────────────────────────────────────────── */
+/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
+
+/* ─── State Management ───────────────────────────────────────────────────────────────────────────────────────────── */
+import MarkupProcessingSharedState from "@MarkupProcessing/MarkupProcessingSharedState";
+
+/* ─── Worktypes ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+import type PagesVariationsMetadata from "@MarkupProcessing/Worktypes/PagesVariationsMetadata";
 
 /* ─── Vinyl FS ──────────────────────────────────────────────────────────────────────────────────────────────────── */
 import VinylFile from "vinyl";
 import VinylFileClass from "@Utils/VinylFileClass";
 
 /* ─── Utils ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
-import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
-import { isUndefined, isNotUndefined } from "@yamato-daiwa/es-extensions";
+import {
+  type ArbitraryObject,
+  getExpectedToBeNonUndefinedMapValue,
+  isNotUndefined
+} from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
@@ -21,6 +30,7 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
   public readonly actualEntryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup;
 
   public readonly pageStateDependentVariationData?: MarkupEntryPointVinylFile.PageStateDependentVariationData;
+  public readonly localizationData?: Readonly<{ [variableName: string]: unknown; }>;
 
   private readonly markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
 
@@ -32,7 +42,8 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
     {
       initialPlainVinylFile,
       markupProcessingSettingsRepresentative,
-      pageStateDependentVariationData
+      pageStateDependentVariationData,
+      localizationData
     }: MarkupEntryPointVinylFile.ConstructorParameter
   ) {
 
@@ -63,50 +74,64 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
       this.pageStateDependentVariationData = pageStateDependentVariationData;
     }
 
+    if (isNotUndefined(localizationData)) {
+      this.localizationData = localizationData;
+    }
+
   }
 
 
-  public forkVariationsForStaticPreviewIfAnyAndStaticPreviewBuildingMode(): Array<MarkupEntryPointVinylFile> {
+  public manageVariations(): MarkupEntryPointVinylFile.VariationsManagement {
+
+    const actualPageVariationsMetadata: PagesVariationsMetadata.Page = getExpectedToBeNonUndefinedMapValue(
+      MarkupProcessingSharedState.pagesVariationsMetadata, this.sourceAbsolutePath
+    );
+
+    if (
+      actualPageVariationsMetadata.mustInitialFileBeKept &&
+      actualPageVariationsMetadata.absoluteSourcePathsOfAllVariations.size === 1 &&
+      actualPageVariationsMetadata.absoluteSourcePathsOfAllVariations.has(this.sourceAbsolutePath)
+    ) {
+      return {
+        newFiles: [],
+        mustInitialFileBeDeleted: false
+      };
+    }
+
 
     const pageVariations: Array<MarkupEntryPointVinylFile> = [];
 
-    const localeDependentPagesVariationsSettings:
-        MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.LocaleDependent | undefined =
-            this.markupProcessingSettingsRepresentative.localeDependentPagesVariationsSettings;
-
-    const localesData:
-        MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.LocaleDependent.LocalesData =
-            localeDependentPagesVariationsSettings?.locales ?? new Map();
-
-    const areLocaleDependentVariationsRequiredForCurrentFile: boolean =
-        localesData.size > 0 &&
-        localeDependentPagesVariationsSettings?.excludedFilesAbsolutePaths.includes(this.sourceAbsolutePath) === false;
-
-    if (isUndefined(this.pageStateDependentVariationsSpecification)) {
-      return [];
-    }
-
-
-    const pageStateDependentVariations: Array<MarkupEntryPointVinylFile> = [];
-
     for (
-      const [ derivedFileAbsolutePath, state ] of
-          this.pageStateDependentVariationsSpecification.derivedPagesAndStatesMap.entries()
+      const [ variationFileAbsolutePath__forwardSlashesPathSeparators, dataForPug ] of
+          actualPageVariationsMetadata.dataForPugBySourceFilesAbsolutePaths.entries()
     ) {
 
-      pageStateDependentVariations.push(new MarkupEntryPointVinylFile({
-        initialPlainVinylFile: new VinylFile({
-          base: this.base,
-          path: derivedFileAbsolutePath,
-          contents: this.contents
-        }),
-        actualEntryPointsGroupSettings: this.actualEntryPointsGroupSettings,
-        pageStateDependentVariationData: { [this.pageStateDependentVariationsSpecification.stateVariableName]: state }
-      }));
+      if (this.sourceAbsolutePath === variationFileAbsolutePath__forwardSlashesPathSeparators) {
+        continue;
+      }
+
+
+      pageVariations.push(
+        new MarkupEntryPointVinylFile({
+          initialPlainVinylFile: new VinylFile({
+            base: this.base,
+            path: variationFileAbsolutePath__forwardSlashesPathSeparators,
+            contents: this.contents
+          }),
+          markupProcessingSettingsRepresentative: this.markupProcessingSettingsRepresentative,
+          pageStateDependentVariationData: {
+            ...dataForPug.localizationData ?? null,
+            ...dataForPug.pageStateDependentVariationData ?? null
+          }
+        })
+      );
 
     }
 
-    return pageVariations;
+    return {
+      newFiles: pageVariations,
+      mustInitialFileBeDeleted: !actualPageVariationsMetadata.mustInitialFileBeKept
+    };
 
   }
 
@@ -121,9 +146,15 @@ namespace MarkupEntryPointVinylFile {
     pageStateDependentVariationsSpecification?: MarkupProcessingSettings__Normalized.StaticPreview.
         PagesVariations.StateDependent.Page;
     pageStateDependentVariationData?: PageStateDependentVariationData;
+    localizationData?: Readonly<{ [variableName: string]: unknown; }>;
   }>;
 
   export type PageStateDependentVariationData = Readonly<{ [stateVariableName: string]: ArbitraryObject; }>;
+
+  export type VariationsManagement = Readonly<{
+    newFiles: Array<MarkupEntryPointVinylFile>;
+    mustInitialFileBeDeleted: boolean;
+  }>;
 
 }
 

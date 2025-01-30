@@ -30,6 +30,8 @@ import TypeScriptSpecialist from "@ThirdPartySolutionsSpecialists/TypeScriptSpec
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import type TypeScript from "typescript";
+import FileSystem from "fs";
+import DotEnv from "dotenv";
 import { isUndefined, isNotUndefined } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
@@ -307,6 +309,20 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
     }
 
 
+    let environmentVariablesFromFile: Readonly<{ [variableName: string]: string; }> = {};
+
+    if (isNotUndefined(localDevelopmentServerOrchestrationSettings__rawValid.environmentVariablesFileRelativePath)) {
+      environmentVariablesFromFile = DotEnv.parse(
+        FileSystem.readFileSync(
+          ImprovedPath.joinPathSegments([
+            this.consumingProjectRootDirectoryAbsolutePath,
+            localDevelopmentServerOrchestrationSettings__rawValid.environmentVariablesFileRelativePath
+          ]),
+          "utf-8"
+        )
+      );
+    }
+
     return {
 
       localDevelopmentServerOrchestration: {
@@ -315,7 +331,10 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
         arguments: localDevelopmentServerOrchestrationSettings__rawValid.arguments ?? [],
 
-        environmentVariables: localDevelopmentServerOrchestrationSettings__rawValid.environmentVariables ?? {}
+        environmentVariables: {
+          ...localDevelopmentServerOrchestrationSettings__rawValid.environmentVariables ?? null,
+          ...environmentVariablesFromFile
+        }
 
       }
 

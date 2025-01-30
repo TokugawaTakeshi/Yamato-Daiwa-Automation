@@ -1,18 +1,20 @@
-projectBuilding:
+$projectBuilding:
 
-  commonSettings:
+  $commonSettings:
 
-    publicDirectoriesRelativePaths:
+    $publicDirectoriesRelativePaths:
 
-      PRODUCTION: 02-ProductionBuilding
+      $production: ProductionBuilding
 
 
-  markupProcessing:
+  $markupProcessing:
 
-    entryPointsGroups:
+    $entryPointsGroups:
 
       All:
-        sourceFilesTopDirectoryRelativePath: 01-Source
-        buildingModeDependent:
-          PRODUCTION:
-            outputTopDirectoryRelativePath: 02-ProductionBuilding
+
+        $sourceFilesTopDirectoryRelativePath: Source
+
+        $buildingModeDependent:
+          $production:
+            $outputTopDirectoryRelativePath: ProductionBuilding

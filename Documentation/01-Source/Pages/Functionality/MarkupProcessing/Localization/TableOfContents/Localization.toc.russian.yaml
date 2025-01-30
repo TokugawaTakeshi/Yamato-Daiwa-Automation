@@ -1,0 +1,11 @@
+providingOfStringResources:
+
+  $heading: "Обеспечение строковых ресурсов"
+
+  viaTypeScript:
+
+    $heading: "Обеспечение строковых ресурсов через TypeScript"
+
+  viaJSON_Files:
+
+    $heading: "Обеспечение строковых ресурсов через JSON-файлы"

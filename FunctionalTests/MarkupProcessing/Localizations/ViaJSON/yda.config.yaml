@@ -1,0 +1,64 @@
+$projectBuilding:
+
+  $markupProcessing:
+
+    $common:
+      $buildingModeDependent:
+        $production:
+          $mustResolveResourcesPointersToRelativePaths: true
+
+    $entryPointsGroups:
+
+      StaticPreview:
+
+        $singleEntryPointSourceFileRelativePath: 01-Source/StaticPreview/StaticPreviewAnywherePage.pug
+
+        $buildingModeDependent:
+          $staticPreview:
+            $outputTopDirectoryRelativePath: 02-StaticPreviewBuild
+
+      Pages:
+
+        $sourceFilesTopDirectoryRelativePath: 01-Source/Pages
+
+        $partialsRecognition:
+          $excludeSubdirectoriesWithPrefixes: "_"
+          $excludeFilesWithPrefixes: "_"
+
+        $buildingModeDependent:
+          $staticPreview:
+            $outputTopDirectoryRelativePath: 02-StaticPreviewBuild
+          $production:
+            $outputTopDirectoryRelativePath: 03-ProductionBuild
+
+        $localization:
+
+          $stringResourcesFileRelativePath: 01-Source/LocalizedStringResources.json
+          $localizedStringResourcesConstantName: $$localizedStringResources
+          $localeConstantName: $$LOCALE
+          $nameOfConstantForInterpolationToLangHTML_Attribute: $$HTML_TAG_LANG_ATTRIBUTE_VALUE
+
+          $locales:
+
+            english:
+              $outputFileInterimNameExtensionWithoutDot: english
+              $localeConstantValue: ENGLISH
+              $keyInLocalizedStringResourcesObject: $$english
+              $valueOfConstantForInterpolationToLangHTML_Attribute: en
+
+            japanese:
+              $outputFileInterimNameExtensionWithoutDot: japanese
+              $localeConstantValue: JAPANESE
+              $keyInLocalizedStringResourcesObject: $$japanese
+              $valueOfConstantForInterpolationToLangHTML_Attribute: ja
+
+  $browserLiveReloading:
+
+    $setups:
+
+      StaticPreview:
+
+        $localServer:
+
+          $rootDirectoryRelativePath: 02-StaticPreviewBuild
+          $customStartingFileNameWithExtension: StaticPreviewAnywherePage.html

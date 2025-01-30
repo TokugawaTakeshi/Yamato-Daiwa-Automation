@@ -11,9 +11,11 @@ block append Metadata
 
   -
 
+    const { $heading: topHeading } = localizedRouting.top;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("トップ"),
+        title: buildHTML_PageTitle(topHeading),
         description:
           "「やまとダイワ自動化」（技術名：「Yamato Daiwa Auitomation」、略：「YDA」）は高水準プロジェクト（クライアントアプリケーションやサーバアプリケーションや" +
             "ブラウザーJavaScript・Node.js専用ラブライブ）用構成手段、Node.jsのユーティリティ。" +

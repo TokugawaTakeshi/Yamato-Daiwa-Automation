@@ -1,6 +1,6 @@
 import MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRestrictions";
-import ConsumingProjectBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
+import type ConsumingProjectBuildingModes from "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
+import { LineSeparators } from "@yamato-daiwa/es-extensions";
 
 
 const MarkupProcessingSettings__Default: Readonly<{
@@ -12,7 +12,28 @@ const MarkupProcessingSettings__Default: Readonly<{
   }>;
 
   outputCodeFormatting: Readonly<{
-    mustExecute: (consumingProjectBuildingMode: ConsumingProjectBuildingModes) => boolean;
+    mustExecute: (
+      factors: Readonly<{
+        consumingProjectBuildingMode: ConsumingProjectBuildingModes;
+        outputFormat: MarkupProcessingRestrictions.OutputFormats;
+      }>
+    ) => boolean;
+    indentationString: string;
+    lineSeparators: LineSeparators;
+    mustGuaranteeTrailingEmptyLine: boolean;
+    mustIndentHeadAndBodyTags: boolean;
+  }>;
+
+  outputCodeMinifying: Readonly<{
+    mustExecute: (
+      factors: Readonly<{
+        consumingProjectBuildingMode: ConsumingProjectBuildingModes;
+        outputFormat: MarkupProcessingRestrictions.OutputFormats;
+      }>
+    ) => boolean;
+    attributesExtraWhitespacesCollapsing: boolean;
+    attributesValuesDeduplication: boolean;
+    commentsRemoving: boolean;
   }>;
 
   linting: Readonly<{
@@ -63,9 +84,34 @@ const MarkupProcessingSettings__Default: Readonly<{
   },
 
   outputCodeFormatting: {
-    mustExecute: (consumingProjectBuildingMode: ConsumingProjectBuildingModes): boolean =>
-        consumingProjectBuildingMode === ConsumingProjectBuildingModes.staticPreview ||
-        consumingProjectBuildingMode === ConsumingProjectBuildingModes.localDevelopment
+    mustExecute: (
+      {
+        outputFormat
+      }: Readonly<{
+        consumingProjectBuildingMode: ConsumingProjectBuildingModes;
+        outputFormat: MarkupProcessingRestrictions.OutputFormats;
+      }>
+    ): boolean =>
+        outputFormat === MarkupProcessingRestrictions.OutputFormats.razor,
+    indentationString: "  ",
+    lineSeparators: LineSeparators.lineFeed,
+    mustGuaranteeTrailingEmptyLine: true,
+    mustIndentHeadAndBodyTags: true
+  },
+
+  outputCodeMinifying: {
+    mustExecute: (
+      {
+        outputFormat
+      }: Readonly<{
+        outputFormat: MarkupProcessingRestrictions.OutputFormats;
+      }>
+    ): boolean =>
+        outputFormat === MarkupProcessingRestrictions.OutputFormats.HTML ||
+        outputFormat === MarkupProcessingRestrictions.OutputFormats.handlebars,
+    attributesExtraWhitespacesCollapsing: true,
+    attributesValuesDeduplication: true,
+    commentsRemoving: true
   },
 
   linting: {

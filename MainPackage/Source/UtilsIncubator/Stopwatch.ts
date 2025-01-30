@@ -28,6 +28,7 @@ class Stopwatch {
       seconds: millisecondsToSeconds(amountOfTimeElapsesBetweenActivationAndDeactivation__milliseconds),
       milliseconds: amountOfTimeElapsesBetweenActivationAndDeactivation__milliseconds
     };
+
   }
 
   public reset(): void {

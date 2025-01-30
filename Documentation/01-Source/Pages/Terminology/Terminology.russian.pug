@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = routing.russian.terminology;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Терминология"),
+        title: buildHTML_PageTitle(topHeading),
         description:
             "Терминология, используемая Node.js-утилитой для сборки проектов (клиентских веб-приложений, серверных" +
               "приложений, консольных утилит, библиотек) «Yamato Daiwa Automation» (сокращённо: «YDA» читается: " +
@@ -34,11 +39,6 @@ block append Metadata
       english: routing.english.terminology.$URI,
       japanese: routing.japanese.terminology.$URI,
     });
-
-    const {
-      $sectioning: localizedSectioning,
-      $heading: topHeading
-    } = routing.russian.terminology;
 
 
 block append HeadScripts
@@ -315,7 +315,7 @@ block append SpecificContent
             Как видно из названия, основная задача соответствующего этапа — провести тестирование и выявить ошибки
               (#[+Term--YDID баги]).
 
-          dt Стэйждинг (Staging)
+          dt Инсценировка («Стэйждинг», Staging)
           dd.
             В больших проектах часто помимо версии для тестирования имеется похожая версия, которую называют
               #[+Term--YDID «инсценировкой»] (#[+Term--YDID «стэйджингом»]).
@@ -325,7 +325,7 @@ block append SpecificContent
               продукта.
             Кстати, по этой же причине заказчикам лучше презентовать именно эту сборку, а не&nbsp;тестовую.
 
-          dt Продакшен (Production)
+          dt Эксплуатация («Продакшен», Production)
           dd.
             Сайт или приложение, собранные в этом режиме, подлежат публикации и использованию целевой аудиторией.
             По сравнению с предыдущими режимами сборки, здесь #[+Keyword--YDID необходимы] максимальные настройки

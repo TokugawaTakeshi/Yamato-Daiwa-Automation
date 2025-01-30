@@ -109,24 +109,20 @@ export default class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
         pipe(super.logProcessedFilesIfMust()).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: this.replacePlainVinylFileWithAssetVinylFile.bind(this)
           })
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ AssetVinylFile, GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: GulpStreamsBasedAssetsProcessor.addContentHashPostfixToFileNameIfMust
           })
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ AssetVinylFile, FontsProcessor.postProcessFile ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: FontsProcessor.postProcessFile
           })
         ).
 

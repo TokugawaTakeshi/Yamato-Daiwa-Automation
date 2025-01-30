@@ -7,8 +7,8 @@ const markupProcessingRawSettingsNormalizerLocalization__english: MarkupProcessi
   noNeedToSetResourcesReferencesResolvingToRelativePathsOnStaticPreviewModeLog: {
     title: "Redundant configuration detected",
     description: "For the static preview mode, the resources references could be resolved only to relative paths. " +
-        "You can safely remove \"projectBuilding.markupProcessing.common.buildingModeDependent." +
-        "STATIC_PREVIEW.mustResolveResourceReferencesToRelativePaths\" specifying from the configuration."
+        "You can safely remove \"$projectBuilding.$markupProcessing.$common.$buildingModeDependent." +
+        "STATIC_PREVIEW.$mustResolveResourcesPointersToRelativePaths\" specifying from the configuration."
   },
 
   generateUnableToResolveResourcesReferencesToAbsolutePathLog:
@@ -20,12 +20,12 @@ const markupProcessingRawSettingsNormalizerLocalization__english: MarkupProcessi
       ): MarkupProcessingRawSettingsNormalizer.Localization.UnableToResolveResourcesReferencesToAbsolutePathLog =>
           ({
             title: "Unable to resolve the resources references to absolute paths",
-            description: "The public directory (\"projectBuilding.commonSettings.publicDirectoriesRelativePaths." +
+            description: "The public directory (\"$projectBuilding.$commonSettings.$publicDirectoriesRelativePaths." +
                 "[PROJECT_BUILDING_MODE]\") that requires for resolving of resources references to absolute " +
                 `paths has not been specified for the "${ consumingProjectBuildingMode }" building mode. ` +
                 "The resources references will be resolved to relative paths instead. " +
-                "If you wish these references be resolved to relative path, set \"projectBuilding.markupProcessing.common." +
-                "buildingModeDependent.[PROJECT_BUILDING_MODE].mustResolveResourceReferencesToRelativePaths\" " +
+                "If you wish these references be resolved to relative path, set \"$projectBuilding.$markupProcessing.$common." +
+                "$buildingModeDependent.[PROJECT_BUILDING_MODE].$mustResolveResourcesPointersToRelativePaths\" " +
                 `to true for the "${ consumingProjectBuildingMode }" building mode.`
           }),
 

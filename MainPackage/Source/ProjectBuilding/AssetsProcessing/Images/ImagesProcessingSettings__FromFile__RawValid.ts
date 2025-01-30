@@ -1,6 +1,4 @@
 /* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
-import type ConsumingProjectPreDefinedBuildingModes__Localized from
-    "@ProjectBuilding/Common/RawConfig/Enumerations/ConsumingProjectPreDefinedBuildingModes__Localized";
 import AssetsProcessingSettingsGenericProperties__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/AssetsProcessingSettingsGenericProperties__FromFile__RawValid";
 
@@ -23,22 +21,8 @@ namespace ImagesProcessingSettings__FromFile__RawValid {
 
   export type Logging = AssetsProcessingSettingsGenericProperties__FromFile__RawValid.Logging;
 
-  export type Localization = AssetsProcessingSettingsGenericProperties__FromFile__RawValid.Localization;
-
-  export function getLocalizedPropertiesSpecification(
-    compoundParameter: Readonly<{
-      imagesProcessingLocalization: Localization;
-      revisioningPropertiesLocalizedSpecification: RawObjectDataProcessor.PropertiesSpecification;
-      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.
-          PropertiesSpecification;
-      consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-    }>
-  ): RawObjectDataProcessor.PropertiesSpecification {
-    return AssetsProcessingSettingsGenericProperties__FromFile__RawValid.getLocalizedPropertiesSpecification({
-      ...compoundParameter,
-      assetsProcessingSettingsGenericPropertiesLocalization: compoundParameter.imagesProcessingLocalization
-    });
-  }
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification =
+      AssetsProcessingSettingsGenericProperties__FromFile__RawValid.propertiesSpecification;
 
 }
 

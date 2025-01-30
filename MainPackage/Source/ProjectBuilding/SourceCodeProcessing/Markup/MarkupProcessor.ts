@@ -6,7 +6,7 @@ import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupP
 
 /* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
+import type MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 
 /* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
 import MarkupSourceFilesWatcher from "@MarkupProcessing/MarkupSourceFilesWatcher";
@@ -23,7 +23,6 @@ import Gulp from "gulp";
 import type VinylFile from "vinyl";
 import gulpData from "gulp-data";
 import gulpPug from "gulp-pug";
-import JSBeautify from "js-beautify";
 
 /* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import PugPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/PugPreProcessorSpecialist";
@@ -35,28 +34,24 @@ import MarkupEntryPointVinylFile from "@MarkupProcessing/MarkupEntryPointVinylFi
 import SourceCodeSelectiveReprocessingHelper from "@Utils/SourceCodeSelectiveReprocessingHelper";
 import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 import computeContentMD5_Checksum from "rev-hash";
-import HTML_Validator from "@MarkupProcessing/Plugins/HTML_Validator/HTML_Validator";
+import HTML_Validator from "./Plugins/HTML_Validator/HTML_Validator";
 import PointersReferencesResolverForHTML from "./Plugins/ResourcesPointersResolverForHTML/ResourcesPointersResolverForHTML";
 import AccessibilityInspector from "@MarkupProcessing/Plugins/AccessibilityInspector/AccessibilityInspector";
 import ImagesAspectRatioAffixer from "@MarkupProcessing/Plugins/ImagesAspectRatioAffixer";
 import SpacesNormalizerForCJK_Text from "@MarkupProcessing/Plugins/SpacesNormalizerForCJK_Text";
 import CodeListingPugFilter from "@MarkupProcessing/PugFilters/CodeListingPugFilter";
+import CodeFormatter from "js-beautify";
+import HTML_CodeMinifier from "htmlnano";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
-import type { ArbitraryObject, LineSeparators } from "@yamato-daiwa/es-extensions";
 import {
   secondsToMilliseconds,
-  addElementsToArray,
-  getIndexOfArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne,
   isUndefined,
   isNotUndefined,
-  isNull,
   isNotNull,
-  explodeStringToLines,
-  getLineSeparatorType,
-  extractFileNameWithoutLastExtension,
   SpaceCharacters,
-  splitString
+  splitString,
+  type ArbitraryObject
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath, ImprovedGlob } from "@yamato-daiwa/es-extensions-nodejs";
 import { parse as parseHTML } from "node-html-parser";
@@ -65,14 +60,12 @@ import type { HTMLElement } from "node-html-parser";
 
 export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
-  private static readonly CACHED_HTML_VALIDATION_RESULTS_DIRECTORY_NAME: string = "HTML_Validation";
   private static readonly CACHED_ACCESSIBILITY_INSPECTION_RESULTS_DIRECTORY_NAME: string = "AccessibilityInspection";
   private static readonly ENTRY_POINTS_AND_PARTIAL_FILES_MAPPING_CACHE_FILE_NAME_WITH_EXTENSION: string =
       "MarkupEntryPointsAndAffiliatedFilesMappingCache.json";
 
   protected readonly logging: GulpStreamsBasedTaskExecutor.Logging;
 
-  private readonly CACHED_HTML_VALIDATION_RESULTS_DIRECTORY_ABSOLUTE_PATH: string;
   private readonly CACHED_ACCESSIBILITY_INSPECTION_RESULTS_DIRECTORY_ABSOLUTE_PATH: string;
 
   private readonly markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
@@ -98,21 +91,25 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
       markupProcessingSettingsRepresentative, projectBuildingMasterConfigRepresentative
     );
 
-    dataHoldingSelfInstance.initializeSourceAndOutputFilesAbsolutePathsCorrespondenceMap();
+    MarkupProcessingSharedState.pagesVariationsMetadata = markupProcessingSettingsRepresentative.createPagesVariationsMetadata(
+      ImprovedGlob.getFilesAbsolutePathsSynchronously(
+        markupProcessingSettingsRepresentative.initialRelevantEntryPointsSourceFilesAbsolutePaths,
+        { alwaysForwardSlashSeparators: true }
+      )
+    );
 
     if (markupProcessingSettingsRepresentative.mustValidateHTML) {
-      HTML_Validator.beginInitialization({
-        cachedValidationsResultsFileParentDirectoryAbsolutePath: dataHoldingSelfInstance.
-            CACHED_HTML_VALIDATION_RESULTS_DIRECTORY_ABSOLUTE_PATH,
-        consumingProjectBuildingMode: projectBuildingMasterConfigRepresentative.consumingProjectBuildingMode,
-        projectBuildingSelectiveExecutionID: projectBuildingMasterConfigRepresentative.selectiveExecutionID,
+
+      HTML_Validator.initialize({
+        temporaryFileDirectoryAbsolutePath: DotYDA_DirectoryManager.TEMPORARY_FILES_DIRECTORY_ABSOLUTE_PATH,
+        projectBuildingMasterConfigRepresentative,
         logging: {
-          validationStart:
-              markupProcessingSettingsRepresentative.loggingSettings.HTML_Validation.starting,
-          validationCompletionWithoutIssues:
-              markupProcessingSettingsRepresentative.loggingSettings.HTML_Validation.completionWithoutIssues
+          validationStart: markupProcessingSettingsRepresentative.loggingSettings.HTML_Validation.starting,
+          validationCompletionWithoutIssues: markupProcessingSettingsRepresentative.loggingSettings.HTML_Validation.
+            completionWithoutIssues
         }
       });
+
     }
 
     if (markupProcessingSettingsRepresentative.mustInspectAccessibility) {
@@ -199,14 +196,6 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
     this.markupProcessingSettingsRepresentative = markupProcessingSettingsRepresentative;
 
-    this.CACHED_HTML_VALIDATION_RESULTS_DIRECTORY_ABSOLUTE_PATH = ImprovedPath.joinPathSegments(
-      [
-        DotYDA_DirectoryManager.OPTIMIZATION_FILES_DIRECTORY_ABSOLUTE_PATH,
-        MarkupProcessor.CACHED_HTML_VALIDATION_RESULTS_DIRECTORY_NAME
-      ],
-      { alwaysForwardSlashSeparators: true }
-    );
-
     this.CACHED_ACCESSIBILITY_INSPECTION_RESULTS_DIRECTORY_ABSOLUTE_PATH = ImprovedPath.joinPathSegments(
       [
         DotYDA_DirectoryManager.OPTIMIZATION_FILES_DIRECTORY_ABSOLUTE_PATH,
@@ -235,24 +224,14 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
         pipe(this.handleErrorIfItWillOccur()).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventCommonHandler: this.replacePlainVinylFileWithMarkupEntryPointVinylFile.bind(this)
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: this.replacePlainVinylFileWithMarkupEntryPointVinylFile.bind(this)
           })
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ MarkupEntryPointVinylFile, this.injectImportsFromTypeScriptIfAnyToMarkupFile.bind(this) ]
-            ])
-          })
-        ).
-
-        pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ MarkupEntryPointVinylFile, MarkupProcessor.createEntryPointsStateDependentVariations ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: MarkupProcessor.managePageVariations
           })
         ).
 
@@ -262,8 +241,11 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
           gulpData(
             (vinylFile: VinylFile): ArbitraryObject => ({
               ...vinylFile.pageStateDependentVariationData ?? null,
+              ...vinylFile.localizationData ?? null,
               ...this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode ?
-                  this.markupProcessingSettingsRepresentative.staticDataForStaticPreview : null
+                  this.markupProcessingSettingsRepresentative.staticDataForStaticPreview : null,
+              ...MarkupProcessingSharedState.importsFromTypeScript,
+              ...MarkupProcessingSharedState.importsFromJavaScript
             })
           )
         ).
@@ -294,18 +276,14 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ MarkupEntryPointVinylFile, MarkupProcessor.formatOnMinifyContentIfMust ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: MarkupProcessor.formatOrMinifyContentIfMust
           })
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            onStreamStartedEventHandlersForSpecificFileTypes: new Map([
-              [ MarkupEntryPointVinylFile, this.onOutputHTML_FileReady.bind(this) ]
-            ])
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler: this.onOutputHTML_FileReady.bind(this)
           })
         ).
 
@@ -329,10 +307,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
     addNewFileToStream(
       new MarkupEntryPointVinylFile({
         initialPlainVinylFile: plainVinylFile,
-        actualEntryPointsGroupSettings: this.markupProcessingSettingsRepresentative.
-            getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(plainVinylFile.path),
-        pageStateDependentVariationsSpecification: this.markupProcessingSettingsRepresentative.
-            getStateDependentVariationsForEntryPointWithAbsolutePath(plainVinylFile.path)
+        markupProcessingSettingsRepresentative: this.markupProcessingSettingsRepresentative
       })
     );
 
@@ -340,132 +315,23 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
   }
 
-  private async injectImportsFromTypeScriptIfAnyToMarkupFile(
-    markupEntryPointVinylFile: MarkupEntryPointVinylFile
-  ): Promise<GulpStreamModifier.CompletionSignals> {
-
-    if (
-      isNull(MarkupProcessingSharedState.importingFromTypeScriptPugCodeGenerator) ||
-      isUndefined(this.markupProcessingSettingsRepresentative.importingFromTypeScriptSettings)
-    ) {
-      return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-    }
-
-
-    const pugCode: string = markupEntryPointVinylFile.stringifiedContents;
-    const lineSeparator: LineSeparators = getLineSeparatorType(pugCode);
-
-    /* [ Maintainability ] Although this option is not configurable, keep this constant to avoid the magic numbers. */
-    const BLANK_LINES_COUNT_AFTER_JAVASCRIPT_CODE_BLOCK: number = 2;
-
-    /* [ Theory ] For the Pug preprocessor, the single indent could be either tab or multiple spaces.
-     *   Thus, ident is not always the single character. */
-    const indentString: string = PugPreProcessorSpecialist.defineIndentString(pugCode);
-
-    if (!PugPreProcessorSpecialist.isSourceCodeIncludingExtendingDeclaration(pugCode)) {
-
-      markupEntryPointVinylFile.setContents(
-        [
-          MarkupProcessingSharedState.importingFromTypeScriptPugCodeGenerator({
-            indentString,
-            lineSeparator,
-            initialIndentationDepth__numerationFrom0: 0
-          }),
-          lineSeparator.repeat(BLANK_LINES_COUNT_AFTER_JAVASCRIPT_CODE_BLOCK + 1),
-          markupEntryPointVinylFile.stringifiedContents
-        ].join("")
-      );
-
-      return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-
-    }
-
-
-    const sourceCodeExplodedToLines: Array<string> = explodeStringToLines({
-      targetString: markupEntryPointVinylFile.stringifiedContents,
-      mustIgnoreCarriageReturn: false
-    });
-
-
-    /* [ Theory ] If the Pug entry point file has been extended, the JavaScript code block could be injected only inside
-     *    th specific block which must be declared in the parent (direct or no) files. It remains to process 2 cases: when
-     *    this block has been modified in the entry point file and when this block has not been referred in the entry point. */
-    const nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected: string = this.markupProcessingSettingsRepresentative.
-        importingFromTypeScriptSettings.nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected;
-
-    /* [ Theory ]
-     * If the Pug file has been extended from another one, the extending declaration must be first, otherwise error will occur.
-     * The only thing is allowed is the unbuffered comments (will not be compiled to HTML comments), thus Pug file could
-     * start from the unbuffered comment which could be safely discarded.  */
-    const indexOfLineIncludingBlockModifyingDeclaration: number | null =
-        getIndexOfArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne(
-          sourceCodeExplodedToLines,
-          (sourceCodeLine: string): boolean =>
-              PugPreProcessorSpecialist.isSourceCodeLineIncludingSpecificBlockModifyingDeclaration({
-                sourceCodeLine, blockName: nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected
-              })
-        );
-
-    if (isNotNull(indexOfLineIncludingBlockModifyingDeclaration)) {
-
-      const targetCodeBlockExtractingResult: PugPreProcessorSpecialist.BlockExtractingResult =
-          PugPreProcessorSpecialist.extractBlock({
-            sourceCodeLines: sourceCodeExplodedToLines,
-            startLineIndex: indexOfLineIncludingBlockModifyingDeclaration
-          });
-
-      sourceCodeExplodedToLines.splice(
-        indexOfLineIncludingBlockModifyingDeclaration,
-        targetCodeBlockExtractingResult.codeLines.length,
-        ...targetCodeBlockExtractingResult.codeLines,
-        MarkupProcessingSharedState.importingFromTypeScriptPugCodeGenerator({
-          indentString,
-          lineSeparator,
-          initialIndentationDepth__numerationFrom0: 1
-        }),
-        ...Array.from<string>({ length: BLANK_LINES_COUNT_AFTER_JAVASCRIPT_CODE_BLOCK }).fill("")
-      );
-
-      markupEntryPointVinylFile.setContents(sourceCodeExplodedToLines.join(lineSeparator));
-
-      return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-
-    }
-
-
-    const indexOfLineContainsExtendingDeclaration: number =
-        getIndexOfArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne(
-          sourceCodeExplodedToLines,
-            (sourceCodeLine: string): boolean =>
-                PugPreProcessorSpecialist.isSourceCodeLineIncludingExtendingDeclaration(sourceCodeLine),
-            { mustThrowErrorIfElementNotFoundOrMatchesAreMultiple: true }
-        );
-
-    markupEntryPointVinylFile.setContents(
-        addElementsToArray({
-          targetArray: sourceCodeExplodedToLines,
-          toPosition__numerationFrom0: indexOfLineContainsExtendingDeclaration + 1,
-          newElements: [
-            `\n\nblock append ${ nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected }\n`,
-            MarkupProcessingSharedState.importingFromTypeScriptPugCodeGenerator({
-              indentString,
-              lineSeparator,
-              initialIndentationDepth__numerationFrom0: 1
-            })
-          ],
-          mutably: false
-        }).join("\n")
-    );
-
-    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-
-  }
-
-  private static async createEntryPointsStateDependentVariations(
+  private static async managePageVariations(
     markupEntryPointVinylFile: MarkupEntryPointVinylFile, addNewFilesToStream: GulpStreamModifier.NewFilesAdder
   ): Promise<GulpStreamModifier.CompletionSignals> {
-    addNewFilesToStream(markupEntryPointVinylFile.forkStaticPreviewStateDependentVariationsIfAny());
-    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+    const {
+      newFiles,
+      mustInitialFileBeDeleted
+    }: MarkupEntryPointVinylFile.VariationsManagement = markupEntryPointVinylFile.manageVariations();
+
+    addNewFilesToStream(newFiles);
+
+    return Promise.resolve(
+      mustInitialFileBeDeleted ?
+          GulpStreamModifier.CompletionSignals.REMOVING_FILE_FROM_STREAM :
+          GulpStreamModifier.CompletionSignals.PASSING_ON
+    );
+
   }
 
   /* [ Theory ] The ampersand must be escaped first, otherwise the ampersand from which HTML other entities begins
@@ -479,22 +345,54 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
         replace(/'/gu, "&apos;");
   }
 
+  private static async formatOrMinifyContentIfMust(
+    markupVinylFile: MarkupEntryPointVinylFile
+  ): Promise<GulpStreamModifier.CompletionSignals> {
+
+    if (markupVinylFile.actualEntryPointsGroupSettings.outputCodeFormatting.mustExecute) {
+
+      markupVinylFile.setContents(MarkupProcessor.formatHTML_Code(markupVinylFile));
+
+      return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+    }
+
+    if (markupVinylFile.actualEntryPointsGroupSettings.outputCodeMinifying.mustExecute) {
+
+      markupVinylFile.setContents(
+        await MarkupProcessor.minifyHTML_Code(markupVinylFile)
+      );
+
+      return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+    }
+
+
+    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+  }
+
+
   /* eslint-disable @typescript-eslint/member-ordering --
    * From now, static and non-static methods are following by the usage order. */
   private async onOutputHTML_FileReady(
     processedEntryPointVinylFile: MarkupEntryPointVinylFile
   ): Promise<GulpStreamModifier.CompletionSignals> {
 
-    const entryPointFileContentRelativeToConsumingProjectRootDirectory: string = ImprovedPath.computeRelativePath({
-      basePath: this.projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-      comparedPath: processedEntryPointVinylFile.path,
-      alwaysForwardSlashSeparators: true
-    });
+    const entryPointFileContentRelativeToConsumingProjectRootDirectory__forwardSlashesSeparatorsOnly: string =
+        ImprovedPath.computeRelativePath({
+          basePath: this.projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
+          comparedPath: processedEntryPointVinylFile.path,
+          alwaysForwardSlashSeparators: true
+        });
 
-    let entryPointFileContent: string = processedEntryPointVinylFile.stringifiedContents;
-    const entryPointFileContentMD5_Checksum: string = computeContentMD5_Checksum(entryPointFileContent);
+    /** @description
+     * Pug gives neither good formatting nor good minification, thus the `stringifiedContents` is neither of.
+     * Depending on the settings, the `stringifiedContents` must be formatted or minified. */
+    let semiFinishedHTML_Code: string = processedEntryPointVinylFile.stringifiedContents;
+    const semiFinishedHTML_CodeMD5_Checksum: string = computeContentMD5_Checksum(semiFinishedHTML_Code);
 
-    let rootHTML_Element: HTMLElement = parseHTML(entryPointFileContent);
+    let rootHTML_Element: HTMLElement = parseHTML(semiFinishedHTML_Code);
 
     rootHTML_Element = PointersReferencesResolverForHTML.resolve({
       rootHTML_Element,
@@ -513,7 +411,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
     rootHTML_Element = SpacesNormalizerForCJK_Text.normalize(rootHTML_Element);
 
-    entryPointFileContent = rootHTML_Element.toString();
+    semiFinishedHTML_Code = rootHTML_Element.toString();
 
     if (
       processedEntryPointVinylFile.actualEntryPointsGroupSettings.outputFormat ===
@@ -521,7 +419,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
       !this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode
     ) {
 
-      processedEntryPointVinylFile.setContents(entryPointFileContent);
+      processedEntryPointVinylFile.setContents(semiFinishedHTML_Code);
       processedEntryPointVinylFile.extname = ".hbs";
 
       return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
@@ -533,7 +431,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
           MarkupProcessingRestrictions.OutputFormats.razor
     ) {
 
-      processedEntryPointVinylFile.setContents(entryPointFileContent);
+      processedEntryPointVinylFile.setContents(semiFinishedHTML_Code);
       processedEntryPointVinylFile.extname = ".razor";
 
       return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
@@ -541,51 +439,56 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
     }
 
 
-    if (this.projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
+    let formattedHTML_CodeForReports: string | null =
+        processedEntryPointVinylFile.actualEntryPointsGroupSettings.outputCodeFormatting.mustExecute ?
+            semiFinishedHTML_Code : null;
 
-      if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.HTML_Validation.mustExecute) {
-        HTML_Validator.validateAtBackgroundAndReportImmideatlyWithoutThrowingOfErrors({
-          HTML_Code: entryPointFileContent,
-          HTML_CodeMD5Checksum: entryPointFileContentMD5_Checksum,
-          targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
-              entryPointFileContentRelativeToConsumingProjectRootDirectory
-        });
-      }
+    if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.HTML_Validation.mustExecute) {
 
-      if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.mustExecute) {
-        AccessibilityInspector.inspectAtBackgroundAndReportImmideatlyWithoutThrowingOfErrors({
-          HTML_Code: entryPointFileContent,
-          HTML_CodeMD5Checksum: entryPointFileContentMD5_Checksum,
+      formattedHTML_CodeForReports =
+          formattedHTML_CodeForReports ??
+          MarkupProcessor.formatHTML_Code(processedEntryPointVinylFile);
+
+      HTML_Validator.enqueueFileForValidation({
+        formattedHTML_Content: formattedHTML_CodeForReports,
+        HTML_ContentMD5_Hash: semiFinishedHTML_CodeMD5_Checksum,
+        originalHTML_FilePathRelativeToConsumingProjectRoot__forwardSlashesSeparatorsOnly:
+            entryPointFileContentRelativeToConsumingProjectRootDirectory__forwardSlashesSeparatorsOnly
+      });
+
+    }
+
+    if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.mustExecute) {
+
+      formattedHTML_CodeForReports =
+          formattedHTML_CodeForReports ??
+          MarkupProcessor.formatHTML_Code(processedEntryPointVinylFile);
+
+      if (this.projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
+
+        AccessibilityInspector.inspectAtBackgroundAndReportImmediatelyWithoutThrowingOfErrors({
+          HTML_Code: formattedHTML_CodeForReports,
+          HTML_CodeMD5Checksum: semiFinishedHTML_CodeMD5_Checksum,
           accessibilityStandard: processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.standard,
           targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
-              entryPointFileContentRelativeToConsumingProjectRootDirectory
+              entryPointFileContentRelativeToConsumingProjectRootDirectory__forwardSlashesSeparatorsOnly
         });
-      }
 
-    } else {
+      } else {
 
-      if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.HTML_Validation.mustExecute) {
-        HTML_Validator.validateAtBackgroundWithoutReporting({
-          HTML_Code: entryPointFileContent,
-          HTML_CodeMD5Checksum: entryPointFileContentMD5_Checksum,
-          targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
-              entryPointFileContentRelativeToConsumingProjectRootDirectory
-        });
-      }
-
-      if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.mustExecute) {
         AccessibilityInspector.inspectAtBackgroundWithoutReporting({
-          HTML_Code: entryPointFileContent,
-          HTML_CodeMD5Checksum: entryPointFileContentMD5_Checksum,
+          HTML_Code: formattedHTML_CodeForReports,
+          HTML_CodeMD5Checksum: semiFinishedHTML_CodeMD5_Checksum,
           accessibilityStandard: processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.standard,
           targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
-              entryPointFileContentRelativeToConsumingProjectRootDirectory
+          entryPointFileContentRelativeToConsumingProjectRootDirectory__forwardSlashesSeparatorsOnly
         });
+
       }
 
     }
 
-    processedEntryPointVinylFile.setContents(entryPointFileContent);
+    processedEntryPointVinylFile.setContents(semiFinishedHTML_Code);
 
     return GulpStreamModifier.CompletionSignals.PASSING_ON;
 
@@ -593,11 +496,12 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
   private onStreamEnded(): void {
 
-    if (!this.projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
+    if (this.markupProcessingSettingsRepresentative.mustValidateHTML) {
+      HTML_Validator.validateQueuedFilesButReportAll();
+    }
 
-      if (this.markupProcessingSettingsRepresentative.mustValidateHTML) {
-        HTML_Validator.reportCachedValidationsResultsAndFinalize();
-      }
+
+    if (!this.projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
 
       if (this.markupProcessingSettingsRepresentative.mustInspectAccessibility) {
         AccessibilityInspector.reportCachedValidationsResultsAndFinalize();
@@ -609,9 +513,9 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
 
   /* ━━━ Rebuilding ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  private onSourceFilesWatcherEmitsAnyEvent(targetFileAbsolutePath: string): void {
+  private onSourceFilesWatcherEmitsAnyEvent(targetFileAbsolutePath__forwardSlashesSeparators: string): void {
 
-    this.absolutePathOfFilesWaitingForReProcessing.add(targetFileAbsolutePath);
+    this.absolutePathOfFilesWaitingForReProcessing.add(targetFileAbsolutePath__forwardSlashesSeparators);
 
     if (isNotNull(this.subsequentFilesStateChangeTimeout)) {
       clearTimeout(this.subsequentFilesStateChangeTimeout);
@@ -635,190 +539,64 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
   }
 
-  private onEntryPointFileAdded(targetEntryPointFileAbsolutePath: string): void {
-
-    const markupEntryPointsGroupSettingsActualForCurrentFile: MarkupProcessingSettings__Normalized.EntryPointsGroup = this.
-        markupProcessingSettingsRepresentative.
-        getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(targetEntryPointFileAbsolutePath);
-
-    const outputFileNameWithExtensionWithLeadingDot: string = this.
-        markupProcessingSettingsRepresentative.
-        computeOutputFileNameExtension({
-          entryPointsGroupSettingsActualForTargetFile: markupEntryPointsGroupSettingsActualForCurrentFile,
-          mustPrependDotToFileNameExtension: false
-        });
-
-    MarkupProcessingSharedState.
-        entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
-        set(
-          targetEntryPointFileAbsolutePath,
-          ImprovedPath.joinPathSegments(
-            [
-              MarkupProcessingSettingsRepresentative.computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
-                targetEntryPointFileAbsolutePath, markupEntryPointsGroupSettingsActualForCurrentFile
-              ),
-              `${ extractFileNameWithoutLastExtension(targetEntryPointFileAbsolutePath) }.` +
-                  outputFileNameWithExtensionWithLeadingDot
-            ],
-            { alwaysForwardSlashSeparators: true }
-          )
-        );
-
+  private onEntryPointFileAdded(targetFileAbsolutePath__forwardSlashesSeparators: string): void {
+    MarkupProcessingSharedState.pagesVariationsMetadata.set(
+      targetFileAbsolutePath__forwardSlashesSeparators,
+      this.markupProcessingSettingsRepresentative.createPageVariationsMetadata(targetFileAbsolutePath__forwardSlashesSeparators)
+    );
   }
 
-  private static onEntryPointFileDeleted(targetEntryPointFileAbsolutePath: string): void {
-    MarkupProcessingSharedState.
-        entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
-        delete(targetEntryPointFileAbsolutePath);
+  private static onEntryPointFileDeleted(targetFileAbsolutePath__forwardSlashesSeparators: string): void {
+    MarkupProcessingSharedState.pagesVariationsMetadata.delete(targetFileAbsolutePath__forwardSlashesSeparators);
   }
 
 
   /* ━━━ Helpers ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  private initializeSourceAndOutputFilesAbsolutePathsCorrespondenceMap(): void {
+  private static formatHTML_Code(markupVinylFile: MarkupEntryPointVinylFile): string {
 
-    const localeDependentPagesVariationsSettings:
-        MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.LocaleDependent | undefined =
-            this.markupProcessingSettingsRepresentative.localeDependentPagesVariationsSettings;
+    const { outputCodeFormatting: outputCodeFormattingSettings }: MarkupProcessingSettings__Normalized.EntryPointsGroup =
+        markupVinylFile.actualEntryPointsGroupSettings;
 
-    const localesData:
-        MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.LocaleDependent.LocalesData =
-            localeDependentPagesVariationsSettings?.locales ?? new Map();
-
-    for (
-      const markupSourceFileAbsolutePath of ImprovedGlob.getFilesAbsolutePathsSynchronously(
-        this.markupProcessingSettingsRepresentative.initialRelevantEntryPointsSourceFilesAbsolutePaths,
-        { alwaysForwardSlashSeparators: true }
-      )
-    ) {
-
-      const areLocaleDependentVariationsRequiredForCurrentFile: boolean =
-          localesData.size > 0 &&
-          localeDependentPagesVariationsSettings?.excludedFilesAbsolutePaths.includes(markupSourceFileAbsolutePath) === false;
-
-      const markupEntryPointsGroupSettingsActualForCurrentFile: MarkupProcessingSettings__Normalized.EntryPointsGroup =
-          this.markupProcessingSettingsRepresentative.
-              getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(markupSourceFileAbsolutePath);
-
-      const outputFileNameWithLastExtensionWithLeadingDot: string = this.markupProcessingSettingsRepresentative.
-          computeOutputFileNameExtension({
-            entryPointsGroupSettingsActualForTargetFile: markupEntryPointsGroupSettingsActualForCurrentFile,
-            mustPrependDotToFileNameExtension: false
-          });
-
-      const outputDirectoryForCurrentMarkupFileAndDerivedOnes: string = MarkupProcessingSettingsRepresentative.
-          computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
-            markupSourceFileAbsolutePath, markupEntryPointsGroupSettingsActualForCurrentFile
-          );
-
-      if (areLocaleDependentVariationsRequiredForCurrentFile) {
-
-        for (const localeData of localesData.values()) {
-
-          MarkupProcessingSharedState.
-              entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
-              set(
-                addPenultimateFileNameExtension({
-                  targetPath: markupSourceFileAbsolutePath,
-                  targetFileNamePenultimateExtensionWithOrWithoutLeadingDot:
-                      localeData.outputFileInterimNameExtensionWithoutDot,
-                  mustAppendDuplicateEvenIfTargetPenultimateFileNameExtensionAlreadyExist: true,
-                  mustAppendLastFileNameExtensionInsteadIfThereIsNoOne: true
-                }),
-                ImprovedPath.joinPathSegments(
-                  [
-                    outputDirectoryForCurrentMarkupFileAndDerivedOnes,
-                    [
-                      extractFileNameWithoutLastExtension(markupSourceFileAbsolutePath),
-                      localeData.outputFileInterimNameExtensionWithoutDot,
-                      outputFileNameWithLastExtensionWithLeadingDot
-                    ].join(".")
-                  ],
-                  { alwaysForwardSlashSeparators: true }
-                )
-              );
-
-        }
-
-      } else {
-
-        MarkupProcessingSharedState.
-            entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
-            set(
-              markupSourceFileAbsolutePath,
-              ImprovedPath.joinPathSegments(
-                [
-                  outputDirectoryForCurrentMarkupFileAndDerivedOnes,
-                  `${ extractFileNameWithoutLastExtension(markupSourceFileAbsolutePath) }.` +
-                      outputFileNameWithLastExtensionWithLeadingDot
-                ],
-                { alwaysForwardSlashSeparators: true }
-              )
-            );
-
+    /* [ Theory ]
+     * + `indent_with_tabs` overrides `indent_size` and `indent_char` so not required.
+     * */
+    return CodeFormatter.html(
+      markupVinylFile.stringifiedContents,
+      {
+        ...outputCodeFormattingSettings.indentationString.includes(SpaceCharacters.regularSpace) ?
+            { indent_size: splitString(outputCodeFormattingSettings.indentationString, "").length } : null,
+        indent_char: outputCodeFormattingSettings.indentationString,
+        eol: outputCodeFormattingSettings.lineSeparators,
+        end_with_newline: outputCodeFormattingSettings.mustGuaranteeTrailingEmptyLine,
+        indent_body_inner_html: outputCodeFormattingSettings.mustIndentHeadAndBodyTags
       }
-
-      const entryPointStateDependentVariations: MarkupProcessingSettings__Normalized.StaticPreview.
-          PagesVariations.StateDependent.Page | undefined =
-          this.markupProcessingSettingsRepresentative.
-              getStateDependentVariationsForEntryPointWithAbsolutePath(markupSourceFileAbsolutePath);
-
-      for (
-        const derivedSourceFileAbsolutePath of
-            (entryPointStateDependentVariations?.derivedPagesAndStatesMap ?? new Map<string, string>()).keys()
-      ) {
-
-        if (areLocaleDependentVariationsRequiredForCurrentFile) {
-
-          for (const localeData of localesData.values()) {
-
-            MarkupProcessingSharedState.
-                entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
-                set(
-                  addPenultimateFileNameExtension({
-                    targetPath: derivedSourceFileAbsolutePath,
-                    targetFileNamePenultimateExtensionWithOrWithoutLeadingDot:
-                    localeData.outputFileInterimNameExtensionWithoutDot,
-                    mustAppendDuplicateEvenIfTargetPenultimateFileNameExtensionAlreadyExist: true,
-                    mustAppendLastFileNameExtensionInsteadIfThereIsNoOne: true
-                  }),
-                  ImprovedPath.joinPathSegments(
-                    [
-                      outputDirectoryForCurrentMarkupFileAndDerivedOnes,
-                      [
-                        extractFileNameWithoutLastExtension(derivedSourceFileAbsolutePath),
-                        localeData.outputFileInterimNameExtensionWithoutDot,
-                        "html"
-                      ].join(".")
-                    ],
-                    { alwaysForwardSlashSeparators: true }
-                  )
-                );
-
-          }
-
-        } else {
-
-          MarkupProcessingSharedState.
-              entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.
-              set(
-                derivedSourceFileAbsolutePath,
-                ImprovedPath.joinPathSegments(
-                  [
-                    outputDirectoryForCurrentMarkupFileAndDerivedOnes,
-                    `${ extractFileNameWithoutLastExtension(derivedSourceFileAbsolutePath) }.html`
-                  ],
-                  { alwaysForwardSlashSeparators: true }
-                )
-              );
-
-        }
-
-      }
-
-    }
+    );
 
   }
 
+  private static async minifyHTML_Code(markupVinylFile: MarkupEntryPointVinylFile): Promise<string> {
+
+    const { outputCodeMinifying: outputCodeFormattingSettings }: MarkupProcessingSettings__Normalized.EntryPointsGroup =
+        markupVinylFile.actualEntryPointsGroupSettings;
+
+    return (
+      await HTML_CodeMinifier.process(
+        markupVinylFile.stringifiedContents,
+        {
+
+          collapseAttributeWhitespace: outputCodeFormattingSettings.attributesExtraWhitespacesCollapsing,
+          deduplicateAttributeValues: outputCodeFormattingSettings.attributesValuesDeduplication,
+          collapseWhitespace: "aggressive",
+          minifyCss: true,
+          minifyJs: true,
+
+          /* [ Theory ] Could cause the errors like #htmlnano fails to minify the svg:Error: Config should be an object#
+           *   on which user can not affect */
+          minifySvg: false
+
+        }
+      )
+    ).html;
 
   }
   /* eslint-enable @typescript-eslint/member-ordering */

@@ -13,26 +13,29 @@ import {
 
 abstract class CodeListingPugFilter {
 
-  public static optionsSpecification: RawObjectDataProcessor.FixedKeyAndValuesTypeObjectDataSpecification = {
-    subtype: RawObjectDataProcessor.ObjectSubtypes.fixedKeyAndValuePairsObject,
+  public static optionsSpecification: RawObjectDataProcessor.FixedSchemaObjectTypeDataSpecification = {
+    subtype: RawObjectDataProcessor.ObjectSubtypes.fixedSchema,
     nameForLogging: "CodeListingPugFilerOptions",
     properties: {
       mustAppendEmptyLine: {
         type: Boolean,
-        defaultValue: false
+        undefinedValueSubstitution: false,
+        isNullForbidden: true
       },
       indentationMultiplier: {
         preValidationModifications: convertPotentialStringToIntegerIfPossible,
         type: Number,
-        required: false,
+        isUndefinedForbidden: false,
+        isNullForbidden: true,
         numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
       },
       indentationString: {
         type: String,
-        requiredIf: {
+        undefinedForbiddenIf: {
           predicate: (rawOptions: ArbitraryObject): boolean => isNotUndefined(rawOptions.indentationMultiplier),
           descriptionForLogging: "\"indentationMultiplier\" has been specified"
         },
+        isNullForbidden: true,
         minimalCharactersCount: 1
       }
     }
@@ -43,7 +46,7 @@ abstract class CodeListingPugFilter {
     const rawOptionsProcessingResult: RawObjectDataProcessor.ProcessingResult<CodeListingPugFilter.Options> =
         RawObjectDataProcessor.process(rawOptions, CodeListingPugFilter.optionsSpecification);
 
-    if (rawOptionsProcessingResult.rawDataIsInvalid) {
+    if (rawOptionsProcessingResult.isRawDataInvalid) {
       Logger.throwErrorAndLog({
         errorInstance: new InvalidExternalDataError({
           customMessage: "One or more invalid options found for \"CodeListing\" pug filer.\n" +

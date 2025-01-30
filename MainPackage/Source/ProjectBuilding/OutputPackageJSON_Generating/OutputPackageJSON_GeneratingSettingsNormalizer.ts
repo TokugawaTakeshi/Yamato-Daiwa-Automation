@@ -60,6 +60,7 @@ class OutputPackageJSON_GeneratingSettingsNormalizer {
       return null;
     }
 
+
     const extractionFromPackageJSON_OfConsumingProject: OutputPackageJSON_GeneratingSettingsNormalizer.
         ActualFieldsOfPackageJSON_OfConsumingProject =
             ObjectDataFilesProcessor.processFile<
@@ -70,26 +71,35 @@ class OutputPackageJSON_GeneratingSettingsNormalizer {
                 { alwaysForwardSlashSeparators: true }
               ),
               validDataSpecification: {
-                subtype: RawObjectDataProcessor.ObjectSubtypes.fixedKeyAndValuePairsObject,
+                subtype: RawObjectDataProcessor.ObjectSubtypes.fixedSchema,
                 nameForLogging: "PackageJSON_OfConsumingProject",
                 properties: {
                   scripts: {
-                    type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-                    defaultValue: {},
+                    type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+                    undefinedValueSubstitution: {},
+                    isNullForbidden: true,
+                    areUndefinedTypeValuesForbidden: true,
+                    areNullTypeValuesForbidden: true,
                     value: {
                       type: String
                     }
                   },
                   dependencies: {
-                    type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-                    defaultValue: {},
+                    type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+                    undefinedValueSubstitution: {},
+                    isNullForbidden: true,
+                    areUndefinedTypeValuesForbidden: true,
+                    areNullTypeValuesForbidden: true,
                     value: {
                       type: String
                     }
                   },
                   devDependencies: {
-                    type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-                    defaultValue: {},
+                    type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+                    undefinedValueSubstitution: {},
+                    isNullForbidden: true,
+                    areUndefinedTypeValuesForbidden: true,
+                    areNullTypeValuesForbidden: true,
                     value: {
                       type: String
                     }

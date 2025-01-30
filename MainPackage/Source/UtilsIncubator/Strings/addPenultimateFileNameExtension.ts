@@ -46,10 +46,10 @@ export default function addPenultimateFileNameExtension(
   const pathDotSeparatedSegments: Array<string> = splitString(targetPath, ".");
 
   return addElementsToArray({
-    targetArray: splitString(targetPath, "."),
+    targetArray: pathDotSeparatedSegments,
     newElements: [ targetFileNamePenultimateExtensionWithoutLeadingDot ],
     mutably: true,
-    toPosition__numerationFrom1: pathDotSeparatedSegments.length - 1
+    toPosition__numerationFrom1: pathDotSeparatedSegments.length
   }).join(".");
 
 }

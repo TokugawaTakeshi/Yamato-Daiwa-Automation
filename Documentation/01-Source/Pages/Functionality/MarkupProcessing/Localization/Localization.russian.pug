@@ -1,0 +1,103 @@
+extends ../../../../../node_modules/@yamato-daiwa/programming_documentation/Layouts/TwoColumns/TwoColumnsLayout.pug
+
+
+block append Requirements
+
+  include ../../../../SharedAssets/Markup/SharedAssets.russian.pug
+  include ../../../../SharedComponents/SharedComponents.russian.pug
+
+
+block append Metadata
+
+  -
+
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.functionality.$children.markupProcessing.$children.localization;
+
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle(topHeading),
+        description: ""
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
+    });
+
+    RoutingEmulator.setCurrentRoute("functionality.markupProcessing.localization");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: routing.english.functionality.$children.markupProcessing.$children.localization.$URI,
+      japanese: routing.japanese.functionality.$children.markupProcessing.$children.localization.$URI
+    });
+
+
+block append HeadScripts
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  article
+
+    //- ━━━ Локализация ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h1.Article-Heading1= topHeading
+
+    +PageNotReadyApology--YDPD({ currentState: PageNotReadyApology__YDPD.States.initialTextNotComplete })
+
+    p.Article-Paragraph.
+      Для #[+Keyword--YDID одного] #[+Keyword__Contrast--YDID входного] #[+Term--YDID Pug-файла]
+        #[+ImportantEntity--YDID YDA] может сгенерировать #[+Keyword--YDID несколько] #[+Keyword__Contrast--YDID выходных]
+        #[+Term--YDID HTML-файлов], отличающихся языком страницы.
+      Такой тип локализации актуален для следующих случаев:
+
+    dl.Article-DescriptionList
+
+      dt Статическое превью
+      dd Создание локализованных версий страниц на этапе #[+Term--YDID статического превью] с целью показать их заказчику.
+
+      dt Статические сайты
+      dd Будучи статическими, такой тип сайтов не подразумевает использование сверенных средств локализации.
+
+      dt MVC
+      dd.
+        Помимо использования бэкенд-библиотек для локализации/интернационализации, таких как
+          #[+SecondaryEntity--YDID i18n-express], заготовить по одному промежуточному шаблону для каждой комбинации
+          #[+Term--YDID страница-язык] (естественно, с частичной автоматизацией) что очень хорошо с точки зрения
+          производительности, если большинство текстовых элементов не меняются на протяжении просмотра страницы.
+
+    p.Article-Paragraph.
+      Такую «статическую» локализацию можно совмещать с другими типами (например, использовать тот же
+        #[+SecondaryEntity--YDID i18n-express] только для текстовых элементов, которые вычисляются во время рендеринга
+        на серверной стороне), а если у Вас рендеринг выполняется на клиентской стороне, то статическую локализацию
+        можно применять на стадии #[+Term--YDID статического превью].
+
+
+    //- ━━━ Обеспечение строковых ресурсов ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.providingOfStringResources.$heading,
+      HTML_ID: localizedSectioning.providingOfStringResources.$anchor
+    }).Article-Heading2
+
+    //- ─── Обеспечение строковых ресурсов через TypeScript ────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.providingOfStringResources.$children.viaTypeScript.$heading,
+      HTML_ID: localizedSectioning.providingOfStringResources.$children.viaTypeScript.$anchor
+    }).Article-Heading3
+
+    //- ─── Обеспечение строковых ресурсов через JSON-файлы ────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.providingOfStringResources.$children.viaJSON_Files.$heading,
+      HTML_ID: localizedSectioning.providingOfStringResources.$children.viaJSON_Files.$anchor
+    }).Article-Heading3

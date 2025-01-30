@@ -52,14 +52,17 @@ abstract class FilesMasterWatcher {
     FilesMasterWatcher.passiveWatchers.add(passiveWatcher);
   }
 
+
   /* [ Chokidar theory ] While the globs are absolute path based, the second parameter will be the absolute path too. */
   private static onAnyChokidarEvent(
     chokidarEventName: ChokidarSpecialist.EventsNames,
-    targetFileOrDirectoryAbsolutePath__operationingSystemDependentPathSeparators: string
+    targetFileOrDirectoryAbsolutePath__operatingSystemDependentPathSeparators: string
   ): void {
 
     let eventName: FilesMasterWatcher.EventsNames;
 
+    /* eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check --
+     * Only operations with files are actual in this case.  */
     switch (chokidarEventName) {
 
       case ChokidarSpecialist.EventsNames.fileAdded: {
@@ -85,7 +88,7 @@ abstract class FilesMasterWatcher {
 
     const targetFileAbsolutePath__forwardSlashesPathSeparators: string = ImprovedPath.
         replacePathSeparatorsToForwardSlashes(
-          targetFileOrDirectoryAbsolutePath__operationingSystemDependentPathSeparators
+          targetFileOrDirectoryAbsolutePath__operatingSystemDependentPathSeparators
         );
 
     for (const passiveWatcher of FilesMasterWatcher.passiveWatchers) {

@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.stylesProcessing;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Styles Processing Settings"),
+        title: buildHTML_PageTitle(topHeading),
         description:
             "The description of the configuration of the styles (source code: Pug, output code: HTML) processing in the " +
               "\"Yamato Daiwa Automation\" (abbreviation: \"YDA\"), the Node.js utility for the projects " +
@@ -34,11 +39,6 @@ block append Metadata
       russian: routing.russian.configurationFile.$children.stylesProcessing.$URI
     });
 
-    const {
-      $heading: topHeading,
-      $sectioning: localizedSectioning
-    } = localizedRouting.configurationFile.$children.stylesProcessing;
-
 
 block append HeadScripts
 
@@ -53,3 +53,7 @@ block append SpecificContent
 
     //- ━━━ `$stylesProcessing` — Styles Processing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })

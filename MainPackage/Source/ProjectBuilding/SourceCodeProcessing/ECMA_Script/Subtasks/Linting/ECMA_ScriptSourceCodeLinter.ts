@@ -114,70 +114,87 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
       sourceFilesCachedCheckingResults: {
         fileNameWithExtension: "ECMA_ScriptLintingCache.json",
         contentSpecification: {
-          subtype: RawObjectDataProcessor.ObjectSubtypes.fixedKeyAndValuePairsObject,
+          subtype: RawObjectDataProcessor.ObjectSubtypes.fixedSchema,
           nameForLogging: "CachedMarkupLintingResultsFileContent",
           properties: {
             files: {
-              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-              required: true,
+              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+              isUndefinedForbidden: true,
+              isNullForbidden: true,
+              areUndefinedTypeValuesForbidden: true,
+              areNullTypeValuesForbidden: true,
               value: {
                 type: Object,
                 properties: {
                   issues: {
                     type: Array,
-                    required: true,
+                    isUndefinedForbidden: true,
+                    isNullForbidden: true,
+                    areUndefinedElementsForbidden: true,
+                    areNullElementsForbidden: true,
                     element: {
                       type: Object,
                       properties: {
                         ruleID: {
                           type: String,
-                          required: false
+                          isUndefinedForbidden: false,
+                          isNullForbidden: true
                         },
                         message: {
                           type: String,
-                          required: true
+                          isUndefinedForbidden: true,
+                          isNullForbidden: true
                         },
                         codeFragment: {
                           type: Object,
-                          required: true,
+                          isUndefinedForbidden: true,
+                          isNullForbidden: true,
                           properties: {
                             beforeHighlighting: {
                               type: String,
-                              required: true
+                              isUndefinedForbidden: true,
+                              isNullForbidden: true
                             },
                             highlighted: {
                               type: String,
-                              required: true
+                              isUndefinedForbidden: true,
+                              isNullForbidden: true
                             },
                             afterHighlighting: {
                               type: String,
-                              required: true
+                              isUndefinedForbidden: true,
+                              isNullForbidden: true
                             }
                           }
                         },
                         location: {
                           type: Object,
-                          required: true,
+                          isUndefinedForbidden: true,
+                          isNullForbidden: true,
                           properties: {
                             startingLineNumber__numerationFrom1: {
                               type: Number,
                               numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-                              required: false
+                              isUndefinedForbidden: false,
+                              isNullForbidden: true
                             },
                             endingLineNumber__numerationFrom1: {
                               type: Number,
                               numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-                              required: false
+                              isUndefinedForbidden: false,
+                              isNullForbidden: true
                             },
                             startingColumnNumber__numerationFrom1: {
                               type: Number,
                               numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-                              required: false
+                              isUndefinedForbidden: false,
+                              isNullForbidden: true
                             },
                             endingColumnNumber__numerationFrom1: {
                               type: Number,
                               numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-                              required: false
+                              isUndefinedForbidden: false,
+                              isNullForbidden: true
                             }
                           }
                         }
@@ -186,7 +203,8 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
                   },
                   modificationDateTime__ISO_8601: {
                     type: String,
-                    required: true,
+                    isUndefinedForbidden: true,
+                    isNullForbidden: true,
                     minimalCharactersCount: 1
                   }
                 }

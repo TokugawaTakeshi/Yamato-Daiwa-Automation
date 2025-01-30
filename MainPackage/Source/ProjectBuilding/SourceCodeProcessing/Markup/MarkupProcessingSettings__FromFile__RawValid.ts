@@ -6,21 +6,25 @@ import ConsumingProjectBuildingModes from
 /* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
 import SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid";
-import type ConsumingProjectPreDefinedBuildingModes__Localized from
-    "@ProjectBuilding/Common/RawConfig/Enumerations/ConsumingProjectPreDefinedBuildingModes__Localized";
-import type LintingSettings__FromFile__RawValid from
+import LintingSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/LintingSettings__FromFile__RawValid";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
-import { RawObjectDataProcessor, LineSeparators, nullToUndefined } from "@yamato-daiwa/es-extensions";
+import {
+  RawObjectDataProcessor,
+  LineSeparators,
+  splitString,
+  getObjectPropertySafely,
+  isNotUndefined
+} from "@yamato-daiwa/es-extensions";
 
 
 type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
   common?: MarkupProcessingSettings__FromFile__RawValid.Common;
-  // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  staticPreview?: MarkupProcessingSettings__FromFile__RawValid.StaticPreview;
   linting?: MarkupProcessingSettings__FromFile__RawValid.Linting;
   importingFromTypeScript?: MarkupProcessingSettings__FromFile__RawValid.ImportingFromTypeScript;
-  staticPreview?: MarkupProcessingSettings__FromFile__RawValid.StaticPreview;
+  importingFromJavaScript?: MarkupProcessingSettings__FromFile__RawValid.ImportingFromJavaScript;
   routing?: MarkupProcessingSettings__FromFile__RawValid.Routing;
   entryPointsGroups: Readonly<{ [groupID: string]: MarkupProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
   logging?: MarkupProcessingSettings__FromFile__RawValid.Logging;
@@ -29,36 +33,65 @@ type MarkupProcessingSettings__FromFile__RawValid = Readonly<{
 
 namespace MarkupProcessingSettings__FromFile__RawValid {
 
+  /* ━━━ Reusables ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export namespace Reusables {
+
+    /* ─── Localization ───────────────────────────────────────────────────────────────────────────────────────────── */
+    export type Localization = Readonly<{
+      stringResourcesFileRelativePath?: string;
+      localizedStringResourcesConstantName?: string;
+      localeConstantName?: string;
+      nameOfConstantForInterpolationToLangHTML_Attribute?: string;
+      locales: Readonly<{ [ localeKey: string ]: Localization.LocaleData; }>;
+    }>;
+
+    export namespace Localization {
+
+      export type LocaleData = Readonly<{
+        outputFileInterimNameExtensionWithoutDot: string;
+        localeConstantValue?: string;
+        keyInLocalizedStringResourcesObject?: string;
+        valueOfConstantForInterpolationToLangHTML_Attribute?: string;
+      }>;
+
+    }
+
+  }
+
+
+  /* ━━━ Common ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Common = Readonly<{
+    localization?: Common.Localization;
     buildingModeDependent?: Readonly<{ [projectBuildingMode: string]: Common.BuildingModeDependent | undefined; }>;
   }>;
 
   export namespace Common {
+
+    export type Localization =
+        Reusables.Localization &
+        Readonly<{
+          excludedFilesPathsRelativeRelativeToProjectRootDirectory: ReadonlyArray<string>;
+        }>;
+
     export type BuildingModeDependent = Readonly<{
       secondsBetweenFileUpdatingAndStartingOfRebuilding?: number;
       mustResolveResourcesPointersToRelativePaths?: boolean;
     }>;
+
   }
 
 
-  // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  export type Linting = LintingSettings__FromFile__RawValid;
-
-
-  export type ImportingFromTypeScript = Readonly<{
-    typeScriptConfigurationFileRelativePath?: string;
-    importedNamespace: string;
-    sourceFileRelativePath: string;
-    nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected: string;
-  }>;
-
-
+  /* ━━━ Static Preview ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type StaticPreview = Readonly<{
-    stateDependentPagesVariationsSpecificationFileRelativePath?: string;
+    stateDependentPagesVariations?: StaticPreview.StateDependentPageVariations;
     importsFromStaticDataFiles?: ReadonlyArray<StaticPreview.ImportFromStaticDataFile>;
   }>;
 
   export namespace StaticPreview {
+
+    export type StateDependentPageVariations = Readonly<{
+      specificationFileRelativePath: string;
+    }>;
 
     export type ImportFromStaticDataFile = Readonly<{
       importedVariableName: string;
@@ -68,6 +101,26 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
   }
 
 
+  /* ━━━ Linting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export type Linting = LintingSettings__FromFile__RawValid;
+
+
+  /* ━━━ Importing from TypeScript ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export type ImportingFromTypeScript = Readonly<{
+    typeScriptConfigurationFileRelativePath?: string;
+    importedNamespace: string;
+    sourceFileRelativePath: string;
+  }>;
+
+
+  /* ━━━ Importing from JavaScript ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export type ImportingFromJavaScript = Readonly<{
+    sourceFileRelativePath: string;
+    nameOfGlobalConstantForStoringOfImports: string;
+  }>;
+
+
+  /* ━━━ Routing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Routing = Readonly<{
     specificationFileRelativePath: string;
     variable: string;
@@ -79,10 +132,12 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
   }
 
 
+  /* ━━━ Entry Points Group ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type EntryPointsGroup =
       SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
       Readonly<{
         outputFormat?: MarkupProcessingRestrictions.OutputFormats;
+        localization?: EntryPointsGroup.Localization;
         HTML_Validation?: EntryPointsGroup.HTML_Validation;
         accessibilityInspection?: EntryPointsGroup.AccessibilityInspection;
         buildingModeDependent: Readonly<{
@@ -91,6 +146,12 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
       }>;
 
   export namespace EntryPointsGroup {
+
+    export type Localization =
+        Reusables.Localization &
+        Readonly<{
+          excludedFilesPathsRelativeToSourcesFilesTopDirectory?: ReadonlyArray<string>;
+        }>;
 
     export type HTML_Validation = Readonly<{
       disable?: boolean;
@@ -111,15 +172,34 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
 
     export type BuildingModeDependent =
         SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup.BuildingModeDependent &
-        Readonly<{ outputCodeFormatting?: BuildingModeDependent.OutputCodeFormatting; }>;
+        Readonly<{
+          outputCodeFormatting?: BuildingModeDependent.OutputCodeFormatting;
+          outputCodeMinifying?: BuildingModeDependent.OutputCodeMinifying;
+        }>;
 
     export namespace BuildingModeDependent {
-      export type OutputCodeFormatting = Readonly<{ disable?: boolean; }>;
+
+      export type OutputCodeFormatting = Readonly<{
+        enable?: boolean;
+        indentationString?: string;
+        lineSeparators?: LineSeparators;
+        mustGuaranteeTrailingEmptyLine?: boolean;
+        mustIndentHeadAndBodyTags?: boolean;
+      }>;
+
+      export type OutputCodeMinifying = Readonly<{
+        enable?: boolean;
+        attributesExtraWhitespacesCollapsing?: boolean;
+        attributesValuesDeduplication?: boolean;
+        commentsRemoving?: boolean;
+      }>;
+
     }
 
   }
 
 
+  /* ━━━ Logging ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Logging = Readonly<{
 
     filesPaths?: boolean;
@@ -145,462 +225,169 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
   }>;
 
 
-  /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  export type Localization = Readonly<{
-
-    common: Readonly<{
-
-      KEY: string;
-
-      periodBetweenFileUpdatingAndRebuildingStarting__seconds: Readonly<{ KEY: string; }>;
-
-      buildingModeDependent: Readonly<{
-        KEY: string;
-        mustResolveResourceReferencesToRelativePaths: Readonly<{ KEY: string; }>;
-      }>;
-
-    }>;
-
-    linting: Readonly<{ KEY: string; }>;
-
-    importingFromTypeScript: Readonly<{
-      KEY: string;
-      typeScriptConfigurationFileRelativePath: Readonly<{ KEY: string; }>;
-      importedNamespace: Readonly<{ KEY: string; }>;
-      sourceFileRelativePath: Readonly<{ KEY: string; }>;
-      nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected: Readonly<{ KEY: string; }>;
-    }>;
-
-    staticPreview: Readonly<{
-
-      KEY: string;
-
-      stateDependentPagesVariationsSpecificationFileRelativePath: Readonly<{ KEY: string; }>;
-
-      importsFromStaticDataFiles: {
-        KEY: string;
-        importedVariableName: Readonly<{ KEY: string; }>;
-        fileRelativePath: Readonly<{ KEY: string; }>;
-      };
-
-    }>;
-
-    entryPointsGroups: Readonly<{
-
-      KEY: string;
-
-      HTML_Validation: Readonly<{
-        KEY: string;
-        disable: Readonly<{ KEY: string; }>;
-        ignoring: Readonly<{
-          KEY: string;
-          files: Readonly<{ KEY: string; }>;
-          directories: Readonly<{ KEY: string; }>;
-        }>;
-      }>;
-
-      accessibilityInspection: Readonly<{
-        KEY: string;
-        standard: Readonly<{ KEY: string; }>;
-        disable: Readonly<{ KEY: string; }>;
-        ignoring: Readonly<{
-          KEY: string;
-          files: Readonly<{ KEY: string; }>;
-          directories: Readonly<{ KEY: string; }>;
-        }>;
-      }>;
-
-      outputFormat: { KEY: string; };
-
-      buildingModeDependent: Readonly<{
-        KEY: string;
-        outputTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
-        outputCodeFormatting: Readonly<{
-          KEY: string;
-          disable: Readonly<{ KEY: string; }>;
-        }>;
-      }>;
-
-    }>;
-
-    logging: Readonly<{
-
-      KEY: string;
-
-      filesPaths: Readonly<{ KEY: string; }>;
-      filesCount: Readonly<{ KEY: string; }>;
-      partialFilesAndParentEntryPointsCorrespondence: Readonly<{ KEY: string; }>;
-      filesWatcherEvents: Readonly<{ KEY: string; }>;
-
-      linting: Readonly<{
-        KEY: string;
-        starting: Readonly<{ KEY: string; }>;
-        completionWithoutIssues: Readonly<{ KEY: string; }>;
-      }>;
-
-      HTML_Validation: Readonly<{
-        KEY: string;
-        starting: Readonly<{ KEY: string; }>;
-        completionWithoutIssues: Readonly<{ KEY: string; }>;
-      }>;
-
-      accessibilityChecking: Readonly<{
-        KEY: string;
-        starting: Readonly<{ KEY: string; }>;
-        completionWithoutIssues: Readonly<{ KEY: string; }>;
-      }>;
-
-    }>;
-
-  }>;
-
-
-  export function getLocalizedPropertiesSpecification(
-    {
-      markupProcessingPropertiesLocalization,
-      localizedConsumingProjectLocalizedPreDefinedBuildingModes,
-      lintingSettingsLocalizedPropertiesSpecification,
-      sourceCodeProcessingSettingsGenericPropertiesLocalization,
-      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification
-    }: Readonly<{
-      markupProcessingPropertiesLocalization: Localization;
-      localizedConsumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-      lintingSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.PropertiesSpecification;
-      sourceCodeProcessingSettingsGenericPropertiesLocalization:
-          SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.Localization;
-      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification: RawObjectDataProcessor.
-          PropertiesSpecification;
-    }>
-  ): RawObjectDataProcessor.PropertiesSpecification {
+  /* ━━━ Properties Specification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export function generateLocalizationPropertiesSpecification(
+    { forEntryPointsGroups }: Readonly<{ forEntryPointsGroups: boolean; }>
+  ): RawObjectDataProcessor.NestedObjectPropertySpecification {
 
     return {
 
-      $common: {
+      newName: "localization",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
 
-        newName: "common",
-        preValidationModifications: nullToUndefined,
-        type: Object,
-        required: false,
+      properties: {
 
-        properties: {
+        $stringResourcesFileRelativePath: {
+          newName: "stringResourcesFileRelativePath",
+          type: String,
+          isUndefinedForbidden: false,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
 
-          $buildingModeDependent: {
+        $localizedStringResourcesConstantName: {
+          newName: "localizedStringResourcesConstantName",
+          type: String,
+          isUndefinedForbidden: false,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
 
-            newName: "buildingModeDependent",
+        $localeConstantName: {
+          newName: "localeConstantName",
+          type: String,
+          isUndefinedForbidden: false,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
 
-            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
+        $nameOfConstantForInterpolationToLangHTML_Attribute: {
+          newName: "nameOfConstantForInterpolationToLangHTML_Attribute",
+          type: String,
+          isUndefinedForbidden: false,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
 
-            required: false,
+        $locales: {
 
-            minimalEntriesCount: 1,
+          newName: "locales",
+          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+          isUndefinedForbidden: true,
+          isNullForbidden: true,
+          areUndefinedTypeValuesForbidden: true,
+          areNullTypeValuesForbidden: true,
+          minimalEntriesCount: 1,
 
-            allowedKeys: [
-              "$staticPreview",
-              "$localDevelopment",
-              "$testing",
-              "$staging",
-              "$production"
-            ],
+          value: {
 
-            keysRenamings: {
-              $staticPreview: ConsumingProjectBuildingModes.staticPreview,
-              $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
-              $testing: ConsumingProjectBuildingModes.testing,
-              $staging: ConsumingProjectBuildingModes.staging,
-              $production: ConsumingProjectBuildingModes.production
-            },
-
-            value: {
-
-              type: Object,
-
-              properties: {
-
-                $secondsBetweenFileUpdatingAndStartingOfRebuilding: {
-                  newName: "secondsBetweenFileUpdatingAndStartingOfRebuilding",
-                  type: Number,
-                  numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
-                  required: false
-                },
-
-                $mustResolveResourcesPointersToRelativePaths: {
-                  newName: "mustResolveResourcesPointersToRelativePaths",
-                  type: Boolean,
-                  required: false
-                }
-
-              }
-
-            }
-
-          }
-
-        }
-
-      },
-
-      // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      [markupProcessingPropertiesLocalization.linting.KEY]: {
-        newName: "linting",
-        preValidationModifications: nullToUndefined,
-        type: Object,
-        required: false,
-        properties: lintingSettingsLocalizedPropertiesSpecification
-      },
-
-      [markupProcessingPropertiesLocalization.importingFromTypeScript.KEY]: {
-
-        newName: "importingFromTypeScript",
-        preValidationModifications: nullToUndefined,
-        type: Object,
-        required: false,
-
-        properties: {
-
-          [markupProcessingPropertiesLocalization.importingFromTypeScript.typeScriptConfigurationFileRelativePath.KEY]: {
-            newName: "typeScriptConfigurationFileRelativePath",
-            type: String,
-            required: false,
-            minimalCharactersCount: 1
-          },
-
-          [markupProcessingPropertiesLocalization.importingFromTypeScript.importedNamespace.KEY]: {
-            newName: "importedNamespace",
-            type: String,
-            required: true,
-            minimalCharactersCount: 1
-          },
-
-          [markupProcessingPropertiesLocalization.importingFromTypeScript.sourceFileRelativePath.KEY]: {
-            newName: "sourceFileRelativePath",
-            type: String,
-            required: true,
-            minimalCharactersCount: 1
-          },
-
-          [
-            markupProcessingPropertiesLocalization.importingFromTypeScript.
-              nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected.KEY
-          ]: {
-            newName: "nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected",
-            type: String,
-            required: true,
-            minimalCharactersCount: 1
-          }
-
-        }
-
-      },
-
-      [markupProcessingPropertiesLocalization.staticPreview.KEY]: {
-
-        newName: "staticPreview",
-        preValidationModifications: nullToUndefined,
-        type: Object,
-        required: false,
-
-        properties: {
-
-          [markupProcessingPropertiesLocalization.staticPreview.stateDependentPagesVariationsSpecificationFileRelativePath.KEY]: {
-            newName: "stateDependentPagesVariationsSpecificationFileRelativePath",
-            type: String,
-            required: false,
-            minimalCharactersCount: 1
-          },
-
-          [markupProcessingPropertiesLocalization.staticPreview.importsFromStaticDataFiles.KEY]: {
-
-            newName: "importsFromStaticDataFiles",
-            preValidationModifications: nullToUndefined,
-            type: Array,
-            required: false,
-
-            element: {
-
-              type: Object,
-              properties: {
-
-                [markupProcessingPropertiesLocalization.staticPreview.importsFromStaticDataFiles.importedVariableName.KEY]: {
-                  newName: "importedVariableName",
-                  type: String,
-                  required: true,
-                  minimalCharactersCount: 1
-                },
-
-                [markupProcessingPropertiesLocalization.staticPreview.importsFromStaticDataFiles.fileRelativePath.KEY]: {
-                  newName: "fileRelativePath",
-                  type: String,
-                  required: true,
-                  minimalCharactersCount: 1
-                }
-
-              }
-
-            }
-
-          }
-
-        }
-
-      },
-
-      routing: {
-
-        type: Object,
-        required: false,
-        preValidationModifications: nullToUndefined,
-
-        properties: {
-
-          $specificationFileRelativePath: {
-            newName: "specificationFileRelativePath",
-            type: String,
-            required: true,
-            minimalCharactersCount: 1
-          },
-
-          $variable: {
-            newName: "variable",
-            type: String,
-            required: true,
-            minimalCharactersCount: 1
-          },
-
-          $localizations: {
-            newName: "localizations",
-            type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-            required: false,
-            preValidationModifications: nullToUndefined,
-            value: {
-              type: String,
-              minimalCharactersCount: 1
-            }
-          }
-
-        }
-
-      },
-
-      ...SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.getLocalizedPropertiesSpecification({
-
-        sourceCodeProcessingSettingsGenericPropertiesLocalization,
-
-        localizedConsumingProjectLocalizedPreDefinedBuildingModes,
-
-        entryPointsGroupBuildingModeIndependentSpecificSettingsLocalizedPropertiesSpecification: {
-
-          [markupProcessingPropertiesLocalization.entryPointsGroups.outputFormat.KEY]: {
-            newName: "outputFormat",
-            type: String,
-            allowedAlternatives: Object.values(MarkupProcessingRestrictions.OutputFormats),
-            required: false
-          },
-
-          [markupProcessingPropertiesLocalization.entryPointsGroups.HTML_Validation.KEY]: {
-
-            newName: "HTML_Validation",
-            preValidationModifications: nullToUndefined,
             type: Object,
-            required: false,
-
             properties: {
 
-              [markupProcessingPropertiesLocalization.entryPointsGroups.HTML_Validation.disable.KEY]: {
-                newName: "disable",
-                type: Boolean,
-                required: false
-              },
-
-              [markupProcessingPropertiesLocalization.entryPointsGroups.HTML_Validation.ignoring.KEY]: {
-
-                newName: "ignoring",
-                preValidationModifications: nullToUndefined,
-                type: Object,
-                required: false,
-
-                properties: {
-
-                  [markupProcessingPropertiesLocalization.entryPointsGroups.HTML_Validation.ignoring.files.KEY]: {
-                    newName: "files",
-                    type: Array,
-                    required: false,
-                    element: {
-                      type: String,
-                      minimalCharactersCount: 1
-                    }
-                  },
-
-                  [markupProcessingPropertiesLocalization.entryPointsGroups.HTML_Validation.ignoring.directories.KEY]: {
-                    newName: "directories",
-                    type: Array,
-                    required: false,
-                    element: {
-                      type: String,
-                      minimalCharactersCount: 1
-                    }
-                  }
-
-                }
-
-              }
-
-            }
-
-          },
-
-          [markupProcessingPropertiesLocalization.entryPointsGroups.accessibilityInspection.KEY]: {
-
-            newName: "accessibilityInspection",
-            preValidationModifications: nullToUndefined,
-            type: Object,
-            required: false,
-
-            properties: {
-
-              [markupProcessingPropertiesLocalization.entryPointsGroups.accessibilityInspection.standard.KEY]: {
-                newName: "standard",
+              $outputFileInterimNameExtensionWithoutDot: {
+                newName: "outputFileInterimNameExtensionWithoutDot",
                 type: String,
-                required: false,
-                allowedAlternatives: Object.values(MarkupProcessingRestrictions.SupportedAccessibilityStandards)
+                isUndefinedForbidden: true,
+                isNullForbidden: true,
+                minimalCharactersCount: 1
               },
 
-              [markupProcessingPropertiesLocalization.entryPointsGroups.accessibilityInspection.disable.KEY]: {
-                newName: "disable",
-                type: Boolean,
-                required: false
+              $localeConstantValue: {
+                newName: "localeConstantValue",
+                type: String,
+                undefinedForbiddenIf: {
+                  predicate: (
+                    {
+                      targetPropertyDotSeparatedPath,
+                      rawData__full
+                    }: RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+                  ): boolean =>
+                      isNotUndefined(
+                        getObjectPropertySafely(
+                          rawData__full,
+                          [
+                            /* eslint-disable-next-line @typescript-eslint/no-magic-numbers --
+                             * 3 referees to last three elements in paths like
+                             * $projectBuilding.$markupProcessing.$entryPointsGroups.Pages.$localization.
+                             *   $locales.english.$localeConstantValue */
+                            ...splitString(targetPropertyDotSeparatedPath, ".").slice(0, -3),
+                            "$localeConstantName"
+                          ]
+                        )
+                      ),
+                  descriptionForLogging:
+                      "`$projectBuilding.$markupProcessing." +
+                        (forEntryPointsGroups ? "$entryPointsGroups.NNN" : "$common") +
+                        ".$localization.$localeConstantName` is defined"
+                },
+                isNullForbidden: true,
+                minimalCharactersCount: 1
               },
 
-              [markupProcessingPropertiesLocalization.entryPointsGroups.accessibilityInspection.ignoring.KEY]: {
+              $keyInLocalizedStringResourcesObject: {
+                newName: "keyInLocalizedStringResourcesObject",
+                type: String,
+                undefinedForbiddenIf: {
+                  predicate: (
+                    {
+                      targetPropertyDotSeparatedPath,
+                      rawData__full
+                    }: RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+                  ): boolean =>
+                      isNotUndefined(
+                        getObjectPropertySafely(
+                          rawData__full,
+                          [
+                            /* eslint-disable-next-line @typescript-eslint/no-magic-numbers --
+                             * 3 referees to last three elements in paths like
+                             * $projectBuilding.$markupProcessing.$entryPointsGroups.Pages.$localization.$locales.
+                             *     english.$localeConstantValue */
+                            ...splitString(targetPropertyDotSeparatedPath, ".").slice(0, -3),
+                            "$stringResourcesFileRelativePath"
+                          ]
+                        )
+                      ),
+                  descriptionForLogging:
+                      "`$projectBuilding.$markupProcessing." +
+                        (forEntryPointsGroups ? "$entryPointsGroups.NNN" : "$common") +
+                        ".$localization.$stringResourcesFileRelativePath` is defined"
+                },
+                isNullForbidden: true,
+                minimalCharactersCount: 1
+              },
 
-                newName: "ignoring",
-                preValidationModifications: nullToUndefined,
-                type: Object,
-                required: false,
-
-                properties: {
-
-                  [markupProcessingPropertiesLocalization.entryPointsGroups.accessibilityInspection.ignoring.files.KEY]: {
-                    newName: "files",
-                    type: Array,
-                    required: false,
-                    element: {
-                      type: String,
-                      minimalCharactersCount: 1
-                    }
-                  },
-
-                  [markupProcessingPropertiesLocalization.entryPointsGroups.accessibilityInspection.ignoring.directories.KEY]: {
-                    newName: "directories",
-                    type: Array,
-                    required: false,
-                    element: {
-                      type: String,
-                      minimalCharactersCount: 1
-                    }
-                  }
-
-                }
-
+              $valueOfConstantForInterpolationToLangHTML_Attribute: {
+                newName: "valueOfConstantForInterpolationToLangHTML_Attribute",
+                type: String,
+                undefinedForbiddenIf: {
+                  predicate: (
+                    {
+                      targetPropertyDotSeparatedPath,
+                      rawData__full
+                    }: RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+                  ): boolean =>
+                      isNotUndefined(
+                        getObjectPropertySafely(
+                          rawData__full,
+                          [
+                            /* eslint-disable-next-line @typescript-eslint/no-magic-numbers --
+                             * 3 referees to last three elements in paths like
+                             * $projectBuilding.$markupProcessing.$entryPointsGroups.Pages.$localization.$locales.
+                             *     english.$localeConstantValue */
+                            ...splitString(targetPropertyDotSeparatedPath, ".").slice(0, -3),
+                            "$nameOfConstantForInterpolationToLangHTML_Attribute"
+                          ]
+                        )
+                      ),
+                  descriptionForLogging:
+                      "`$projectBuilding.$markupProcessing." +
+                        (forEntryPointsGroups ? "$entryPointsGroups.NNN" : "$common") +
+                        ".$localization.$nameOfConstantForInterpolationToLangHTML_Attribute` is defined"
+                },
+                isNullForbidden: true,
+                minimalCharactersCount: 1
               }
 
             }
@@ -609,134 +396,108 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
 
         },
 
-        entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
+        ...forEntryPointsGroups ?
+            {
+              $excludedFilesPathsRelativeToSourcesFilesTopDirectory: {
 
-        entryPointsGroupBuildingModeDependentSpecificSettingsLocalizedPropertiesSpecification: {
+                newName: "excludedFilesPathsRelativeToSourcesFilesTopDirectory",
+                type: Array,
+                isUndefinedForbidden: false,
+                isNullForbidden: true,
+                areUndefinedElementsForbidden: true,
+                areNullElementsForbidden: true,
 
-          [markupProcessingPropertiesLocalization.entryPointsGroups.buildingModeDependent.outputCodeFormatting.KEY]: {
+                element: {
+                  type: String,
+                  minimalCharactersCount: 1
+                }
 
-            newName: "outputCodeFormatting",
-            type: Object,
-            required: false,
-            preValidationModifications: nullToUndefined,
-
-            properties: {
-              disable: {
-                newName: "disable",
-                type: Boolean,
-                required: false
               }
+            } :
+            {
+              $excludedFilesPathsRelativeRelativeToProjectRootDirectory: {
 
+                newName: "excludedFilesPathsRelativeRelativeToProjectRootDirectory",
+                type: Array,
+                isUndefinedForbidden: false,
+                isNullForbidden: true,
+                areUndefinedElementsForbidden: true,
+                areNullElementsForbidden: true,
+
+                element: {
+                  type: String,
+                  minimalCharactersCount: 1
+                }
+
+              }
             }
 
-          }
+      }
 
-        }
+    };
 
-      }),
+  }
 
-      [markupProcessingPropertiesLocalization.logging.KEY]: {
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-        newName: "logging",
-        type: Object,
-        required: false,
-        preValidationModifications: nullToUndefined,
+    /* ━━━ Common ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    $common: {
 
-        properties: {
+      newName: "common",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
 
-          [markupProcessingPropertiesLocalization.logging.filesPaths.KEY]: {
-            newName: "filesPaths",
-            type: Boolean,
-            required: false
+      properties: {
+
+        $localization: generateLocalizationPropertiesSpecification({ forEntryPointsGroups: false }),
+
+        $buildingModeDependent: {
+
+          newName: "buildingModeDependent",
+
+          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+          areUndefinedTypeValuesForbidden: true,
+          areNullTypeValuesForbidden: true,
+
+          minimalEntriesCount: 1,
+
+          allowedKeys: [
+            "$localDevelopment",
+            "$testing",
+            "$staging",
+            "$production"
+          ],
+
+          keysRenamings: {
+            $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
+            $testing: ConsumingProjectBuildingModes.testing,
+            $staging: ConsumingProjectBuildingModes.staging,
+            $production: ConsumingProjectBuildingModes.production
           },
 
-          [markupProcessingPropertiesLocalization.logging.filesCount.KEY]: {
-            newName: "filesCount",
-            type: Boolean,
-            required: false
-          },
+          value: {
 
-          [markupProcessingPropertiesLocalization.logging.partialFilesAndParentEntryPointsCorrespondence.KEY]: {
-            newName: "partialFilesAndParentEntryPointsCorrespondence",
-            type: Boolean,
-            required: false
-          },
-
-          [markupProcessingPropertiesLocalization.logging.filesWatcherEvents.KEY]: {
-            newName: "filesWatcherEvents",
-            type: Boolean,
-            required: false
-          },
-
-          [markupProcessingPropertiesLocalization.logging.HTML_Validation.KEY]: {
-
-            newName: "HTML_Validation",
             type: Object,
-            required: false,
-            preValidationModifications: nullToUndefined,
 
             properties: {
 
-              [markupProcessingPropertiesLocalization.logging.HTML_Validation.starting.KEY]: {
-                newName: "starting",
-                type: Boolean,
-                required: false
+              $secondsBetweenFileUpdatingAndStartingOfRebuilding: {
+                newName: "secondsBetweenFileUpdatingAndStartingOfRebuilding",
+                type: Number,
+                numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                isUndefinedForbidden: false,
+                isNullForbidden: true
               },
 
-              [markupProcessingPropertiesLocalization.logging.HTML_Validation.completionWithoutIssues.KEY]: {
-                newName: "completionWithoutIssues",
+              $mustResolveResourcesPointersToRelativePaths: {
+                newName: "mustResolveResourcesPointersToRelativePaths",
                 type: Boolean,
-                required: false
-              }
-
-            }
-
-          },
-
-          [markupProcessingPropertiesLocalization.logging.accessibilityChecking.KEY]: {
-
-            newName: "accessibilityChecking",
-            type: Object,
-            required: false,
-            preValidationModifications: nullToUndefined,
-
-            properties: {
-
-              [markupProcessingPropertiesLocalization.logging.accessibilityChecking.starting.KEY]: {
-                newName: "starting",
-                type: Boolean,
-                required: false
-              },
-
-              [markupProcessingPropertiesLocalization.logging.accessibilityChecking.completionWithoutIssues.KEY]: {
-                newName: "completionWithoutIssues",
-                type: Boolean,
-                required: false
-              }
-
-            }
-
-          },
-
-          [markupProcessingPropertiesLocalization.logging.linting.KEY]: {
-
-            newName: "linting",
-            type: Object,
-            required: false,
-            preValidationModifications: nullToUndefined,
-
-            properties: {
-
-              [markupProcessingPropertiesLocalization.logging.linting.starting.KEY]: {
-                newName: "starting",
-                type: Boolean,
-                required: false
-              },
-
-              [markupProcessingPropertiesLocalization.logging.linting.completionWithoutIssues.KEY]: {
-                newName: "completionWithoutIssues",
-                type: Boolean,
-                required: false
+                isUndefinedForbidden: false,
+                isNullForbidden: true
               }
 
             }
@@ -747,9 +508,564 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
 
       }
 
-    };
+    },
 
-  }
+    /* ━━━ Static Preview ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    $staticPreview: {
+
+      newName: "staticPreview",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $stateDependentPagesVariations: {
+
+          newName: "stateDependentPagesVariations",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          properties: {
+
+            $specificationFileRelativePath: {
+              newName: "specificationFileRelativePath",
+              type: String,
+              isUndefinedForbidden: true,
+              isNullForbidden: true,
+              minimalCharactersCount: 1
+            }
+
+          }
+
+        },
+
+        $importsFromStaticDataFiles: {
+
+          newName: "importsFromStaticDataFiles",
+          type: Array,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+          areUndefinedElementsForbidden: true,
+          areNullElementsForbidden: true,
+
+          element: {
+
+            type: Object,
+            properties: {
+
+              $importedVariableName: {
+                newName: "importedVariableName",
+                type: String,
+                isUndefinedForbidden: true,
+                isNullForbidden: true,
+                minimalCharactersCount: 1
+              },
+
+              $fileRelativePath: {
+                newName: "fileRelativePath",
+                type: String,
+                isUndefinedForbidden: true,
+                isNullForbidden: true,
+                minimalCharactersCount: 1
+              }
+
+            }
+
+          }
+
+        }
+
+      }
+
+    },
+
+
+    /* ━━━ Linting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    $linting: {
+      newName: "linting",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+      properties: LintingSettings__FromFile__RawValid.propertiesSpecification
+    },
+
+
+    /* ━━━ Importing From TypeScript ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    $importingFromTypeScript: {
+
+      newName: "importingFromTypeScript",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $typeScriptConfigurationFileRelativePath: {
+          newName: "typeScriptConfigurationFileRelativePath",
+          type: String,
+          isUndefinedForbidden: false,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
+
+        $importedNamespace: {
+          newName: "importedNamespace",
+          type: String,
+          isUndefinedForbidden: true,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
+
+        $sourceFileRelativePath: {
+          newName: "sourceFileRelativePath",
+          type: String,
+          isUndefinedForbidden: true,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        }
+
+      }
+
+    },
+
+
+    /* ━━━ Importing from JavaScript ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    $importingFromJavaScript: {
+
+      newName: "importingFromJavaScript",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $sourceFileRelativePath: {
+          newName: "sourceFileRelativePath",
+          type: String,
+          isUndefinedForbidden: true,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
+
+        $nameOfGlobalConstantForStoringOfImports: {
+          newName: "nameOfGlobalConstantForStoringOfImports",
+          type: String,
+          isUndefinedForbidden: true,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        }
+
+      }
+
+    },
+
+    /* ━━━ Routing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    $routing: {
+
+      newName: "routing",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $specificationFileRelativePath: {
+          newName: "specificationFileRelativePath",
+          type: String,
+          isUndefinedForbidden: true,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
+
+        $variable: {
+          newName: "variable",
+          type: String,
+          isUndefinedForbidden: true,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
+
+        $localizations: {
+          newName: "localizations",
+          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+          areUndefinedTypeValuesForbidden: true,
+          areNullTypeValuesForbidden: true,
+          value: {
+            type: String,
+            minimalCharactersCount: 1
+          }
+        }
+
+      }
+
+    },
+
+    ...SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.generatePropertiesSpecification({
+
+      entryPointsGroupBuildingModeIndependentSpecificSettingsLocalizedPropertiesSpecification: {
+
+        $outputFormat: {
+          newName: "outputFormat",
+          type: String,
+          allowedAlternatives: Object.values(MarkupProcessingRestrictions.OutputFormats),
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
+
+        $localization: generateLocalizationPropertiesSpecification({ forEntryPointsGroups: true }),
+
+        $HTML_Validation: {
+
+          newName: "HTML_Validation",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          properties: {
+
+            $disable: {
+              newName: "disable",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $ignoring: {
+
+              newName: "ignoring",
+              type: Object,
+              isUndefinedForbidden: false,
+              mustTransformNullToUndefined: true,
+
+              properties: {
+
+                $files: {
+                  newName: "files",
+                  type: Array,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true,
+                  areUndefinedElementsForbidden: true,
+                  areNullElementsForbidden: true,
+                  element: {
+                    type: String,
+                    minimalCharactersCount: 1
+                  }
+                },
+
+                $directories: {
+                  newName: "directories",
+                  type: Array,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true,
+                  areUndefinedElementsForbidden: true,
+                  areNullElementsForbidden: true,
+                  element: {
+                    type: String,
+                    minimalCharactersCount: 1
+                  }
+                }
+
+              }
+
+            }
+
+          }
+
+        },
+
+        $accessibilityInspection: {
+
+          newName: "accessibilityInspection",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          properties: {
+
+            $standard: {
+              newName: "standard",
+              type: String,
+              isUndefinedForbidden: false,
+              isNullForbidden: true,
+              allowedAlternatives: Object.values(MarkupProcessingRestrictions.SupportedAccessibilityStandards)
+            },
+
+            $disable: {
+              newName: "disable",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $ignoring: {
+
+              newName: "ignoring",
+              type: Object,
+              isUndefinedForbidden: false,
+              mustTransformNullToUndefined: true,
+
+              properties: {
+
+                $files: {
+                  newName: "files",
+                  type: Array,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true,
+                  areUndefinedElementsForbidden: true,
+                  areNullElementsForbidden: true,
+                  element: {
+                    type: String,
+                    minimalCharactersCount: 1
+                  }
+                },
+
+                $directories: {
+                  newName: "directories",
+                  type: Array,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true,
+                  areUndefinedElementsForbidden: true,
+                  areNullElementsForbidden: true,
+                  element: {
+                    type: String,
+                    minimalCharactersCount: 1
+                  }
+                }
+
+              }
+
+            }
+
+          }
+
+        }
+
+      },
+
+      entryPointsGroupBuildingModeDependentSpecificSettingsLocalizedPropertiesSpecification: {
+
+        $outputCodeFormatting: {
+
+          newName: "outputCodeFormatting",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          properties: {
+
+            $enable: {
+              newName: "enable",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $indentationString: {
+              newName: "indentationString",
+              type: String,
+              isUndefinedForbidden: false,
+              isNullForbidden: true,
+              validValueRegularExpression: /^\s+$/u
+            },
+
+            $lineSeparators: {
+              newName: "lineSeparators",
+              type: String,
+              isUndefinedForbidden: false,
+              isNullForbidden: true,
+              allowedAlternatives: Object.values(LineSeparators)
+            },
+
+            $mustGuaranteeTrailingEmptyLine: {
+              newName: "mustGuaranteeTrailingEmptyLine",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $mustIndentHeadAndBodyTags: {
+              newName: "mustIndentHeadAndBodyTags",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            }
+
+          }
+
+        },
+
+        $outputCodeMinifying: {
+
+          newName: "outputCodeMinifying",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          properties: {
+
+            $enable: {
+              newName: "enable",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $attributesExtraWhitespacesCollapsing: {
+              newName: "attributesExtraWhitespacesCollapsing",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $attributesValuesDeduplication: {
+              newName: "attributesValuesDeduplication",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $commentsRemoving: {
+              newName: "commentsRemoving",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            }
+
+          }
+
+        }
+
+      }
+
+    }),
+
+    $logging: {
+
+      newName: "logging",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $filesPaths: {
+          newName: "filesPaths",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
+
+        $filesCount: {
+          newName: "filesCount",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
+
+        $partialFilesAndParentEntryPointsCorrespondence: {
+          newName: "partialFilesAndParentEntryPointsCorrespondence",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
+
+        $filesWatcherEvents: {
+          newName: "filesWatcherEvents",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
+
+        $HTML_Validation: {
+
+          newName: "HTML_Validation",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          properties: {
+
+            $starting4: {
+              newName: "starting",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $completionWithoutIssues: {
+              newName: "completionWithoutIssues",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            }
+
+          }
+
+        },
+
+        $accessibilityChecking: {
+
+          newName: "accessibilityChecking",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          properties: {
+
+            $starting: {
+              newName: "starting",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $completionWithoutIssues: {
+              newName: "completionWithoutIssues",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            }
+
+          }
+
+        },
+
+        $linting: {
+
+          newName: "linting",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          properties: {
+
+            $starting: {
+              newName: "starting",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            },
+
+            $completionWithoutIssues: {
+              newName: "completionWithoutIssues",
+              type: Boolean,
+              isUndefinedForbidden: false,
+              isNullForbidden: true
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+  };
 
 }
 

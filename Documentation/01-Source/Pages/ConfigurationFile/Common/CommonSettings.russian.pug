@@ -12,10 +12,17 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.commonSettings;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Общие настройки"),
-        description: ""
+        title: buildHTML_PageTitle(topHeading),
+        description:
+            "Общие настройки инструмента сборки проектов «Yamato Daiwa Automation» (сокращённо — «YDA») либо не имеют " +
+              "отношение к конкретным задачам, либо имеют отношение сразу к нескольким задачам."
       },
       stylesSheetsURIs: [
         "$CommonStyles",
@@ -32,11 +39,6 @@ block append Metadata
       japanese: routing.japanese.configurationFile.$children.commonSettings.$URI
     });
 
-    const {
-      $heading: topHeading,
-      $sectioning: localizedSectioning
-    } = localizedRouting.configurationFile.$children.commonSettings;
-
 
 block append HeadScripts
 
@@ -52,6 +54,27 @@ block append SpecificContent
     //- ━━━ `$common` — Общие настройки ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
 
+    p.Article-Paragraph
+      | Настройки, #[+Keyword--YDID не]&nbsp;имеющие отношение к конкретной
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.task.$URI
+      }) задаче
+      |
+      | и/или имеющие отношение сразу к нескольким #[+Term--YDID задачам] могут быть определены в
+      | #[+ImportantEntity__Code--YDID $projectBuilding.$commonSettings]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            # Задайте общие настройки здесь в соответствии с данным руководством
+
+    +CompactTableOfContents--YDF_DK(localizedSectioning)
+
+
     //- ━━━ `$selectiveExecutions` — Выборочные выполнения ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
       level: 2,
@@ -62,7 +85,7 @@ block append SpecificContent
     +PropertyMetadata--YDF_DK(
       Object.assign(
         {},
-        ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.$selectiveExecutions,
+        $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.$selectiveExecutions,
         {
           value: {
             type: {
@@ -84,7 +107,7 @@ block append SpecificContent
       | .
 
     p.Article-Paragraph.
-      Через #[+Keyword--YDID ключи] указываются #[+Keyword--YDID идентификаторы] #[+Term--YDID выборочных выполнений]:
+      Через #[+Keyword--YDID ключи] указываются #[+Keyword--YDID идентификаторы] #[+Term--YDID выборочных выполнений].
 
     +CodeViewer--YDF
       +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
@@ -102,6 +125,11 @@ block append SpecificContent
 
                 # Конфигурация выборочного выполнения «Application» (подробности см. далее)
 
+    p.Article-Paragraph.
+      В соответствии с соглашением об определении настроек, отсуствтие символа #[+ImportantEntity__Code--YDID $] перед
+        этими #[+Term--YDID ключами] означает, что их имя выбрано пользователем и #[+Keyword--YDID не]&nbsp;является
+        #[+Term--YDID зарезервированным ключом] в #[+Term__Contrast--YDID API].
+
     p.Article-Paragraph
       +Keyphrase--YDID.
         После того, как #[+Keyword--YDID валидные] настройки #[+Term--YDID выборочных выполнений] определены
@@ -115,9 +143,9 @@ block append SpecificContent
         yda build --selectiveExecution Application --mode LOCAL_DEVELOPMENT
 
     p.Article-Paragraph.
-      #[+Term--YDID Значения] же #[+Term__Contrast--YDID ассоциативного массива]
-        #[+ImportantEntity__Code--YDID $selectiveExecutions] #[+Keyword--YDID должны] быть указаны в соответствие с
-        приведёнными далее правилами.
+      #[+Term--YDID Значениями] #[+Term__Contrast--YDID ассоциативного массива]
+        #[+ImportantEntity__Code--YDID $selectiveExecutions] являются #[+Term--YDID объекты], которые
+        #[+Keyword--YDID должны] быть указаны в соответствие с приведёнными ниже правилами.
 
 
     //- ─── Настройки каждого выборочного выполнения ───────────────────────────────────────────────────────────────────
@@ -130,8 +158,8 @@ block append SpecificContent
     +ObjectTypeAbstract--YDF_DK({
       typeName: "ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution",
       localizedDescriptiveHeading: "Настройки конкретного выборочного выполнения",
-      propertiesSpecification: ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
-          $selectiveExecutions.value.properties
+      propertiesSpecification: $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.
+          propertiesSpecification.$selectiveExecutions.value.properties
     })
 
 
@@ -145,29 +173,19 @@ block append SpecificContent
     }).Article-Heading4
 
     +PropertyMetadata--YDF_DK(
-      Object.assign(
-        {},
-        {
-          required: ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.$selectiveExecutions.
-              value.properties.$tasksAndSourceFilesSelection.required,
-          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-          allowedKeys: ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.$selectiveExecutions.
-              value.properties.$tasksAndSourceFilesSelection.allowedKeys,
-          value: ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.$selectiveExecutions.
-              value.properties.$tasksAndSourceFilesSelection.value,
-        }
-      )
+      $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
+          $selectiveExecutions.value.properties.$tasksAndSourceFilesSelection
     )
 
     p.Article-Paragraph
       | #[+Term--YDID Объект] #[+Term__Contrast--YDID типа] #[+Term--YDID «ассоциативный массив»],
-      |   #[+Keyword--YDID ключами] которого являются названия
+      |   #[+Term--YDID ключами] которого являются названия
       |
       +Link--YDF({
         internalURI: localizedRouting.terminology.$sectioning.task.$URI
       }) задач
       |
-      | (#[+Keyphrase--YDID но #[+Keyword--YDID не]&nbsp;всех, а только упомянутых выше]), а #[+Keyword--YDID значениями]
+      | (#[+Keyphrase--YDID но #[+Keyword--YDID не]&nbsp;всех, а только упомянутых выше]), а #[+Term--YDID значениями]
       | — #[+Term--YDID массивы] имён
       |
       +Link--YDF({
@@ -177,7 +195,7 @@ block append SpecificContent
       | (в случае #[+Term--YDID задач] обработки #[+Term--YDID исходного кода]) или
       |
       +Link--YDF({
-        internalURI: localizedRouting.terminology.$sectioning.entryPointsAndChildrenFiles.$children.entryPointsGroup.$URI
+        internalURI: localizedRouting.terminology.$sectioning.assets.$children.groups.$URI
       }) группы ассетов
       |
       | (в случае задач обработки
@@ -192,9 +210,9 @@ block append SpecificContent
         internalURI: localizedRouting.configurationFile.$children.plainCopying.$URI
       }) простого копирования файлов
       | ).
-      | При этом, все #[+Term--YDID задачи] и #[+Term--YDID группы] #[+Term__Contrast--YDID точек входа] или
-      |   #[+Term__Contrast--YDID ассетов] #[+Keyphrase--YDID упомянутые в #[+Term--YDID выборочном выполнении]]
-      |   #[+Keyword--YDID должны] быть объявлены в том же файле конфигурации:
+      | При этом, #[+Keyword--YDID все] #[+Term--YDID задачи] и #[+Term--YDID группы] #[+Term__Contrast--YDID точек входа]
+      |   или #[+Term__Contrast--YDID ассетов] #[+Keyphrase--YDID упомянутые в #[+Term--YDID выборочном выполнении]]
+      |   #[+Keyword--YDID должны] быть объявлены в #[+Keyphrase--YDID том же] файле конфигурации:
 
     +CodeViewer--YDF
 
@@ -221,17 +239,18 @@ block append SpecificContent
                     $markupProcessing: [ Pages, MVC_Fragments ]
                     $stylesProcessing: [ Shared, Layouts, Pages ]
         +CodeViewer-Explanation--YDF.
-          Если используются #[+Term--YDID выборочные выполнения], то #[+Keyphrase--YDID для каждого из них по умолчанию]
-            #[+Keyword--YDID не]&nbsp;выбирается #[+Keyword--YDID ничего], поэтому даже если набор
-            #[+Term--YDID групп] #[+Term__Contrast--YDID точек входа] или #[+Term__Contrast--YDID ассетов] такой же,
-            как и в другом #[+Term--YDID выборочном выполнении], его всё равно #[+Keyword--YDID необходимо] явно
-            указать.
+          #[+Keyphrase--YDID Если используются #[+Term--YDID выборочные выполнения]], то
+            #[+Keyphrase--YDID для каждого из них по умолчанию] #[+Keyword--YDID не]&nbsp;будут выбраны
+            #[+Keyword--YDID никакие] #[+Term--YDID группы] #[+Term__Contrast--YDID точек входа] или
+            #[+Term__Contrast--YDID ассетов], поэтому даже если набор этих #[+Term--YDID групп] такой же, как и в
+            другом #[+Term--YDID выборочном выполнении], его всё равно #[+Keyword--YDID необходимо]
+            #[+Keyword__Contrast--YDID явно] указать.
 
         +CodeViewer-PartialListing--YDF: :code_listing--yda(indentationMultiplier="6" indentationString="  ")
                     $ECMA_ScriptLogicProcessing: [ Pages, FrontServerEntryPoint, TypeORM_Configuration ]
         +CodeViewer-Explanation--YDF.
           Для того, чтобы указанные выше настройки работали, #[+Keyphrase--YDID все упомянутые выше] #[+Term--YDID задачи]
-            #[+Keyword--YDID и] #[+Term--YDID группы ресурсов] #[+Keyword--YDID должны] быть объявлены.
+            #[+Keyword--YDID и] #[+Term--YDID группы ресурсов] #[+Keyword--YDID должны] быть объявлены:
 
         +CodeViewer-PartialListing--YDF: :code_listing--yda(indentationMultiplier="2" indentationString="  ")
             $markupProcessing: # См. документацию по настройке обработки разметки
@@ -264,6 +283,7 @@ block append SpecificContent
 
                 TypeORM_Configuration: # ...
 
+
     //- ─── `$browserLiveReloadingSetupID` — ID настроек автоматической перезагрузки вкладки браузера ──────────────────
     +Heading--YDF({
       level: 4,
@@ -274,8 +294,8 @@ block append SpecificContent
     }).Article-Heading4
 
     +PropertyMetadata--YDF_DK(
-      ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.$selectiveExecutions.value
-          .properties.$browserLiveReloadingSetupID
+      $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
+          $selectiveExecutions.value.properties.$browserLiveReloadingSetupID
     )
 
     p.Article-Paragraph
@@ -285,12 +305,16 @@ block append SpecificContent
         internalURI: localizedRouting.functionality.$children.browserLiveReloading.$URI
       }) автоматической перезагрузки браузера
       | .
-      | #[+ImportantEntity--YDID API] этой функциональности позволяет определить #[+Keyword--YDID несколько]
-      |   #[+Term--YDID пресетов], при этом #[+Keyword--YDID каждому] из них #[+Keyword--YDID необходимо] задать
-      |   идентификатор.
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.configurationFile.$children.browserLiveReloading.$URI
+      }) API этой функциональности
+      |   позволяет определить #[+Keyword--YDID несколько] #[+Term--YDID пресетов], при этом #[+Keyword--YDID каждому]
+      |   из них #[+Keyword--YDID необходимо] задать идентификатор.
       | Тогда, если в конкретном #[+Term--YDID выборочном выполнении] затребована функциональность автоматической
-      |   перезагрузки браузера, то #[+Keyword--YDID требуется] указать через #[+Term--YDID свойство]
-      |   #[+ImportantEntity__Code--YDID $browserLiveReloadingSetupID] идентификатор нужного #[+Term--YDID пресета]:
+      |   перезагрузки браузера, то через #[+Term--YDID свойство]
+      |   #[+ImportantEntity__Code--YDID $browserLiveReloadingSetupID] #[+Keyword--YDID требуется] указать
+      |   идентификатор нужного #[+Term--YDID пресета]:
 
     +CodeViewer--YDF
       +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
@@ -328,7 +352,6 @@ block append SpecificContent
 
                 # См. документацию по настройке автоматической перезагрузки браузера
 
-
     //- ─── `$distributablePackageJSON_Generating` — Генерация файла «package.json» для дистрибутива ───────────────────
     +Heading--YDF({
       level: 4,
@@ -339,8 +362,8 @@ block append SpecificContent
     }).Article-Heading4
 
     +PropertyMetadata--YDF_DK(
-      ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.$selectiveExecutions.value
-          .properties.$distributablePackageJSON_Generating
+      $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
+          $selectiveExecutions.value.properties.$distributablePackageJSON_Generating
     )
 
     p.Article-Paragraph
@@ -351,7 +374,8 @@ block append SpecificContent
       })  функциональности генерации package.json для дистрибутива
       | .
       | Данный #[+Term--YDID булевский флаг] устанавливает, нужно ли для данного #[+Term--YDID выборочного выполнения]
-      |   его генерировать, хотя если если не&nbsp;нужно, то можно просто не&nbsp;указывать эту опцию.
+      |   генерировать #[+ImportantEntity--YDID package.json], хотя если если не&nbsp;нужно, то можно просто
+      |   не&nbsp;указывать эту опцию.
       | Если же этот флаг установлен в значение #[+ImportantEntity__Code--YDID true], то #[+Keyword--YDID необходимо]
       |   определить настройки #[+Keyword--YDID одноимённой] группы
       |   #[+ImportantEntity__Code--YDID $distributablePackageJSON_Generating]:
@@ -375,45 +399,46 @@ block append SpecificContent
             # См. документацию по настройки выходного файла package.json
 
 
-  //- ━━━ `$publicDirectoriesRelativePaths` — Относительные пути публичных директорий ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  +Heading--YDF({
-    level: 2,
-    innerHTML: localizedSectioning.publicDirectoriesRelativePaths.$heading,
-    HTML_ID: localizedSectioning.publicDirectoriesRelativePaths.$anchor
-  }).Article-Heading2
+    //- ━━━ `$publicDirectoriesRelativePaths` — Относительные пути публичных директорий ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      innerHTML: localizedSectioning.publicDirectoriesRelativePaths.$heading,
+      HTML_ID: localizedSectioning.publicDirectoriesRelativePaths.$anchor
+    }).Article-Heading2
 
-  +PropertyMetadata--YDF_DK(
-    ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.$publicDirectoriesRelativePaths
-  )
+    +PropertyMetadata--YDF_DK(
+      $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
+          $publicDirectoriesRelativePaths
+    )
 
-  p.Article-Paragraph
-    | Имеет отношение к функциональности
-    |
-    +Link--YDF({
-      internalURI: localizedRouting.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI
-    }) вычисления указателей на ресурсы
-    | .
-    | Для того, чтобы вычислить
-    |
-    +Link--YDF({
-      internalURI: localizedRouting.terminology.$sectioning.importantForYDA_ExistingTerms.$children.
-          publicPathAndShortenedAbsolutePath.$URI
-    }) укороченный абсолютный путь
-    |
-    | (невозможно для #[+Term--YDID режима сборки] #[+Term__Contrast--YDID статического превью])
-    |   #[+Keyword--YDID необходимо] указать, на какой #[+Term--YDID директории] соответствует #[+Term--YDID корень]
-    |   #[+Term--YDID укороченного абсолютного пути].
-    | Эту #[+Term--YDID директорию] #[+Keyword--YDID необходимо] указать в виде #[+Term--YDID пути], относительного
-    |   уже #[+Term--YDID директории проекта].
+    p.Article-Paragraph
+      | Имеет отношение к функциональности
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI
+      }) вычисления указателей на ресурсы
+      | .
+      | Для того, чтобы вычислить
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.importantForYDA_ExistingTerms.$children.
+            publicPathAndShortenedAbsolutePath.$URI
+      }) укороченный абсолютный путь
+      |
+      | (#[+Keyword--YDID невозможно] для #[+Term--YDID режима сборки] #[+Term__Contrast--YDID статического превью] в
+      |   силу его концепции), #[+Keyword--YDID необходимо] указать, какой #[+Term--YDID директории] соответствует
+      |   #[+Term--YDID корень] #[+Term--YDID укороченного абсолютного пути].
+      | Эту #[+Term--YDID директорию] #[+Keyword--YDID необходимо] указать в виде #[+Term--YDID пути],
+      |   #[+Keyword--YDID относительного] уже #[+Term--YDID директории проекта]:
 
-  +CodeViewer--YDF
-    +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
-      $projectBuilding:
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
 
-        $commonSettings:
+          $commonSettings:
 
-          $publicDirectoriesRelativePaths:
+            $publicDirectoriesRelativePaths:
 
-            $localDevelopment: 03-LocalDevelopmentBuild/public
-            $staging: 04-StagingBuild/public
-            $production: 05-ProductionBuild/public
+              $localDevelopment: 03-LocalDevelopmentBuild/public
+              $staging: 04-StagingBuild/public
+              $production: 05-ProductionBuild/public

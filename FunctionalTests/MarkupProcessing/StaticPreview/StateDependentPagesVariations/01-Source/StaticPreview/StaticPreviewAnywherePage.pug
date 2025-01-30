@@ -1,0 +1,87 @@
+extends ../../node_modules/@yamato-daiwa/frontend/PagesTemplates/StaticPreviewAnywherePageTemplate.pug
+
+
+block append Metadata
+
+  -
+
+    StaticPreviewAnywherePage__YDF.configure({
+
+      metadata: {
+        title: "Pages State Dependent Variations Test"
+      },
+
+      topHeading: "Pages State Dependent Variations Test",
+
+      tableOfContents: [
+
+        {
+
+          title: "Products List",
+          progressStatus: StaticPreviewAnywherePage__YDF.PageDevelopmentProgressStatuses.implementationInProgress,
+
+          linksTable: [
+
+            {
+              rowLabel: "Normal Displaying",
+              columns: [
+                { label: "English", URI: "@Pages/Product/List/ProductsListPage.english" },
+                { label: "日本語", URI: "@Pages/Product/List/ProductsListPage.japanese" }
+              ]
+            },
+
+            {
+              rowLabel: "Loading",
+              columns: [
+                { label: "English", URI: "@Pages/Product/List/ProductsListPage__Loading.english" },
+                { label: "日本語", URI: "@Pages/Product/List/ProductsListPage__Loading.japanese" }
+              ]
+            },
+
+            {
+              rowLabel: "Error",
+              columns: [
+                { label: "English", URI: "@Pages/Product/List/ProductsListPage__Error.english" },
+                { label: "日本語", URI: "@Pages/Product/List/ProductsListPage__Error.japanese" }
+              ]
+            },
+
+
+            {
+              rowLabel: "No Items",
+              columns: [
+                { label: "English", URI: "@Pages/Product/List/ProductsListPage__NoItems.english" },
+                { label: "日本語", URI: "@Pages/Product/List/ProductsListPage__NoItems.japanese" }
+              ]
+            },
+
+            {
+              rowLabel: "No Search Results",
+              columns: [
+                { label: "English", URI: "@Pages/Product/List/ProductsListPage__NoSearchResults.english" },
+                { label: "日本語", URI: "@Pages/Product/List/ProductsListPage__NoSearchResults.japanese" }
+              ]
+            }
+
+          ]
+
+        },
+
+        {
+          title: "Product Details",
+          linksList: [
+            { label: "English", URI: "@Pages/Product/Details/ProductDetailsPage.english" },
+            { label: "日本語", URI: "@Pages/Product/Details/ProductDetailsPage.japanese" }
+          ],
+          progressStatus: StaticPreviewAnywherePage__YDF.PageDevelopmentProgressStatuses.implementationInProgress
+        },
+
+        {
+          title: "Terms of Use",
+          URI: "@Pages/TermsOfUse",
+          progressStatus: StaticPreviewAnywherePage__YDF.PageDevelopmentProgressStatuses.implementationInProgress
+        }
+
+      ]
+
+    });

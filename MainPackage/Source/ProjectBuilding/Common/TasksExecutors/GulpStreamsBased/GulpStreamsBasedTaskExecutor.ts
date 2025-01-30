@@ -14,7 +14,7 @@ import NodeNotifier from "node-notifier";
 
 abstract class GulpStreamsBasedTaskExecutor {
 
-  private static readonly SUBSEQUENT_ERROR_TOAST_NOTIFICATION_PROHIBITION_PERIOD__SECONDS: number = 5;
+  private static readonly SUBSEQUENT_ERROR_TOAST_NOTIFICATION_PROHIBITION_PERIOD__SECONDS: number = 3;
 
   protected abstract readonly logging: GulpStreamsBasedTaskExecutor.Logging;
 
@@ -43,7 +43,7 @@ abstract class GulpStreamsBasedTaskExecutor {
 
       errorHandler: (error: Error): void => {
 
-        const ERROR_MESSAGE_TITLE: string = `Task "${ this.TASK_TITLE_FOR_LOGGING }", error occurred`;
+        const ERROR_MESSAGE_TITLE: string = `Task "${ this.TASK_TITLE_FOR_LOGGING }", Error Occurred`;
 
         Logger.logErrorLikeMessage({
           title: ERROR_MESSAGE_TITLE,
@@ -53,10 +53,14 @@ abstract class GulpStreamsBasedTaskExecutor {
         clearTimeout(nullToUndefined(this.waitingForErrorToastNotificationsWillBePermittedAgain));
 
         if (this.isErrorToastNotificationPermitted) {
+
           NodeNotifier.notify({
             title: ERROR_MESSAGE_TITLE,
             message: "Please check your terminal for the details."
           });
+
+          this.isErrorToastNotificationPermitted = false;
+
         }
 
         this.waitingForErrorToastNotificationsWillBePermittedAgain = setTimeout(

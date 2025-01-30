@@ -97,7 +97,7 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
 
       browserLiveReloadingSetupID: actualSelectiveExecution?.browserLiveReloadingSetupID,
 
-      mustGenerateOutputPackageJSON: actualSelectiveExecution?.outputPackageJSON_Generating === true,
+      mustGenerateOutputPackageJSON: actualSelectiveExecution?.distributablePackageJSON_Generating === true,
 
       actualPublicDirectoryAbsolutePath
 

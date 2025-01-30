@@ -65,7 +65,6 @@ export default class DotYDA_DirectoryManager {
 
     let YDA_VersionActualForDotYDA_Directory: string;
 
-
     try {
 
       YDA_VersionActualForDotYDA_Directory = FileSystem.

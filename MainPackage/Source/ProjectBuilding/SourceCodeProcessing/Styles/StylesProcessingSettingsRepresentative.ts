@@ -23,7 +23,7 @@ export default class StylesProcessingSettingsRepresentative extends GulpStreamBa
 
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Stylesheet";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Stylesheets";
-  public readonly TASK_NAME_FOR_LOGGING: string = "Styles processing";
+  public readonly TASK_NAME_FOR_LOGGING: string = "Styles Processing";
   public readonly WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS: number;
 
   public readonly entryPointsGroupsNormalizedSettingsMappedByReferences: ReadonlyMap<

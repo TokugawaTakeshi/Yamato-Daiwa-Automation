@@ -2,7 +2,6 @@ import Webpack from "webpack";
 import Path from "path";
 
 import NodeExternalsPlugin from "webpack-node-externals";
-import ForkTypeScriptCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import ESLintPlugin from "eslint-webpack-plugin";
 
 import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
@@ -56,11 +55,7 @@ export default function generateConfiguration(
       rules: [
         {
           test: /\.ts$/u,
-          loader: "ts-loader",
-          options: {
-            /* [ Theory ] 'ForkTypeScriptCheckerWebpackPlugin' will execute the type checking. */
-            transpileOnly: true
-          }
+          loader: "ts-loader"
         }
       ]
     },
@@ -145,17 +140,13 @@ export default function generateConfiguration(
         __IS_DEVELOPMENT_BUILDING_MODE__,
         __IS_PRODUCTION_BUILDING_MODE__
       }),
-      new ForkTypeScriptCheckerWebpackPlugin({
-        typescript: {
-          /* [ Theory ] The default value is 'context', but the 'tsconfig.json' is 1 level above 'context'. */
-          configFile: Path.resolve(__dirname, "tsconfig.json")
-        }
-      }),
       new ESLintPlugin({
         configType: "flat",
         extensions: [ "js", "ts" ],
         failOnWarning: __IS_PRODUCTION_BUILDING_MODE__
       })
     ]
+
   };
+
 }

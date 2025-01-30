@@ -3,14 +3,11 @@ import ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
 /* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
-import type ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid from
+import ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid";
-import type ConsumingProjectPreDefinedBuildingModes__Localized
-  from "@ProjectBuilding/Common/RawConfig/Enumerations/ConsumingProjectPreDefinedBuildingModes__Localized";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
-import { RawObjectDataProcessor, nullToUndefined, isNonEmptyString } from "@yamato-daiwa/es-extensions";
-import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
+import { RawObjectDataProcessor, isNonEmptyString } from "@yamato-daiwa/es-extensions";
 
 
 namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
@@ -49,50 +46,14 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
 
   }
 
-  /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  export type Localization = Readonly<{
 
-    entryPointsGroups: Readonly<{
-
-      KEY: string;
-
-      sourceFilesTopDirectoryRelativePath: Readonly<{ KEY: string; }>;
-      sourceFilesTopDirectoryPathAliasName: Readonly<{ KEY: string; }>;
-      singleEntryPointSourceFilePathAliasName: Readonly<{ KEY: string; }>;
-
-      partialsRecognition: Readonly<{
-        KEY: string;
-        excludeAllSubdirectories: Readonly<{ KEY: string; }>;
-        excludeSubdirectoriesWithNames: Readonly<{ KEY: string; }>;
-        excludeSubdirectoriesWithPrefixes: Readonly<{ KEY: string; }>;
-        excludeFilesWithPrefixes: Readonly<{ KEY: string; }>;
-      }>;
-
-      singleEntryPointSourceFileRelativePath: Readonly<{ KEY: string; REQUIREMENT_CONDITION_DESCRIPTION: string; }>;
-
-      buildingModeDependent:
-          ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid.Localization &
-          Readonly<{
-            revisioning: Readonly<{ KEY: string; }>;
-          }>;
-
-    }>;
-
-  }>;
-
-  export function getLocalizedPropertiesSpecification(
+  /* ━━━ Properties Specification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export function generatePropertiesSpecification(
     {
-      sourceCodeProcessingSettingsGenericPropertiesLocalization,
-      localizedConsumingProjectLocalizedPreDefinedBuildingModes,
       entryPointsGroupBuildingModeIndependentSpecificSettingsLocalizedPropertiesSpecification = {},
-      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
       entryPointsGroupBuildingModeDependentSpecificSettingsLocalizedPropertiesSpecification = {}
     }: Readonly<{
-      sourceCodeProcessingSettingsGenericPropertiesLocalization: Localization;
-      localizedConsumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
       entryPointsGroupBuildingModeIndependentSpecificSettingsLocalizedPropertiesSpecification?:
-          RawObjectDataProcessor.PropertiesSpecification;
-      entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification:
           RawObjectDataProcessor.PropertiesSpecification;
       entryPointsGroupBuildingModeDependentSpecificSettingsLocalizedPropertiesSpecification:
           RawObjectDataProcessor.PropertiesSpecification;
@@ -100,68 +61,64 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
   ): RawObjectDataProcessor.PropertiesSpecification {
     return {
 
-      [sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.KEY]: {
+      $entryPointsGroups: {
 
         newName: "entryPointsGroups",
-        preValidationModifications: nullToUndefined,
-        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-        required: true,
+        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+        isUndefinedForbidden: true,
+        mustTransformNullToUndefined: true,
+        areUndefinedTypeValuesForbidden: true,
+        areNullTypeValuesForbidden: true,
 
         value: {
 
           type: Object,
           properties: {
 
-            [
-              sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.
-                  sourceFilesTopDirectoryRelativePath.KEY
-            ]: {
+            $sourceFilesTopDirectoryRelativePath: {
               newName: "sourceFilesTopDirectoryRelativePath",
               type: String,
-              required: false,
+              isUndefinedForbidden: false,
+              isNullForbidden: true,
               minimalCharactersCount: 1
             },
 
-            [
-              sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.
-                sourceFilesTopDirectoryPathAliasName.KEY
-            ]: {
+            $sourceFilesTopDirectoryPathAliasName: {
               newName: "sourceFilesTopDirectoryPathAliasName",
               type: String,
-              required: false,
+              isUndefinedForbidden: false,
+              isNullForbidden: true,
               minimalCharactersCount: 1
             },
 
-            [sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.partialsRecognition.KEY]: {
+            $partialsRecognition: {
 
               newName: "partialsRecognition",
-              preValidationModifications: nullToUndefined,
               type: Object,
-              required: false,
+              isUndefinedForbidden: false,
+              mustTransformNullToUndefined: true,
 
               properties: {
 
-                [
-                  sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.
-                      partialsRecognition.excludeAllSubdirectories.KEY
-                ]: {
+                $excludeAllSubdirectories: {
                   newName: "excludeAllSubdirectories",
                   type: Boolean,
-                  required: false
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true
                 },
 
-                [
-                  sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.
-                      partialsRecognition.excludeSubdirectoriesWithNames.KEY
-                ]: {
+                $excludeSubdirectoriesWithNames: {
 
                   newName: "excludeSubdirectoriesWithNames",
-                  type: RawObjectDataProcessor.ValuesTypesIDs.oneOf,
-                  required: false,
+                  type: RawObjectDataProcessor.ValuesTypesIDs.polymorphic,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true,
 
                   alternatives: [
                     {
                       type: Array,
+                      areUndefinedElementsForbidden: true,
+                      areNullElementsForbidden: true,
                       minimalElementsCount: 1,
                       element: {
                         type: String,
@@ -176,18 +133,18 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
 
                 },
 
-                [
-                  sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.
-                      partialsRecognition.excludeSubdirectoriesWithPrefixes.KEY
-                ]: {
+                $excludeSubdirectoriesWithPrefixes: {
 
                   newName: "excludeSubdirectoriesWithPrefixes",
-                  type: RawObjectDataProcessor.ValuesTypesIDs.oneOf,
-                  required: false,
+                  type: RawObjectDataProcessor.ValuesTypesIDs.polymorphic,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true,
 
                   alternatives: [
                     {
                       type: Array,
+                      areUndefinedElementsForbidden: true,
+                      areNullElementsForbidden: true,
                       minimalElementsCount: 1,
                       element: {
                         type: String,
@@ -202,18 +159,18 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
 
                 },
 
-                [
-                  sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.
-                      partialsRecognition.excludeFilesWithPrefixes.KEY
-                ]: {
+                $excludeFilesWithPrefixes: {
 
                   newName: "excludeFilesWithPrefixes",
-                  type: RawObjectDataProcessor.ValuesTypesIDs.oneOf,
-                  required: false,
+                  type: RawObjectDataProcessor.ValuesTypesIDs.polymorphic,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true,
 
                   alternatives: [
                     {
                       type: Array,
+                      areUndefinedElementsForbidden: true,
+                      areNullElementsForbidden: true,
                       minimalElementsCount: 1,
                       element: {
                         type: String
@@ -231,57 +188,60 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
 
             },
 
-            [
-              sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.
-                  singleEntryPointSourceFileRelativePath.KEY
-            ]: {
+            $singleEntryPointSourceFileRelativePath: {
               newName: "singleEntryPointSourceFileRelativePath",
               type: String,
-              requiredIf: {
-                predicate: (rawObjectOfCurrentDepthLevel: ArbitraryObject): boolean =>
-                    !isNonEmptyString(rawObjectOfCurrentDepthLevel.sourceFilesTopDirectoryRelativePath),
-                descriptionForLogging: sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.
-                    singleEntryPointSourceFileRelativePath.REQUIREMENT_CONDITION_DESCRIPTION
+              undefinedForbiddenIf: {
+                predicate: (
+                  { rawData__currentObjectDepth: entryPointsGroup }:
+                      RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+                ): boolean => !isNonEmptyString(entryPointsGroup.$sourceFilesTopDirectoryRelativePath),
+                descriptionForLogging: "`$sourceFilesTopDirectoryRelativePath` has not been specified"
               },
+              isNullForbidden: true,
               minimalCharactersCount: 1
             },
 
-            [
-              sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.
-                  singleEntryPointSourceFilePathAliasName.KEY
-            ]: {
+            $singleEntryPointSourceFilePathAliasName: {
               newName: "singleEntryPointSourceFilePathAliasName",
               type: String,
-              required: false,
+              isUndefinedForbidden: false,
+              isNullForbidden: true,
               minimalCharactersCount: 1
             },
 
             ...entryPointsGroupBuildingModeIndependentSpecificSettingsLocalizedPropertiesSpecification,
 
-            [sourceCodeProcessingSettingsGenericPropertiesLocalization.entryPointsGroups.buildingModeDependent.KEY]: {
+            $buildingModeDependent: {
 
               newName: "buildingModeDependent",
-              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-              required: true,
+              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+              isUndefinedForbidden: true,
+              isNullForbidden: true,
+              areUndefinedTypeValuesForbidden: true,
+              areNullTypeValuesForbidden: true,
               minimalEntriesCount: 1,
 
+              allowedKeys: [
+                "$staticPreview",
+                "$localDevelopment",
+                "$testing",
+                "$staging",
+                "$production"
+              ],
+
               keysRenamings: {
-                [localizedConsumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
-                    ConsumingProjectBuildingModes.staticPreview,
-                [localizedConsumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
-                    ConsumingProjectBuildingModes.localDevelopment,
-                [localizedConsumingProjectLocalizedPreDefinedBuildingModes.testing]:
-                    ConsumingProjectBuildingModes.testing,
-                [localizedConsumingProjectLocalizedPreDefinedBuildingModes.staging]:
-                    ConsumingProjectBuildingModes.staging,
-                [localizedConsumingProjectLocalizedPreDefinedBuildingModes.production]:
-                    ConsumingProjectBuildingModes.production
+                $staticPreview: ConsumingProjectBuildingModes.staticPreview,
+                $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
+                $testing: ConsumingProjectBuildingModes.testing,
+                $staging: ConsumingProjectBuildingModes.staging,
+                $production: ConsumingProjectBuildingModes.production
               },
 
               value: {
                 type: Object,
                 properties: {
-                  ...entryPointsGroupBuildingModeDependentOutputGenericSettingsLocalizedPropertiesSpecification,
+                  ...ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid.propertiesSpecification,
                   ...entryPointsGroupBuildingModeDependentSpecificSettingsLocalizedPropertiesSpecification
                 }
               }

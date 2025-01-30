@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.configurationFile.$children.stylesProcessing;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("意匠設計記法（スタイル）処理"),
+        title: buildHTML_PageTitle(topHeading),
         description:
             "「やまとダイワ自動化」（技術名：「Yamato Daiwa Automation」、省略：「YDA」）と言うプロジェクト（クライアント・ウェブ・アプリケーション、" +
               "サーバアプリケーション、コンソル・ユーティリティ、ライブラリ）構成のNode.jaユーティリティにおいて構造設計記法（マークアップ）の設定の詳細。"
@@ -33,11 +38,6 @@ block append Metadata
       russian: routing.russian.configurationFile.$children.stylesProcessing.$URI
     });
 
-    const {
-      $heading: topHeading,
-      $sectioning: localizedSectioning
-    } = localizedRouting.configurationFile.$children.stylesProcessing;
-
 
 block append HeadScripts
 
@@ -52,3 +52,7 @@ block append SpecificContent
 
     //- ━━━ `$stylesProcessing`　意匠設計記法（スタイル）処理 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })

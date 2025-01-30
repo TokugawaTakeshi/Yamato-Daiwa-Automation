@@ -5,8 +5,6 @@ import type ConsumingProjectBuildingModes from
 /* ─── Raw Valid Config ───────────────────────────────────────────────────────────────────────────────────────────── */
 import ProjectBuildingConfig__FromFile__RawValid from
     "./ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid";
-import ProjectBuildingConfigDefaultLocalization__FromFile__RawValid from
-    "@ProjectBuilding/ProjectBuildingConfigFromFileDefaultLocalization";
 
 /* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingConfig__Normalized from "./ProjectBuilding/ProjectBuildingConfig__Normalized";
@@ -16,7 +14,9 @@ import ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectB
 /* ─── Tasks Runners ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
 import MarkupSourceCodeLinter from "@MarkupProcessing/Subtasks/Linting/MarkupSourceCodeLinter";
-import CompiledInlineTypeScriptImporterForPug from "@MarkupProcessing/Subtasks/CompiledTypeScriptImporterForPug";
+import TypeScriptTypesChecker from "@ECMA_ScriptProcessing/Subtasks/TypeScriptTypesChecker";
+import CompiledTypeScriptImporterForPug from "@MarkupProcessing/Subtasks/CompiledTypeScriptImporterForPug";
+import JavaScriptImporterForPug from "@MarkupProcessing/Subtasks/JavaScriptImporterForPug";
 import StylesProcessor from "@StylesProcessing/StylesProcessor";
 import ECMA_ScriptLogicProcessor from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessor";
 import ECMA_ScriptSourceCodeLinter from "@ECMA_ScriptProcessing/Subtasks/Linting/ECMA_ScriptSourceCodeLinter";
@@ -37,9 +37,10 @@ import FilesMasterWatcher from "@ProjectBuilding/FilesWatching/Watchers/FilesMas
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
   RawObjectDataProcessor,
+  isNeitherUndefinedNorNull,
   Logger,
   InvalidConfigError,
-  isNeitherUndefinedNorNull, UnexpectedEventError
+  UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
 
 
@@ -57,12 +58,11 @@ abstract class ProjectBuilder {
         ProcessingResult<ProjectBuilder.ContainerizedProjectBuildingValidConfigFromFile> =
             RawObjectDataProcessor.process(
               rawConfigFromFile,
-              ProjectBuildingConfig__FromFile__RawValid.getLocalizedSpecification(
-                ProjectBuildingConfigDefaultLocalization__FromFile__RawValid
-              )
+              ProjectBuildingConfig__FromFile__RawValid.propertiesSpecification,
+              { processingApproach: RawObjectDataProcessor.ProcessingApproaches.assemblingOfNewObject }
             );
 
-    if (rawDataProcessingResult.rawDataIsInvalid) {
+    if (rawDataProcessingResult.isRawDataInvalid) {
       Logger.throwErrorAndLog({
         errorInstance: new InvalidConfigError({
           mentionToConfig: "@yamato-daiwa/automation (project building)",
@@ -98,12 +98,14 @@ abstract class ProjectBuilder {
       Gulp.parallel([
 
         MarkupSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative),
+        TypeScriptTypesChecker.provideCheckingIfMust(masterConfigRepresentative),
         ECMA_ScriptSourceCodeLinter.provideLintingIfMust(masterConfigRepresentative),
 
         Gulp.series([
 
           Gulp.parallel([
-            CompiledInlineTypeScriptImporterForPug.provideTypeScriptImportsForMarkupIfMust(masterConfigRepresentative),
+            CompiledTypeScriptImporterForPug.provideTypeScriptImportsForMarkupIfMust(masterConfigRepresentative),
+            JavaScriptImporterForPug.provideJavaScriptImportsForMarkupIfMust(masterConfigRepresentative),
             ECMA_ScriptLogicProcessor.provideLogicProcessingIfMust(masterConfigRepresentative),
             PlainCopier.providePlainCopierIfMust(masterConfigRepresentative)
           ]),

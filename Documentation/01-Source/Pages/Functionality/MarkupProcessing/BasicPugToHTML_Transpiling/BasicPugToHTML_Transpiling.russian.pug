@@ -1,0 +1,157 @@
+extends ../../../../../node_modules/@yamato-daiwa/programming_documentation/Layouts/TwoColumns/TwoColumnsLayout.pug
+
+
+block append Requirements
+
+  include ../../../../SharedAssets/Markup/SharedAssets.russian.pug
+  include ../../../../SharedComponents/SharedComponents.russian.pug
+
+
+block append Metadata
+
+  -
+
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = localizedRouting.functionality.$children.markupProcessing.$children.basicPugToHTML_Transpiling;
+
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle(topHeading),
+        description:
+            "Node.js-утилита для сборки проектов (клиентских веб-приложений, серверных приложений, консольных утилит, " +
+              "библиотек) «Yamato Daiwa Automation» (сокращённо: «YDA», читается: «Уай-Ди-Эй») " +
+              "использует HTML-препроцессор «Pug 3» для обработки разметки, при этом даёт оптимизацию и некоторые " +
+              "дополнительные возможности.",
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
+    });
+
+    RoutingEmulator.setCurrentRoute("functionality.markupProcessing.basicPugToHTML_Transpiling");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: routing.english.functionality.$children.markupProcessing.$children.basicPugToHTML_Transpiling.$URI,
+      japanese: routing.japanese.functionality.$children.markupProcessing.$children.basicPugToHTML_Transpiling.$URI
+    });
+
+
+block append HeadScripts
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  article
+
+    //- ━━━ Базовый транспайлинг из Pug в HTML ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h1.Article-Heading1= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotComplete
+    })
+
+    p.Article-Paragraph
+      | #[+ImportantEntity--YDID YDA] использует #[+Term--YDID HTML-препроцессор]
+      |   #[+Link--YDF({ unendorsedExternalURI: sharedExternalLinks.pug.homePage.top }) Pug 3]
+      |   для работы с #[+Term--YDID разметкой], при этом написание исходного кода на чистом #[+ImportantEntity--YDID HTML]
+      |   #[+Keyword--YDID не]&nbsp;поддерживается.
+      | Хотя со времён выхода версии #[+ImportantEntity--YDID 3] добавление новой функциональности не&nbsp;осуществляется,
+      |   а владельцы репозитория на #[+ImportantEntity--YDID GitHub]
+      |
+      +Link--YDF({
+        unendorsedExternalURI: sharedExternalLinks.pug.homePage.officialProjectStatusRequest
+      }) не&nbsp;сделали комментариев по поводу будущего препроцессора
+      |
+      |   , аналога, сочетающего в себе предельно лаконичный синтаксис с богатой функциональностью включая возможность
+      |   описания логики на #[+ImportantEntity--YDID JavaScript] (обычно такое не&nbsp;приветствуется, но в определённых
+      |   ситуациях крайне полезно) не&nbsp;разработано и не&nbsp;поддерживается.
+      | До тех под, пока ситуация не&nbsp;изменится, #[+ImportantEntity--YDID YDA] продолжит специализироваться на данном
+      |   препроцессоре.
+      | Кроме того, уязвимости версии #[+ImportantEntity--YDID 3] были быстро устранены, что указывает на наличие минимально
+      |   необходимой поддержки проекта.
+
+
+    //- ━━━ Минимальные настройки ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h2.Article-Heading2 Минимальные настройки
+
+    p.Article-Paragraph
+      | Для того, чтобы настроить #[+Keyword--YDID минимальную] обработку #[+Term--YDID Pug-файлов],
+      |   #[+Keyword--YDID необходимо] определить в файле настроек #[+ImportantEntity--YDID YDA]
+      |   (обычно это #[+ImportantEntity--YDID yda.config.yaml]) #[+Keyphrase--YDID хотя бы] #[+Keyword--YDID одну]
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.entryPointsAndChildrenFiles.$children.entryPointsGroup.$URI
+      }) группу точек входа
+      |
+      |   в #[+ImportantEntity__Code--YDID projectBuilding.markupProcessing.entryPointsGroups], а именно:
+
+    ul.Article-UnorderedList
+
+      li Идентификатор #[+Term--YDID группы точек входа]
+      li Относительный путь с директории с #[+Term--YDID входными файлами]
+      li
+        | Зависящий от
+        |
+        +Link--YDF({
+          internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI
+        }) режима сборки проекта
+        |   относительный путь с директории с #[+Term--YDID выходными файлами]
+
+
+    //- ─── Начальный пример ───────────────────────────────────────────────────────────────────────────────────────────
+    h3.Article-Heading3 Пример
+
+    p.Article-Paragraph.
+
+      Начальный пример включает в себя обработку двух #[+Term--YDID Pug-файлов]: #[+SecondaryEntity--YDID index.pug] и
+        #[+SecondaryEntity--YDID about.pug].
+      Так как пример близок к простейшему, то:
+
+    ul.Article-UnorderedList
+
+      li Будет только один #[+Term--YDID режим сборки] — #[+Term--YDID эксплуатационный] (#[+Term--YDID «продакшен»])
+      li Автоматической пересборки проекта при внесении изменений в исходных код #[+Keyword--YDID не]&nbsp;будет.
+      li Готове #[+Term--YDID HTML-файлы] в браузере автоматически #[+Keyword--YDID не]&nbsp;откроются.
+
+    +CodeViewer--YDF({ title: "yda.config.yaml" })
+      +CodeViewer-TabPanel--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML })
+
+        +CodeViewer-PartialListing--YDF: :code_listing--yda
+          $projectBuilding:
+
+            $commonSettings:
+
+              $publicDirectoriesRelativePaths:
+
+                $production: ProductionBuilding
+        +CodeViewer-Explanation--YDF
+          | Если не&nbsp;указать #[+Term--YDID публичный путь], то для всех #[+Term--YDID режимов сборки проекта],
+          |   #[+Keyword--YDID кроме] #[+Term--YDID статического превью] будет выдано предупреждение.
+          | Если Вы прямо сейчас хотите узнать, с чем это предупреждение связано, то это связано
+          |
+          +Link--YDF({
+            internalURI: localizedRouting.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI
+          }) разрешением указателей на ресурсы
+          | .
+          | Хотя в нашем простейшем примере это не&nbsp;понадобится, #[+Term--YDID разрешение указателей на ресурсы] —
+          |   один из #[+Keyword--YDID базовых] механизмов #[+ImportantEntity--YDID YDA].
+
+        +CodeViewer-PartialListing--YDF: :code_listing--yda(indentationMultiplier="2" indentationString="  ")
+          $markupProcessing:
+
+            $entryPointsGroups:
+
+              All:
+                $sourceFilesTopDirectoryRelativePath: Source
+                $buildingModeDependent:
+                  $production:
+                    $outputTopDirectoryRelativePath: ProductionBuilding

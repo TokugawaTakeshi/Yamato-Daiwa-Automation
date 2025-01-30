@@ -9,46 +9,41 @@ type FilesWatchingSettings__FromFile__RawValid = Readonly<{
 
 namespace FilesWatchingSettings__FromFile__RawValid {
 
-  export type Localization = Readonly<{
-    relativePathsOfExcludeFiles: Readonly<{ KEY: string; }>;
-    relativePathsOfExcludeDirectories: Readonly<{ KEY: string; }>;
-  }>;
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-  export function getLocalizedPropertiesSpecification(
-    filesWatchingSettingsLocalization: Localization
-  ): RawObjectDataProcessor.PropertiesSpecification {
+    $relativePathsOfExcludeFiles: {
 
-    return {
+      newName: "relativePathsOfExcludeFiles",
+      type: Array,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      areUndefinedElementsForbidden: true,
+      areNullElementsForbidden: true,
 
-      [filesWatchingSettingsLocalization.relativePathsOfExcludeFiles.KEY]: {
-
-        newName: "relativePathsOfExcludeFiles",
-        type: Array,
-        required: false,
-
-        element: {
-          type: String,
-          minimalCharactersCount: 1
-        }
-
-      },
-
-      [filesWatchingSettingsLocalization.relativePathsOfExcludeDirectories.KEY]: {
-
-        newName: "relativePathsOfExcludeDirectories",
-        type: Array,
-        required: false,
-
-        element: {
-          type: String,
-          minimalCharactersCount: 1
-        }
-
+      element: {
+        type: String,
+        minimalCharactersCount: 1
       }
 
-    };
+    },
 
-  }
+    $relativePathsOfExcludeDirectories: {
+
+      newName: "relativePathsOfExcludeDirectories",
+      type: Array,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      areUndefinedElementsForbidden: true,
+      areNullElementsForbidden: true,
+
+      element: {
+        type: String,
+        minimalCharactersCount: 1
+      }
+
+    }
+
+  };
 
 }
 

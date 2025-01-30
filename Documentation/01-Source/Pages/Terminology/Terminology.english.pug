@@ -11,9 +11,14 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = routing.english.terminology;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
-        title: buildHTML_PageTitle("Terminology"),
+        title: buildHTML_PageTitle(topHeading),
         description:
           "The terminology which being used by the \"Yamato Daiwa Automation\" (abbreviation: \"YDA\")," +
             "the Node.js utility for the projects (client web applications, server applications, console utilities, " +
@@ -32,13 +37,8 @@ block append Metadata
 
     LanguageDropDownList__YDF_DK.setLinks({
       japanese: routing.japanese.terminology.$URI,
-      russian: routing.russian.terminology.$URI,
+      russian: routing.russian.terminology.$URI
     });
-
-    const {
-      $sectioning: localizedSectioning,
-      $heading: topHeading
-    } = routing.english.terminology;
 
 
 block append HeadScripts
@@ -54,6 +54,11 @@ block append SpecificContent
 
     //- ━━━ Terminology ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })
+
 
     //- ━━━ YDA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({

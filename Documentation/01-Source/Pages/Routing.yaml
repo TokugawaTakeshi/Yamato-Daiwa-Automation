@@ -26,10 +26,38 @@ functionality:
 
       $children:
 
-        #        basicPugToHTML_Transpiling:
-        #
-        #          $heading: `functionality.markupProcessing.basicPugToHTML_Transpiling.$heading`
-        #          $URI: `@All/Functionality/MarkupProcessing/BasicPugToHTML_Transpiling/BasicPugToHTML_Transpiling.${ fileNameLocalizationExtensions }`
+        basicPugToHTML_Transpiling:
+
+          $heading: `functionality.markupProcessing.basicPugToHTML_Transpiling.$heading`
+          $URI: `@All/Functionality/MarkupProcessing/BasicPugToHTML_Transpiling/BasicPugToHTML_Transpiling.${ fileNameLocalizationExtensions }`
+          $sectioning:
+            $specificationFileRelativePath: 01-Source/Pages/Functionality/MarkupProcessing/BasicPugToHTML_Transpiling/TableOfContents/BasicPugToHTML_Transpiling.toc.yaml
+            $localizations:
+              english: 01-Source/Pages/Functionality/MarkupProcessing/BasicPugToHTML_Transpiling/TableOfContents/BasicPugToHTML_Transpiling.toc.english.yaml
+              japanese: 01-Source/Pages/Functionality/MarkupProcessing/BasicPugToHTML_Transpiling/TableOfContents/BasicPugToHTML_Transpiling.toc.japanese.yaml
+              russian: 01-Source/Pages/Functionality/MarkupProcessing/BasicPugToHTML_Transpiling/TableOfContents/BasicPugToHTML_Transpiling.toc.russian.yaml
+
+        HTML_Validation:
+
+          $heading: `functionality.markupProcessing.HTML_Validation.$heading`
+          $URI: `@All/Functionality/MarkupProcessing/HTML_Validation/HTML_Validation.${ fileNameLocalizationExtensions }`
+          $sectioning:
+            $specificationFileRelativePath: 01-Source/Pages/Functionality/MarkupProcessing/HTML_Validation/TableOfContents/HTML_Validation.toc.yaml
+            $localizations:
+              english: 01-Source/Pages/Functionality/MarkupProcessing/HTML_Validation/TableOfContents/HTML_Validation.toc.english.yaml
+              japanese: 01-Source/Pages/Functionality/MarkupProcessing/HTML_Validation/TableOfContents/HTML_Validation.toc.japanese.yaml
+              russian: 01-Source/Pages/Functionality/MarkupProcessing/HTML_Validation/TableOfContents/HTML_Validation.toc.russian.yaml
+
+        accessibilityChecking:
+
+          $heading: `functionality.markupProcessing.accessibilityChecking.$heading`
+          $URI: `@All/Functionality/MarkupProcessing/AccessibilityChecking/AccessibilityChecking.${ fileNameLocalizationExtensions }`
+          $sectioning:
+            $specificationFileRelativePath: 01-Source/Pages/Functionality/MarkupProcessing/AccessibilityChecking/TableOfContents/AccessibilityChecking.toc.yaml
+            $localizations:
+              english: 01-Source/Pages/Functionality/MarkupProcessing/AccessibilityChecking/TableOfContents/AccessibilityChecking.toc.english.yaml
+              japanese: 01-Source/Pages/Functionality/MarkupProcessing/AccessibilityChecking/TableOfContents/AccessibilityChecking.toc.japanese.yaml
+              russian: 01-Source/Pages/Functionality/MarkupProcessing/AccessibilityChecking/TableOfContents/AccessibilityChecking.toc.russian.yaml
 
         resourcesPointersResolving:
 
@@ -41,6 +69,42 @@ functionality:
               english: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesPointersResolving/TableOfContents/ResourcesPointersResolving.toc.english.yaml
               japanese: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesPointersResolving/TableOfContents/ResourcesPointersResolving.toc.japanese.yaml
               russian: 01-Source/Pages/Functionality/MarkupProcessing/ResourcesPointersResolving/TableOfContents/ResourcesPointersResolving.toc.russian.yaml
+
+        importingFromTypeScript:
+
+          $heading: `functionality.markupProcessing.importingFromTypeScript.$heading`
+          $URI: `@All/Functionality/MarkupProcessing/ImportingFromTypeScript/ImportingFromTypeScript.${ fileNameLocalizationExtensions }`
+          $sectioning:
+            $specificationFileRelativePath: 01-Source/Pages/Functionality/MarkupProcessing/ImportingFromTypeScript/TableOfContents/ImportingFromTypeScript.toc.yaml
+            $localizations:
+              english: 01-Source/Pages/Functionality/MarkupProcessing/ImportingFromTypeScript/TableOfContents/ImportingFromTypeScript.toc.yaml
+              japanese: 01-Source/Pages/Functionality/MarkupProcessing/ImportingFromTypeScript/TableOfContents/ImportingFromTypeScript.toc.yaml
+              russian: 01-Source/Pages/Functionality/MarkupProcessing/ImportingFromTypeScript/TableOfContents/ImportingFromTypeScript.toc.yaml
+
+        localization:
+
+          $heading: `functionality.markupProcessing.localization.$heading`
+          $URI: `@All/Functionality/MarkupProcessing/Localization/Localization.${ fileNameLocalizationExtensions }`
+          $sectioning:
+            $specificationFileRelativePath: 01-Source/Pages/Functionality/MarkupProcessing/Localization/TableOfContents/Localization.toc.yaml
+            $localizations:
+              english: 01-Source/Pages/Functionality/MarkupProcessing/Localization/TableOfContents/Localization.toc.english.yaml
+              japanese: 01-Source/Pages/Functionality/MarkupProcessing/Localization/TableOfContents/Localization.toc.japanese.yaml
+              russian: 01-Source/Pages/Functionality/MarkupProcessing/Localization/TableOfContents/Localization.toc.russian.yaml
+
+        staticPreview:
+
+          $heading: `functionality.markupProcessing.staticPreview.$heading`
+
+          $children:
+
+            stateDependentPagesVariations:
+              $heading: `functionality.markupProcessing.staticPreview.stateDependentPagesVariations.$heading`
+              $URI: `@All/Functionality/MarkupProcessing/StaticPreview/StateDependentPagesVariations/StateDependentPagesVariations.${ fileNameLocalizationExtensions }.pug`
+              $localizations:
+                english: 01-Source/Pages/Functionality/MarkupProcessing/StaticPreview/StateDependentPagesVariations/TableOfContents/StateDependentPagesVariations.toc.english.yaml
+                japanese: 01-Source/Pages/Functionality/MarkupProcessing/StaticPreview/StateDependentPagesVariations/TableOfContents/StateDependentPagesVariations.toc.japanese.yaml
+                russian: 01-Source/Pages/Functionality/MarkupProcessing/StaticPreview/StateDependentPagesVariations/TableOfContents/StateDependentPagesVariations.toc.russian.yaml
 
     browserLiveReloading:
 
@@ -141,7 +205,7 @@ configurationFile:
 
     plainCopying:
 
-      $heading: Plain Copying
+      $heading: `configuration.plainCopying.$heading`
       $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation/blob/master/TemporaryDocumentation/API/ConfigurationFile/PlainCopying/PlainCopying.md
 
     browserLiveReloading:
@@ -155,7 +219,7 @@ configurationFile:
           japanese: 01-Source/Pages/ConfigurationFile/BrowserLiveReloading/TableOfContents/BrowserLiveReloadingSettings.toc.japanese.yaml
           russian: 01-Source/Pages/ConfigurationFile/BrowserLiveReloading/TableOfContents/BrowserLiveReloadingSettings.toc.russian.yaml
 
-CLI:
+consoleLineInterface:
 
-  $heading: CLI
-  $URI: https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation?tab=readme-ov-file#console
+  $heading: `consoleLineInterface.$heading`
+  $URI: `@All/ConsoleLineInterface/ConsoleLineInterface.${ fileNameLocalizationExtensions }`

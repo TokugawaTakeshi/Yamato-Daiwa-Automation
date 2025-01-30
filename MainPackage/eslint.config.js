@@ -4,7 +4,8 @@ const YamatoDaiwaStyleGuides = require("@yamato-daiwa/style_guides/ECMAScript");
 module.exports = [
   {
     ignores: [
-      "EntryPoint.js"
+      "EntryPoint.js",
+      "ForDocumentation.js"
     ]
   },
   ...YamatoDaiwaStyleGuides,
@@ -22,7 +23,9 @@ module.exports = [
       "**/*Settings__FromFile__RawValid.ts",
       "ProjectBuildingConfig__FromFile__RawValid.ts",
       "**/*Settings__Normalized.ts",
-      "Source/ProjectBuilding/Common/Plugins/ResourcesPointersResolver.ts"
+      "Source/ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid.ts",
+      "Source/ProjectBuilding/Common/Plugins/ResourcesPointersResolver.ts",
+      "Source/ProjectBuilding/SourceCodeProcessing/Markup/Worktypes/PagesVariationsMetadata.ts"
     ],
     rules: {
 

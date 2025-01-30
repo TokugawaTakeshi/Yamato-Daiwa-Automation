@@ -1,7 +1,5 @@
-import { RawObjectDataProcessor, nullToUndefined, LineSeparators } from "@yamato-daiwa/es-extensions";
 import ConsumingProjectBuildingModes from "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
-import type ConsumingProjectPreDefinedBuildingModes__Localized
-  from "@ProjectBuilding/Common/RawConfig/Enumerations/ConsumingProjectPreDefinedBuildingModes__Localized";
+import { RawObjectDataProcessor, LineSeparators } from "@yamato-daiwa/es-extensions";
 
 
 type OutputPackageJSON_GeneratingSettings__FromFile__RawValid = Readonly<{
@@ -36,168 +34,159 @@ namespace OutputPackageJSON_GeneratingSettings__FromFile__RawValid {
 
 
   /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  export type Localization = Readonly<{
+  export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
-    inheritedDependencies: Readonly<{ KEY: string; }>;
-    inheritedDevelopmentDependencies: Readonly<{ KEY: string; }>;
-    inheritedNPM_Scripts: Readonly<{ KEY: string; }>;
-    newNPM_Scripts: Readonly<{ KEY: string; }>;
-    indentString: Readonly<{ KEY: string; }>;
-    linesSeparator: Readonly<{ KEY: string; }>;
+    $inheritedDependencies: {
 
-    buildingModeDependent: Readonly<{
-      KEY: string;
-      outputDirectoryRelativePath: Readonly<{ KEY: string; }>;
-      indentString: Readonly<{ KEY: string; }>;
-      linesSeparator: Readonly<{ KEY: string; }>;
-    }>;
+      newName: "inheritedDependencies",
+      type: Array,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      areUndefinedElementsForbidden: true,
+      areNullElementsForbidden: true,
+      minimalElementsCount: 1,
 
-  }>;
-
-  export function getLocalizedPropertiesSpecification(
-    {
-      outputPackageJSON_GeneratingSettingsLocalization,
-      consumingProjectLocalizedPreDefinedBuildingModes
-    }: Readonly<{
-      outputPackageJSON_GeneratingSettingsLocalization: Localization;
-      consumingProjectLocalizedPreDefinedBuildingModes: ConsumingProjectPreDefinedBuildingModes__Localized;
-    }>
-  ): RawObjectDataProcessor.PropertiesSpecification {
-
-    return {
-
-      [outputPackageJSON_GeneratingSettingsLocalization.inheritedDependencies.KEY]: {
-
-        newName: "inheritedDependencies",
-        type: Array,
-        required: false,
-        minimalElementsCount: 1,
-
-        element: {
-          type: String,
-          minimalCharactersCount: 1
-        }
-
-      },
-
-      [outputPackageJSON_GeneratingSettingsLocalization.inheritedDevelopmentDependencies.KEY]: {
-
-        newName: "inheritedDevelopmentDependencies",
-        type: Array,
-        required: false,
-        minimalElementsCount: 1,
-
-        element: {
-          type: String,
-          minimalCharactersCount: 1
-        }
-
-      },
-
-      [outputPackageJSON_GeneratingSettingsLocalization.inheritedNPM_Scripts.KEY]: {
-
-        newName: "inheritedNPM_Scripts",
-        type: Array,
-        required: false,
-        minimalElementsCount: 1,
-
-        element: {
-          type: String,
-          minimalCharactersCount: 1
-        }
-
-      },
-
-      [outputPackageJSON_GeneratingSettingsLocalization.newNPM_Scripts.KEY]: {
-
-        newName: "newNPM_Scripts",
-        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-        required: false,
-        preValidationModifications: nullToUndefined,
-        minimalEntriesCount: 1,
-
-        value: {
-          type: String,
-          minimalCharactersCount: 1
-        }
-
-      },
-
-      [outputPackageJSON_GeneratingSettingsLocalization.indentString.KEY]: {
-
-        newName: "indentString",
+      element: {
         type: String,
-        required: false,
         minimalCharactersCount: 1
+      }
 
-      },
+    },
 
-      [outputPackageJSON_GeneratingSettingsLocalization.linesSeparator.KEY]: {
+    $inheritedDevelopmentDependencies: {
 
-        newName: "linesSeparator",
+      newName: "inheritedDevelopmentDependencies",
+      type: Array,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      areUndefinedElementsForbidden: true,
+      areNullElementsForbidden: true,
+      minimalElementsCount: 1,
+
+      element: {
         type: String,
-        required: false,
-        allowedAlternatives: Object.values(LineSeparators.lineFeed)
+        minimalCharactersCount: 1
+      }
 
+    },
+
+    $inheritedNPM_Scripts: {
+
+      newName: "inheritedNPM_Scripts",
+      type: Array,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      areUndefinedElementsForbidden: true,
+      areNullElementsForbidden: true,
+      minimalElementsCount: 1,
+
+      element: {
+        type: String,
+        minimalCharactersCount: 1
+      }
+
+    },
+
+    $newNPM_Scripts: {
+
+      newName: "newNPM_Scripts",
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+      areUndefinedTypeValuesForbidden: true,
+      areNullTypeValuesForbidden: true,
+      minimalEntriesCount: 1,
+
+      value: {
+        type: String,
+        minimalCharactersCount: 1
+      }
+
+    },
+
+    $indentString: {
+
+      newName: "indentString",
+      type: String,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      minimalCharactersCount: 1
+
+    },
+
+    $linesSeparator: {
+
+      newName: "linesSeparator",
+      type: String,
+      isUndefinedForbidden: false,
+      isNullForbidden: true,
+      allowedAlternatives: Object.values(LineSeparators.lineFeed)
+
+    },
+
+    $buildingModeDependent: {
+
+      newName: "buildingModeDependent",
+      type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+      isUndefinedForbidden: true,
+      isNullForbidden: true,
+      areUndefinedTypeValuesForbidden: true,
+      areNullTypeValuesForbidden: true,
+      minimalEntriesCount: 1,
+
+      allowedKeys: [
+        "$staticPreview",
+        "$localDevelopment",
+        "$testing",
+        "$staging",
+        "$production"
+      ],
+
+      keysRenamings: {
+        $staticPreview: ConsumingProjectBuildingModes.staticPreview,
+        $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
+        $testing: ConsumingProjectBuildingModes.testing,
+        $staging: ConsumingProjectBuildingModes.staging,
+        $production: ConsumingProjectBuildingModes.production
       },
 
-      [outputPackageJSON_GeneratingSettingsLocalization.buildingModeDependent.KEY]: {
+      value: {
 
-        newName: "buildingModeDependent",
-        type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-        required: true,
-        allowedKeys: Object.values(ConsumingProjectBuildingModes),
-        minimalEntriesCount: 1,
+        type: Object,
 
-        keysRenamings: {
-          [consumingProjectLocalizedPreDefinedBuildingModes.staticPreview]:
-              ConsumingProjectBuildingModes.staticPreview,
-          [consumingProjectLocalizedPreDefinedBuildingModes.localDevelopment]:
-              ConsumingProjectBuildingModes.localDevelopment,
-          [consumingProjectLocalizedPreDefinedBuildingModes.testing]:
-              ConsumingProjectBuildingModes.testing,
-          [consumingProjectLocalizedPreDefinedBuildingModes.staging]:
-              ConsumingProjectBuildingModes.staging,
-          [consumingProjectLocalizedPreDefinedBuildingModes.production]:
-              ConsumingProjectBuildingModes.production
-        },
+        properties: {
 
-        value: {
+          $outputDirectoryRelativePath: {
+            newName: "outputDirectoryRelativePath",
+            type: String,
+            isUndefinedForbidden: true,
+            isNullForbidden: true,
+            minimalCharactersCount: 1
+          },
 
-          type: Object,
+          $indentString: {
+            newName: "indentString",
+            type: String,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+            minimalCharactersCount: 1
+          },
 
-          properties: {
-
-            [outputPackageJSON_GeneratingSettingsLocalization.buildingModeDependent.outputDirectoryRelativePath.KEY]: {
-              newName: "outputDirectoryRelativePath",
-              type: String,
-              required: true,
-              minimalCharactersCount: 1
-            },
-
-            [outputPackageJSON_GeneratingSettingsLocalization.buildingModeDependent.indentString.KEY]: {
-              newName: "indentString",
-              type: String,
-              required: false,
-              minimalCharactersCount: 1
-            },
-
-            [outputPackageJSON_GeneratingSettingsLocalization.buildingModeDependent.linesSeparator.KEY]: {
-              newName: "linesSeparator",
-              type: String,
-              required: false,
-              allowedAlternatives: Object.values(LineSeparators.lineFeed)
-            }
-
+          $linesSeparator: {
+            newName: "linesSeparator",
+            type: String,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+            allowedAlternatives: Object.values(LineSeparators.lineFeed)
           }
 
         }
 
       }
 
-    };
+    }
 
-  }
+  };
 
 }
 

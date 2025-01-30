@@ -154,51 +154,63 @@ class MarkupSourceCodeLinter extends LinterLikeTaskExecutor<MarkupSourceCodeLint
       sourceFilesCachedCheckingResults: {
         fileNameWithExtension: "MarkupLintingCache.json",
         contentSpecification: {
-          subtype: RawObjectDataProcessor.ObjectSubtypes.fixedKeyAndValuePairsObject,
+          subtype: RawObjectDataProcessor.ObjectSubtypes.fixedSchema,
           nameForLogging: "CachedMarkupLintingResultsFileContent",
           properties: {
             files: {
-              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArrayOfUniformTypeValues,
-              required: true,
+              type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+              isUndefinedForbidden: true,
+              isNullForbidden: true,
+              areUndefinedTypeValuesForbidden: true,
+              areNullTypeValuesForbidden: true,
               value: {
                 type: Object,
                 properties: {
                   issues: {
                     type: Array,
-                    required: true,
+                    isUndefinedForbidden: true,
+                    isNullForbidden: true,
+                    areUndefinedElementsForbidden: true,
+                    areNullElementsForbidden: true,
                     element: {
                       type: Object,
                       properties: {
                         code: {
                           type: String,
-                          required: true,
+                          isUndefinedForbidden: true,
+                          isNullForbidden: true,
                           minimalCharactersCount: 1
                         },
                         message: {
                           type: String,
-                          required: true,
+                          isUndefinedForbidden: true,
+                          isNullForbidden: true,
                           minimalCharactersCount: 1
                         },
                         sourceListing: {
                           type: String,
-                          required: true
+                          isUndefinedForbidden: true,
+                          isNullForbidden: true
                         },
                         lineNumber: {
                           type: Number,
-                          required: true,
-                          numbersSet: RawObjectDataProcessor.NumbersSets.nonNegativeInteger
+                          isUndefinedForbidden: true,
+                          isNullForbidden: true,
+                          numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero
                         },
                         columnNumber: {
                           type: Number,
-                          required: false,
-                          numbersSet: RawObjectDataProcessor.NumbersSets.nonNegativeInteger
+                          isUndefinedForbidden: false,
+                          isNullForbidden: true,
+                          numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero
                         }
                       }
                     }
                   },
                   modificationDateTime__ISO_8601: {
                     type: String,
-                    required: true,
+                    isUndefinedForbidden: true,
+                    isNullForbidden: true,
                     minimalCharactersCount: 1
                   }
                 }
@@ -383,10 +395,6 @@ class MarkupSourceCodeLinter extends LinterLikeTaskExecutor<MarkupSourceCodeLint
 
 
 namespace MarkupSourceCodeLinter {
-
-  export type CachedLintingResults =
-      LinterLikeTaskExecutor.CachedCheckingResults<LintingIssue> &
-      Readonly<{ rulesChecksum: string; }>;
 
   export type LintingIssue = Readonly<{
     code: string;

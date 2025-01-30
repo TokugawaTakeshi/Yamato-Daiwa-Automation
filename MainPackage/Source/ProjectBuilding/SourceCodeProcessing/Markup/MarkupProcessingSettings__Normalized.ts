@@ -14,6 +14,7 @@ type MarkupProcessingSettings__Normalized = Readonly<{
   common: MarkupProcessingSettings__Normalized.Common;
   linting: MarkupProcessingSettings__Normalized.Linting;
   importingFromTypeScript?: MarkupProcessingSettings__Normalized.ImportingFromTypeScript;
+  importingFromJavaScript?: MarkupProcessingSettings__Normalized.ImportingFromJavaScript;
   staticPreview: MarkupProcessingSettings__Normalized.StaticPreview;
   routing?: MarkupProcessingSettings__Normalized.Routing;
   relevantEntryPointsGroups: ReadonlyMap<
@@ -41,7 +42,11 @@ namespace MarkupProcessingSettings__Normalized {
     typeScriptConfigurationFileAbsolutePath: string;
     sourceFileAbsolutePath: string;
     importedNamespace: string;
-    nameOfPugBlockToWhichTranspiledTypeScriptMustBeInjected: string;
+  }>;
+
+  export type ImportingFromJavaScript = Readonly<{
+    sourceFileAbsolutePath: string;
+    nameOfGlobalConstantForStoringOfImports: string;
   }>;
 
 
@@ -52,9 +57,27 @@ namespace MarkupProcessingSettings__Normalized {
 
   export namespace StaticPreview {
 
-    export type StateDependentPagesVariationsSpecification = Readonly<{
-      [entryPointSourceFileAbsolutePath: string]: PagesStateDependentVariationsSpecification.Page | undefined;
+    export type PagesVariations = Readonly<{
+      stateDependent: PagesVariations.StateDependent;
     }>;
+
+    export namespace PagesVariations {
+
+      export type StateDependent = Map<StateDependent.EntryPointSourceFileAbsolutePath, StateDependent.Page>;
+
+      export namespace StateDependent {
+
+        export type EntryPointSourceFileAbsolutePath = string;
+        export type DerivedFileAbsolutePath = string;
+
+        export type Page = Readonly<{
+          stateVariableName: string;
+          derivedPagesAndStatesMap: ReadonlyMap<DerivedFileAbsolutePath, ArbitraryObject>;
+        }>;
+
+      }
+
+    }
 
     export type ImportsFromStaticDataFiles = Readonly<{ [variableName: string]: unknown; }>;
 
@@ -71,12 +94,37 @@ namespace MarkupProcessingSettings__Normalized {
       SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup &
       Readonly<{
         outputFormat: MarkupProcessingRestrictions.OutputFormats;
+        localization: EntryPointsGroup.Localization;
         HTML_Validation: EntryPointsGroup.HTML_Validation;
         accessibilityInspection: EntryPointsGroup.AccessibilityInspection;
         outputCodeFormatting: EntryPointsGroup.OutputCodeFormatting;
+        outputCodeMinifying: EntryPointsGroup.OutputCodeMinifying;
       }>;
 
   export namespace EntryPointsGroup {
+
+    export type Localization = Readonly<{
+      localizedStringResourcesConstantName?: string;
+      localeConstantName?: string;
+      nameOfConstantForInterpolationToLangHTML_Attribute?: string;
+      locales: Localization.Locales;
+      excludedFilesAbsolutePaths: ReadonlyArray<string>;
+    }>;
+
+    export namespace Localization {
+
+      export type Locales = ReadonlyMap<LocaleKey, LocaleData>;
+
+      export type LocaleKey = string;
+
+      export type LocaleData = Readonly<{
+        outputFileInterimNameExtensionWithoutDot: string;
+        stringResources?: unknown;
+        localeConstantValue?: string;
+        valueOfConstantForInterpolationToLangHTML_Attribute?: string;
+      }>;
+
+    }
 
     export type HTML_Validation = Readonly<{
       mustExecute: boolean;
@@ -95,7 +143,20 @@ namespace MarkupProcessingSettings__Normalized {
       }>;
     }>;
 
-    export type OutputCodeFormatting = Readonly<{ mustExecute: boolean; }>;
+    export type OutputCodeFormatting = Readonly<{
+      mustExecute: boolean;
+      indentationString: string;
+      lineSeparators: LineSeparators;
+      mustGuaranteeTrailingEmptyLine: boolean;
+      mustIndentHeadAndBodyTags: boolean;
+    }>;
+
+    export type OutputCodeMinifying = Readonly<{
+      mustExecute: boolean;
+      attributesExtraWhitespacesCollapsing: boolean;
+      attributesValuesDeduplication: boolean;
+      commentsRemoving: boolean;
+    }>;
 
   }
 

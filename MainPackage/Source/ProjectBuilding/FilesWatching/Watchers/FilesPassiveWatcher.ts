@@ -6,8 +6,8 @@ abstract class FilesPassiveWatcher {
 
   public readonly ID: string;
 
-  protected mustLogEvents: boolean;
-  protected targetFilesGlobSelectors: Array<string>;
+  protected readonly mustLogEvents: boolean;
+  protected readonly targetFilesGlobSelectors: ReadonlyArray<string>;
 
 
   protected constructor(
@@ -42,7 +42,7 @@ namespace FilesPassiveWatcher {
 
   export type InitializationRequirements = Readonly<{
     ID: string;
-    targetFilesGlobSelectors: Array<string>;
+    targetFilesGlobSelectors: ReadonlyArray<string>;
     mustLogEvents: boolean;
   }>;
 

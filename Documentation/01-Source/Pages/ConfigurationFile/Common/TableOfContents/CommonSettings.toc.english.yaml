@@ -1,7 +1,23 @@
-common:
+selectiveExecutions:
 
-  $heading: "<code>$common</code> — Common Settings"
+  $heading: "<code>$selectiveExecutions</code> — Selective Executions"
 
-  secondsBetweenFileUpdatingAndStartingOfRebuilding:
+  settingUpOfEachItem:
 
-    $heading: "<code>secondsBetweenFileUpdatingAndStartingOfRebuilding</code> — seconds between file styles saving and starting of rebuilding"
+    $heading: "Settings of Each Selective Execution"
+
+    tasksAndSourceFilesSelection:
+
+      $heading: "<code>$tasksAndSourceFilesSelection</code> — Selection of Tasks And Source Files"
+
+    browserLiveReloadingSetupID:
+
+      $heading: "<code>$browserLiveReloadingSetupID</code> — Browser Live Reloading Setup ID"
+
+    distributablePackageJSON_Generating:
+
+      $heading: "<code>$distributablePackageJSON_Generating</code> — Generating of \"package.json\" for Distributive"
+
+publicDirectoriesRelativePaths:
+
+  $heading: "<code>$publicDirectoriesRelativePaths</code> — Public Directories Relative Paths"

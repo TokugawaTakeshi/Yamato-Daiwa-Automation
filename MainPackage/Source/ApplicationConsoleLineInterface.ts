@@ -30,29 +30,31 @@ namespace ApplicationConsoleLineInterface {
         options: {
           mode: {
             newName: "projectBuildingMode",
+            shortcut: "m",
+            required: true,
+            type: ConsoleCommandsParser.ParametersTypes.string,
+            allowedAlternatives: Object.values(ConsumingProjectBuildingModes),
             description:
                 "The project building mode; affects to presence or absence of incremental building, " +
-                  "browser live reloading, code minification etc.",
-            type: ConsoleCommandsParser.ParametersTypes.string,
-            required: true,
-            shortcut: "m",
-            allowedAlternatives: Object.values(ConsumingProjectBuildingModes)
-          },
-          configurationFile: {
-            description:
-                "Custom name of the configuration file (the default one is " +
-                  `"${ CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION }")`,
-            newName: "customConfigurationFileName__possiblyWithoutExtension",
-            type: ConsoleCommandsParser.ParametersTypes.string,
-            required: false
+                  "browser live reloading, code minification etc."
           },
           selectiveExecution: {
             newName: "selectiveExecutionID",
-            description:
-                "Allows to specify the selection of tasks, entry points groups, etc. by selective execution ID, " +
-                  "herewith the desired selective execution must be preliminarily defined in the configuration file.",
+            shortcut: "s",
+            required: false,
             type: ConsoleCommandsParser.ParametersTypes.string,
-            required: false
+            description:
+              "Allows to specify the selection of tasks, entry points groups, etc. by selective execution ID, " +
+              "herewith the desired selective execution must be preliminarily defined in the configuration file."
+          },
+          configurationFile: {
+            newName: "customConfigurationFileName__possiblyWithoutExtension",
+            shortcut: "c",
+            required: false,
+            type: ConsoleCommandsParser.ParametersTypes.string,
+            description:
+                "Custom name of the configuration file (the default one is " +
+                  `"${ CONFIGURATION_FILE_DEFAULT_NAME_WITH_EXTENSION }")`
           }
         }
       },

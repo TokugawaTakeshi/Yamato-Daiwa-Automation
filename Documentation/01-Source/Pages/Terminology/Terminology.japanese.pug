@@ -11,6 +11,11 @@ block append Metadata
 
   -
 
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = routing.japanese.terminology;
+
     RegularWebPageTemplate__YDF.configure({
       metadata: {
         title: buildHTML_PageTitle("用語"),
@@ -31,13 +36,8 @@ block append Metadata
 
     LanguageDropDownList__YDF_DK.setLinks({
       english: routing.english.terminology.$URI,
-      russian: routing.russian.terminology.$URI,
+      russian: routing.russian.terminology.$URI
     });
-
-    const {
-      $sectioning: localizedSectioning,
-      $heading: topHeading
-    } = routing.japanese.terminology;
 
 
 block append HeadScripts
@@ -53,6 +53,11 @@ block append SpecificContent
 
     //- ━━━ 用語 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1= topHeading
+
+    +PageNotReadyApology--YDPD({
+      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    })
+
 
     //- ━━━ YDA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     +Heading--YDF({
