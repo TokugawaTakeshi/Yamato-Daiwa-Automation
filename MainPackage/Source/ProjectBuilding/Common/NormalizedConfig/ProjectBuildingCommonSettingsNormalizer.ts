@@ -1,8 +1,8 @@
 /* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
-import type ConsumingProjectBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
+import ConsumingProjectBuildingModes from "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 import mustProvideIncrementalProjectBuilding from
     "@ProjectBuilding/Common/Restrictions/mustProvideIncrementalProjectBuilding";
+import FilesWatchingRestrictions from "@ProjectBuilding/FilesWatching/FilesWatchingRestrictions";
 
 /* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
 import { ProjectBuildingTasksIDsForConfigFile } from
@@ -52,6 +52,9 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
       );
     }
 
+    const filesWatchingSettings__fromFile__rawValid:
+        ProjectBuildingCommonSettings__FromFile__RawValid.FilesWatching | undefined =
+            commonSettings__fromFile__rawValid.filesWatching;
 
     return {
 
@@ -99,7 +102,71 @@ export default abstract class ProjectBuildingCommonSettingsNormalizer {
 
       mustGenerateOutputPackageJSON: actualSelectiveExecution?.distributablePackageJSON_Generating === true,
 
-      actualPublicDirectoryAbsolutePath
+      dockerSetupID: actualSelectiveExecution?.dockerSetupID,
+
+      actualPublicDirectoryAbsolutePath,
+
+      filesWatching: {
+
+        excludedFilesGlobSelectors: new Set(
+          [
+
+            ...FilesWatchingRestrictions.relativePathsOfExcludeFiles,
+            ...filesWatchingSettings__fromFile__rawValid?.relativePathsOfExcludedFiles ?? [],
+
+            /* eslint-disable-next-line @stylistic/no-extra-parens -- For squared layout */
+            ...(
+              projectBuildingMode === ConsumingProjectBuildingModes.staticPreview ||
+              projectBuildingMode === ConsumingProjectBuildingModes.localDevelopment
+            ) ?
+              filesWatchingSettings__fromFile__rawValid?.buildingModeDependent?.[projectBuildingMode].
+                  relativePathsOfExcludedFiles ??
+                [] :
+              []
+          ].
+              map(
+                (fileRelativePath: string): string =>
+
+                    /* [ Theory ] In this case the Glob even with a directory absolute path is fine. */
+                    ImprovedPath.joinPathSegments(
+                      [ consumingProjectRootDirectoryAbsolutePath, fileRelativePath ],
+                      { alwaysForwardSlashSeparators: true }
+                    )
+
+              )
+
+        ),
+
+        excludedDirectoriesGlobSelectors: new Set(
+          [
+
+            ...FilesWatchingRestrictions.relativePathsOfExcludeDirectories,
+            ...filesWatchingSettings__fromFile__rawValid?.relativePathsOfExcludeDirectories ?? [],
+
+            /* eslint-disable-next-line @stylistic/no-extra-parens -- For squared layout */
+            ...(
+              projectBuildingMode === ConsumingProjectBuildingModes.staticPreview ||
+              projectBuildingMode === ConsumingProjectBuildingModes.localDevelopment
+            ) ?
+              filesWatchingSettings__fromFile__rawValid?.buildingModeDependent?.[projectBuildingMode].
+                  relativePathsOfExcludeDirectories ??
+                [] :
+              []
+
+          ].
+              map(
+                (directoryRelativePath: string): string =>
+
+                    /* [ Theory ] In this case the Glob even with a directory absolute path is fine. */
+                    ImprovedPath.joinPathSegments(
+                      [ consumingProjectRootDirectoryAbsolutePath, directoryRelativePath ],
+                      { alwaysForwardSlashSeparators: true }
+                    )
+
+              )
+        )
+
+      }
 
     };
 

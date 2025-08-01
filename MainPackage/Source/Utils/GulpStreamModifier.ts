@@ -29,7 +29,7 @@ abstract class GulpStreamModifier {
       transform(this: Stream.Transform, chunk: unknown, _encoding: BufferEncoding, callback: TransformCallback): void {
 
         if (!VinylFile.isVinyl(chunk)) {
-          Logger.throwErrorAndLog({
+          Logger.throwErrorWithFormattedMessage({
             errorInstance: new UnexpectedEventError(
               PoliteErrorsMessagesBuilder.buildMessage({
                 technicalDetails: "The \"chunk\" parameter is not an instance of Vinyl file",
@@ -121,7 +121,7 @@ abstract class GulpStreamModifier {
       transform(this: Stream.Transform, chunk: unknown, _encoding: BufferEncoding, callback: TransformCallback): void {
 
         if (!VinylFile.isVinyl(chunk)) {
-          Logger.throwErrorAndLog({
+          Logger.throwErrorWithFormattedMessage({
             errorInstance: new UnexpectedEventError(
               PoliteErrorsMessagesBuilder.buildMessage({
                 technicalDetails: "The \"chunk\" parameter is not an instance of Vinyl file",

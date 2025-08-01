@@ -57,6 +57,10 @@ functionality:
 
     $heading: "Генерация файла «package.json» для дистрибутива"
 
+  dockerIntegration:
+
+    $heading: "Интеграция с Docker"
+
 configuration:
 
   $heading: "Конфигурация"
@@ -88,6 +92,10 @@ configuration:
   browserLiveReloading:
 
     $heading: "<code>$browserLiveReloading</code> — Настройки автоматической перезагрузки вкладки браузера"
+
+  dockerLaunching:
+
+    $heading: "<code>$dockerLaunching</code> — Запуск Docker"
 
 consoleLineInterface:
 

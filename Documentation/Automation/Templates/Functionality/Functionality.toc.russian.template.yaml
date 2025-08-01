@@ -1,0 +1,11 @@
+section1:
+
+  $heading: "Раздел 1"
+
+  subsection1_1:
+
+    $heading: "Подраздел 1-1"
+
+  subsection1_2:
+
+    $heading: "Подраздел 1-2"

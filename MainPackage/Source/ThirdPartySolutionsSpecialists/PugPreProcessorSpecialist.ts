@@ -15,7 +15,7 @@ class PugPreProcessorSpecialist {
     /^ *(?:include|extends) +((?:\w|-|\.|\/)+) *$/gmu
   ];
 
-  public static readonly implicitFilesNamesExtensionsWithoutLeadingDotsOfPartials: ReadonlyArray<string> = [ "pug" ];
+  public static readonly implicitFilesNamesExtensionsWithoutLeadingDotsOfPartials: ReadonlySet<string> = new Set([ "pug" ]);
 
   public static readonly linterConfigurationFilesNamesWithExtensions: ReadonlyArray<string> = [
     ".pug-lintrc", ".pug-lintrc.js", ".pug-lintrc.json", "package.json"

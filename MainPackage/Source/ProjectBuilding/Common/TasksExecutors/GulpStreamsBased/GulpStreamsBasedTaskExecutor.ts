@@ -43,7 +43,7 @@ abstract class GulpStreamsBasedTaskExecutor {
 
       errorHandler: (error: Error): void => {
 
-        const ERROR_MESSAGE_TITLE: string = `Task "${ this.TASK_TITLE_FOR_LOGGING }", Error Occurred`;
+        const ERROR_MESSAGE_TITLE: string = `${ this.TASK_TITLE_FOR_LOGGING }, Error Occurred`;
 
         Logger.logErrorLikeMessage({
           title: ERROR_MESSAGE_TITLE,
@@ -73,7 +73,7 @@ abstract class GulpStreamsBasedTaskExecutor {
     });
   }
 
-  protected logProcessedFilesIfMust(): Stream.Transform {
+  protected logInputFilesIfMust(): Stream.Transform {
     return GulpStreamModifier.modify({
 
       onStreamStartedEventCommonHandler: async (file: VinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
@@ -81,12 +81,14 @@ abstract class GulpStreamsBasedTaskExecutor {
         Logger.logGeneric({
           mustOutputIf: this.logging.pathsOfFilesWillBeProcessed,
           badge: false,
-          title: `[ ${ this.TASK_TITLE_FOR_LOGGING } ]`,
-          description: ImprovedPath.computeRelativePath({
-            basePath: this.projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-            comparedPath: file.path,
-            alwaysForwardSlashSeparators: true
-          }),
+          title: "｟ ➞□  Input ｠",
+          description:
+              `[ ${ this.TASK_TITLE_FOR_LOGGING } ] ` +
+              ImprovedPath.computeRelativePath({
+                basePath: this.projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
+                comparedPath: file.path,
+                alwaysForwardSlashSeparators: true
+              }),
           compactLayout: true
         });
 
@@ -102,7 +104,53 @@ abstract class GulpStreamsBasedTaskExecutor {
           mustOutputIf: this.logging.quantityOfFilesWillBeProcessed,
           badge: false,
           title: this.TASK_TITLE_FOR_LOGGING,
-          description: `Files will be processed: ${ this.processedFilesCountDuringCurrentRun }`,
+          description: `${ this.processedFilesCountDuringCurrentRun } files will be processed`,
+          compactLayout: true
+        });
+
+        this.processedFilesCountDuringCurrentRun = 0;
+
+        return Promise.resolve();
+
+      }
+
+    });
+  }
+
+  protected logOutputFilesIfMust(): Stream.Transform {
+    return GulpStreamModifier.modify({
+
+      onStreamStartedEventCommonHandler: async (file: VinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
+
+        /* [ Approach ] It is better to use different with input case font color.  */
+        Logger.logSuccess({
+          mustOutputIf: this.logging.pathsOfFilesWillBeProcessed,
+          badge: false,
+          title: "｟ □➞ Output ｠",
+          description:
+              `[ ${ this.TASK_TITLE_FOR_LOGGING } ] ` +
+              ImprovedPath.computeRelativePath({
+                basePath: this.projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
+                comparedPath: file.path,
+                alwaysForwardSlashSeparators: true
+              }),
+          compactLayout: true
+        });
+
+        this.processedFilesCountDuringCurrentRun++;
+
+        return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+      },
+
+      onStreamEndedEventHandler: async (): Promise<void> => {
+
+        /* [ Approach ] It is better to use different with input case font color.  */
+        Logger.logSuccess({
+          mustOutputIf: this.logging.quantityOfFilesWillBeProcessed,
+          badge: false,
+          title: this.TASK_TITLE_FOR_LOGGING,
+          description: `${ this.processedFilesCountDuringCurrentRun } file(s) has been processed`,
           compactLayout: true
         });
 

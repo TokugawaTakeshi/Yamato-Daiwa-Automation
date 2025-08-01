@@ -18,6 +18,10 @@ selectiveExecutions:
 
       $heading: "<code>$distributablePackageJSON_Generating</code> — Generating of \"package.json\" for Distributive"
 
+    dockerSetupID:
+
+      $heading: "<code>$dockerSetupID</code> — Docker Setup ID"
+
 publicDirectoriesRelativePaths:
 
   $heading: "<code>$publicDirectoriesRelativePaths</code> — Public Directories Relative Paths"

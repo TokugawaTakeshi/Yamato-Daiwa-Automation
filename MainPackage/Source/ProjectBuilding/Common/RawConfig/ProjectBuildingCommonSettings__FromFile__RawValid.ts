@@ -13,20 +13,26 @@ import { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
 type ProjectBuildingCommonSettings__FromFile__RawValid = Readonly<{
   selectiveExecutions?: ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecutions;
   publicDirectoriesRelativePaths?: Readonly<{ [projectBuildingMode: string]: string | undefined; }>;
+  filesWatching?: ProjectBuildingCommonSettings__FromFile__RawValid.FilesWatching;
 }>;
 
 
 namespace ProjectBuildingCommonSettings__FromFile__RawValid {
 
+  /* ━━━ Types ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ┅┅┅ Selective Executions ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   export type SelectiveExecutions = Readonly<{ [selectiveExecutionID: string]: SelectiveExecution | undefined; }>;
 
   export type SelectiveExecution = Readonly<{
     tasksAndSourceFilesSelection: ProjectBuilderTasksAndSourceFilesSelection;
     browserLiveReloadingSetupID?: string;
     distributablePackageJSON_Generating?: boolean;
+    dockerSetupID?: string;
   }>;
 
-  type ProjectBuilderTasksAndSourceFilesSelection = Readonly<{
+
+  /* ┅┅┅ Project Builder Tasks and Source Files Selection ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+  export type ProjectBuilderTasksAndSourceFilesSelection = Readonly<{
     [ProjectBuildingTasksIDsForConfigFile.markupProcessing]?: ReadonlyArray<string>;
     [ProjectBuildingTasksIDsForConfigFile.stylesProcessing]?: ReadonlyArray<string>;
     [ProjectBuildingTasksIDsForConfigFile.ECMA_ScriptLogicProcessing]?: ReadonlyArray<string>;
@@ -36,6 +42,29 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
     [ProjectBuildingTasksIDsForConfigFile.videosProcessing]?: ReadonlyArray<string>;
     [ProjectBuildingTasksIDsForConfigFile.plainCopying]?: ReadonlyArray<string>;
   }>;
+
+
+  /* ┅┅┅ FilesWatching ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+  export type FilesWatching = Readonly<{
+    relativePathsOfExcludedFiles?: ReadonlyArray<string>;
+    relativePathsOfExcludeDirectories?: ReadonlyArray<string>;
+    buildingModeDependent?: Readonly<{
+      [
+        projectBuildingMode in
+            ConsumingProjectBuildingModes.staticPreview |
+            ConsumingProjectBuildingModes.localDevelopment
+      ]: FilesWatching.BuildingModeDependent;
+    }>;
+  }>;
+
+  export namespace FilesWatching {
+
+    export type BuildingModeDependent = Readonly<{
+      relativePathsOfExcludedFiles?: ReadonlyArray<string>;
+      relativePathsOfExcludeDirectories?: ReadonlyArray<string>;
+    }>;
+
+  }
 
 
   export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
@@ -53,6 +82,7 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
       value: {
 
         type: Object,
+
         properties: {
 
           $tasksAndSourceFilesSelection: {
@@ -108,7 +138,8 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
             newName: "browserLiveReloadingSetupID",
             type: String,
             isUndefinedForbidden: false,
-            isNullForbidden: true
+            isNullForbidden: true,
+            minimalCharactersCount: 1
           },
 
           $distributablePackageJSON_Generating: {
@@ -116,9 +147,18 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
             type: Boolean,
             isUndefinedForbidden: false,
             isNullForbidden: true
+          },
+
+          $dockerSetupID: {
+            newName: "dockerSetupID",
+            type: String,
+            isUndefinedForbidden: false,
+            isNullForbidden: true,
+            minimalCharactersCount: 1
           }
 
         }
+
       }
 
     },
@@ -149,6 +189,114 @@ namespace ProjectBuildingCommonSettings__FromFile__RawValid {
       value: {
         type: String,
         minimalCharactersCount: 1
+      }
+
+    },
+
+    $filesWatching: {
+
+      newName: "filesWatching",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $relativePathsOfExcludedFiles: {
+
+          newName: "relativePathsOfExcludedFiles",
+          type: Array,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+          areUndefinedElementsForbidden: false,
+          areNullElementsForbidden: false,
+
+          element: {
+            type: String,
+            minimalCharactersCount: 1
+          }
+
+        },
+
+        $relativePathsOfExcludeDirectories: {
+
+          newName: "relativePathsOfExcludeDirectories",
+          type: Array,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+          areUndefinedElementsForbidden: false,
+          areNullElementsForbidden: false,
+
+          element: {
+            type: String,
+            minimalCharactersCount: 1
+          }
+
+        },
+
+        $buildingModeDependent: {
+
+          newName: "buildingModeDependent",
+          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+          areUndefinedTypeValuesForbidden: true,
+          areNullTypeValuesForbidden: true,
+
+          allowedKeys: [
+            "$staticPreview",
+            "$localDevelopment"
+          ],
+
+          keysRenamings: {
+            $staticPreview: ConsumingProjectBuildingModes.staticPreview,
+            $localDevelopment: ConsumingProjectBuildingModes.localDevelopment
+          },
+
+          value: {
+
+            type: Object,
+
+            properties: {
+
+              $relativePathsOfExcludedFiles: {
+
+                newName: "relativePathsOfExcludedFiles",
+                type: Array,
+                isUndefinedForbidden: false,
+                mustTransformNullToUndefined: true,
+                areUndefinedElementsForbidden: false,
+                areNullElementsForbidden: false,
+
+                element: {
+                  type: String,
+                  minimalCharactersCount: 1
+                }
+
+              },
+
+              $relativePathsOfExcludeDirectories: {
+
+                newName: "relativePathsOfExcludeDirectories",
+                type: Array,
+                isUndefinedForbidden: false,
+                mustTransformNullToUndefined: true,
+                areUndefinedElementsForbidden: false,
+                areNullElementsForbidden: false,
+
+                element: {
+                  type: String,
+                  minimalCharactersCount: 1
+                }
+
+              }
+
+            }
+
+          }
+
+        }
+
       }
 
     }

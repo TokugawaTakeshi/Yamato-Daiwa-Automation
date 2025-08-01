@@ -15,7 +15,6 @@ import {
   Logger,
   InvalidParameterValueError,
   stringifyAndFormatArbitraryValue,
-  isString,
   isNonEmptyArbitraryObject,
   isUndefined,
   isNotUndefined
@@ -54,7 +53,7 @@ class BrowserLiveReloadingSettingsNormalizer {
           browserLiveReloadingSettings__fromFile__rawValid.setups[selectedBrowserLiveReloadingSetupID];
 
       if (isUndefined(actualBrowserLiveReloadingSetup__rawValid)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidParameterValueError({
             customMessage: BrowserLiveReloadingSettingsNormalizer.localization.
                 generateUndefinedBrowserLiveReloadingSetupID_Message({
@@ -95,21 +94,8 @@ class BrowserLiveReloadingSettingsNormalizer {
               { alwaysForwardSlashSeparators: true }
           ),
 
-          ignoredFilesAndDirectoriesRelativePaths: ((): ReadonlyArray<string> => {
-
-            const ignoredFilesAndDirectoriesRelativePaths: ReadonlyArray<string> | string | undefined =
-                actualBrowserLiveReloadingSetup__rawValid.localServer.ignoredFilesAndDirectoriesRelativePaths;
-
-            if (Array.isArray(ignoredFilesAndDirectoriesRelativePaths)) {
-              return ignoredFilesAndDirectoriesRelativePaths;
-            } else if (isString(ignoredFilesAndDirectoriesRelativePaths)) {
-              return [ ignoredFilesAndDirectoriesRelativePaths ];
-            }
-
-
-            return [];
-
-          })(),
+          ignoredFilesAndDirectoriesRelativePaths:
+              actualBrowserLiveReloadingSetup__rawValid.localServer.ignoredFilesAndDirectoriesRelativePaths ?? [],
 
           ...isNotUndefined(actualBrowserLiveReloadingSetup__rawValid.localServer.customPort) ? {
             port: actualBrowserLiveReloadingSetup__rawValid.localServer.customPort

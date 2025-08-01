@@ -74,7 +74,7 @@ class RoutingSettingsNormalizer {
       });
 
       if (!isArbitraryObject(routingLocalization)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage: `Malformed routing localization at "${ routingLocalizationFileAbsolutePath }".`
           }),
@@ -132,7 +132,7 @@ class RoutingSettingsNormalizer {
   ): RoutingSettingsNormalizer.NormalizedRouting.Routes {
 
     if (!isArbitraryObject(rawRoutingOfSpecificDepthLevel)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage: [
             "Malformed routing",
@@ -156,7 +156,7 @@ class RoutingSettingsNormalizer {
       RoutingSettingsNormalizer.routingPathSegments[RoutingSettingsNormalizer.routingPathSegments.length - 1] = routeKey;
 
       if (!isArbitraryObject(rawRoute)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage:
                 `Malformed routing at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }". ` +
@@ -204,7 +204,7 @@ class RoutingSettingsNormalizer {
 
 
     if (!isString(rawURI)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage:
               `Malformed routing at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }.$URI". ` +
@@ -221,7 +221,7 @@ class RoutingSettingsNormalizer {
     if (URI_Workpiece.startsWith("`")) {
 
       if (isUndefined(localization)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage:
                 `Malformed routing at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }.$URI". ` +
@@ -262,7 +262,7 @@ class RoutingSettingsNormalizer {
               matching.namedCapturingGroups.variable
             );
 
-            if (!isString(variableSubstitution) && !isNumber(variableSubstitution)) {
+            if (!isString(variableSubstitution) && !isNumber(variableSubstitution, { mustConsiderNaN_AsNumber: false })) {
               return null;
             }
 
@@ -279,7 +279,7 @@ class RoutingSettingsNormalizer {
         const localeDependentURI: unknown = getObjectPropertySafely(localization.strings, URI_Workpiece);
 
         if (!isString(localeDependentURI)) {
-          Logger.throwErrorAndLog({
+          Logger.throwErrorWithFormattedMessage({
             errorInstance: new InvalidExternalDataError({
               customMessage:
                   `Malformed routing at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }.$URI". ` +
@@ -307,7 +307,7 @@ class RoutingSettingsNormalizer {
   ): string {
 
     if (!isString(rawHeading)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage: [
             `Malformed routing at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }.$heading".`,
@@ -325,7 +325,7 @@ class RoutingSettingsNormalizer {
     if (headingWorkpiece.startsWith("`")) {
 
       if (isEitherUndefinedOrNull(localization)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage:
                 `Malformed routing at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }.$heading".` +
@@ -352,7 +352,7 @@ class RoutingSettingsNormalizer {
       const localizedHeading: unknown = getObjectPropertySafely(localization.strings, headingWorkpiece);
 
       if (!isString(localizedHeading)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage: [
               `Malformed localized heading at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }.$heading".`,
@@ -385,7 +385,7 @@ class RoutingSettingsNormalizer {
     RoutingSettingsNormalizer.routingPathSegments.push("$sectioning");
 
     if (!isString(parentRouteURI)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage:
               `The sectioning at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }" has been defined ` +
@@ -399,7 +399,7 @@ class RoutingSettingsNormalizer {
 
 
     if (!isNonEmptyString(rawSectioningSpecification.$specificationFileRelativePath)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage:
               `Malformed routing at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }.` +
@@ -436,7 +436,7 @@ class RoutingSettingsNormalizer {
 
     } catch (error: unknown) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage:
               "The error has occurred during the reading of sectioning file at " +
@@ -452,7 +452,7 @@ class RoutingSettingsNormalizer {
     RoutingSettingsNormalizer.cachedAbsolutePathsOfSectioning.add(rawSectioningSchemaFileAbsolutePath);
 
     if (!isArbitraryObject(rawSectioningSchema)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage:
               `Malformed sectioning at "${ rawSectioningSpecification.$specificationFileRelativePath }". ` +
@@ -467,7 +467,7 @@ class RoutingSettingsNormalizer {
     if (isArbitraryObject(rawSectioningSpecification.$localizations)) {
 
       if (isUndefined(localization)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage:
                 "The $localizations has been specified for sectioning " +
@@ -486,7 +486,7 @@ class RoutingSettingsNormalizer {
       RoutingSettingsNormalizer.routingPathSegments.push("$localizations", localization.locale);
 
       if (!isString(targetLocalizationFileRelativePath)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage:
                 "Invalid path to sectioning localization at " +
@@ -517,7 +517,7 @@ class RoutingSettingsNormalizer {
 
       } catch (error: unknown) {
 
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new FileReadingFailedError({ filePath: targetLocalizationFileAbsolutePath }),
           title: FileReadingFailedError.localization.defaultTitle,
           occurrenceLocation: "RoutingSettingsNormalizer.normalizeSectioning(...parameters)",
@@ -530,7 +530,7 @@ class RoutingSettingsNormalizer {
       RoutingSettingsNormalizer.cachedAbsolutePathsOfSectioning.add(targetLocalizationFileAbsolutePath);
 
       if (!isArbitraryObject(sectioningRawLocalization)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage: `Malformed sectioning localization at "${ targetLocalizationFileAbsolutePath }".`
           }),
@@ -581,7 +581,7 @@ class RoutingSettingsNormalizer {
   ): RoutingSettingsNormalizer.NormalizedRouting.Sectioning {
 
     if (!isArbitraryObject(rawSectioningOfSpecificDepthLevel)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage:
             `Malformed routing at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }". ` +
@@ -606,7 +606,7 @@ class RoutingSettingsNormalizer {
       RoutingSettingsNormalizer.routingPathSegments[RoutingSettingsNormalizer.routingPathSegments.length - 1] = sectionKey;
 
       if (!isArbitraryObject(sectionRawMetadata)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage:
               `Malformed sectioning at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }".` +
@@ -619,7 +619,7 @@ class RoutingSettingsNormalizer {
 
 
       if (!isString(sectionRawMetadata.$anchor)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage:
                 `Malformed sectioning at "${ RoutingSettingsNormalizer.routingPathSegments.join(".") }". ` +

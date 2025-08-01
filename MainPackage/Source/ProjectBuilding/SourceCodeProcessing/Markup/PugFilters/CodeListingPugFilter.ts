@@ -27,7 +27,8 @@ abstract class CodeListingPugFilter {
         type: Number,
         isUndefinedForbidden: false,
         isNullForbidden: true,
-        numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+        numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+        isNaN_Forbidden: true
       },
       indentationString: {
         type: String,
@@ -47,7 +48,7 @@ abstract class CodeListingPugFilter {
         RawObjectDataProcessor.process(rawOptions, CodeListingPugFilter.optionsSpecification);
 
     if (rawOptionsProcessingResult.isRawDataInvalid) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage: "One or more invalid options found for \"CodeListing\" pug filer.\n" +
               RawObjectDataProcessor.formatValidationErrorsList(rawOptionsProcessingResult.validationErrorsMessages)

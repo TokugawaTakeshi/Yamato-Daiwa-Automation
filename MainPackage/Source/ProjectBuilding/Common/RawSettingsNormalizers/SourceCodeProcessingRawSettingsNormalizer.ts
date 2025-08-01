@@ -28,7 +28,7 @@ import { ImprovedPath, ImprovedGlob } from "@yamato-daiwa/es-extensions-nodejs";
 
 abstract class SourceCodeProcessingRawSettingsNormalizer {
 
-  protected readonly abstract supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+  protected readonly abstract supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
 
   protected readonly projectBuildingCommonSettings__normalized: ProjectBuildingCommonSettings__Normalized;
 

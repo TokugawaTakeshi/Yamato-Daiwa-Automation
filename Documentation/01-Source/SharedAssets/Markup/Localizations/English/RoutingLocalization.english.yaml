@@ -57,6 +57,10 @@ functionality:
 
     $heading: "Distributable package.json Generating"
 
+  dockerIntegration:
+
+    $heading: "Docker Integration"
+
 configuration:
 
   $heading: "Configuration"
@@ -89,9 +93,9 @@ configuration:
 
     $heading: "<code>$browserLiveReloading</code> — Browser Live Reloading Settings"
 
-  outputPackageJSON_Generating:
+  dockerLaunching:
 
-    $heading: "Output package.json Generating"
+    $heading: "<code>$dockerLaunching</code> — Docker launching"
 
 consoleLineInterface:
 

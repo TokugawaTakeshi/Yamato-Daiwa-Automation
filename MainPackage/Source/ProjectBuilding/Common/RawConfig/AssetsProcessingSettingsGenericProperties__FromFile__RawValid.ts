@@ -58,9 +58,10 @@ namespace AssetsProcessingSettingsGenericProperties__FromFile__RawValid {
         $periodBetweenFileUpdatingAndRebuildingStarting__seconds: {
           newName: "periodBetweenFileUpdatingAndRebuildingStarting__seconds",
           type: Number,
+          numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+          isNaN_Forbidden: true,
           isUndefinedForbidden: false,
-          isNullForbidden: true,
-          numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+          isNullForbidden: true
         }
 
       }

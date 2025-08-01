@@ -20,12 +20,12 @@ import AudiosProcessingSettings__FromFile__RawValid from
     "@AudiosProcessing/AudiosProcessingSettings__FromFile__RawValid";
 import PlainCopyingSettings__FromFile__RawValid from
     "@ProjectBuilding/PlainCopying/PlainCopyingSettings__FromFile__RawValid";
-import FilesWatchingSettings__FromFile__RawValid from
-    "@ProjectBuilding/FilesWatching/FilesWatchingSettings__FromFile__RawValid";
 import BrowserLiveReloadingSettings__FromFile__RawValid from
     "@BrowserLiveReloading/BrowserLiveReloadingSettings__FromFile__RawValid";
 import OutputPackageJSON_GeneratingSettings__FromFile__RawValid from
     "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettings__FromFile__RawValid";
+import DockerComposeSettings__FromFile__RawValid from
+    "@ProjectBuilding/DockerCompose/DockerComposeSettings__FromFile__RawValid";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
@@ -46,10 +46,11 @@ type ProjectBuildingConfig__FromFile__RawValid = {
 
   [ProjectBuildingTasksIDsForConfigFile.plainCopying]?: PlainCopyingSettings__FromFile__RawValid;
 
-  [ProjectBuildingTasksIDsForConfigFile.filesWatching]?: FilesWatchingSettings__FromFile__RawValid;
   [ProjectBuildingTasksIDsForConfigFile.browserLiveReloading]?: BrowserLiveReloadingSettings__FromFile__RawValid;
 
   [ProjectBuildingTasksIDsForConfigFile.outputPackageJSON_Generating]?: OutputPackageJSON_GeneratingSettings__FromFile__RawValid;
+
+  [ProjectBuildingTasksIDsForConfigFile.dockerLaunching]: DockerComposeSettings__FromFile__RawValid;
 
 };
 
@@ -146,14 +147,6 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
             properties: PlainCopyingSettings__FromFile__RawValid.propertiesSpecification
           },
 
-          $filesWatching: {
-            newName: "filesWatching",
-            type: Object,
-            isUndefinedForbidden: false,
-            mustTransformNullToUndefined: true,
-            properties: FilesWatchingSettings__FromFile__RawValid.propertiesSpecification
-          },
-
           $browserLiveReloading: {
             newName: "browserLiveReloading",
             type: Object,
@@ -168,6 +161,13 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
             isUndefinedForbidden: false,
             mustTransformNullToUndefined: true,
             properties: OutputPackageJSON_GeneratingSettings__FromFile__RawValid.propertiesSpecification
+          },
+
+          $dockerLaunching: {
+            newName: "dockerLaunching",
+            ...DockerComposeSettings__FromFile__RawValid.propertiesSpecification,
+            undefinedValueSubstitution: {},
+            mustTransformNullToUndefined: true
           }
 
         }

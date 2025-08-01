@@ -5,7 +5,8 @@ import type OutputDirectoryPathTransformationsSettings__Normalized from
 namespace SourceCodeProcessingGenericProperties__Normalized {
 
   export type Common = Readonly<{
-    supportedSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+    supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlySet<string>;
+    supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles: ReadonlySet<string>;
     supportedOutputFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
   }>;
 

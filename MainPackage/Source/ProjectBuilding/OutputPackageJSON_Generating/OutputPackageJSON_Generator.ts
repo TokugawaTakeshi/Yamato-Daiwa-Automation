@@ -8,7 +8,7 @@ import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/Pro
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import FileSystem from "fs";
 import { isUndefined } from "@yamato-daiwa/es-extensions";
-import replaceLinesSeparators from "@UtilsIncubator/Strings/replaceLinesSeparators";
+import replaceLinesSeparators from "@Incubators/@yamato-daiwa/es-extensions/Strings/replaceLinesSeparators";
 
 
 export default class OutputPackageJSON_Generator {

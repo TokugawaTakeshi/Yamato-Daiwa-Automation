@@ -84,7 +84,7 @@ export default class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
     super({
       projectBuildingMasterConfigRepresentative,
       associatedAssetsProcessingSettingsRepresentative: fontsProcessingSettingsRepresentative,
-      taskTitleForLogging: "Fonts processing",
+      taskTitleForLogging: "Fonts Processing",
       waitingForSubsequentFilesWillSavedPeriod__seconds: fontsProcessingSettingsRepresentative.assetsProcessingCommonSettings.
           periodBetweenFileUpdatingAndRebuildingStarting__seconds
     });
@@ -106,7 +106,7 @@ export default class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
         src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
 
         pipe(super.handleErrorIfItWillOccur()).
-        pipe(super.logProcessedFilesIfMust()).
+        pipe(super.logInputFilesIfMust()).
 
         pipe(
           GulpStreamModifier.modifyForSingleVinylFileSubtype({
@@ -125,6 +125,8 @@ export default class FontsProcessor extends GulpStreamsBasedAssetsProcessor<
             onStreamStartedEventHandler: FontsProcessor.postProcessFile
           })
         ).
+
+        pipe(super.logOutputFilesIfMust()).
 
         pipe(
           Gulp.dest(

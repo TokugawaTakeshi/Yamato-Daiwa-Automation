@@ -29,7 +29,7 @@
       "@BrowserLiveReloading/*": [ "./Source/ProjectBuilding/BrowserLiveReloading/*" ],
       "@ThirdPartySolutionsSpecialists/*": [ "./Source/ThirdPartySolutionsSpecialists/*" ],
       "@Utils/*": [ "./Source/Utils/*" ],
-      "@UtilsIncubator/*": [ "./Source/UtilsIncubator/*" ]
+      "@Incubators/*": [ "./Source/Incubators/*" ]
     },
 
   }

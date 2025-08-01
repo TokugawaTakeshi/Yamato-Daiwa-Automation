@@ -988,7 +988,7 @@ class ResourcesPointersResolverForHTML {
     }: Readonly<{
       pickedPathOfTargetResourceFile: string;
       sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string>;
-      supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+      supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap: ReadonlyMap<string, string>;
       fileTypeForLogging__singularForm: string;
       fileTypeForLogging__pluralForm: string;
@@ -1040,11 +1040,11 @@ class ResourcesPointersResolverForHTML {
       if (
         isNull(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile) ||
         !supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.
-            includes(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile)
+            has(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile)
       ) {
 
         const possibleAbsolutePathsOfTargetSourceFileWithoutFragment: Array<string> =
-            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.map(
+            Array.from(supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots).map(
               (supportedStylesheetFileNameExtensionWithoutLeadingDot: string): string =>
                   getURI_PartWithoutFragment(
                     appendLastFileNameExtension({

@@ -30,7 +30,7 @@ import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 abstract class AssetsProcessingRawSettingsNormalizer {
 
   protected readonly assetsGroupsIDsSelection: ReadonlyArray<string>;
-  protected readonly supportedEntryPointsSourceFilenameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+  protected readonly supportedEntryPointsSourceFilenameExtensionsWithoutLeadingDots: ReadonlySet<string>;
   protected readonly consumingProjectRootDirectoryAbsolutePath: string;
   protected readonly consumingProjectBuildingMode: ConsumingProjectBuildingModes;
 
@@ -155,7 +155,7 @@ namespace AssetsProcessingRawSettingsNormalizer {
     consumingProjectRootDirectoryAbsolutePath: string;
     consumingProjectBuildingMode: ConsumingProjectBuildingModes;
     assetsGroupsIDsSelection?: ReadonlyArray<string>;
-    supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+    supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlySet<string>;
   }>;
 }
 

@@ -186,7 +186,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
     super({
       projectBuildingMasterConfigRepresentative,
-      taskTitleForLogging: "Markup processing"
+      taskTitleForLogging: "Markup Processing"
     });
 
     this.logging = {
@@ -235,7 +235,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
           })
         ).
 
-        pipe(this.logProcessedFilesIfMust()).
+        pipe(super.logInputFilesIfMust()).
 
         pipe(
           gulpData(
@@ -286,6 +286,8 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
             onStreamStartedEventHandler: this.onOutputHTML_FileReady.bind(this)
           })
         ).
+
+        pipe(super.logOutputFilesIfMust()).
 
         pipe(
           Gulp.dest(

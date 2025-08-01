@@ -22,7 +22,7 @@ import {
   ImprovedPath,
   ObjectDataFilesProcessor
 } from "@yamato-daiwa/es-extensions-nodejs";
-import type Mutable from "@UtilsIncubator/Types/Mutable";
+import type Mutable from "@Incubators/@yamato-daiwa/es-extensions/Types/Mutable";
 
 
 class OutputPackageJSON_GeneratingSettingsNormalizer {

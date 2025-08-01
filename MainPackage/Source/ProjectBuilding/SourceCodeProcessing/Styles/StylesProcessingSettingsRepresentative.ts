@@ -12,14 +12,17 @@ import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/Pro
 import GulpStreamBasedSourceCodeProcessingConfigRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/GulpStreamBasedSourceCodeProcessingConfigRepresentative";
 
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+import { mergeSets } from "@yamato-daiwa/es-extensions";
+
 
 export default class StylesProcessingSettingsRepresentative extends GulpStreamBasedSourceCodeProcessingConfigRepresentative<
   StylesProcessingSettings__Normalized.Common, StylesProcessingSettings__Normalized.EntryPointsGroup
 > {
 
   /* [ Theory ] Below two fields could be even or not. */
-  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
-  public readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
+  public readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
 
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Stylesheet";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Stylesheets";
@@ -54,9 +57,12 @@ export default class StylesProcessingSettingsRepresentative extends GulpStreamBa
     this.loggingSettings = normalizedStylesProcessingSettings.logging;
 
     this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = normalizedStylesProcessingSettings.common.
-        supportedSourceFileNameExtensionsWithoutLeadingDots;
-    this.actualFileNameExtensionsWithoutLeadingDots = normalizedStylesProcessingSettings.common.
-        supportedSourceFileNameExtensionsWithoutLeadingDots;
+        supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots;
+
+    this.actualFileNameExtensionsWithoutLeadingDots = mergeSets(
+      this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+      normalizedStylesProcessingSettings.common.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles
+    );
 
     this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS = normalizedStylesProcessingSettings.common.
         secondsBetweenFileUpdatingAndStartingOfRebuilding;

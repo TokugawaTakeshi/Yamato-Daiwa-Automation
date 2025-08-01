@@ -36,7 +36,7 @@ export default class TypeScriptTypesChecker {
   private readonly projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
   private readonly ecmaScriptLogicProcessingSettingsRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
 
-  private waitingForNextWithRelatedFiles: NodeJS.Timeout | null = null;
+  private waitingForNextEventWithRelatedFiles: NodeJS.Timeout | null = null;
 
 
   public static provideCheckingIfMust(
@@ -82,7 +82,7 @@ export default class TypeScriptTypesChecker {
       }).
           addOnAnyEventRelatedWithActualFilesHandler({
             handlerID: "ON_ANY_EVENT_RELATED_WITH_ACTUAL_FILES_HANDLER--BY_TYPE_SCRIPT_TYPES_CHECKER",
-            handler: this.onAnyEventRelatedWithActualFiles.bind(this)
+            handler: this.onAnyEventRelatedWithRelatedFiles.bind(this)
           });
 
     }
@@ -93,7 +93,7 @@ export default class TypeScriptTypesChecker {
         );
 
     if (isNull(vueTSC_ExecutableFileAbsolutePath)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new UnexpectedEventError("File to \"vue-tsc\" executable not found"),
         title: UnexpectedEventError.localization.defaultTitle,
         occurrenceLocation: "TypeScriptTypesChecker.constructor(compoundParameter)"
@@ -106,14 +106,14 @@ export default class TypeScriptTypesChecker {
   }
 
 
-  private onAnyEventRelatedWithActualFiles(): void {
+  private onAnyEventRelatedWithRelatedFiles(): void {
 
     clearTimeout(
-      nullToUndefined(this.waitingForNextWithRelatedFiles)
+      nullToUndefined(this.waitingForNextEventWithRelatedFiles)
     );
 
 
-    this.waitingForNextWithRelatedFiles = setTimeout(
+    this.waitingForNextEventWithRelatedFiles = setTimeout(
       (): void => {
         this.checkTypes().catch(Logger.logPromiseError);
       },
@@ -132,6 +132,28 @@ export default class TypeScriptTypesChecker {
           (error: ChildProcess.ExecException | null, stdout: string): void => {
 
             if (isNotNull(error)) {
+
+              if (error.message.includes("Cannot find module")) {
+
+                Logger.logError({
+                  errorType: "TypeScriptTypeCheckingError",
+                  title: "TypeScript Types Checking Failed",
+                  description: "The reference to unexisting module has terminated the TypeScript types checking",
+                  occurrenceLocation: "typeScriptTypesChecker.checkTypes",
+                  caughtError: error
+                });
+
+                if (this.projectBuildingMasterConfigRepresentative.isProductionLikeBuildingMode) {
+                  reject(error);
+                  return;
+                }
+
+
+                resolve();
+                return;
+
+              }
+
 
               Logger.logErrorLikeMessage({
                 title: "TypeScript Type Checking, Error(s) Detected",
@@ -186,7 +208,8 @@ export default class TypeScriptTypesChecker {
           [
             consumingProjectRootDirectoryAbsolutePath,
             "node_modules",
-            ".bin",
+            "vue-tsc",
+            "bin",
             "vue-tsc.js"
           ],
           { alwaysForwardSlashSeparators: true }

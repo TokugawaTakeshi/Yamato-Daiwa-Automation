@@ -27,7 +27,7 @@ import {
   appendLastFileNameExtension,
   removeAllFileNameExtensions,
   stringifyAndFormatArbitraryValue,
-  removeMultipleElementsFromSetByPredicate,
+  removeSetElementsByPredicates,
   isArbitraryObject,
   isNonEmptyString,
   isUndefined,
@@ -38,7 +38,7 @@ import {
   PoliteErrorsMessagesBuilder
 } from "@yamato-daiwa/es-extensions";
 import type { ArbitraryObject, WarningLog } from "@yamato-daiwa/es-extensions";
-import isSubdirectory from "@UtilsIncubator/NodeJS/isSubdirectory";
+import isSubdirectory from "@Incubators/@yamato-daiwa/es-extensions-nodejs/isSubdirectory";
 import { ObjectDataFilesProcessor, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 /* ─── Localization ───────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -52,8 +52,8 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
       markupProcessingRawSettingsNormalizerLocalization__english;
 
 
-  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string> =
-      MarkupProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots;
+  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string> =
+      MarkupProcessingRestrictions.supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots;
 
 
   private readonly markupProcessingSettings__fromFile__rawValid: MarkupProcessingSettings__FromFile__RawValid;
@@ -86,8 +86,11 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
       common: {
 
-        supportedSourceFileNameExtensionsWithoutLeadingDots:
-            MarkupProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+        supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots:
+            MarkupProcessingRestrictions.supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots,
+
+        supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles:
+            MarkupProcessingRestrictions.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles,
 
         supportedOutputFileNameExtensionsWithoutLeadingDots:
             MarkupProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots,
@@ -339,7 +342,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
     } catch (error: unknown) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new FileReadingFailedError({
           customMessage: MarkupProcessingRawSettingsNormalizer.localization.
               generateStaticPreviewStateDependentPagesVariationsSpecificationFileReadingFailedMessage({
@@ -392,7 +395,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
       });
 
       if (!isArbitraryObject(stateDependentPageVariationsData)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage: MarkupProcessingRawSettingsNormalizer.localization.
               generateInvalidValueOfStaticPreviewStateDependentPagesVariationsSpecificationAssociativeArrayMessage({
@@ -411,7 +414,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
 
       if (!isNonEmptyString(stateDependentPageVariationsData.$stateObjectTypeVariableName)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableNameMessage({
               targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
@@ -428,7 +431,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
 
       if (!isArbitraryObject(stateDependentPageVariationsData.$stateDependentVariations)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidExternalDataError({
             customMessage: MarkupProcessingRawSettingsNormalizer.localization.
             generateInvalidPageStateDependentVariationsSpecificationMessage({
@@ -463,7 +466,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
             `${ removeAllFileNameExtensions(markupSourceFileFileAbsolutePath) }${ fineNamePostfix }.pug`;
 
         if (!isArbitraryObject(stateData)) {
-          Logger.throwErrorAndLog({
+          Logger.throwErrorWithFormattedMessage({
             errorInstance: new InvalidExternalDataError({
               customMessage: MarkupProcessingRawSettingsNormalizer.localization.generateInvalidPageStateVariableMessage({
                 targetMarkupFileRelativePath: markupEntryPointSourceFileRelativePath,
@@ -523,7 +526,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
       } catch (error: unknown) {
 
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new FileReadingFailedError({
             filePath: importFromStaticDataFile.fileRelativePath
           }),
@@ -792,7 +795,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
             concat(
               Array.from(
-                removeMultipleElementsFromSetByPredicate({
+                removeSetElementsByPredicates({
                   targetSet: this.unusedCommonlyExcludedFromLocalizationEntryPointsSourceFilesAbsolutePaths,
                   predicate: (commonlyExcludedFromLocalizationEntryPointsSourceFileAbsolutePath: string): boolean =>
                       isSubdirectory({
@@ -825,7 +828,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
     } catch (error: unknown) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new FileReadingFailedError({
           customMessage: `Unable to read the file with string resources at "${ stringResourcesFileAbsolutePath }".`
         }),
@@ -838,7 +841,7 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
     }
 
     if (!isArbitraryObject(stringResources)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidExternalDataError({
           customMessage: `The content of string resources files "${ stringResourcesFileAbsolutePath }" is not an object.`
         }),

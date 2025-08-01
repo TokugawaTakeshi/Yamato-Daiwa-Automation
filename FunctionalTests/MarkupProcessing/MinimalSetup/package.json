@@ -2,7 +2,7 @@
   "name": "@yamato-daiwa/automation-functional_testing-markup_processing_minimal",
   "private": true,
   "scripts": {
-    "Production Building": "rimraf ProductionBuilding & yda build --mode PRODUCTION"
+    "Production Building": "rimraf ProductionBuilding && yda build --mode PRODUCTION"
   },
   "dependencies": {
     "@yamato-daiwa/automation": "../../../MainPackage"

@@ -86,7 +86,7 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
       );
 
       if (targetOutputFileSearchResults.length === 0) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new AlgorithmMismatchError(`入点源ファイル:${ sourceFileAbsolutePath }に該当している出力ファイルが見つけられなかった。`),
           occurrenceLocation:
               "ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator" +
@@ -94,7 +94,7 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
           title: AlgorithmMismatchError.localization.defaultTitle
         });
       } else if (targetOutputFileSearchResults.length > 1) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new AlgorithmMismatchError(
               `入点源ファイル:${ sourceFileAbsolutePath }に該当している出力ファイルが複数件が発見された：\n` +
               `${ stringifyAndFormatArbitraryValue(targetOutputFileSearchResults) }\n` +

@@ -1,7 +1,7 @@
 /* eslint-disable no-inline-comments, @stylistic/no-multi-spaces -- Will comment with which technology each exclusion related. */
 
 
-/* [ Theory ] All directories and files which names started form dot will be ignored by Chokidar. */
+/* [ Theory ] Chokidar will ignore all directories and files which names started from dot. */
 export default {
   relativePathsOfExcludeFiles: [
     "package-lock.json",  // NPM

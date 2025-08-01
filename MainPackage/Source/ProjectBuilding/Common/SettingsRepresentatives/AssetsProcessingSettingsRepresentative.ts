@@ -46,7 +46,7 @@ export default abstract class AssetsProcessingSettingsRepresentative<
   public readonly actualAssetsSourceFilesAbsolutePaths: ReadonlyArray<string>;
   public readonly actualOutputFilesGlobSelectors: ReadonlyArray<string>;
 
-  public readonly supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+  public readonly supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlySet<string>;
 
 
   /* ━━━ Protected fields ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -128,7 +128,8 @@ export default abstract class AssetsProcessingSettingsRepresentative<
     if (
       isNumber(
         relevantAssetsGroupNormalizedSettings.outputPathTransformations.
-            segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved
+            segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved,
+        { mustConsiderNaN_AsNumber: true }
       )
     ) {
       outputDirectoryAbsolutePathForTargetSourceFile =
@@ -192,6 +193,9 @@ export default abstract class AssetsProcessingSettingsRepresentative<
               ImprovedGlob.getFilesAbsolutePathsSynchronously([ assetsGroupSettings.sourceFilesGlobSelector ])
         );
 
+    this.supportedSourceFilesNamesExtensionsWithoutLeadingDots = this.assetsProcessingCommonSettings.
+        supportedSourceFilesNamesExtensionsWithoutLeadingDots;
+
     this.actualOutputFilesGlobSelectors = Array.from(this.relevantAssetsGroupsSettingsMappedByGroupID.values()).
         map(
           (assetsGroupSettings__normalized: SpecificAssetsGroupNormalizedSettings): string =>
@@ -200,9 +204,6 @@ export default abstract class AssetsProcessingSettingsRepresentative<
                 fileNamesExtensions: this.supportedSourceFilesNamesExtensionsWithoutLeadingDots
               })
         );
-
-    this.supportedSourceFilesNamesExtensionsWithoutLeadingDots = this.assetsProcessingCommonSettings.
-        supportedSourceFilesNamesExtensionsWithoutLeadingDots;
 
   }
 

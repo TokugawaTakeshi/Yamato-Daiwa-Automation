@@ -84,7 +84,7 @@ export default class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
     super({
       projectBuildingMasterConfigRepresentative,
       associatedAssetsProcessingSettingsRepresentative: videosProcessingConfigRepresentative,
-      taskTitleForLogging: "Videos processing",
+      taskTitleForLogging: "Videos Processing",
       waitingForSubsequentFilesWillSavedPeriod__seconds: videosProcessingConfigRepresentative.assetsProcessingCommonSettings.
           periodBetweenFileUpdatingAndRebuildingStarting__seconds
     });
@@ -106,7 +106,7 @@ export default class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
         src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
 
         pipe(super.handleErrorIfItWillOccur()).
-        pipe(super.logProcessedFilesIfMust()).
+        pipe(super.logInputFilesIfMust()).
 
         pipe(
           GulpStreamModifier.modifyForSingleVinylFileSubtype({
@@ -125,6 +125,8 @@ export default class VideosProcessor extends GulpStreamsBasedAssetsProcessor<
             onStreamStartedEventHandler: VideosProcessor.postProcessFile
           })
         ).
+
+        pipe(super.logOutputFilesIfMust()).
 
         pipe(
           Gulp.dest(

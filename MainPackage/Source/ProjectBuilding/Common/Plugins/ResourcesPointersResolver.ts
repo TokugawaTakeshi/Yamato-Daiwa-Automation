@@ -40,7 +40,7 @@ abstract class ResourcesPointersResolver {
     }: Readonly<{
       pickedPathOfTargetResourceFile: string;
       sourceFilesTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string>;
-      supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+      supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap: ReadonlyMap<string, string>;
       logging: Readonly<{
         parentFileAbsolutePath: string;
@@ -103,11 +103,11 @@ abstract class ResourcesPointersResolver {
       if (
         isNull(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile) ||
         !supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.
-            includes(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile)
+            has(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile)
       ) {
 
         const possibleAbsolutePathsOfTargetSourceFileWithoutFragment: Array<string> =
-            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.map(
+            Array.from(supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots).map(
               (supportedStylesheetFileNameExtensionWithoutLeadingDot: string): string =>
                   getURI_PartWithoutFragment(
                     appendLastFileNameExtension({

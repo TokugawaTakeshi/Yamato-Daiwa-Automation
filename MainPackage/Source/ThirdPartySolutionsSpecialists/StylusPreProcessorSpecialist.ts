@@ -7,7 +7,7 @@ export default class StylusPreProcessorSpecialist {
     /^ *@(?:import|require) +['"]((?:\w|-|\.|\/)+?)['"] *;? *$/gmu
   ];
 
-  public static readonly implicitFilesNamesExtensionsWithoutLeadingDotsOfPartials: Array<string> =
-      [ "styl", "stylus", "css" ];
+  public static readonly implicitFilesNamesExtensionsWithoutLeadingDotsOfPartials: ReadonlySet<string> =
+      new Set([ "styl", "stylus", "css" ]);
 
 }

@@ -22,7 +22,7 @@ export default class FileNameRevisionPostfixer {
 
 
     if (!(targetFile.contents instanceof Buffer)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new UnexpectedEventError(
           `The 'contents' property of target Vynil file '${ targetFile.path }' is not an instance of 'Buffer'.` +
           "Because usually it is the instance of Buffer, explorations are required."
