@@ -23,8 +23,9 @@ import {
   extractFileNameWithoutLastExtension,
   insertSubstringIf,
   replaceDoubleBackslashesWithForwardSlashes,
-  isNotUndefined,
-  getExpectedToBeNonUndefinedMapValue
+  mergeSets,
+  getExpectedToBeNonUndefinedMapValue,
+  isNotUndefined
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
@@ -34,8 +35,8 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
 > {
 
   /* [ Theory ] Below two fields could be even or not. */
-  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
-  public readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
+  public readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
 
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Markup";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Markup";
@@ -80,9 +81,12 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
     this.loggingSettings = normalizedMarkupProcessingSettings.logging;
 
     this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = normalizedMarkupProcessingSettings.common.
-        supportedSourceFileNameExtensionsWithoutLeadingDots;
-    this.actualFileNameExtensionsWithoutLeadingDots = normalizedMarkupProcessingSettings.common.
-        supportedSourceFileNameExtensionsWithoutLeadingDots;
+        supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots;
+
+    this.actualFileNameExtensionsWithoutLeadingDots = mergeSets(
+      this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+      normalizedMarkupProcessingSettings.common.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles
+    );
 
     this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS = normalizedMarkupProcessingSettings.common.
         secondsBetweenFileUpdatingAndStartingOfRebuilding;

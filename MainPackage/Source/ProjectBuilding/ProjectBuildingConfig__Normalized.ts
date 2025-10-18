@@ -9,8 +9,8 @@ import type FontsProcessingSettings__Normalized from "@FontsProcessing/FontsProc
 import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosProcessingSettings__Normalized";
 import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosProcessingSettings__Normalized";
 import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
-import type FilesWatchingSettings__Normalized from "@ProjectBuilding/FilesWatching/FilesWatchingSettings__Normalized";
 import type BrowserLiveReloadingSettings__Normalized from "@BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
+import type DockerComposeSettings__Normalized from "@ProjectBuilding/DockerCompose/DockerComposeSettings__Normalized";
 import type OutputPackageJSON_GeneratingSettings__Normalized from
     "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettings__Normalized";
 
@@ -30,8 +30,8 @@ type ProjectBuildingConfig__Normalized = Readonly<{
 
   plainCopying?: PlainCopyingSettings__Normalized;
 
-  filesWatching: FilesWatchingSettings__Normalized;
   browserLiveReloading?: BrowserLiveReloadingSettings__Normalized;
+  dockerCompose?: DockerComposeSettings__Normalized;
 
   outputPackageJSON_Generating?: OutputPackageJSON_GeneratingSettings__Normalized;
 

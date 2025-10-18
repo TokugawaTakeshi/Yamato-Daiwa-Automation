@@ -139,7 +139,7 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
 
     super({
       projectBuildingMasterConfigRepresentative,
-      taskTitleForLogging: "Styles processing"
+      taskTitleForLogging: "Styles Processing"
     });
 
     this.logging = {
@@ -166,7 +166,7 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
 
         src(entryPointsSourceFilesAbsolutePaths).
 
-        pipe(this.handleErrorIfItWillOccur()).
+        pipe(super.handleErrorIfItWillOccur()).
 
         pipe(
           GulpStreamModifier.modify({
@@ -182,7 +182,7 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
           )
         ).
 
-        pipe(this.logProcessedFilesIfMust()).
+        pipe(this.logInputFilesIfMust()).
 
         pipe(
           gulpStylus({
@@ -211,10 +211,8 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
                   preset: [
                     "default",
                     {
-                      normalizeWhitespace: !this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode &&
-                          !this.projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
-                      discardComments: !this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode &&
-                          !this.projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode
+                      normalizeWhitespace: !this.projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding,
+                      discardComments: !this.projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding
                     }
                   ]
                 })
@@ -236,6 +234,8 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
             onStreamStartedEventHandler: this.onOutputCSS_FileReady.bind(this)
           })
         ).
+
+        pipe(super.logOutputFilesIfMust()).
 
         pipe(
           Gulp.dest(

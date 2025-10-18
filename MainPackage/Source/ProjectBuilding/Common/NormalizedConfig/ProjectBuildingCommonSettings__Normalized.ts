@@ -16,13 +16,16 @@ type ProjectBuildingCommonSettings__Normalized = Readonly<{
   mustProvideIncrementalBuilding: boolean;
   selectiveExecutionID?: string;
   tasksAndSourceFilesSelection?: ProjectBuildingCommonSettings__Normalized.TasksAndSourceFilesSelection;
+  filesWatching: ProjectBuildingCommonSettings__Normalized.FilesWatching;
   browserLiveReloadingSetupID?: string;
   mustGenerateOutputPackageJSON: boolean;
+  dockerSetupID?: string;
   actualPublicDirectoryAbsolutePath?: string;
 }>;
 
 
 namespace ProjectBuildingCommonSettings__Normalized {
+
   export type TasksAndSourceFilesSelection = Readonly<{
     markupProcessing?: ReadonlyArray<SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID>;
     stylesProcessing?: ReadonlyArray<SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID>;
@@ -33,6 +36,12 @@ namespace ProjectBuildingCommonSettings__Normalized {
     videosProcessing?: ReadonlyArray<AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID>;
     plainCopying?: ReadonlyArray<PlainCopyingSettings__Normalized.FilesGroup.ID>;
   }>;
+
+  export type FilesWatching = Readonly<{
+    excludedFilesGlobSelectors: ReadonlySet<string>;
+    excludedDirectoriesGlobSelectors: ReadonlySet<string>;
+  }>;
+
 }
 
 

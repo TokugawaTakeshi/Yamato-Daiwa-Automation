@@ -52,12 +52,12 @@ import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosP
 import AudiosProcessingRawSettingsNormalizer from "@AudiosProcessing/AudiosProcessingRawSettingsNormalizer";
 import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
 import PlainCopyingRawSettingsNormalizer from "@ProjectBuilding/PlainCopying/PlainCopyingRawSettingsNormalizer";
-import FilesWatchingSettingsNormalizer from "@ProjectBuilding/FilesWatching/FilesWatchingSettingsNormalizer";
 import type BrowserLiveReloadingSettings__Normalized from
     "@BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
 import BrowserLiveReloadingSettingsNormalizer from
     "@BrowserLiveReloading/RawSettingsNormalizer/BrowserLiveReloadingSettingsNormalizer";
-
+import type DockerComposeSettings__Normalized from "@ProjectBuilding/DockerCompose/DockerComposeSettings__Normalized";
+import DockerComposeSettingsNormalizer from "@ProjectBuilding/DockerCompose/DockerComposeSettingsNormalizer";
 import type OutputPackageJSON_GeneratingSettings__Normalized from
     "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettings__Normalized";
 import OutputPackageJSON_GeneratingSettingsNormalizer from
@@ -98,7 +98,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
         projectBuildingConfig__fromFile__rawValid.commonSettings ?? {};
 
     const actualSelectiveExecution: ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution | undefined =
-        ProjectBuilderRawConfigNormalizer.determineActualSelectiveExecutionID({
+        ProjectBuilderRawConfigNormalizer.determineActualSelectiveExecution({
           commonSettings__fromFile__rawValid,
           projectBuildingConfig__fromConsole
         });
@@ -342,13 +342,6 @@ abstract class ProjectBuilderRawConfigNormalizer {
 
       })(),
 
-
-      filesWatching: FilesWatchingSettingsNormalizer.normalize({
-        filesWatchingSettings__fromFile__rawValid:
-            projectBuildingConfig__fromFile__rawValid[ProjectBuildingTasksIDsForConfigFile.filesWatching],
-        projectBuilderCommonSettings__normalized: commonSettings__normalized
-      }),
-
       ...((): { browserLiveReloading?: BrowserLiveReloadingSettings__Normalized; } => {
 
         const browserLiveReloadingSettings__fromFile__rawValid: BrowserLiveReloadingSettings__FromFile__RawValid | undefined =
@@ -369,6 +362,19 @@ abstract class ProjectBuilderRawConfigNormalizer {
             ...isNotUndefined(selectedBrowserLiveReloadingSetupID) ? { selectedBrowserLiveReloadingSetupID } : {}
           })
         };
+
+      })(),
+
+      ...((): Pick<ProjectBuildingConfig__Normalized, "dockerCompose"> => {
+
+        const dockerComposeSettings__normalized: DockerComposeSettings__Normalized | null =
+            DockerComposeSettingsNormalizer.normalize({
+              dockerComposeSettings__fromFile__rawValid:
+                  projectBuildingConfig__fromFile__rawValid[ProjectBuildingTasksIDsForConfigFile.dockerLaunching],
+              commonSettings__normalized
+            });
+
+        return isNotNull(dockerComposeSettings__normalized) ? { dockerCompose: dockerComposeSettings__normalized } : {};
 
       })(),
 
@@ -393,7 +399,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
     ProjectBuilderRawConfigNormalizer.localization = newLocalization;
   }
 
-  private static determineActualSelectiveExecutionID(
+  private static determineActualSelectiveExecution(
     {
       commonSettings__fromFile__rawValid,
       projectBuildingConfig__fromConsole
@@ -414,14 +420,14 @@ abstract class ProjectBuilderRawConfigNormalizer {
     if (isNotUndefined(projectBuildingConfig__fromConsole.selectiveExecutionID)) {
 
       if (isUndefined(selectiveExecutions)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidConsoleCommandError({
             customMessage: ProjectBuilderRawConfigNormalizer.localization.
                 generateNoSelectiveExecutionsHasBeenDefinedErrorMessage({
                   specifiedInConsoleCommandSelectiveExecutionID: projectBuildingConfig__fromConsole.selectiveExecutionID
                 })
           }),
-          occurrenceLocation: "ProjectBuilderRawConfigNormalizer.determineActualSelectiveExecutionID(parametersObject)",
+          occurrenceLocation: "ProjectBuilderRawConfigNormalizer.determineActualSelectiveExecution(parametersObject)",
           title: InvalidParameterValueError.localization.defaultTitle
         });
       }
@@ -430,21 +436,23 @@ abstract class ProjectBuilderRawConfigNormalizer {
       actualSelectiveExecution = selectiveExecutions[projectBuildingConfig__fromConsole.selectiveExecutionID];
 
       if (isUndefined(actualSelectiveExecution)) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidConsoleCommandError({
             customMessage: ProjectBuilderRawConfigNormalizer.localization.
                 generateUndefinedSelectiveExecutionID_ErrorMessage({
                   specifiedInConsoleCommandSelectiveExecutionID: projectBuildingConfig__fromConsole.selectiveExecutionID
                 })
           }),
-          occurrenceLocation: "ProjectBuilderRawConfigNormalizer.determineActualSelectiveExecutionID(parametersObject)",
+          occurrenceLocation: "ProjectBuilderRawConfigNormalizer.determineActualSelectiveExecution(parametersObject)",
           title: InvalidParameterValueError.localization.defaultTitle
         });
       }
+
     }
 
 
     return actualSelectiveExecution;
+
   }
 
 

@@ -100,7 +100,8 @@ export default abstract class GulpStreamBasedSourceCodeProcessingConfigRepresent
 
     if (
       isNumber(
-        relevantEntryPointsGroupSettings.outputPathTransformations.segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved
+        relevantEntryPointsGroupSettings.outputPathTransformations.segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved,
+        { mustConsiderNaN_AsNumber: true }
       )
     ) {
       outputDirectoryAbsolutePathForTargetSourceFile =
@@ -137,7 +138,7 @@ export default abstract class GulpStreamBasedSourceCodeProcessingConfigRepresent
 
 
     if (isUndefined(entryPointsGroupsNormalizedSettingsRelevantForTargetSourceFile)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new UnexpectedEventError(
           `No output entry points group has been fond for file of the path:\n${ targetSourceFileAbsolutePath }`
         ),

@@ -1,9 +1,11 @@
-import addPenultimateFileNameExtension from "@UtilsIncubator/Strings/addPenultimateFileNameExtension";
+import addPenultimateFileNameExtension from "@Incubators/@yamato-daiwa/es-extensions/Strings/addPenultimateFileNameExtension";
 
 
 namespace MarkupProcessingRestrictions {
 
-  export const supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string> = [ "pug" ];
+  export const supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlySet<string> = new Set([ "pug" ]);
+  export const supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles: ReadonlySet<string> = new Set([]);
+
   export const supportedOutputFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string> = [ "html" ];
 
   export enum OutputFormats {

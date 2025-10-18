@@ -20,6 +20,7 @@ type ECMA_ScriptLogicProcessingSettings__Normalized = Readonly<{
     ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
   >;
   localDevelopmentServerOrchestration?: ECMA_ScriptLogicProcessingSettings__Normalized.LocalDevelopmentServerOrchestration;
+  electron?: ECMA_ScriptLogicProcessingSettings__Normalized.Electron;
   logging: ECMA_ScriptLogicProcessingSettings__Normalized.Logging;
 }>;
 
@@ -46,7 +47,14 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
 
   export namespace EntryPointsGroup {
 
-    export type Runtime = Runtime.Browser | Runtime.WebWorker | Runtime.NodeJS | Runtime.Pug;
+    export type Runtime =
+        Runtime.Browser |
+        Runtime.WebWorker |
+        Runtime.NodeJS |
+        Runtime.Pug |
+        Runtime.Electron.MainProcess |
+        Runtime.Electron.RenderingProces |
+        Runtime.Electron.Preload;
 
     export namespace Runtime {
 
@@ -67,6 +75,36 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
       }>;
 
       export type Pug = Readonly<{ type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.pug; }>;
+
+      /* eslint-disable-next-line @typescript-eslint/no-shadow --
+      * Valid TypeScript; no problem will be while invoke `Electron` namespace by correct fully qualified name. */
+      export namespace Electron {
+
+        export type MainProcess = {
+          type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.electronMainProcess;
+          minimalVersion: Readonly<{
+            major: number;
+            minor?: number;
+          }>;
+        };
+
+        export type RenderingProces = {
+          type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.electronRendererProcess;
+          minimalVersion: Readonly<{
+            major: number;
+            minor?: number;
+          }>;
+        };
+
+        export type Preload = {
+          type: ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes.electronPreload;
+          minimalVersion: Readonly<{
+            major: number;
+            minor?: number;
+          }>;
+        };
+
+      }
 
     }
 
@@ -104,6 +142,19 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
     environmentVariables: Readonly<{ [variableName: string]: string; }>;
   }>;
 
+
+  export type Electron = Readonly<{
+    hotReloadingForLocalDevelopmentMode: Electron.HotReloadingForLocalDevelopmentMode;
+  }>;
+
+  export namespace Electron {
+
+    export type HotReloadingForLocalDevelopmentMode = {
+      rootDirectoryAbsolutePath: string;
+      ignoredFilesAndDirectoriesAbsolutePaths: ReadonlyArray<string>;
+    };
+
+  }
 
   export type Logging = Readonly<{
 

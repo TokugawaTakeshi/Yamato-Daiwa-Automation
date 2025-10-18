@@ -352,13 +352,77 @@ block append SpecificContent
 
                 # См. документацию по настройке автоматической перезагрузки браузера
 
+
+    //- ─── `$dockerSetupID` — ID настроек Docker ──────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.dockerSetupID.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.dockerSetupID.$anchor
+    }).Article-Heading4
+
+    p.Article-Paragraph
+      | Имеет отношение к функциональности
+      |
+      +Link--YDF({ internalURI: localizedRouting.functionality.$children.dockerIntegration.$URI }) «интеграция с Docker»
+      | .
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.configurationFile.$children.dockerLaunching.$URI
+      }) API этой функциональности
+      |   позволяет определить #[+Keyword--YDID несколько] #[+Term--YDID пресетов], при этом #[+Keyword--YDID каждому]
+      |   из них #[+Keyword--YDID необходимо] задать идентификатор.
+      | Тогда, если в конкретном #[+Term--YDID выборочном выполнении] затребована функциональность
+      |   #[+ImportantEntity--YDID Docker], то через #[+Term--YDID свойство]
+      |   #[+ImportantEntity__Code--YDID $dockerSetupID] #[+Keyword--YDID требуется] указать
+      |   идентификатор нужного #[+Term--YDID пресета]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML}).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              SelectiveExecution1:
+
+                $tasksAndSourceFilesSelection:
+
+                  # См. выше
+
+                $dockerSetupID: DockerSetup1
+
+              SelectiveExecution2:
+
+                $tasksAndSourceFilesSelection:
+
+                  # См. выше
+
+                $dockerSetupID: DockerSetup2
+
+
+          $dockerLaunching:
+
+            DockerSetup1:
+
+              $composingOptions:
+
+                # См. документацию по настройке запуска Docker
+
+            DockerSetup2:
+
+              $composingOptions:
+
+                # См. документацию по настройке запуска Docker
+
+
     //- ─── `$distributablePackageJSON_Generating` — Генерация файла «package.json» для дистрибутива ───────────────────
     +Heading--YDF({
       level: 4,
       innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
-          $distributablePackageJSON_Generating.$heading,
+          distributablePackageJSON_Generating.$heading,
       HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
-          $distributablePackageJSON_Generating.$anchor
+          distributablePackageJSON_Generating.$anchor
     }).Article-Heading4
 
     +PropertyMetadata--YDF_DK(

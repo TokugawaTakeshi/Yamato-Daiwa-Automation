@@ -489,6 +489,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
                 newName: "secondsBetweenFileUpdatingAndStartingOfRebuilding",
                 type: Number,
                 numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                isNaN_Forbidden: true,
                 isUndefinedForbidden: false,
                 isNullForbidden: true
               },

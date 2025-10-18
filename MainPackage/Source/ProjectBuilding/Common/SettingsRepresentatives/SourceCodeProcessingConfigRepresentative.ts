@@ -16,8 +16,8 @@ export default abstract class SourceCodeProcessingConfigRepresentative<
 > {
 
   /* [ Theory ] Below two fields could be even or not. */
-  public abstract readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
-  public abstract readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+  public abstract readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
+  public abstract readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
 
   public abstract readonly mustLogSourceFilesWatcherEvents: boolean;
 
@@ -44,7 +44,7 @@ export default abstract class SourceCodeProcessingConfigRepresentative<
     if (!Path.isAbsolute(targetFileAbsolutePath)) {
 
       if (__IS_DEVELOPMENT_BUILDING_MODE__) {
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new UnexpectedEventError(
               "\"sourceCodeProcessingConfigRepresentative.isEntryPoint\" works only with absolute paths while " +
                 `the relative path "${ targetFileAbsolutePath }" has been passed.`
@@ -85,11 +85,10 @@ export default abstract class SourceCodeProcessingConfigRepresentative<
   public get actualOutputFilesGlobSelectors(): Array<string> {
     return Array.from(this.relevantEntryPointsGroupsSettings.values()).map(
       (entryPointsGroupNormalizedSettings: EntryPointsGroupSettings__Normalized): string =>
-        ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
-          basicDirectoryPath: entryPointsGroupNormalizedSettings.
-              outputFilesTopDirectoryAbsolutePath,
-          fileNamesExtensions: this.sourceCodeProcessingCommonSettings.supportedOutputFileNameExtensionsWithoutLeadingDots
-      })
+          ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
+            basicDirectoryPath: entryPointsGroupNormalizedSettings.outputFilesTopDirectoryAbsolutePath,
+            fileNamesExtensions: this.sourceCodeProcessingCommonSettings.supportedOutputFileNameExtensionsWithoutLeadingDots
+          })
     );
   }
 

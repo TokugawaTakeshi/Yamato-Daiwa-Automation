@@ -41,7 +41,7 @@ import {
   FileNotFoundError
 } from "@yamato-daiwa/es-extensions-nodejs";
 import { nanoid as generateNanoID } from "nanoid";
-import Stopwatch from "@UtilsIncubator/Stopwatch";
+import Stopwatch from "@Incubators/@yamato-daiwa/es-extensions/Stopwatch";
 
 
 class HTML_Validator {
@@ -96,19 +96,22 @@ class HTML_Validator {
                       type: Number,
                       isUndefinedForbidden: false,
                       isNullForbidden: true,
-                      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+                      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                      isNaN_Forbidden: true
                     },
                     lastColumn: {
                       type: Number,
                       isUndefinedForbidden: false,
                       isNullForbidden: true,
-                      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+                      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                      isNaN_Forbidden: true
                     },
                     firstColumn: {
                       type: Number,
                       isUndefinedForbidden: false,
                       isNullForbidden: true,
-                      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+                      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                      isNaN_Forbidden: true
                     },
                     subType: {
                       type: String,
@@ -134,14 +137,16 @@ class HTML_Validator {
                       isNullForbidden: true,
 
                       /* [ Theory ] The 0 is rare but possible (at least was possible for May 2025). */
-                      numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero
+                      numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero,
+                      isNaN_Forbidden: true
 
                     },
                     hiliteLength: {
                       type: Number,
                       isUndefinedForbidden: false,
                       isNullForbidden: true,
-                      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+                      numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                      isNaN_Forbidden: true
                     }
                   }
                 }
@@ -205,18 +210,21 @@ class HTML_Validator {
                       lineNumber__numerationFrom1: {
                         type: Number,
                         numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                        isNaN_Forbidden: true,
                         isUndefinedForbidden: true,
                         isNullForbidden: true
                       },
                       startingColumnNumber__numerationFrom1: {
                         type: Number,
                         numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero,
+                        isNaN_Forbidden: true,
                         isUndefinedForbidden: true,
                         isNullForbidden: true
                       },
                       endingColumnNumber__numerationFrom1: {
                         type: Number,
                         numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero,
+                        isNaN_Forbidden: true,
                         isUndefinedForbidden: true,
                         isNullForbidden: true
                       },
@@ -735,10 +743,11 @@ class HTML_Validator {
     const codeFragmentBeforeHighlighting: string =
         `${
           cropArray({
+            fromStart: true,
             targetArray: HTML_CodeSplitToLines,
             startingElementNumber__numerationFrom1:
                 numberOfStartingLineWhichWillBeExtractedFromCodeListingForLogging__numerationFrom1,
-            endingElementNumber__numerationFrom1: limitMinimalValue({
+            endingElementNumber__numerationFrom1__including: limitMinimalValue({
               targetNumber: lineNumberOfActualCodeFragment__numerationFrom1 - 1, minimalValue: 1
             }),
             mustThrowErrorIfSpecifiedElementsNumbersAreOutOfRange: false,
@@ -774,9 +783,10 @@ class HTML_Validator {
           })
         }\n` +
         cropArray({
+          fromStart: true,
           targetArray: HTML_CodeSplitToLines,
           startingElementNumber__numerationFrom1: lineNumberOfActualCodeFragment__numerationFrom1 + 1,
-          endingElementNumber__numerationFrom1:
+          endingElementNumber__numerationFrom1__including:
               numberOfEndingLineWhichWillBeExtractedFromCodeListingForLogging__numerationFrom1,
           mustThrowErrorIfSpecifiedElementsNumbersAreOutOfRange: false,
           mutably: false
@@ -1025,8 +1035,8 @@ class HTML_Validator {
     return ImprovedPath.joinPathSegments([
       parentDirectoryAbsolutePath,
       [
-        `${ HTML_Validator.CACHED_VALIDATIONS_RESULTS_FILE_CONSTANT_NAME_PART }.`,
-        ...isUndefined(projectBuildingSelectiveExecutionID) ? [] : [ `${ projectBuildingSelectiveExecutionID }.` ],
+        HTML_Validator.CACHED_VALIDATIONS_RESULTS_FILE_CONSTANT_NAME_PART,
+        ...isUndefined(projectBuildingSelectiveExecutionID) ? [] : [ projectBuildingSelectiveExecutionID ],
         `${ toLowerCamelCase(consumingProjectBuildingMode) }.json`
       ].join(".")
     ]);
@@ -1050,7 +1060,7 @@ class HTML_Validator {
             );
 
     ImprovedFileSystem.writeFileToPossiblyNotExistingDirectory({
-      filePath: this.absolutePathOfParentDirectoryOfCachedValidationsResultsFile,
+      filePath: this.absolutePathOfCachedValidationsResultsFile,
       content: JSON.stringify(cachedValidationsResultsFileContent, null, 2),
       synchronously: true
     });
@@ -1061,7 +1071,7 @@ class HTML_Validator {
   /* ━━━ Routines ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   private static getExpectedToBeInitializedSelfSingleInstance(): HTML_Validator {
     return HTML_Validator.selfSingleInstance ??
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorInstance: new ClassRequiredInitializationHasNotBeenExecutedError({
             className: "HTML_Validator",
             initializingMethodName: "initialize"

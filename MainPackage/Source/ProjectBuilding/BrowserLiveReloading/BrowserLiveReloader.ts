@@ -2,6 +2,9 @@
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type BrowserLiveReloadingSettingsRepresentative from "@BrowserLiveReloading/BrowserLiveReloadingSettingsRepresentative";
 
+/* ─── Shared state ───────────────────────────────────────────────────────────────────────────────────────────────── */
+import MarkupProcessingSharedState from "@MarkupProcessing/MarkupProcessingSharedState";
+
 /* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import BrowserSync from "browser-sync";
 import BrowserCoordinatorRelatedFilesWatcher from "@BrowserLiveReloading/BrowserCoordinatorRelatedFilesWatcher";
@@ -11,10 +14,11 @@ import type HTTP from "http";
 import Timeout = NodeJS.Timeout;
 import {
   Logger,
-  isNull,
-  isNotNull,
+  secondsToMilliseconds,
+  extractLastExtensionOfFileName,
   isUndefined,
-  secondsToMilliseconds
+  isNull,
+  isNotNull
 } from "@yamato-daiwa/es-extensions";
 import type { InfoLog } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
@@ -28,10 +32,13 @@ class BrowserLiveReloader {
   public static localization: BrowserLiveReloader.Localization = BrowserLiveReloaderLocalization__English;
 
   private static readonly onURI_ChangedEventHandlers: Array<BrowserLiveReloader.OnURI_ChangedEventHandler> = [];
+  private static readonly EXPERIMENTAL_LOGGING: boolean = false;
 
   private readonly browserLiveReloadingSettingsRepresentative: BrowserLiveReloadingSettingsRepresentative;
 
   private waitingForSubsequentFilesWillBeUpdatedCountdown: Timeout | undefined;
+
+  private currentHTML_File__EXPERIMENTAL: string | null = null;
 
 
   public static provideBrowserLiveReloadingIfMust(
@@ -157,6 +164,13 @@ class BrowserLiveReloader {
 
   private onRequest(request: HTTP.IncomingMessage, _response: HTTP.ServerResponse, letPass: () => void): void {
 
+    Logger.logWarning({
+      badge: { customText: "Experimental" },
+      title: "Local Server, Request:",
+      description: request.url ?? "No URI",
+      mustOutputIf: BrowserLiveReloader.EXPERIMENTAL_LOGGING
+    });
+
     if (isUndefined(request.url)) {
       letPass();
       return;
@@ -175,6 +189,40 @@ class BrowserLiveReloader {
           [ this.browserLiveReloadingSettingsRepresentative.targetFilesRootDirectoryAbsolutePath, request.url ],
           { alwaysForwardSlashSeparators: true }
         );
+
+    if (
+      extractLastExtensionOfFileName({
+        targetPath: targetHTML_FileAbsolutePath,
+        withLeadingDot: false
+      }) !== "html"
+    ) {
+      letPass();
+      return;
+    }
+
+
+    Logger.logWarning({
+      badge: { customText: "Experimental" },
+      title: "Local Server, Target HTML File",
+      description: targetHTML_FileAbsolutePath,
+      mustOutputIf: BrowserLiveReloader.EXPERIMENTAL_LOGGING,
+      additionalData: {
+        hasPageChanged: this.currentHTML_File__EXPERIMENTAL !== targetHTML_FileAbsolutePath,
+        relatedEntryPointsSourceFiles: Array.from(
+            MarkupProcessingSharedState.entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap.entries()
+        ).
+            filter(
+              ([ , entryPointOutputFileAbsolutePath ]: Readonly<[ string, string ]>): boolean =>
+                  targetHTML_FileAbsolutePath === entryPointOutputFileAbsolutePath
+            ).
+            map(
+              ([ entryPointSourceFileAbsolutePath ]: Readonly<[ string, string ]>): string =>
+                  entryPointSourceFileAbsolutePath
+            )
+      }
+    });
+
+    this.currentHTML_File__EXPERIMENTAL = targetHTML_FileAbsolutePath;
 
     for (const handler of BrowserLiveReloader.onURI_ChangedEventHandlers) {
       handler(targetHTML_FileAbsolutePath);

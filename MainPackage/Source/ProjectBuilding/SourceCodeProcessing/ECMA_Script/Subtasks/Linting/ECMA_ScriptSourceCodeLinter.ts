@@ -109,7 +109,7 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
 
       projectBuildingMasterConfigRepresentative,
 
-      taskTitleForLogging: "ECMAScript logic processing / ECMAScript logic source code linting",
+      taskTitleForLogging: "ECMAScript Logic Processing / ECMAScript Logic Source Code Linting",
 
       sourceFilesCachedCheckingResults: {
         fileNameWithExtension: "ECMA_ScriptLintingCache.json",
@@ -175,24 +175,28 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
                             startingLineNumber__numerationFrom1: {
                               type: Number,
                               numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                              isNaN_Forbidden: true,
                               isUndefinedForbidden: false,
                               isNullForbidden: true
                             },
                             endingLineNumber__numerationFrom1: {
                               type: Number,
                               numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                              isNaN_Forbidden: true,
                               isUndefinedForbidden: false,
                               isNullForbidden: true
                             },
                             startingColumnNumber__numerationFrom1: {
                               type: Number,
                               numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                              isNaN_Forbidden: true,
                               isUndefinedForbidden: false,
                               isNullForbidden: true
                             },
                             endingColumnNumber__numerationFrom1: {
                               type: Number,
                               numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                              isNaN_Forbidden: true,
                               isUndefinedForbidden: false,
                               isNullForbidden: true
                             }
@@ -279,7 +283,7 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
 
     } catch (error: unknown) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorType: "ECMA_ScriptSourceCodeLinter",
         title: ECMA_ScriptSourceCodeLinter.localization.lintingFailedErrorLog.title,
         description: PoliteErrorsMessagesBuilder.buildMessage({
@@ -351,6 +355,7 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
 
       /* [ Maintainability ] Keep these variables for easier debugging. */
       codeFragmentBeforeHighlighting = cropArray({
+        fromStart: true,
         targetArray: replaceArrayElementsByIndexesImmutably({
           targetArray: sourceCodeExplodedToLines,
           index: rawIssue.line - 1,
@@ -367,12 +372,13 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
           targetNumber: rawIssue.line - this.DISPLAYING_LINES_COUNT_BEFORE_ISSUED_LINE_IN_CODE_LISTING_OF_REPORT,
           minimalValue: 1
         }),
-        endingElementNumber__numerationFrom1: rawIssue.line,
+        endingElementNumber__numerationFrom1__including: rawIssue.line,
         mutably: false,
         mustThrowErrorIfSpecifiedElementsNumbersAreOutOfRange: true
       }).join("\n");
 
       highlightedCodeFragment = cropArray({
+        fromStart: true,
         targetArray: replaceArrayElementsByIndexesImmutably({
           targetArray: sourceCodeExplodedToLines,
           replacements: [
@@ -415,7 +421,7 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
           ]
         }),
         startingElementNumber__numerationFrom1: rawIssue.line,
-        endingElementNumber__numerationFrom1: rawIssue.endLine,
+        endingElementNumber__numerationFrom1__including: rawIssue.endLine,
         mutably: false,
         mustThrowErrorIfSpecifiedElementsNumbersAreOutOfRange: true
       }).join("\n");
@@ -423,6 +429,7 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
       const lastLineOfHighlightedCodeFragment: string = sourceCodeExplodedToLines[rawIssue.endLine - 1];
 
       codeFragmentAfterHighlighting = cropArray({
+        fromStart: true,
         targetArray: replaceArrayElementsByIndexesImmutably({
           targetArray: sourceCodeExplodedToLines,
           index: rawIssue.endLine - 1,
@@ -436,7 +443,7 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
               })
         }),
         startingElementNumber__numerationFrom1: rawIssue.endLine,
-        endingElementNumber__numerationFrom1: limitMaximalValue({
+        endingElementNumber__numerationFrom1__including: limitMaximalValue({
           targetNumber: rawIssue.endLine + this.DISPLAYING_LINES_COUNT_AFTER_ISSUED_LINE_IN_CODE_LISTING_OF_REPORT,
           maximalValue: sourceCodeExplodedToLines.length
         }),

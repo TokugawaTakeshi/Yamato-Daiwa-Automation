@@ -165,7 +165,7 @@ export default class DotYDA_DirectoryManager {
   private static getExpectedToBeInitializedSelfSoleInstance(): DotYDA_DirectoryManager {
 
     if (isNull(DotYDA_DirectoryManager.selfSoleInstance)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
 
         errorInstance: new ClassRequiredInitializationHasNotBeenExecutedError({
           className: "DotYDA_DirectoryManager", initializingMethodName: "unrollDotYDA_Directory"

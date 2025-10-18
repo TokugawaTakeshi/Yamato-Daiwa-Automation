@@ -13,14 +13,17 @@ import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/Pro
 import SourceCodeProcessingConfigRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/SourceCodeProcessingConfigRepresentative";
 
+/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+import { mergeSets } from "@yamato-daiwa/es-extensions";
+
 
 export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends SourceCodeProcessingConfigRepresentative<
   ECMA_ScriptLogicProcessingSettings__Normalized.Common, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
 > {
 
   /* [ Theory ] Below two fields could be even or not. */
-  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
-  public readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+  public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
+  public readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
 
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "ECMAScript logic";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "ECMAScript logic";
@@ -34,6 +37,8 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
     SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
     ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
   >;
+
+  public readonly electronSettings?: ECMA_ScriptLogicProcessingSettings__Normalized.Electron;
   public readonly loggingSettings: ECMA_ScriptLogicProcessingSettings__Normalized.Logging;
   public readonly localDevelopmentServerOrchestrationSettings?:
       ECMA_ScriptLogicProcessingSettings__Normalized.LocalDevelopmentServerOrchestration;
@@ -49,15 +54,20 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
     super(projectBuildingMasterConfigRepresentative);
 
     this.sourceCodeProcessingCommonSettings = normalizedECMA_ScriptLogicProcessingSettings.common;
+
     this.relevantEntryPointsGroupsSettings = normalizedECMA_ScriptLogicProcessingSettings.relevantEntryPointsGroups;
+    this.electronSettings = normalizedECMA_ScriptLogicProcessingSettings.electron;
     this.loggingSettings = normalizedECMA_ScriptLogicProcessingSettings.logging;
     this.localDevelopmentServerOrchestrationSettings = normalizedECMA_ScriptLogicProcessingSettings.
         localDevelopmentServerOrchestration;
 
     this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = normalizedECMA_ScriptLogicProcessingSettings.common.
-        supportedSourceFileNameExtensionsWithoutLeadingDots;
-    this.actualFileNameExtensionsWithoutLeadingDots = normalizedECMA_ScriptLogicProcessingSettings.common.
-        supportedSourceFileNameExtensionsWithoutLeadingDots;
+        supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots;
+
+    this.actualFileNameExtensionsWithoutLeadingDots = mergeSets(
+      this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+      normalizedECMA_ScriptLogicProcessingSettings.common.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles
+    );
 
     this.entryPointsGroupsNormalizedSettingsMappedByReferences = new Map<
       string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup
@@ -74,7 +84,7 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
 
   }
 
-  /* ━━━ Logging ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
   public get mustLogSourceFilesWatcherEvents(): boolean {
     return this.loggingSettings.filesWatcherEvents;
   }

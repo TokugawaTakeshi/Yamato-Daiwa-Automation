@@ -109,7 +109,7 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
         src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
 
         pipe(super.handleErrorIfItWillOccur()).
-        pipe(super.logProcessedFilesIfMust()).
+        pipe(super.logInputFilesIfMust()).
 
         pipe(
           GulpStreamModifier.modifyForSingleVinylFileSubtype({
@@ -142,6 +142,8 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
             onStreamStartedEventHandler: ImagesProcessor.postProcessFile
           })
         ).
+
+        pipe(super.logOutputFilesIfMust()).
 
         pipe(
           Gulp.dest(

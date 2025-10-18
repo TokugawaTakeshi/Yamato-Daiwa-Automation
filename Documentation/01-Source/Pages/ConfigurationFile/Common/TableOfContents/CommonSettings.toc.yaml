@@ -22,10 +22,16 @@ selectiveExecutions:
           $heading: `selectiveExecutions.settingUpOfEachItem.browserLiveReloadingSetupID.$heading`
           $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-BROWSER_LIVE_RELOADING_SETUP_ID--SECTION
 
-        $distributablePackageJSON_Generating:
+        distributablePackageJSON_Generating:
 
           $heading: `selectiveExecutions.settingUpOfEachItem.distributablePackageJSON_Generating.$heading`
           $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-OUTPUT_PACKAGE_JSON_GENERATING--SECTION
+
+        dockerSetupID:
+
+          $heading: `selectiveExecutions.settingUpOfEachItem.dockerSetupID.$heading`
+          $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-DOCKER_SETUP_ID--SECTION
+
 
 publicDirectoriesRelativePaths:
 

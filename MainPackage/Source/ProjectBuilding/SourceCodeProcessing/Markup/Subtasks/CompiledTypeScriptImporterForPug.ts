@@ -113,7 +113,7 @@ export default class CompiledTypeScriptImporterForPug extends GulpStreamsBasedTa
           });
 
     if (!FileSystem.existsSync(compiledTypeScriptImportingSettings.sourceFileAbsolutePath)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new FileNotFoundError({
           customMessage:
               `The TypeScript file "${ compiledTypeScriptImportingSettings.sourceFileAbsolutePath }" for ` +
@@ -156,7 +156,7 @@ export default class CompiledTypeScriptImporterForPug extends GulpStreamsBasedTa
         src(this.typeScriptSourceFileAbsolutePath).
 
         pipe(super.handleErrorIfItWillOccur()).
-        pipe(super.logProcessedFilesIfMust()).
+        pipe(super.logInputFilesIfMust()).
 
         pipe(
 
@@ -171,6 +171,8 @@ export default class CompiledTypeScriptImporterForPug extends GulpStreamsBasedTa
           )
 
         ).
+
+        pipe(super.logOutputFilesIfMust()).
 
         pipe(
           GulpStreamModifier.modify({

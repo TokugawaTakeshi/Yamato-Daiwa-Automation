@@ -85,7 +85,7 @@ export default class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
     super({
       projectBuildingMasterConfigRepresentative,
       associatedAssetsProcessingSettingsRepresentative: audiosProcessingSettingsRepresentative,
-      taskTitleForLogging: "Audios processing",
+      taskTitleForLogging: "Audios Processing",
       waitingForSubsequentFilesWillSavedPeriod__seconds: audiosProcessingSettingsRepresentative.assetsProcessingCommonSettings.
           periodBetweenFileUpdatingAndRebuildingStarting__seconds
     });
@@ -107,7 +107,7 @@ export default class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
         src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
 
         pipe(super.handleErrorIfItWillOccur()).
-        pipe(super.logProcessedFilesIfMust()).
+        pipe(super.logInputFilesIfMust()).
 
         pipe(
           GulpStreamModifier.modifyForSingleVinylFileSubtype({
@@ -126,6 +126,8 @@ export default class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
             onStreamStartedEventHandler: AudiosProcessor.postProcessFile
           })
         ).
+
+        pipe(super.logOutputFilesIfMust()).
 
         pipe(
           Gulp.dest(

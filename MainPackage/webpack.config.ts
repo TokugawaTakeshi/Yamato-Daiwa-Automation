@@ -128,10 +128,7 @@ export default function generateConfiguration(
           "ThirdPartySolutionsSpecialists"
         ),
         "@Utils": Path.resolve(SOURCE_CODE_ROOT_DIRECTORY_ABSOLUTE_PATH, "Utils"),
-        "@UtilsIncubator": Path.resolve(
-          SOURCE_CODE_ROOT_DIRECTORY_ABSOLUTE_PATH,
-          "UtilsIncubator"
-        )
+        "@Incubators": Path.resolve(SOURCE_CODE_ROOT_DIRECTORY_ABSOLUTE_PATH, "Incubators")
       }
     },
 

@@ -70,13 +70,12 @@ block append SpecificContent
       +Link--YDF({
         unendorsedExternalURI: sharedExternalLinks.pug.homePage.officialProjectStatusRequest
       }) не&nbsp;сделали комментариев по поводу будущего препроцессора
-      |
       |   , аналога, сочетающего в себе предельно лаконичный синтаксис с богатой функциональностью включая возможность
       |   описания логики на #[+ImportantEntity--YDID JavaScript] (обычно такое не&nbsp;приветствуется, но в определённых
       |   ситуациях крайне полезно) не&nbsp;разработано и не&nbsp;поддерживается.
-      | До тех под, пока ситуация не&nbsp;изменится, #[+ImportantEntity--YDID YDA] продолжит специализироваться на данном
+      | До тех пор, пока ситуация не&nbsp;изменится, #[+ImportantEntity--YDID YDA] продолжит специализироваться на данном
       |   препроцессоре.
-      | Кроме того, уязвимости версии #[+ImportantEntity--YDID 3] были быстро устранены, что указывает на наличие минимально
+      | К счастью, уязвимости версии #[+ImportantEntity--YDID 3] были быстро устранены, что указывает на наличие минимально
       |   необходимой поддержки проекта.
 
 
@@ -106,12 +105,7 @@ block append SpecificContent
         }) режима сборки проекта
         |   относительный путь с директории с #[+Term--YDID выходными файлами]
 
-
-    //- ─── Начальный пример ───────────────────────────────────────────────────────────────────────────────────────────
-    h3.Article-Heading3 Пример
-
     p.Article-Paragraph.
-
       Начальный пример включает в себя обработку двух #[+Term--YDID Pug-файлов]: #[+SecondaryEntity--YDID index.pug] и
         #[+SecondaryEntity--YDID about.pug].
       Так как пример близок к простейшему, то:
@@ -120,7 +114,7 @@ block append SpecificContent
 
       li Будет только один #[+Term--YDID режим сборки] — #[+Term--YDID эксплуатационный] (#[+Term--YDID «продакшен»])
       li Автоматической пересборки проекта при внесении изменений в исходных код #[+Keyword--YDID не]&nbsp;будет.
-      li Готове #[+Term--YDID HTML-файлы] в браузере автоматически #[+Keyword--YDID не]&nbsp;откроются.
+      li Готовые #[+Term--YDID HTML-файлы] в браузере автоматически #[+Keyword--YDID не]&nbsp;откроются.
 
     +CodeViewer--YDF({ title: "yda.config.yaml" })
       +CodeViewer-TabPanel--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML })
@@ -136,7 +130,7 @@ block append SpecificContent
         +CodeViewer-Explanation--YDF
           | Если не&nbsp;указать #[+Term--YDID публичный путь], то для всех #[+Term--YDID режимов сборки проекта],
           |   #[+Keyword--YDID кроме] #[+Term--YDID статического превью] будет выдано предупреждение.
-          | Если Вы прямо сейчас хотите узнать, с чем это предупреждение связано, то это связано
+          | Если Вы прямо сейчас хотите узнать, с чем это предупреждение связано, то связано оно с
           |
           +Link--YDF({
             internalURI: localizedRouting.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI

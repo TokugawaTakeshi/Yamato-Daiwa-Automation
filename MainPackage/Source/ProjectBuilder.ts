@@ -28,6 +28,8 @@ import PlainCopier from "@ProjectBuilding/PlainCopying/PlainCopier";
 import LocalDevelopmentServerOrchestrator from
     "@ECMA_ScriptProcessing/Subtasks/LocalDevelopmentServerOrchestration/LocalDevelopmentServerOrchestrator";
 import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
+import DockerComposeLauncher from "@ProjectBuilding/DockerCompose/DockerComposeLauncher";
+import ElectronCoordinator from "@ECMA_ScriptProcessing/Subtasks/ElectronCoordinator";
 import OutputPackageJSON_Generator from "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_Generator";
 
 /* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -63,7 +65,7 @@ abstract class ProjectBuilder {
             );
 
     if (rawDataProcessingResult.isRawDataInvalid) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidConfigError({
           mentionToConfig: "@yamato-daiwa/automation (project building)",
           messageSpecificPart: RawObjectDataProcessor.formatValidationErrorsList(
@@ -127,7 +129,9 @@ abstract class ProjectBuilder {
 
           Gulp.parallel([
             FilesMasterWatcher.watchIfMust(masterConfigRepresentative),
-            LocalDevelopmentServerOrchestrator.orchestrateIfMust(masterConfigRepresentative)
+            DockerComposeLauncher.launchIfMust(masterConfigRepresentative),
+            LocalDevelopmentServerOrchestrator.orchestrateIfMust(masterConfigRepresentative),
+            ElectronCoordinator.coordinateIfMust(masterConfigRepresentative)
           ])
 
         ])

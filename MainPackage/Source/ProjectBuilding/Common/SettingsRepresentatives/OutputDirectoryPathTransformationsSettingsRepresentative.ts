@@ -57,7 +57,12 @@ export default abstract class OutputDirectoryPathTransformationsSettingsRepresen
 
     }
 
-    if (isNumber(outputDirectoryPathTransformationsSettings.segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved)) {
+    if (
+      isNumber(
+        outputDirectoryPathTransformationsSettings.segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved,
+        { mustConsiderNaN_AsNumber: true }
+      )
+    ) {
       outputPath =
           explodeURI_PathToSegments(outputPath).
           slice(0, -outputDirectoryPathTransformationsSettings.segmentsCountRelativeToGroupTopDirectoryWhichMustBeRemoved).

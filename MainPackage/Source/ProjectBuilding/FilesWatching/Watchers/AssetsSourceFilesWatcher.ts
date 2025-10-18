@@ -158,7 +158,7 @@ namespace AssetsSourceFilesWatcher {
       Pick<FilesPassiveWatcher.InitializationRequirements, "ID" | "mustLogEvents"> &
       Readonly<{
         projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
-        targetFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+        targetFilesNamesExtensionsWithoutLeadingDots: ReadonlySet<string>;
         outputFilesGlobSelectors: ReadonlyArray<string>;
         targetSourceFilesType__singularForm: string;
       }>;

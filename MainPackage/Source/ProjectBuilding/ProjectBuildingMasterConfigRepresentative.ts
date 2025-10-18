@@ -24,11 +24,12 @@ import VideosProcessingSettingsRepresentative from
 
 import PlainCopyingSettingsRepresentative from "@ProjectBuilding/PlainCopying/PlainCopyingSettingsRepresentative";
 
-import FilesWatchingSettingsRepresentative from "@ProjectBuilding/FilesWatching/FilesWatchingSettingsRepresentative";
 import BrowserLiveReloadingSettingsRepresentative from "@BrowserLiveReloading/BrowserLiveReloadingSettingsRepresentative";
 
 import OutputPackageJSON_GeneratingSettingsRepresentative from
     "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettingsRepresentative";
+
+import DockerSettingsRepresentative from "@ProjectBuilding/DockerCompose/DockerSettingsRepresentative";
 
 /* --- General auxiliaries ------------------------------------------------------------------------------------------ */
 import {
@@ -57,8 +58,9 @@ export default class ProjectBuildingMasterConfigRepresentative {
 
   public readonly plainCopyingSettingsRepresentative?: PlainCopyingSettingsRepresentative;
 
-  public readonly filesWatchingSettingsRepresentative?: FilesWatchingSettingsRepresentative;
   public readonly browserLiveReloadingSettingsRepresentative?: BrowserLiveReloadingSettingsRepresentative;
+
+  public readonly dockerComposeSettingsRepresentative?: DockerSettingsRepresentative;
 
   public readonly outputPackageJSON_GeneratingSettingsRepresentative?: OutputPackageJSON_GeneratingSettingsRepresentative;
 
@@ -71,7 +73,7 @@ export default class ProjectBuildingMasterConfigRepresentative {
   ): ProjectBuildingMasterConfigRepresentative {
 
     if (isNotNull(ProjectBuildingMasterConfigRepresentative.selfSoleInstance)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new ClassRedundantSubsequentInitializationError({
           className: "ProjectBuildingMasterConfigRepresentative"
         }),
@@ -142,12 +144,15 @@ export default class ProjectBuildingMasterConfigRepresentative {
       );
     }
 
-    this.filesWatchingSettingsRepresentative =
-        new FilesWatchingSettingsRepresentative(projectBuilderNormalizedConfig.filesWatching, this);
-
     if (isNotUndefined(projectBuilderNormalizedConfig.browserLiveReloading)) {
       this.browserLiveReloadingSettingsRepresentative = new BrowserLiveReloadingSettingsRepresentative(
         projectBuilderNormalizedConfig.browserLiveReloading
+      );
+    }
+
+    if (isNotUndefined(projectBuilderNormalizedConfig.dockerCompose)) {
+      this.dockerComposeSettingsRepresentative = new DockerSettingsRepresentative(
+        projectBuilderNormalizedConfig.dockerCompose
       );
     }
 
@@ -171,6 +176,10 @@ export default class ProjectBuildingMasterConfigRepresentative {
 
   public get selectiveExecutionID(): string | undefined {
     return this.commonSettings.selectiveExecutionID;
+  }
+
+  public get filesWatchingSettings(): ProjectBuildingCommonSettings__Normalized.FilesWatching {
+    return this.commonSettings.filesWatching;
   }
 
 

@@ -3,7 +3,6 @@ import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/Chokidar/Chokida
 
 /* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
-import type FilesWatchingSettingsRepresentative from "@ProjectBuilding/FilesWatching/FilesWatchingSettingsRepresentative";
 
 /* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import type FilesPassiveWatcher from "@ProjectBuilding/FilesWatching/Watchers/FilesPassiveWatcher";
@@ -11,7 +10,6 @@ import type FilesPassiveWatcher from "@ProjectBuilding/FilesWatching/Watchers/Fi
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import Gulp from "gulp";
 import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
-import { isUndefined } from "@yamato-daiwa/es-extensions";
 
 
 abstract class FilesMasterWatcher {
@@ -23,10 +21,7 @@ abstract class FilesMasterWatcher {
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): (callback: (error?: Error | null) => void) => void {
 
-    const filesWatchingSettingsRepresentative: FilesWatchingSettingsRepresentative | undefined =
-        projectBuildingMasterConfigRepresentative.filesWatchingSettingsRepresentative;
-
-    if (isUndefined(filesWatchingSettingsRepresentative) || !filesWatchingSettingsRepresentative.mustProvideFilesWatching) {
+    if (!projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
       return (callback: () => void): void => { callback(); };
     }
 
@@ -38,7 +33,12 @@ abstract class FilesMasterWatcher {
             ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
               basicDirectoryPath: projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
             }),
-            ...filesWatchingSettingsRepresentative.exclusiveGlobsOfExcludedFilesAndDirectories
+            ...ImprovedGlob.includingGlobSelectorsToExcludingOnes(
+              Array.from(projectBuildingMasterConfigRepresentative.filesWatchingSettings.excludedFilesGlobSelectors)
+            ),
+            ...ImprovedGlob.includingGlobSelectorsToExcludingOnes(
+              Array.from(projectBuildingMasterConfigRepresentative.filesWatchingSettings.excludedDirectoriesGlobSelectors)
+            )
           ]).
           on("all", FilesMasterWatcher.onAnyChokidarEvent.bind(this));
 

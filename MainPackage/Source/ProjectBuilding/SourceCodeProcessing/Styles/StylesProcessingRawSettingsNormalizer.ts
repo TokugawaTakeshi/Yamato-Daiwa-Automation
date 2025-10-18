@@ -31,8 +31,8 @@ import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 export default class StylesProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSettingsNormalizer {
 
-  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string> =
-      StylesProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots;
+  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string> =
+      StylesProcessingRestrictions.supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots;
 
 
   public static normalize(
@@ -56,8 +56,13 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
     return {
 
       common: {
-        supportedSourceFileNameExtensionsWithoutLeadingDots:
-            StylesProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+
+        supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots:
+            StylesProcessingRestrictions.supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots,
+
+        supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles:
+            StylesProcessingRestrictions.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles,
+
         supportedOutputFileNameExtensionsWithoutLeadingDots:
             StylesProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots,
         secondsBetweenFileUpdatingAndStartingOfRebuilding:

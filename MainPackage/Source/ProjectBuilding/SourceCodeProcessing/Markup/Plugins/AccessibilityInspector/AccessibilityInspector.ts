@@ -29,7 +29,6 @@ import {
   cropArray,
   cropString,
   nullToUndefined,
-  stringifyAndFormatArbitraryValue,
   isNonEmptyString,
   isNotUndefined,
   isNull,
@@ -52,7 +51,7 @@ import {
   ImprovedPath,
   ImprovedFileSystem
 } from "@yamato-daiwa/es-extensions-nodejs";
-import Stopwatch from "@UtilsIncubator/Stopwatch";
+import Stopwatch from "@Incubators/@yamato-daiwa/es-extensions/Stopwatch";
 import NativeToastMessageService from "node-notifier";
 import FileSystem from "fs";
 import { parse as parseHTML } from "node-html-parser";
@@ -354,7 +353,7 @@ class AccessibilityInspector {
             description: `\n${ accessibilityIssuesLogForEachFile.join("\n") }`
           });
 
-          Logger.throwErrorAndLog({
+          Logger.throwErrorWithFormattedMessage({
             errorType: "AccessibilityIssuesFoundError",
             ...AccessibilityInspector.localization.issuesFoundInOneOrMultipleFilesErrorLog,
             occurrenceLocation: "AccessibilityInspector.reportCachedValidationsResultsAndFinalize"
@@ -768,10 +767,11 @@ class AccessibilityInspector {
       const codeFragmentBeforeHighlighting: string =
           `${
             cropArray({
+              fromStart: true,
               targetArray: rawHTML_CodeSplitToLines,
               startingElementNumber__numerationFrom1:
               numberOfStartingLineWhichWillBeExtractedFromCodeListingForLogging__numerationFrom1,
-              endingElementNumber__numerationFrom1: lineNumberOfActualCodeFragment__numerationFrom1 - 1,
+              endingElementNumber__numerationFrom1__including: lineNumberOfActualCodeFragment__numerationFrom1 - 1,
               mustThrowErrorIfSpecifiedElementsNumbersAreOutOfRange: false,
               mutably: false
             }).join("\n")
@@ -793,9 +793,10 @@ class AccessibilityInspector {
             })
           }\n` +
           cropArray({
+            fromStart: true,
             targetArray: rawHTML_CodeSplitToLines,
             startingElementNumber__numerationFrom1: lineNumberOfActualCodeFragment__numerationFrom1 + 1,
-            endingElementNumber__numerationFrom1:
+            endingElementNumber__numerationFrom1__including:
                 numberOfEndingLineWhichWillBeExtractedFromCodeListingForLogging__numerationFrom1,
             mustThrowErrorIfSpecifiedElementsNumbersAreOutOfRange: false,
             mutably: false
@@ -1017,7 +1018,7 @@ class AccessibilityInspector {
 
     FileSystem.writeFileSync(
       this.CACHED_INSPECTIONS_RESULTS_FILE_ABSOLUTE_PATH,
-      stringifyAndFormatArbitraryValue(cachedInspectionsResultsFileContent)
+      JSON.stringify(cachedInspectionsResultsFileContent, null, 2)
     );
 
   }
@@ -1085,7 +1086,7 @@ class AccessibilityInspector {
   private static async getInstanceOnceReady(): Promise<AccessibilityInspector> {
 
     if (!AccessibilityInspector.hasInitializationStarted) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new ClassRequiredInitializationHasNotBeenExecutedError({
           className: "AccessibilityInspector",
           initializingMethodName: "beginInitialization"
@@ -1097,7 +1098,7 @@ class AccessibilityInspector {
 
 
     if (AccessibilityInspector.hasInitializationFailed) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorType: "InitializationFailedError",
         description: "The initialization has failed thus the accessibility checking could not be executed.",
         title: "Initialization failed",

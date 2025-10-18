@@ -22,7 +22,6 @@ import {
   InvalidExternalDataError,
   nullToUndefined,
   secondsToMilliseconds,
-  stringifyAndFormatArbitraryValue,
   isUndefined,
   isNotUndefined,
   readonlyArrayToMutableOne
@@ -133,7 +132,7 @@ abstract class LinterLikeTaskExecutor<SourceFileCheckingIssue extends ParsedJSON
         src(readonlyArrayToMutableOne(globSelectorsOrAbsolutePathsOfTargetFiles), { read: false }).
 
         pipe(super.handleErrorIfItWillOccur()).
-        pipe(super.logProcessedFilesIfMust()).
+        pipe(super.logInputFilesIfMust()).
 
         pipe(
           GulpStreamModifier.modify({
@@ -177,6 +176,8 @@ abstract class LinterLikeTaskExecutor<SourceFileCheckingIssue extends ParsedJSON
 
           )
         ).
+
+        pipe(super.logOutputFilesIfMust()).
 
         /* [ Approach ]
          * Basically, the `on("end", this.onStreamEnded.bind(this));` should be here.
@@ -380,7 +381,7 @@ abstract class LinterLikeTaskExecutor<SourceFileCheckingIssue extends ParsedJSON
 
     ImprovedFileSystem.writeFileToPossiblyNotExistingDirectory({
       filePath: this.ABSOLUTE_PATH_OF_FILE_WITH_CACHED_RESULTS_OF_SOURCE_FILES_CHECKING,
-      content: stringifyAndFormatArbitraryValue(this.sourceFilesCheckingCachedResults),
+      content: JSON.stringify(this.sourceFilesCheckingCachedResults, null, 2),
       synchronously: true
     });
 

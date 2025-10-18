@@ -69,7 +69,7 @@ class MarkupSourceCodeLinter extends LinterLikeTaskExecutor<MarkupSourceCodeLint
 
     } catch (error: unknown) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidConfigError({
           customMessage: "Invalid puglint config."
         }),
@@ -149,7 +149,7 @@ class MarkupSourceCodeLinter extends LinterLikeTaskExecutor<MarkupSourceCodeLint
 
       projectBuildingMasterConfigRepresentative,
 
-      taskTitleForLogging: "Markup processing / Markup source code linting",
+      taskTitleForLogging: "Markup Processing / Markup Source Code Linting",
 
       sourceFilesCachedCheckingResults: {
         fileNameWithExtension: "MarkupLintingCache.json",
@@ -196,13 +196,15 @@ class MarkupSourceCodeLinter extends LinterLikeTaskExecutor<MarkupSourceCodeLint
                           type: Number,
                           isUndefinedForbidden: true,
                           isNullForbidden: true,
-                          numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero
+                          numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero,
+                          isNaN_Forbidden: true
                         },
                         columnNumber: {
                           type: Number,
                           isUndefinedForbidden: false,
                           isNullForbidden: true,
-                          numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero
+                          numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero,
+                          isNaN_Forbidden: true
                         }
                       }
                     }
@@ -263,7 +265,7 @@ class MarkupSourceCodeLinter extends LinterLikeTaskExecutor<MarkupSourceCodeLint
 
     } catch (error: unknown) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidConfigError({
           customMessage: MarkupSourceCodeLinter.localization.pugLintConfigurationIsInvalid.description
         }),
@@ -300,7 +302,7 @@ class MarkupSourceCodeLinter extends LinterLikeTaskExecutor<MarkupSourceCodeLint
 
     } catch (error: unknown) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorType: "MarkupLintingError",
         title: MarkupSourceCodeLinter.localization.lintingFailedErrorLog.title,
         description: PoliteErrorsMessagesBuilder.buildMessage({

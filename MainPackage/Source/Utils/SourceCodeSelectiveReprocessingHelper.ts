@@ -6,10 +6,10 @@ import {
   FileReadingFailedError,
   RawObjectDataProcessor,
   extractLastExtensionOfFileName,
-  addMultipleElementsToSet,
+  addElementsToSet,
   createSetBasedOnOtherSet,
-  stringifyAndFormatArbitraryValue,
   replaceArrayElementsByIndexesImmutably,
+  mergeSets,
   isString,
   isNonEmptyString,
   isUndefined,
@@ -203,15 +203,14 @@ class SourceCodeSelectiveReprocessingHelper {
             alwaysForwardSlashSeparators: true
           });
 
-      addMultipleElementsToSet(
-        absolutePathsOfEntryPointsWhichMustBeProcessed__forwardSlashSeparators,
-        Array.from(
-          this.childrenFilesMetadata.get(
-            pathOfChildFileRelativeToConsumingProjectRootDirectory__forwardSlashSeparators
-          )?.parentEntryPointsAbsolutePaths ??
-          new Set()
-        )
-      );
+      addElementsToSet({
+        targetSet: absolutePathsOfEntryPointsWhichMustBeProcessed__forwardSlashSeparators,
+        newElements:
+            this.childrenFilesMetadata.
+                get(pathOfChildFileRelativeToConsumingProjectRootDirectory__forwardSlashSeparators)?.
+                parentEntryPointsAbsolutePaths ??
+                    new Set()
+      });
 
     }
 
@@ -634,8 +633,10 @@ class SourceCodeSelectiveReprocessingHelper {
     *   `include ProductCard.static`. */
     if (
       isNull(explicitlySpecifiedLastFileNameExtensionInChildrenFileRawPath) ||
-      !this.childrenFilesResolutionRules.implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles.
-          includes(explicitlySpecifiedLastFileNameExtensionInChildrenFileRawPath)
+      !mergeSets(
+        this.childrenFilesResolutionRules.implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles,
+        this.childrenFilesResolutionRules.additionalExplicitFileNameExtensionsWithoutLeadingDotsOfChildrenFiles ?? new Set()
+      ).has(explicitlySpecifiedLastFileNameExtensionInChildrenFileRawPath)
     ) {
 
       for (
@@ -643,20 +644,22 @@ class SourceCodeSelectiveReprocessingHelper {
             possibleIntermediatePathsOfChildFileWithResolvedAlias
       ) {
 
-        addMultipleElementsToSet(
-          possibleAbsolutePathsOfTargetChildFile__forwardSlashSeparators,
-          this.childrenFilesResolutionRules.implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles.map(
-            (childFileNameImplicitExtension: string): string =>
-              ImprovedPath.joinPathSegments(
-                [
-                  ...Path.isAbsolute(possibleIntermediatePathOfChildFileWithResolvedAlias) ?
-                      [] : [ parentFileDirectoryAbsolutePath__forwardSlashSeparators ],
-                  `${ possibleIntermediatePathOfChildFileWithResolvedAlias }.${ childFileNameImplicitExtension }`
-                ],
-                { alwaysForwardSlashSeparators: true }
-              )
-          )
-        );
+        addElementsToSet({
+          targetSet: possibleAbsolutePathsOfTargetChildFile__forwardSlashSeparators,
+          newElements:
+              Array.from(this.childrenFilesResolutionRules.implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles).
+                  map(
+                    (childFileNameImplicitExtension: string): string =>
+                      ImprovedPath.joinPathSegments(
+                        [
+                          ...Path.isAbsolute(possibleIntermediatePathOfChildFileWithResolvedAlias) ?
+                              [] : [ parentFileDirectoryAbsolutePath__forwardSlashSeparators ],
+                          `${ possibleIntermediatePathOfChildFileWithResolvedAlias }.${ childFileNameImplicitExtension }`
+                        ],
+                        { alwaysForwardSlashSeparators: true }
+                      )
+                  )
+        });
 
       }
 
@@ -1001,7 +1004,10 @@ class SourceCodeSelectiveReprocessingHelper {
 
     };
 
-    FileSystem.writeFileSync(this.CACHED_METADATA_FILE_ABSOLUTE_PATH, stringifyAndFormatArbitraryValue(outputData));
+    FileSystem.writeFileSync(
+      this.CACHED_METADATA_FILE_ABSOLUTE_PATH,
+      JSON.stringify(outputData, null, 2)
+    );
 
   }
 
@@ -1083,7 +1089,8 @@ namespace SourceCodeSelectiveReprocessingHelper {
 
 
   export type ChildrenFilesResolutionRules = Readonly<{
-    implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles: ReadonlyArray<string>;
+    implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles: ReadonlySet<string>;
+    additionalExplicitFileNameExtensionsWithoutLeadingDotsOfChildrenFiles?: ReadonlySet<string>;
     childrenFilesIncludingDeclarationsPatterns: ReadonlyArray<RegExp>;
   }>;
 

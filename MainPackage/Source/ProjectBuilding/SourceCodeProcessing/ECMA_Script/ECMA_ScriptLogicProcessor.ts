@@ -21,17 +21,19 @@ import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
-  Logger,
-  UnexpectedEventError,
   isNeitherUndefinedNorNull,
   addEntriesToMap,
   isUndefined,
   isNotUndefined,
+  isNull,
   isNotNull,
   secondsToMilliseconds,
-  addMultipleElementsToSet,
+  addElementsToSet,
   filterMap,
-  getArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne
+  getArrayElementSatisfiesThePredicateIfSuchElementIsExactlyOne,
+  Logger,
+  UnexpectedEventError,
+  PoliteErrorsMessagesBuilder
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath, ImprovedGlob } from "@yamato-daiwa/es-extensions-nodejs";
 
@@ -167,7 +169,26 @@ class ECMA_ScriptLogicProcessor {
     }
 
     this.webpackConfigurationsForExistingEntryPoints = webpackConfigurationsForExistingEntryPoints;
-    this.webpackMultiCompiler = Webpack(this.webpackConfigurationsForExistingEntryPoints);
+
+    const webpackMultiCompiler: Webpack.MultiCompiler | null = Webpack(this.webpackConfigurationsForExistingEntryPoints);
+
+    if (isNull(webpackMultiCompiler)) {
+      Logger.throwErrorWithFormattedMessage({
+        errorInstance: new UnexpectedEventError(
+           PoliteErrorsMessagesBuilder.buildMessage({
+            politeExplanation: "It has occurred some problem with changed functionality of Webpack, the dependency of YDA.",
+            technicalDetails:
+                "The `Webpack` function returned the null. " +
+                "Previously according to TypeScript type definitions, the returned value was always non-nullable. "
+          })
+        ),
+        title: UnexpectedEventError.localization.defaultTitle,
+        occurrenceLocation: "ECMA_ScriptLogicProcessor.constructor(...parameters)"
+      });
+    }
+
+
+    this.webpackMultiCompiler = webpackMultiCompiler;
 
     this.entryPointsSourceFilesAbsolutePathsAndWebpackConfigurationNamesMap =
         entryPointsSourceFilesAbsolutePathsAndWebpackConfigurationNamesMap;
@@ -391,10 +412,10 @@ class ECMA_ScriptLogicProcessor {
             new Set(correspondingDirectoriesAbsolutePaths)
           );
         } else {
-          addMultipleElementsToSet(
-            alreadyRegisteredCorrespondingDirectoriesAbsolutePaths,
-            correspondingDirectoriesAbsolutePaths
-          );
+          addElementsToSet({
+            targetSet: alreadyRegisteredCorrespondingDirectoriesAbsolutePaths,
+            newElements: correspondingDirectoriesAbsolutePaths
+          });
         }
       }
     }

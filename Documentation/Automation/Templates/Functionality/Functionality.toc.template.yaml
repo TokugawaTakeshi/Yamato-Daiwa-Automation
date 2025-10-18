@@ -1,0 +1,14 @@
+section1:
+
+  $heading: `section1.$heading`
+  $anchor: EXAMPLES--SECTION_1
+
+  $children:
+
+    subsection1_1:
+      $heading: `section1.subsection1_1.$heading`
+      $anchor: EXAMPLES--SECTION_1-SUBSECTION_1_1
+
+    subsection1_2:
+      $heading: `section1.subsection1_2.$heading`
+      $anchor: EXAMPLES--SECTION_1-SUBSECTION_1_2

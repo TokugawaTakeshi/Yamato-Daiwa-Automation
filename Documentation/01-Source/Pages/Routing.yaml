@@ -128,6 +128,16 @@ functionality:
           japanese: 01-Source/Pages/Functionality/DistributablePackageJSON_Generating/TableOfContents/DistributablePackageJSON_Generating.toc.japanese.yaml
           russian: 01-Source/Pages/Functionality/DistributablePackageJSON_Generating/TableOfContents/DistributablePackageJSON_Generating.toc.russian.yaml
 
+    dockerIntegration:
+      $heading: `functionality.dockerIntegration.$heading`
+      $URI: `@All/Functionality/DockerIntegration/DockerIntegration.${ fileNameLocalizationExtensions }.pug`
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/Functionality/DockerIntegration/TableOfContents/DockerIntegration.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/Functionality/DockerIntegration/TableOfContents/DockerIntegration.toc.english.yaml
+          japanese: 01-Source/Pages/Functionality/DockerIntegration/TableOfContents/DockerIntegration.toc.japanese.yaml
+          russian: 01-Source/Pages/Functionality/DockerIntegration/TableOfContents/DockerIntegration.toc.russian.yaml
+
 # Functionality/MarkupProcessing/ResourcesPointersResolving/ResourcesPointersResolving.${ fileNameLocalizationExtensions }`
 
 #configuration:
@@ -218,6 +228,17 @@ configurationFile:
           english: 01-Source/Pages/ConfigurationFile/BrowserLiveReloading/TableOfContents/BrowserLiveReloadingSettings.toc.english.yaml
           japanese: 01-Source/Pages/ConfigurationFile/BrowserLiveReloading/TableOfContents/BrowserLiveReloadingSettings.toc.japanese.yaml
           russian: 01-Source/Pages/ConfigurationFile/BrowserLiveReloading/TableOfContents/BrowserLiveReloadingSettings.toc.russian.yaml
+
+    dockerLaunching:
+
+      $heading: `configuration.dockerLaunching.$heading`
+      $URI: `@All/ConfigurationFile/DockerLaunching/DockerLaunching.${ fileNameLocalizationExtensions }`
+      $sectioning:
+        $specificationFileRelativePath: 01-Source/Pages/ConfigurationFile/DockerLaunching/TableOfContents/DockerLaunching.toc.yaml
+        $localizations:
+          english: 01-Source/Pages/ConfigurationFile/DockerLaunching/TableOfContents/DockerLaunching.toc.english.yaml
+          japanese: 01-Source/Pages/ConfigurationFile/DockerLaunching/TableOfContents/DockerLaunching.toc.japanese.yaml
+          russian: 01-Source/Pages/ConfigurationFile/DockerLaunching/TableOfContents/DockerLaunching.toc.russian.yaml
 
 consoleLineInterface:
 

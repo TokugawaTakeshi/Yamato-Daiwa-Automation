@@ -1,0 +1,11 @@
+section1:
+
+  $heading: "節１"
+
+  subsection1_1:
+
+    $heading: "小節１－１"
+
+  subsection1_2:
+
+    $heading: "小節１－２"

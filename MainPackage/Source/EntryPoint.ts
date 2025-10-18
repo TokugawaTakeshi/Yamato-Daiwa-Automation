@@ -75,7 +75,7 @@ export default abstract class EntryPoint {
         } catch (error: unknown) {
 
           if (error instanceof FileNotFoundError) {
-            Logger.throwErrorAndLog({
+            Logger.throwErrorWithFormattedMessage({
               errorInstance: new FileNotFoundError({
                 customMessage:
                     "The configuration file for \"Yamato Daiwa Automation\" utility not found at path " +
@@ -92,7 +92,7 @@ export default abstract class EntryPoint {
           }
 
 
-          Logger.throwErrorAndLog({
+          Logger.throwErrorWithFormattedMessage({
             errorInstance: new FileReadingFailedError({
               customMessage:
                   "The configuration file for \"Yamato Daiwa Automation\" utility not found at path " +
@@ -119,6 +119,7 @@ export default abstract class EntryPoint {
         });
 
         break;
+
       }
 
       case ApplicationConsoleLineInterface.CommandPhrases.referenceGenerating: {

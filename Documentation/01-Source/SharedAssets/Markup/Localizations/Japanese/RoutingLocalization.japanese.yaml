@@ -57,6 +57,10 @@ functionality:
 
     $heading: "納品専用package.jsonの生成"
 
+  dockerIntegration:
+
+    $heading: "Docker結合"
+
 configuration:
 
   $heading: "コンフィグレーション"
@@ -88,6 +92,10 @@ configuration:
   browserLiveReloading:
 
     $heading: "<code>$browserLiveReloading</code> ブラウザタブ自動リロード設定"
+
+  dockerLaunching:
+
+    $heading: "<code>$dockerLaunching</code> Docker起動"
 
 consoleLineInterface:
 

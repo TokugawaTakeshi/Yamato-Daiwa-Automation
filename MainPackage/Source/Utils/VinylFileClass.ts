@@ -16,7 +16,7 @@ export default abstract class VinylFileClass extends VinylFile {
   public static getOutputDirectoryAbsolutePathOfExpectedToBeSelfInstance(targetVinylFile: VinylFile): string {
 
     if (!(targetVinylFile instanceof VinylFileClass)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidParameterValueError({
           parameterName: "targetVinylFile",
           parameterNumber: 1,

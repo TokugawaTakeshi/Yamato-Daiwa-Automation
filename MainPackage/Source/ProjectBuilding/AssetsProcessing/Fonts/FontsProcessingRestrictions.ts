@@ -1,6 +1,6 @@
 export default {
 
-  /* [ Theory ] There could be text licence file which must be copied.  */
-  supportedSourceFilesNamesExtensionsWithoutLeadingDots: [ "ttf", "otf", "woff", "txt" ]
+  /* [ Theory ] There could be a text license file that must be copied.  */
+  supportedSourceFilesNamesExtensionsWithoutLeadingDots: new Set([ "ttf", "otf", "woff", "txt" ])
 
 };

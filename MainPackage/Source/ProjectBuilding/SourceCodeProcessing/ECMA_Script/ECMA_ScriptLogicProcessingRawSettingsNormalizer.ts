@@ -38,8 +38,8 @@ import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSettingsNormalizer {
 
-  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlyArray<string> =
-      ECMA_ScriptLogicProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots;
+  protected supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string> =
+      ECMA_ScriptLogicProcessingRestrictions.supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots;
 
   protected readonly cachedTypeScriptConfigurationsFilesRelativePathsAndCorrespondingCompilersOptions:
       Map<string, TypeScript.CompilerOptions> = new Map();
@@ -81,8 +81,11 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
       common: {
 
-        supportedSourceFileNameExtensionsWithoutLeadingDots:
-            ECMA_ScriptLogicProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+        supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots:
+            ECMA_ScriptLogicProcessingRestrictions.supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots,
+
+        supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles:
+            ECMA_ScriptLogicProcessingRestrictions.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles,
 
         supportedOutputFileNameExtensionsWithoutLeadingDots:
             ECMA_ScriptLogicProcessingRestrictions.supportedOutputFilesNamesExtensionsWithoutLeadingDots
@@ -112,6 +115,45 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
         relevantEntryPointsGroups,
         ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.localDevelopmentServerOrchestration
       ),
+
+      ...isNotUndefined(ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.electron) ?
+          {
+            electron: {
+
+              hotReloadingForLocalDevelopmentMode: {
+
+                rootDirectoryAbsolutePath: ImprovedPath.joinPathSegments(
+                  [
+                    dataHoldingSelfInstance.consumingProjectRootDirectoryAbsolutePath,
+                    ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.electron.
+                        hotReloadingForLocalDevelopmentMode.rootDirectoryRelativePath
+                  ],
+                  { alwaysForwardSlashSeparators: true }
+                ),
+
+                ignoredFilesAndDirectoriesAbsolutePaths:
+                    (
+                      ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.electron.
+                          hotReloadingForLocalDevelopmentMode.ignoredFilesAndDirectoriesRelativePaths ??
+                      []
+                    ).
+
+                        map(
+                          (ignoredFileOrDirectoryRelativePath: string): string =>
+                              ImprovedPath.joinPathSegments(
+                                [
+                                  dataHoldingSelfInstance.consumingProjectRootDirectoryAbsolutePath,
+                                  ignoredFileOrDirectoryRelativePath
+                                ],
+                                { alwaysForwardSlashSeparators: true }
+                              )
+                        )
+
+              }
+
+            }
+          } :
+          null,
 
       logging: {
 
@@ -214,6 +256,43 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
               type: SupportedECMA_ScriptRuntimesTypes.pug
             };
           }
+
+          case SupportedECMA_ScriptRuntimesTypes.electronMainProcess: {
+            return {
+              type: SupportedECMA_ScriptRuntimesTypes.electronMainProcess,
+              minimalVersion: {
+                major: entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.major,
+                ...isNotUndefined(entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.minor) ? {
+                  minor: entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.minor
+                } : null
+              }
+            };
+          }
+
+          case SupportedECMA_ScriptRuntimesTypes.electronRendererProcess: {
+            return {
+              type: SupportedECMA_ScriptRuntimesTypes.electronRendererProcess,
+              minimalVersion: {
+                major: entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.major,
+                ...isNotUndefined(entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.minor) ? {
+                  minor: entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.minor
+                } : null
+              }
+            };
+          }
+
+          case SupportedECMA_ScriptRuntimesTypes.electronPreload: {
+            return {
+              type: SupportedECMA_ScriptRuntimesTypes.electronPreload,
+              minimalVersion: {
+                major: entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.major,
+                ...isNotUndefined(entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.minor) ? {
+                  minor: entryPointsGroupSettings__rawValid.targetRuntime.minimalVersion.minor
+                } : null
+              }
+            };
+          }
+
         }
 
       })(),

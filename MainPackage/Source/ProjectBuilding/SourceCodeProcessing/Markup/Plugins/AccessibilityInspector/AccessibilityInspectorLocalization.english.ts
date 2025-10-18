@@ -9,7 +9,7 @@ const accessibilityInspectorLocalization__english: AccessibilityInspector.Locali
     { targetFileRelativePath }: Localization.FileIsEmptyWarningLog.TemplateVariables
   ): Localization.FileIsEmptyWarningLog =>
       ({
-        title: "HTML code accessibility inspection terminated because of empty file",
+        title: "HTML Code Accessibility Inspection Terminated because of Empty File",
         description: `File "${ targetFileRelativePath }" is empty, no HTML to inspect. ` +
             "Please note that at production-like modes the empty HTML files are being considered as invalid."
       }),
@@ -18,8 +18,8 @@ const accessibilityInspectorLocalization__english: AccessibilityInspector.Locali
     { targetFileRelativePath }: Localization.InspectionStartedInfoLog.TemplateVariables
   ): Localization.InspectionStartedInfoLog =>
       ({
-        title: "HTML code accessibility inspection started",
-        description: `Begin the accessibility inspection of HTML code in the file "${ targetFileRelativePath }" ...`
+        title: "HTML Code Accessibility Inspection Started",
+        description: `Target file: ${ targetFileRelativePath }`
       }),
 
   inspectionFailedErrorLog: {
@@ -37,12 +37,14 @@ const accessibilityInspectorLocalization__english: AccessibilityInspector.Locali
     }: Localization.InspectionFinishedWithNoIssuesFoundSuccessLog.TemplateVariables
   ): Localization.InspectionOfSingleFileHasFinishedWithNoIssuesFoundSuccessLog =>
       ({
-        title: "HTML code accessibility cheking of single file has finished with no issues found",
-        description: `The HTML code in file "${ targetFileRelativePath }" has no the accessibility issues.\n` +
-            isUndefined(secondsElapsed) ?
-                "(Cached result, no changes in output HTML code since last building)" :
-                `${ secondsElapsed } seconds taken.`
-
+        title: "HTML Code Accessibility Checking of Single File Complete without Issues",
+        description:
+            `The HTML code in file "${ targetFileRelativePath }" has no the accessibility issues.\n` +
+            (
+              isUndefined(secondsElapsed) ?
+                  "(Cached result, no changes in output HTML code since last building)" :
+                  `${ secondsElapsed } seconds taken.`
+            )
       }),
 
   generateIssuesFoundInSingleFileErrorLog: (

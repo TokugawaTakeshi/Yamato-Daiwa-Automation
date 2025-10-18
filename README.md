@@ -17,6 +17,7 @@ npm i @yamato-daiwa/automation -D -E
 ## Documentation
 
 + [Terminology](https://automation.yamato-daiwa.com/Terminology/Terminology.english.html)
++ [Console Line Interface](https://automation.yamato-daiwa.com/ConsoleLineInterface/ConsoleLineInterface.english.html)
 
 
 ### Functionality
@@ -31,6 +32,7 @@ npm i @yamato-daiwa/automation -D -E
     + [State Dependent Pages Variations](https://automation.yamato-daiwa.com/Functionality/MarkupProcessing/StaticPreview/StateDependentPagesVariations/StateDependentPagesVariations.english.html) 
 + [Browser Live Reloading](https://automation.yamato-daiwa.com/Functionality/BrowserLiveReloading/BrowserLiveReloading.english.html)
 + [Distributable package.json Generating](https://automation.yamato-daiwa.com/Functionality/DistributablePackageJSON_Generating/DistributablePackageJSON_Generating.english.html)
++ [Docker Integration](https://automation.yamato-daiwa.com/Functionality/DockerIntegration/DockerIntegration.english.html)
     
 
 ### Configuration File
@@ -40,4 +42,5 @@ npm i @yamato-daiwa/automation -D -E
 + [Styles Processing Settings](https://automation.yamato-daiwa.com/ConfigurationFile/StylesProcessing/StylesProcessingSettings.english.html)
 + [ECMAScript Logic Processing Settings](https://automation.yamato-daiwa.com/ConfigurationFile/ECMAScriptLogicProcessing/ECMAScriptLogicProcessing.english.html)
 + [Images Processing Settings](https://automation.yamato-daiwa.com/ConfigurationFile/ImagesProcessing/ImagesProcessingSettings.english.html)
-+ [Browser Live Reloading Settings](https://automation.yamato-daiwa.com/http://localhost:3000/ConfigurationFile/BrowserLiveReloading/BrowserLiveReloadingSettings.english.html)
++ [Browser Live Reloading Settings](https://automation.yamato-daiwa.com/ConfigurationFile/BrowserLiveReloading/BrowserLiveReloadingSettings.english.html)
++ [Docker Launching](https://automation.yamato-daiwa.com/ConfigurationFile/DockerLaunching/DockerLaunching.english.html)

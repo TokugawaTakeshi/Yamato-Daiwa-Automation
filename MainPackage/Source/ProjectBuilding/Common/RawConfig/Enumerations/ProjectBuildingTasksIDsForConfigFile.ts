@@ -12,7 +12,8 @@ export enum ProjectBuildingTasksIDsForConfigFile {
   browserLiveReloading = "browserLiveReloading",
   plainCopying = "plainCopying",
   filesWatching = "filesWatching",
-  outputPackageJSON_Generating = "outputPackageJSON_Generating"
+  outputPackageJSON_Generating = "outputPackageJSON_Generating",
+  dockerLaunching = "dockerLaunching"
 }
 
 

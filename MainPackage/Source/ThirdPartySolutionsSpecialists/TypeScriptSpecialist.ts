@@ -28,7 +28,7 @@ export default abstract class TypeScriptSpecialist {
 
     } catch (error: unknown) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new FileReadingFailedError({ filePath: typeScriptConfigurationFileAbsolutePath }),
         title: FileReadingFailedError.localization.defaultTitle,
         occurrenceLocation: "TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions" +
@@ -41,7 +41,7 @@ export default abstract class TypeScriptSpecialist {
 
     if (isNotUndefined(typeScriptFileReadingResult.error)) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new FileReadingFailedError({ filePath: typeScriptConfigurationFileAbsolutePath }),
         title: FileReadingFailedError.localization.defaultTitle,
         occurrenceLocation: "TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions" +
@@ -54,7 +54,7 @@ export default abstract class TypeScriptSpecialist {
 
 
     if (!isArbitraryObject(typeScriptFileReadingResult.config) || !("compilerOptions" in typeScriptFileReadingResult.config)) {
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new InvalidConfigError({
           mentionToConfig: `TypeScript (${ typeScriptConfigurationFileAbsolutePath })`
         }),
@@ -88,7 +88,7 @@ export default abstract class TypeScriptSpecialist {
 
     } catch (error: unknown) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new FileReadingFailedError({ filePath: typeScriptConfigurationFileAbsolutePath }),
         title: FileReadingFailedError.localization.defaultTitle,
         occurrenceLocation: "TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions" +
@@ -101,7 +101,7 @@ export default abstract class TypeScriptSpecialist {
 
     if (typeCompilerOptionsConfigurationParsingResult.errors.length > 0) {
 
-      Logger.throwErrorAndLog({
+      Logger.throwErrorWithFormattedMessage({
         errorInstance: new FileReadingFailedError({ filePath: typeScriptConfigurationFileAbsolutePath }),
         title: FileReadingFailedError.localization.defaultTitle,
         occurrenceLocation: "TypeScriptSpecialist.readTypeScriptConfigurationFileAndGetCompilerOptions" +

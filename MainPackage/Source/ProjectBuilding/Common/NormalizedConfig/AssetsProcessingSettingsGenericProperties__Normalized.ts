@@ -7,7 +7,7 @@ import type RevisioningSettings__Normalized from
 namespace AssetsProcessingSettingsGenericProperties__Normalized {
 
   export type Common = Readonly<{
-    supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string>;
+    supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlySet<string>;
     periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
   }>;
 

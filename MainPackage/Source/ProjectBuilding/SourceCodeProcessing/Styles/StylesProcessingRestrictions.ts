@@ -1,6 +1,10 @@
 namespace StylesProcessingRestrictions {
 
-  export const supportedSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string> = [ "styl", "stylus" ];
+  export const supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlySet<string> = new Set([
+    "styl", "stylus"
+  ]);
+  export const supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles: ReadonlySet<string> = new Set([]);
+
   export const supportedOutputFilesNamesExtensionsWithoutLeadingDots: ReadonlyArray<string> = [ "css" ];
 
 }

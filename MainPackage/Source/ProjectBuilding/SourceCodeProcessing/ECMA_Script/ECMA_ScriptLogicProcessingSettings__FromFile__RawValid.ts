@@ -22,15 +22,20 @@ type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid = Readonly<{
   entryPointsGroups: Readonly<{ [groupID: string]: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
   localDevelopmentServerOrchestration?:
       ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.LocalDevelopmentServerOrchestration;
+  electron?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Electron;
   logging?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Logging;
 }>;
 
 
 namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
-  /* ━━━ Common ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ━━━ Types ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ┅┅┅ Common ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+  /* ╍╍╍ Linting ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
   export type Linting = LintingSettings__FromFile__RawValid;
 
+
+  /* ╍╍╍ Entry Points Group ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
   export type EntryPointsGroup =
       SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
       Readonly<{
@@ -44,11 +49,16 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
         }>;
       }>;
 
-
-  /* ━━━ Entry Points Group ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export namespace EntryPointsGroup {
 
-    export type Runtime = Runtime.Browser | Runtime.WebWorker | Runtime.NodeJS | Runtime.Pug;
+    export type Runtime =
+        Runtime.Browser |
+        Runtime.WebWorker |
+        Runtime.NodeJS |
+        Runtime.Pug |
+        Runtime.Electron.MainProcess |
+        Runtime.Electron.RenderingProces |
+        Runtime.Electron.Preload;
 
     export namespace Runtime {
 
@@ -65,6 +75,36 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
       }>;
 
       export type Pug = Readonly<{ type: SupportedECMA_ScriptRuntimesTypes.pug; }>;
+
+      /* eslint-disable-next-line @typescript-eslint/no-shadow --
+      * Valid TypeScript; no problem will be while invoke `Electron` namespace by correct fully qualified name. */
+      export namespace Electron {
+
+        export type MainProcess = Readonly<{
+          type: SupportedECMA_ScriptRuntimesTypes.electronMainProcess;
+          minimalVersion: Readonly<{
+            major: number;
+            minor?: number;
+          }>;
+        }>;
+
+        export type RenderingProces = Readonly<{
+          type: SupportedECMA_ScriptRuntimesTypes.electronRendererProcess;
+          minimalVersion: Readonly<{
+            major: number;
+            minor?: number;
+          }>;
+        }>;
+
+        export type Preload = Readonly<{
+          type: SupportedECMA_ScriptRuntimesTypes.electronPreload;
+          minimalVersion: Readonly<{
+            major: number;
+            minor?: number;
+          }>;
+        }>;
+
+      }
 
     }
 
@@ -105,7 +145,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
   }
 
 
-  /* ━━━ Local Development Server Orchestration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ╍╍╍ Local Development Server Orchestration ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
   export type LocalDevelopmentServerOrchestration = Readonly<{
     targetSingularEntryPointsGroupID: string;
     arguments?: ReadonlyArray<string>;
@@ -114,7 +154,22 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
   }>;
 
 
-  /* ━━━ Logging ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ╍╍╍ Electron ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+  export type Electron = Readonly<{
+    hotReloadingForLocalDevelopmentMode: Electron.HotReloadingForLocalDevelopmentMode;
+  }>;
+
+  export namespace Electron {
+
+    export type HotReloadingForLocalDevelopmentMode = {
+      rootDirectoryRelativePath: string;
+      ignoredFilesAndDirectoriesRelativePaths?: ReadonlyArray<string>;
+    };
+
+  }
+
+
+  /* ╍╍╍ Logging ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
   export type Logging = Readonly<{
 
     filesPaths?: boolean;
@@ -130,9 +185,10 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
   }>;
 
 
-  /* ━━━ Localization ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ━━━ Properties Specification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
+    /* ┅┅┅ Linting ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
     $linting: {
       newName: "linting",
       type: Object,
@@ -141,6 +197,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
       properties: LintingSettings__FromFile__RawValid.propertiesSpecification
     },
 
+    /* ╍╍╍ Entry Points Group ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
     ...SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.generatePropertiesSpecification({
 
       entryPointsGroupBuildingModeIndependentSpecificSettingsLocalizedPropertiesSpecification: {
@@ -168,8 +225,16 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
               type: Object,
               undefinedForbiddenIf: {
                 predicate: (runtimeConfig: ArbitraryObject): boolean =>
-                    runtimeConfig.type === SupportedECMA_ScriptRuntimesTypes.nodeJS,
-                descriptionForLogging: "Target runtime is NodeJS"
+                    [
+                      SupportedECMA_ScriptRuntimesTypes.nodeJS,
+                      SupportedECMA_ScriptRuntimesTypes.electronMainProcess,
+                      SupportedECMA_ScriptRuntimesTypes.electronRendererProcess,
+                      SupportedECMA_ScriptRuntimesTypes.electronPreload
+                      /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+                      * Even `runtimeConfig.type` is `undefined` or `null` it still can be safely compared with elements
+                      *   of enumeration. */
+                    ].includes(runtimeConfig.type as SupportedECMA_ScriptRuntimesTypes.electronPreload),
+                descriptionForLogging: "Target runtime is NodeJS or Electron-like"
               },
               isNullForbidden: true,
 
@@ -180,7 +245,8 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
                   type: Number,
                   isUndefinedForbidden: true,
                   isNullForbidden: true,
-                  numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+                  numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                  isNaN_Forbidden: true
                 },
 
                 $minor: {
@@ -188,7 +254,8 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
                   type: Number,
                   isUndefinedForbidden: false,
                   isNullForbidden: true,
-                  numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber
+                  numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                  isNaN_Forbidden: true
                 }
 
               }
@@ -334,6 +401,111 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
     }),
 
+    /* ┅┅┅ Local Development Server Orchestration ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+    $localDevelopmentServerOrchestration: {
+
+      newName: "localDevelopmentServerOrchestration",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $targetSingularEntryPointsGroupID: {
+          newName: "targetSingularEntryPointsGroupID",
+          type: String,
+          isUndefinedForbidden: true,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        },
+
+        $arguments: {
+          newName: "arguments",
+          type: Array,
+          isUndefinedForbidden: false,
+          isNullForbidden: true,
+          areUndefinedElementsForbidden: true,
+          areNullElementsForbidden: true,
+          element: {
+            type: String,
+            minimalCharactersCount: 1
+          }
+        },
+
+        $environmentVariables: {
+          newName: "environmentVariables",
+          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+          isUndefinedForbidden: false,
+          isNullForbidden: true,
+          areUndefinedTypeValuesForbidden: true,
+          areNullTypeValuesForbidden: true,
+          value: {
+            type: String,
+            minimalCharactersCount: 1
+          }
+        },
+
+        $environmentVariablesFileRelativePath: {
+          newName: "environmentVariablesFileRelativePath",
+          type: String,
+          isUndefinedForbidden: false,
+          isNullForbidden: true,
+          minimalCharactersCount: 1
+        }
+
+      }
+
+    },
+
+    /* ┅┅┅ Electron ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+    $electron: {
+
+      newName: "electron",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $hotReloadingForLocalDevelopmentMode: {
+
+          newName: "hotReloadingForLocalDevelopmentMode",
+          type: Object,
+          isUndefinedForbidden: true,
+          mustTransformNullToUndefined: true,
+
+          properties: {
+
+            $rootDirectoryRelativePath: {
+              newName: "rootDirectoryRelativePath",
+              type: String,
+              isUndefinedForbidden: true,
+              isNullForbidden: true,
+              minimalCharactersCount: 1
+            },
+
+            $ignoredFilesAndDirectoriesRelativePaths: {
+              newName: "ignoredFilesAndDirectoriesRelativePaths",
+              type: Array,
+              isUndefinedForbidden: false,
+              mustTransformNullToUndefined: true,
+              areUndefinedElementsForbidden: true,
+              areNullElementsForbidden: true,
+              element: {
+                type: String,
+                minimalCharactersCount: 1
+              }
+            }
+
+          }
+
+        }
+
+      }
+
+    },
+
+    /* ┅┅┅ Logging ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
     $logging: {
 
       newName: "logging",
@@ -397,61 +569,6 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
           }
 
-        }
-
-      }
-
-    },
-
-    $localDevelopmentServerOrchestration: {
-
-      newName: "localDevelopmentServerOrchestration",
-      type: Object,
-      isUndefinedForbidden: false,
-      mustTransformNullToUndefined: true,
-
-      properties: {
-
-        $targetSingularEntryPointsGroupID: {
-          newName: "targetSingularEntryPointsGroupID",
-          type: String,
-          isUndefinedForbidden: true,
-          isNullForbidden: true,
-          minimalCharactersCount: 1
-        },
-
-        $arguments: {
-          newName: "arguments",
-          type: Array,
-          isUndefinedForbidden: false,
-          isNullForbidden: true,
-          areUndefinedElementsForbidden: true,
-          areNullElementsForbidden: true,
-          element: {
-            type: String,
-            minimalCharactersCount: 1
-          }
-        },
-
-        $environmentVariables: {
-          newName: "environmentVariables",
-          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
-          isUndefinedForbidden: false,
-          isNullForbidden: true,
-          areUndefinedTypeValuesForbidden: true,
-          areNullTypeValuesForbidden: true,
-          value: {
-            type: String,
-            minimalCharactersCount: 1
-          }
-        },
-
-        $environmentVariablesFileRelativePath: {
-          newName: "environmentVariablesFileRelativePath",
-          type: String,
-          isUndefinedForbidden: false,
-          isNullForbidden: true,
-          minimalCharactersCount: 1
         }
 
       }

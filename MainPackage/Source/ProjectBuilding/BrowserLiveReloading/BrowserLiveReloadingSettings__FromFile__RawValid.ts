@@ -104,6 +104,7 @@ namespace BrowserLiveReloadingSettings__FromFile__RawValid {
                 newName: "customPort",
                 type: Number,
                 numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero,
+                isNaN_Forbidden: true,
                 isUndefinedForbidden: false,
                 isNullForbidden: true,
                 maximalValue: 65536
@@ -203,6 +204,7 @@ namespace BrowserLiveReloadingSettings__FromFile__RawValid {
                 newName: "customPort",
                 type: Number,
                 numbersSet: RawObjectDataProcessor.NumbersSets.positiveIntegerOrZero,
+                isNaN_Forbidden: true,
                 isUndefinedForbidden: false,
                 isNullForbidden: true,
                 maximalValue: 65536
@@ -222,6 +224,7 @@ namespace BrowserLiveReloadingSettings__FromFile__RawValid {
           $periodBetweenFileUpdatingAndBrowserReloading__seconds: {
             newName: "periodBetweenFileUpdatingAndBrowserReloading__seconds",
             type: Number,
+            isNaN_Forbidden: true,
             isUndefinedForbidden: false,
             isNullForbidden: true,
             numbersSet: RawObjectDataProcessor.NumbersSets.anyRealNumber

@@ -21,13 +21,14 @@ import type { Configuration as WebpackConfiguration } from "webpack";
 import type TypeScript from "typescript";
 import { VueLoaderPlugin as VueLoaderWebpackPlugin } from "vue-loader";
 import provideAccessToNodeJS_ExternalDependencies from "webpack-node-externals";
+import Autoprefixer from "autoprefixer";
+import CSS_Nano from "cssnano";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import Path from "path";
 import {
   isUndefined,
   isNotUndefined,
-  insertSubstringIf,
   removeAllFileNameExtensions,
   Logger,
   UnexpectedEventError
@@ -35,7 +36,7 @@ import {
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-/* [ Approach ] Because of serious performance impact, the file watching has been delegated to external watcher. */
+/* [ Approach ] Because of the serious performance impact, the file watching has been delegated to an external watcher. */
 export default abstract class WebpackConfigGenerator {
 
   private static readonly cachedTypeScriptConfigurations: {
@@ -106,12 +107,34 @@ export default abstract class WebpackConfigGenerator {
     const distributingSettings: ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup.Distributing | undefined =
         entryPointsGroupSettings.distributing;
 
+    const postCSS_LoaderSettings: Webpack.RuleSetRule = {
+      loader: "postcss-loader",
+      options: {
+        postcssOptions: {
+          plugins: [
+            "postcss-normalize-stylus-compatible-container-query-syntax",
+            Autoprefixer,
+            CSS_Nano({
+              preset: [
+                "default",
+                {
+                  normalizeWhitespace: !masterConfigRepresentative.mustProvideIncrementalBuilding,
+                  discardComments: !masterConfigRepresentative.mustProvideIncrementalBuilding
+                }
+              ]
+            })
+          ]
+        }
+      }
+    };
+
     return {
 
       name: entryPointsGroupSettings.ID,
 
-      /* [ Webpack theory ] In this case, path separators must be operating system dependent, otherwise following error
-       *    will be thrown: `configuration[0].context: The provided value "D:/OSPanel/../01_Open" is not an absolute path!` */
+      /* [ Webpack theory ] In this case, path separators must be operating-system-dependent; otherwise the following
+       *    error will be thrown: `configuration[0].context: The provided value "D:/OSPanel/../01_Open" is not an
+       *    absolute path!` */
       context: Path.normalize(sourceFilesTopDirectoryAbsolutePath),
 
       /* [ Reference ] https://webpack.js.org/configuration/target/ */
@@ -124,19 +147,45 @@ export default abstract class WebpackConfigGenerator {
             return "web";
           }
 
-
           case SupportedECMA_ScriptRuntimesTypes.webWorker: {
             return "webworker";
           }
 
-
           case SupportedECMA_ScriptRuntimesTypes.nodeJS: {
-            return `node${ entryPointsGroupSettings.targetRuntime.minimalVersion.major }` +
-                insertSubstringIf(
-                  `.${ entryPointsGroupSettings.targetRuntime.minimalVersion.minor }`,
-                  isNotUndefined(entryPointsGroupSettings.targetRuntime.minimalVersion.minor)
-                );
+            return [
+              `node${ entryPointsGroupSettings.targetRuntime.minimalVersion.major }`,
+              ...isNotUndefined(entryPointsGroupSettings.targetRuntime.minimalVersion.minor) ?
+                  [ `.${ entryPointsGroupSettings.targetRuntime.minimalVersion.minor }` ] : []
+            ].join("");
           }
+
+          case SupportedECMA_ScriptRuntimesTypes.electronMainProcess: {
+            return [
+              `electron${ entryPointsGroupSettings.targetRuntime.minimalVersion.major }`,
+              ...isNotUndefined(entryPointsGroupSettings.targetRuntime.minimalVersion.minor) ?
+                  [ `.${ entryPointsGroupSettings.targetRuntime.minimalVersion.minor }` ] : [],
+              "-main"
+            ].join("");
+          }
+
+          case SupportedECMA_ScriptRuntimesTypes.electronRendererProcess: {
+            return [
+              `electron${ entryPointsGroupSettings.targetRuntime.minimalVersion.major }`,
+              ...isNotUndefined(entryPointsGroupSettings.targetRuntime.minimalVersion.minor) ?
+                  [ `.${ entryPointsGroupSettings.targetRuntime.minimalVersion.minor }` ] : [],
+              "-renderer"
+            ].join("");
+          }
+
+          case SupportedECMA_ScriptRuntimesTypes.electronPreload: {
+            return [
+              `electron${ entryPointsGroupSettings.targetRuntime.minimalVersion.major }`,
+              ...isNotUndefined(entryPointsGroupSettings.targetRuntime.minimalVersion.minor) ?
+                  [ `.${ entryPointsGroupSettings.targetRuntime.minimalVersion.minor }` ] : [],
+              "-preload"
+            ].join("");
+          }
+
         }
       })(),
 
@@ -166,16 +215,25 @@ export default abstract class WebpackConfigGenerator {
               switch (entryPointsGroupSettings.targetRuntime.type) {
 
                 case SupportedECMA_ScriptRuntimesTypes.browser:
+                case SupportedECMA_ScriptRuntimesTypes.electronRendererProcess:
+                case SupportedECMA_ScriptRuntimesTypes.electronPreload:
+
                   return entryPointsGroupSettings.distributing.exposingOfExportsFromEntryPoints.mustAssignToWindowObject ?
+
                       "window" : "module";
 
-                case SupportedECMA_ScriptRuntimesTypes.nodeJS: return "commonjs";
+                case SupportedECMA_ScriptRuntimesTypes.nodeJS:
+                case SupportedECMA_ScriptRuntimesTypes.electronMainProcess:
 
-                case SupportedECMA_ScriptRuntimesTypes.pug: return "umd";
+                    return "commonjs";
+
+                case SupportedECMA_ScriptRuntimesTypes.pug:
+
+                  return "umd";
 
                 case SupportedECMA_ScriptRuntimesTypes.webWorker: {
 
-                  Logger.throwErrorAndLog({
+                  Logger.throwErrorWithFormattedMessage({
                     errorInstance: new UnexpectedEventError(
                       "The web worker could not be the library, while the computing of 'output.library.type' has been " +
                       "requested"
@@ -221,7 +279,24 @@ export default abstract class WebpackConfigGenerator {
       /* [ Theory ] Although "cheap-module-source-map" causes both slow first building and slow rebuilding,
        *   faster alternatives including "eval" could cause the errors related with security.
        *   See https://stackoverflow.com/a/49100966. */
-      devtool: masterConfigRepresentative.mustProvideIncrementalBuilding ? "cheap-module-source-map" : false,
+      devtool: ((): string | false => {
+
+        /* eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check --
+         * Currently no sourcemap demanded for non-browser-like environments;
+         * */
+        switch (entryPointsGroupSettings.targetRuntime.type) {
+
+          case SupportedECMA_ScriptRuntimesTypes.browser:
+          case SupportedECMA_ScriptRuntimesTypes.electronRendererProcess:
+          case SupportedECMA_ScriptRuntimesTypes.electronPreload:
+
+            return masterConfigRepresentative.mustProvideIncrementalBuilding ? "cheap-module-source-map" : false;
+
+          default: return false;
+
+        }
+
+      })(),
 
       ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS ? {
         node: {
@@ -287,8 +362,8 @@ export default abstract class WebpackConfigGenerator {
               },
 
               {
-                test: /\.ydfr\.pug$/u,
-                loader: "pug3-ast-loader"
+                test: /\.ydur\.pug$/u,
+                loader: "@yamato-daiwa/universal-reactive-webpack-loader"
               },
 
               {
@@ -333,6 +408,7 @@ export default abstract class WebpackConfigGenerator {
                 use: [
                   "vue-style-loader",
                   "css-loader",
+                  postCSS_LoaderSettings,
                   "stylus-loader"
                 ]
               },
@@ -340,6 +416,7 @@ export default abstract class WebpackConfigGenerator {
                 use: [
                   "style-loader",
                   "css-loader",
+                  postCSS_LoaderSettings,
                   "stylus-loader"
                 ]
               }
@@ -351,8 +428,8 @@ export default abstract class WebpackConfigGenerator {
 
       resolve: {
 
-        extensions: ECMA_ScriptLogicProcessingConfigRepresentative.
-            supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.
+        extensions: Array.
+            from(ECMA_ScriptLogicProcessingConfigRepresentative.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots).
             map((fileNameExtensionWithoutDot: string): string => `.${ fileNameExtensionWithoutDot }`),
 
         alias: {
@@ -502,7 +579,7 @@ export default abstract class WebpackConfigGenerator {
 
       if (entryPointsSourceFiles.has(filePathWithoutFilenameExtension)) {
 
-        Logger.throwErrorAndLog({
+        Logger.throwErrorWithFormattedMessage({
           errorType: "IncompatibleFilesError",
           description: "Incompatible files",
           title: UnexpectedEventError.localization.defaultTitle,

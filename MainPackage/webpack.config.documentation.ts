@@ -118,9 +118,9 @@ export default function generateConfiguration(): Webpack.Configuration {
           "ThirdPartySolutionsSpecialists"
         ),
         "@Utils": Path.resolve(SOURCE_CODE_ROOT_DIRECTORY_ABSOLUTE_PATH, "Utils"),
-        "@UtilsIncubator": Path.resolve(
+        "@Incubators": Path.resolve(
           SOURCE_CODE_ROOT_DIRECTORY_ABSOLUTE_PATH,
-          "UtilsIncubator"
+          "Incubators"
         )
       }
     },
