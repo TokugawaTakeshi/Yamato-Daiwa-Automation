@@ -99,7 +99,8 @@ export default abstract class SourceCodeProcessingConfigRepresentative<
               flatMap(
                 (entryPointsGroupNormalizedSettings: EntryPointsGroupSettings__Normalized): Array<string> =>
                     ImprovedGlob.getFilesAbsolutePathsSynchronously(
-                      entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors
+                      entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors,
+                      { alwaysForwardSlashSeparators: true }
                     )
               )
     );

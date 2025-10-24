@@ -154,6 +154,11 @@ export default class StylesProcessingRawSettingsNormalizer extends SourceCodePro
 
       ...entryPointsGroupGenericSettings__normalized,
 
+      mustGenerateSourcemaps:
+          entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode].mustGenerateSourcemaps ??
+          StylesProcessingSettings__Default.sourcemaps.
+              mustGenerate({ consumingProjectBuildingMode: this.consumingProjectBuildingMode }),
+
       revisioning: RevisioningSettingsNormalizer.normalize({
         revisioningSettings__rawValid: entryPointsGroupSettings__rawValid.
             buildingModeDependent[this.consumingProjectBuildingMode].revisioning,

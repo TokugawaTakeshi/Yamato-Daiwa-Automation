@@ -12,9 +12,9 @@ export default class SpacesNormalizerForCJK_Text {
 
   private static readonly extraSpaceSurroundedByCharactersDetectingPatterns: ReadonlyArray<RegExp> = [
 
-    /* [ Regular Expressions Tester ] https://regex101.com/r/oTsJps/2 */
+    /* [ Regular Expressions Tester ] https://regex101.com/r/tPn28I/2 */
     new RegExp(
-      `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })\\x20+` +
+      `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })[\\x20|\\n|\\r\\n]+` +
           `(${ SpacesNormalizerForCJK_Text.ANY_CJK_CHARACTER_INCLUDING_PUNCTUATION_ONES })`,
       "gmu"
     ),

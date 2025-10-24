@@ -1,34 +1,32 @@
 import Webpack from "webpack";
 import Path from "path";
-
 import NodeExternalsPlugin from "webpack-node-externals";
 import ESLintPlugin from "eslint-webpack-plugin";
 
 import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
 
-
 export default function generateConfiguration(
   _environment: ArbitraryObject, commandArguments: ArbitraryObject
 ): Webpack.Configuration {
 
-  const SOURCE_CODE_ROOT_DIRECTORY_ABSOLUTE_PATH: string = Path.resolve(__dirname, "Source");
+  const SOURCE_CODE_ROOT_DIRECTORY_ABSOLUTE_PATH: string = Path.resolve(process.cwd(), "Source");
 
+  /* eslint-disable-next-line no-underscore-dangle -- Allowed as an exception global constant. */
   const __IS_DEVELOPMENT_BUILDING_MODE__: boolean = commandArguments.mode === "development";
+
+  /* eslint-disable-next-line no-underscore-dangle -- Allowed as an exception global constant. */
   const __IS_PRODUCTION_BUILDING_MODE__: boolean = commandArguments.mode === "production";
 
   return {
 
-    target: "node",
+    target: "node22",
 
     context: SOURCE_CODE_ROOT_DIRECTORY_ABSOLUTE_PATH,
     entry: { EntryPoint: "./EntryPoint.ts" },
 
     output: {
-      path: __dirname,
-      filename: "[name].js",
-      library: {
-        type: "commonjs"
-      }
+      path: process.cwd(),
+      filename: "[name].js"
     },
 
     /* [ Theory ] Valid non-undefined values are only "development", "production" and "none". */
@@ -47,7 +45,9 @@ export default function generateConfiguration(
 
     externals: [
       NodeExternalsPlugin({
-        allowlist: [ "rev-hash" ]
+        allowlist: [
+          "rev-hash"
+        ]
       })
     ],
 

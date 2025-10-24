@@ -301,7 +301,6 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
   }
 
   private normalizeStaticPreviewPagesVariationsSettings(): MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations
-  /* eslint-disable-next-line @stylistic/brace-style -- In this case, the Allman style more readable. */
   {
 
     const stateDependentPagesVariationsSettings:
@@ -571,8 +570,11 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
       HTML_Validation: {
 
-        mustExecute: entryPointsGroupSettings__rawValid.HTML_Validation?.disable === true ? false :
-            MarkupProcessingSettings__Default.HTML_Validation.mustExecute,
+        mustExecute:
+            outputFormat !== MarkupProcessingRestrictions.OutputFormats.HTML ||
+                entryPointsGroupSettings__rawValid.HTML_Validation?.disable === true ?
+                    false :
+                    MarkupProcessingSettings__Default.HTML_Validation.mustExecute,
 
         ignoring: {
           filesAbsolutePaths: (entryPointsGroupSettings__rawValid.HTML_Validation?.ignoring?.files ?? []).
@@ -601,8 +603,11 @@ class MarkupProcessingRawSettingsNormalizer extends SourceCodeProcessingRawSetti
 
       accessibilityInspection: {
 
-        mustExecute: entryPointsGroupSettings__rawValid.accessibilityInspection?.disable === true ? false :
-            MarkupProcessingSettings__Default.accessibilityInspection.mustExecute,
+        mustExecute:
+            outputFormat !== MarkupProcessingRestrictions.OutputFormats.HTML ||
+                entryPointsGroupSettings__rawValid.accessibilityInspection?.disable === true ?
+                    false :
+                    MarkupProcessingSettings__Default.accessibilityInspection.mustExecute,
 
         standard: entryPointsGroupSettings__rawValid.accessibilityInspection?.standard ??
             MarkupProcessingSettings__Default.accessibilityInspection.standard,

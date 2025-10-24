@@ -5,6 +5,10 @@ topPage:
   $heading: "トップ"
   $URI: @All/Top/TopPage.japanese
 
+startingFromScratch:
+
+  $heading: "ゼロからのプロジェクト展開"
+
 terminology:
 
   $heading: "用語"
@@ -48,6 +52,10 @@ functionality:
       stateDependentPagesVariations:
 
         $heading: "状態毎のページ変形"
+
+    optimization:
+
+      $heading: "マークアップ構成最適化"
 
   browserLiveReloading:
 

@@ -32,7 +32,11 @@ import TypeScriptSpecialist from "@ThirdPartySolutionsSpecialists/TypeScriptSpec
 import type TypeScript from "typescript";
 import FileSystem from "fs";
 import DotEnv from "dotenv";
-import { isUndefined, isNotUndefined } from "@yamato-daiwa/es-extensions";
+import {
+  type ReadonlyParsedJSON_Object,
+  isUndefined,
+  isNotUndefined
+} from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
@@ -44,6 +48,7 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
   protected readonly cachedTypeScriptConfigurationsFilesRelativePathsAndCorrespondingCompilersOptions:
       Map<string, TypeScript.CompilerOptions> = new Map();
 
+  protected readonly commonActualPreprocessorVariables: ReadonlyParsedJSON_Object;
 
   public static normalize(
     {
@@ -58,9 +63,12 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
     const dataHoldingSelfInstance: ECMA_ScriptLogicProcessingRawSettingsNormalizer =
         new ECMA_ScriptLogicProcessingRawSettingsNormalizer({
           projectBuildingCommonSettings__normalized: commonSettings__normalized,
-          ...isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) ? {
-            entryPointsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.ECMA_ScriptLogicProcessing
-          } : null
+          ...isNotUndefined(commonSettings__normalized.tasksAndSourceFilesSelection) ?
+              {
+                entryPointsGroupsIDsSelection: commonSettings__normalized.tasksAndSourceFilesSelection.ECMA_ScriptLogicProcessing
+              } :
+              null,
+          commonPreprocessorVariables: ECMA_ScriptLogicProcessingSettings__fromFile__rawValid.common?.preprocessorVariables
         });
 
     const relevantEntryPointsGroups: ReadonlyMap<
@@ -188,6 +196,33 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
       }
 
     };
+
+  }
+
+
+  private constructor(
+    {
+      projectBuildingCommonSettings__normalized,
+      entryPointsGroupsIDsSelection,
+      commonPreprocessorVariables = {}
+    }:
+        SourceCodeProcessingRawSettingsNormalizer.ConstructorParameter &
+        Readonly<{
+          commonPreprocessorVariables?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Common.PreprocessorVariables;
+        }>
+  ) {
+
+    super({
+      projectBuildingCommonSettings__normalized,
+      entryPointsGroupsIDsSelection
+    });
+
+    this.commonActualPreprocessorVariables =
+        {
+          ...commonPreprocessorVariables.forAllProjectBuildingModes ?? {},
+          ...commonPreprocessorVariables.buildingModeDependent?.
+              [projectBuildingCommonSettings__normalized.projectBuildingMode] ?? {}
+        };
 
   }
 
@@ -335,27 +370,47 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
 
       ...isNotUndefined(distributingSettings__rawValid) ? {
 
-        distributing: {
+        distributing:
 
-          exposingOfExportsFromEntryPoints: {
-            mustExpose: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.mustExpose ??
-                ECMA_ScriptLogicProcessingSettings__Default.distributing.exposingOfExportsFromEntryPoints.mustExpose,
-            namespace: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.namespace,
-            mustAssignToWindowObject: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.mustAssignToWindowObject ??
-                ECMA_ScriptLogicProcessingSettings__Default.distributing.exposingOfExportsFromEntryPoints.mustAssignToWindowObject
-          },
+            {
 
-          externalizingDependencies: distributingSettings__rawValid.externalizingDependencies ?? [],
+                exposingOfExportsFromEntryPoints: {
+                  mustExpose:
+                      distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.mustExpose ??
+                      ECMA_ScriptLogicProcessingSettings__Default.distributing.exposingOfExportsFromEntryPoints.mustExpose,
+                  namespace: distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.namespace,
+                  mustAssignToWindowObject:
+                      distributingSettings__rawValid.exposingOfExportsFromEntryPoints?.mustAssignToWindowObject ??
+                      ECMA_ScriptLogicProcessingSettings__Default.distributing.exposingOfExportsFromEntryPoints.
+                          mustAssignToWindowObject
+                },
 
-          typeScriptTypesDeclarations: {
-            mustGenerate: distributingSettings__rawValid.typeScriptTypesDeclarations?.mustGenerate ??
-                ECMA_ScriptLogicProcessingSettings__Default.distributing.typeScriptTypesDeclarations.mustGenerate,
-            fileNameWithoutExtension: distributingSettings__rawValid.typeScriptTypesDeclarations?.fileNameWithoutExtension ??
-                ECMA_ScriptLogicProcessingSettings__Default.distributing.typeScriptTypesDeclarations.fileNameWithoutExtension
+                externalizingDependencies: distributingSettings__rawValid.externalizingDependencies ?? [],
+
+                typeScriptTypesDeclarations: {
+                  mustGenerate:
+                      distributingSettings__rawValid.typeScriptTypesDeclarations?.mustGenerate ??
+                      ECMA_ScriptLogicProcessingSettings__Default.distributing.typeScriptTypesDeclarations.mustGenerate,
+                  fileNameWithoutExtension:
+                      distributingSettings__rawValid.typeScriptTypesDeclarations?.fileNameWithoutExtension ??
+                      ECMA_ScriptLogicProcessingSettings__Default.distributing.typeScriptTypesDeclarations.
+                          fileNameWithoutExtension
+                }
+              }
+
+            } :
+
+            null,
+
+      preprocessorVariables:
+
+          {
+            ...this.commonActualPreprocessorVariables,
+            ...entryPointsGroupSettings__rawValid.preprocessorVariables ?? {},
+            ...entryPointsGroupSettings__rawValid.
+                buildingModeDependent[this.consumingProjectBuildingMode].preprocessorVariables ??
+                    {}
           }
-        }
-
-      } : null
 
     };
 
@@ -451,6 +506,9 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
     /* [ TypeScript theory ] If `baseUrl` has been specified in configuration file, once parsed, it will be the
      +   absolute path herewith forward slashes path separators. */
     const typeScriptBasicAbsolutePath: string =
+
+        /* eslint-disable-next-line @typescript-eslint/no-deprecated --
+        * Although `baseUrl` has deprecated, it still exists and can be used in a consuming project. */
         typeScriptCompilerOptions.baseUrl ??
         ImprovedPath.extractDirectoryFromFilePath({
           targetPath: typeScriptConfigurationFileAbsolutePath,

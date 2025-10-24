@@ -42,7 +42,7 @@ export default abstract class EntryPoint {
   }
 
 
-  public static interpretAndExecuteConsoleCommand(): void {
+  private static interpretAndExecuteConsoleCommand(): void {
 
     /* [ Theory ] The global constant `__IS_DEVELOPMENT_BUILDING_MODE__` is not available in above static block. */
     PoliteErrorsMessagesBuilder.setTechnicalDetailsOnlyModeIf(__IS_DEVELOPMENT_BUILDING_MODE__);

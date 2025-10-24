@@ -63,6 +63,7 @@ namespace ProjectBuildingConfig__FromFile__RawValid {
 
     nameForLogging: "ProjectBuildingConfig__FromFile__RawValid",
     subtype: RawObjectDataProcessor.ObjectSubtypes.fixedSchema,
+    mustExpectOnlySpecifiedProperties: true,
 
     properties: {
 

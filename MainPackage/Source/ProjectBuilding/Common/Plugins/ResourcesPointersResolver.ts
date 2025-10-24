@@ -102,8 +102,8 @@ abstract class ResourcesPointersResolver {
 
       if (
         isNull(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile) ||
-        !supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.
-            has(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile)
+            !supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots.
+                has(explicitlySpecifiedLastFileNameExtensionWithoutDotOfSourceFile)
       ) {
 
         const possibleAbsolutePathsOfTargetSourceFileWithoutFragment: Array<string> =

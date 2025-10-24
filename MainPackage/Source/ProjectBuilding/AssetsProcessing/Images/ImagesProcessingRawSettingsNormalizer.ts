@@ -19,7 +19,9 @@ import AssetsProcessingRawSettingsNormalizer from
       "@ProjectBuilding/Common/RawSettingsNormalizers/AssetsProcessingRawSettingsNormalizer";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 import { isNotUndefined } from "@yamato-daiwa/es-extensions";
+import { ImprovedPath, ImprovedGlob } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default class ImagesProcessingRawSettingsNormalizer extends AssetsProcessingRawSettingsNormalizer {
@@ -57,18 +59,28 @@ export default class ImagesProcessingRawSettingsNormalizer extends AssetsProcess
     return {
 
       common: {
-        supportedSourceFilesNamesExtensionsWithoutLeadingDots: ImagesProcessingRestrictions.
-            supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+
+        supportedSourceFilesNamesExtensionsWithoutLeadingDots:
+            ImagesProcessingRestrictions.supportedSourceFilesNamesExtensionsWithoutLeadingDots,
+
         periodBetweenFileUpdatingAndRebuildingStarting__seconds:
             imagesProcessingSettings__fromFile__rawValid.common?.periodBetweenFileUpdatingAndRebuildingStarting__seconds ??
-            ImagesProcessingSettings__Default.periodBetweenFileUpdatingAndRebuildingStarting__seconds
+            ImagesProcessingSettings__Default.periodBetweenFileUpdatingAndRebuildingStarting__seconds,
+
+        imagesOptimization:
+            ImagesProcessingRawSettingsNormalizer.normalizeImagesOptimizationCommonSettings(
+              commonSettings__normalized,
+              imagesProcessingSettings__fromFile__rawValid.common?.imagesOptimization
+            )
+
       },
 
-      assetsGroups: dataHoldingSelfInstance.createNormalizedAssetsGroupsSettings(
-        dataHoldingSelfInstance.imagesProcessingSettings__fromFile__rawValid.assetsGroups,
-        ImagesProcessingRawSettingsNormalizer.
-            completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings
-      ),
+      assetsGroups:
+          dataHoldingSelfInstance.createNormalizedAssetsGroupsSettings(
+            dataHoldingSelfInstance.imagesProcessingSettings__fromFile__rawValid.assetsGroups,
+            dataHoldingSelfInstance.completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings.
+                bind(dataHoldingSelfInstance)
+          ),
 
       logging: {
 
@@ -93,19 +105,92 @@ export default class ImagesProcessingRawSettingsNormalizer extends AssetsProcess
 
   private constructor(
     compoundParameter:
-        AssetsProcessingRawSettingsNormalizer.CompoundParameter & {
-          imagesProcessingSettings__fromFile__rawValid: ImagesProcessingSettings__FromFile__RawValid;
-        }
+        AssetsProcessingRawSettingsNormalizer.CompoundParameter &
+        Readonly<{ imagesProcessingSettings__fromFile__rawValid: ImagesProcessingSettings__FromFile__RawValid; }>
   ) {
     super(compoundParameter);
     this.imagesProcessingSettings__fromFile__rawValid = compoundParameter.imagesProcessingSettings__fromFile__rawValid;
   }
 
 
-  private static completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings(
-    imagesGroupSettings__generalProperties__normalized: AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup
+  private completeAssetsGroupNormalizedSettingsCommonPropertiesUntilImagesGroupNormalizedSettings(
+    imagesGroupSettings__generalProperties__normalized: AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup,
+    imagesGroupSettings__fromFile__rawValid: ImagesProcessingSettings__FromFile__RawValid.AssetsGroup
   ): ImagesProcessingSettings__Normalized.AssetsGroup {
-    return { ...imagesGroupSettings__generalProperties__normalized };
+    return {
+
+      ...imagesGroupSettings__generalProperties__normalized,
+
+      imagesOptimization: {
+        mustOptimize:
+            imagesGroupSettings__fromFile__rawValid.imagesOptimization?.enabled ??
+            ImagesProcessingSettings__Default.mustOptimize(this.consumingProjectBuildingMode)
+      }
+
+    };
+  }
+
+  private static normalizeImagesOptimizationCommonSettings(
+    commonSettings__normalized: ProjectBuildingCommonSettings__Normalized,
+    imagesOptimizationCommonSettings__rawValid__fromFile?: ImagesProcessingSettings__FromFile__RawValid.Common.ImagesOptimization
+  ): ImagesProcessingSettings__Normalized.Common.ImagesOptimization {
+
+    return {
+
+      cachedOptimizedImagesDirectoryAbsolutePath:
+
+          ImprovedPath.joinPathSegments(
+            [
+              ...isNotUndefined(
+                imagesOptimizationCommonSettings__rawValid__fromFile?.cachedOptimizedImagesDirectoryRelativePath
+              ) ?
+                  [
+                    commonSettings__normalized.projectRootDirectoryAbsolutePath,
+                    imagesOptimizationCommonSettings__rawValid__fromFile.cachedOptimizedImagesDirectoryRelativePath
+                  ] :
+                  [
+                    DotYDA_DirectoryManager.OPTIMIZATION_FILES_DIRECTORY_ABSOLUTE_PATH,
+                    "Images"
+                  ]
+            ],
+            { alwaysForwardSlashSeparators: true }
+          ),
+
+      ignoresFilesGlobs:
+
+          new Set([
+
+            ...(imagesOptimizationCommonSettings__rawValid__fromFile?.relativePathsOfIgnoredFiles ?? []).
+                map(
+                  (relativePathsOfIgnoredFile: string): string =>
+                      ImprovedPath.joinPathSegments(
+                        [
+                          commonSettings__normalized.projectRootDirectoryAbsolutePath,
+                          relativePathsOfIgnoredFile
+                        ],
+                        { alwaysForwardSlashSeparators: true }
+                      )
+                ),
+
+            ...(imagesOptimizationCommonSettings__rawValid__fromFile?.relativePathsOfIgnoredDirectories ?? []).
+                map(
+                  (relativePathsOfIgnoredDirectory: string): string =>
+                      ImprovedGlob.buildExcludingOfDirectoryWithSubdirectoriesGlobSelector({
+                        targetDirectoryPath:
+                            ImprovedPath.joinPathSegments(
+                              [
+                                commonSettings__normalized.projectRootDirectoryAbsolutePath,
+                                relativePathsOfIgnoredDirectory
+                              ],
+                              { alwaysForwardSlashSeparators: true }
+                            )
+                      })
+                )
+
+          ])
+
+    };
+
   }
 
 }

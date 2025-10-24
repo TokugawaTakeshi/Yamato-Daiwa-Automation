@@ -173,7 +173,7 @@ abstract class CodeSourceFilesWatcher extends FilesPassiveWatcher {
           Logger.logInfo({
             mustOutputIf: this.mustLogEvents,
             badge: { customText: this.LOGGER_BADGE_TEXT },
-            title: `${ this.TARGET_SOURCE_FILES_TYPE__SINGULAR_FORM__LOWERCASE } Entry Point Source File Added`,
+            title: `${ this.TARGET_SOURCE_FILES_TYPE__SINGULAR_FORM__CAPITALIZED } Entry Point Source File Added`,
             description: targetFileAbsolutePath__forwardSlashesPathSeparators
           });
 
@@ -186,7 +186,7 @@ abstract class CodeSourceFilesWatcher extends FilesPassiveWatcher {
           Logger.logInfo({
             mustOutputIf: this.mustLogEvents,
             badge: { customText: this.LOGGER_BADGE_TEXT },
-            title: `${ this.TARGET_SOURCE_FILES_TYPE__SINGULAR_FORM__LOWERCASE } Partial Source File Added`,
+            title: `${ this.TARGET_SOURCE_FILES_TYPE__SINGULAR_FORM__CAPITALIZED } Partial Source File Added`,
             description: targetFileAbsolutePath__forwardSlashesPathSeparators
           });
 

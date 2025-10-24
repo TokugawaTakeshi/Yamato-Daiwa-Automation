@@ -5,6 +5,10 @@ topPage:
   $heading: "Top Page"
   $URI: @All/index
 
+startingFromScratch:
+
+  $heading: "Starting From Scratch"
+
 terminology:
 
   $heading: "Terminology"
@@ -48,6 +52,10 @@ functionality:
       stateDependentPagesVariations:
 
         $heading: "State Dependent Pages Variations"
+
+    optimization:
+
+      $heading: "Markup Processing Optimization"
 
   browserLiveReloading:
 

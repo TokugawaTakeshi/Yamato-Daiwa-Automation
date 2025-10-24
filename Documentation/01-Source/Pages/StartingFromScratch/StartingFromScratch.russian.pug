@@ -1,0 +1,215 @@
+extends ../../../node_modules/@yamato-daiwa/programming_documentation/Layouts/TwoColumns/TwoColumnsLayout.pug
+
+
+block append Requirements
+
+  include ../../SharedAssets/Markup/SharedAssets.russian.pug
+  include ../../SharedComponents/SharedComponents.russian.pug
+
+
+block append Metadata
+
+  -
+
+    const {
+      $heading: topHeading,
+      $sectioning: localizedSectioning
+    } = routing.russian.startingFromScratch;
+
+    RegularWebPageTemplate__YDF.configure({
+      metadata: {
+        title: buildHTML_PageTitle(topHeading),
+        description: ""
+      },
+      stylesSheetsURIs: [
+        "$CommonStyles",
+        "$LayoutsStyles/TwoColumns/TwoColumnsLayout.css",
+        "$PreMadesStyles",
+        "@CustomizedExternalComponents"
+      ]
+    });
+
+    YDF.RoutingEmulator.setCurrentRoute("startingFromScratch");
+
+    LanguageDropDownList__YDF_DK.setLinks({
+      english: routing.english.startingFromScratch.$URI,
+      japanese: routing.japanese.startingFromScratch.$URI
+    });
+
+
+block append HeadScripts
+
+  if __IS_PRODUCTION_BUILDING_MODE__
+
+    +GoogleAnalyticsScript
+
+
+block append SpecificContent
+
+  article
+
+    //- ━━━ Развёртывание проекта с нуля ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    h1.Article-Heading1= topHeading
+
+    +ArticleAbstract--YDF.
+      Ознакомьтесь с этой страницей, если впервые пользуетесь утилитой #[+ImportantEntity--YDID Yamato Daiwa Automation]
+        (#[+ImportantEntity--YDID YDA]).
+
+
+    //- ┅┅┅ Создание npm-проекта ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+    +Heading--YDF({
+      level: 2,
+      text: localizedSectioning.creatingOfNpmProject.$heading,
+      HTML_ID: localizedSectioning.creatingOfNpmProject.$anchor
+    }).Article-Heading2
+
+    p.Article-Paragraph.
+      Создайте директорию и добавьте туда файл #[+ImportantEntity--YDID package.json].
+      #[+Keyphrase--YDID На данный момент] #[+Keyword--YDID достаточно] следующего содержимого:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.JSON }): :code_listing--yda
+        {
+          "private": true,
+          "devDependencies": {
+            "@yamato-daiwa/automation": "0.8.0"
+          }
+        }
+
+    p.Article-Paragraph.
+      Установите npm-зависимости.
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }): :code_listing--yda
+        npm i
+
+
+  //- ┅┅┅ Попытки первого запуска YDA ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+  +Heading--YDF({
+    level: 2,
+    text: localizedSectioning.attemptOfFirstStart.$heading,
+    HTML_ID: localizedSectioning.attemptOfFirstStart.$anchor
+  }).Article-Heading2
+
+  p.Article-Paragraph.
+    Если Вы прямо из консоли попробуете вызывать #[+ImportantEntity__Code--YDID yda], то скорее всего получите сообщение
+      наподобие:
+
+  +ConsoleOutput--YDF.
+    "yda" не является внутренней или внешней командой, исполняемой программной или пакетным файлом.
+
+  p.Article-Paragraph.
+    Объясняется это тем, что установка зависимости в #[+ImportantEntity__Code--YDID node_modules] проекта
+      #[+Keyword--YDID не]&nbsp;делает её обнаруживаемой для консолей.
+    Легче всего исправить это, запустив команду посредством #[+Term--YDID npm-скрипта].
+    Добавьте такой скрипт в #[+ImportantEntity--YDID package.json]:
+
+  +CodeViewer--YDF
+    +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.JSON }): :code_listing--yda
+      {
+        "private": true,
+        "scripts": {
+          "build": "yda"
+        },
+        "devDependencies": {
+          "@yamato-daiwa/automation": "0.8.0"
+        }
+      }
+
+  p.Article-Paragraph.
+    Теперь yda можно запустить посредством `npm run`:
+
+  +CodeViewer--YDF
+    +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }): :code_listing--yda
+      npm run build
+
+  p.Article-Paragraph.
+    Будет получено следующее сообщение об ошибке:
+
+  +ConsoleOutput--YDF.
+    InvalidConsoleCommandError: Invalid Console Command
+    Invalid console command for the application "Yamato Daiwa Automation". The option "--mode" is required for the command "build" (default command phrase). Please check the reference for this command:
+    ● build (default command phrase)
+      Builds the projects according to the configuration file ("yda.config.yaml" as default).
+
+      ■ Options
+
+        --mode
+          The project building mode; affects to presence or absence of incremental building, browser live reloading, code minification etc.
+
+          ◯ Shortcut: -m
+          ◯ Type: string
+          ◯ Is Required: Yes
+          ◯ Allowed Alternatives:
+            ◆ STATIC_PREVIEW
+            ◆ LOCAL_DEVELOPMENT
+            ◆ TESTING
+            ◆ STAGING
+            ◆ PRODUCTION
+
+        --selectiveExecution
+          Allows to specify the selection of tasks, entry points groups, etc. by selective execution ID, herewith the desired selective execution must be preliminarily defined in the configuration file.
+
+          ◯ Shortcut: -s
+          ◯ Type: string
+          ◯ Is Required: No
+
+        --configurationFile
+          Custom name of the configuration file (the default one is "yda.config.yaml")
+
+          ◯ Shortcut: -c
+          ◯ Type: string
+          ◯ Is Required: No
+
+    Occurrence location: ConsoleCommandsParser.parse(commandLineInterfaceSpecification, argumentsVector)
+
+  p.Article-Paragraph.
+    Из сообщения об ошибке при переводе на русской даже первых четырёх строк причина ошибки абсолютно ясна, но
+      многие начинающие разработчики боятся подобных ошибок и даже не&nbsp;пытаются их прочитать и перевести.
+    А сказано в сообщении то, что для командной фразы #[+ImportantEntity__Code--YDID build] (которая по умолчанию,
+      потому мы её не&nbsp;указали) #[+Keyword--YDID обязательна] #[+Term--YDID опция]
+      #[+ImportantEntity__Code--YDID --mode].
+    Ниже отображена справка по данной командной фразе, где, разумеется, упомянута #[+Term--YDID опция]
+      #[+ImportantEntity__Code--YDID --mode], сказано, что она имеет #[+Keyword--YDID строковый] #[+Term--YDID тип] и
+      принимает #[+Keyphrase--YDID одно из] #[+Keyword--YDID пяти] перечисленных значений.
+    На данном этапе мы можем выбрать любой из них — например, #[+SecondaryEntity__Code--YDID PRODUCTION]:
+
+  +CodeViewer--YDF
+    +CodeViewer-Listing--YDF({codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.JSON}): :code_listing--yda
+      {
+        "private": true,
+        "scripts": {
+          "build": "yda --mode PRODUCTION"
+        },
+        "devDependencies": {
+          "@yamato-daiwa/automation": "0.8.0"
+        }
+      }
+
+  p.Article-Paragraph.
+    Перезапустим утилиту:
+
+  +CodeViewer--YDF
+    +CodeViewer-Listing--YDF({codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash}): :code_listing--yda
+      npm run build
+
+  p.Article-Paragraph.
+    Возникнет другая ошибка:
+
+  +ConsoleOutput--YDF.
+    FileNotFoundError: File Not Found
+    The configuration file for "Yamato Daiwa Automation" utility not found at path "D:\IntelliJ IDEA\InHouseDevelopment\YamatoDaiwaAutomation\FunctionalTests\ZeroStart\yda.config.yaml". The "Yamato Daiwa Automation" utility is required the configuration file and will expect the file "yda.config.yaml" at the same directory as CLI has been invoked. You can set custom configuration file name via CLI if you want.
+
+    Occurrence location: EntryPoint.interpretAndExecuteConsoleCommand()
+
+    Inner error:
+    FileNotFoundError: File Not Found
+    File with path "D:\IntelliJ IDEA\InHouseDevelopment\YamatoDaiwaAutomation\FunctionalTests\ZeroStart\yda.config.yaml" not found.
+
+  p.Article-Paragraph.
+    Опять же, при переводе на русский причина ясна и понятна.
+    В ошибке говорится об отсутствии файла конфигурации #[+ImportantEntity--YDID yda.config.yaml], о том, где этот файл
+      искали, и о том, что этот файл #[+Keyword--YDID необходим] — в общем всё объяснено, даже не&nbsp;надо руководство
+      читать.
+    Поэтому создадим этот файл.
+

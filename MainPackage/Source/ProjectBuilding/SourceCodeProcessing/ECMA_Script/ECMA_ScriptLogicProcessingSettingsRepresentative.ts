@@ -25,9 +25,8 @@ export default class ECMA_ScriptLogicProcessingSettingsRepresentative extends So
   public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
   public readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
 
-  public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "ECMAScript logic";
-  public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "ECMAScript logic";
-  public readonly TASK_NAME_FOR_LOGGING: string = "ECMAScript Logic Processing";
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "ECMAScript Logic";
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "ECMAScript Logic";
 
   public readonly entryPointsGroupsNormalizedSettingsMappedByReferences: ReadonlyMap<
     string, ECMA_ScriptLogicProcessingSettings__Normalized.EntryPointsGroup

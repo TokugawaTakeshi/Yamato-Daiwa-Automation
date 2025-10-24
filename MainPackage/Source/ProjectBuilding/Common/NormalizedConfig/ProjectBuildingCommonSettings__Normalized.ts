@@ -1,13 +1,15 @@
-/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Restrictions ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type SourceCodeProcessingGenericProperties__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
 import type AssetsProcessingSettingsGenericProperties__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/AssetsProcessingSettingsGenericProperties__Normalized";
 import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 type ProjectBuildingCommonSettings__Normalized = Readonly<{
@@ -21,6 +23,8 @@ type ProjectBuildingCommonSettings__Normalized = Readonly<{
   mustGenerateOutputPackageJSON: boolean;
   dockerSetupID?: string;
   actualPublicDirectoryAbsolutePath?: string;
+  processingOnDemand: ProjectBuildingCommonSettings__Normalized.ProcessingOnDemand;
+  CSS_ClassesMinificationOnFly: ProjectBuildingCommonSettings__Normalized.CSS_ClassesMinificationOnFly;
 }>;
 
 
@@ -41,6 +45,29 @@ namespace ProjectBuildingCommonSettings__Normalized {
     excludedFilesGlobSelectors: ReadonlySet<string>;
     excludedDirectoriesGlobSelectors: ReadonlySet<string>;
   }>;
+
+  export type ProcessingOnDemand = Readonly<{
+    enabled: boolean;
+    fullInitialBuilding: boolean;
+  }>;
+
+  export type CSS_ClassesMinificationOnFly = Readonly<{
+    enabled: boolean;
+    CSS_ClassesRegularExpressions: ReadonlySet<RegExp>;
+    forbiddenMinifiedCSS_ClassesNames: ReadonlySet<string>;
+    ignoredCSS_Classes: ReadonlySet<string>;
+    generatingInMarkupOfShortCSS_ClassesNotMentionedInStylesheets:
+        CSS_ClassesMinificationOnFly.GeneratingInMarkupOfShortCSS_ClassesNotMentionedInStylesheets;
+  }>;
+
+  export namespace CSS_ClassesMinificationOnFly {
+
+    export type GeneratingInMarkupOfShortCSS_ClassesNotMentionedInStylesheets = Readonly<{
+      enabled: boolean;
+      ignoredInitialCSS_Classes: ReadonlySet<string>;
+    }>;
+
+  }
 
 }
 

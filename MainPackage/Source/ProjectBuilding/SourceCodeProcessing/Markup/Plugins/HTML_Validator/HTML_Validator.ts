@@ -323,7 +323,7 @@ class HTML_Validator {
   /* ━━━ Constructor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   private constructor(
     {
-      temporaryFileDirectoryAbsolutePath,
+      temporaryFilesDirectoryAbsolutePath,
       projectBuildingMasterConfigRepresentative,
       logging
     }: HTML_Validator.Requirements
@@ -386,7 +386,7 @@ class HTML_Validator {
 
     /* ─── Temporary Files ────────────────────────────────────────────────────────────────────────────────────────── */
     this.absolutePathOfParentDirectoryOfTemporaryFormattedHTML_Files = ImprovedPath.joinPathSegments([
-      temporaryFileDirectoryAbsolutePath,
+      temporaryFilesDirectoryAbsolutePath,
       HTML_Validator.TEMPORARY_FORMATTED_HTML_FILES_FOLDER_NAME
     ]);
 
@@ -674,7 +674,7 @@ class HTML_Validator {
              * + All validation errors will be output to `stderr` herewith the first parameter will be non-null.
              * + It is possible to output the validation error to `stdout` instead if to specify the respective option,
              *   but the first parameter will be non-null anyway.
-             * + The reaction to non-existing file is completely same as to valid file: the stringified object
+             * + The reaction to a non-existing file is completely the same as to a valid file: the stringified object
              *   `{"messages":[]}` will be returned. */
             const stringifiedOutput: string = Buffer.isBuffer(stderr) ? stderr.toString("utf8") : stderr;
 
@@ -898,7 +898,7 @@ class HTML_Validator {
                   `${
                     surroundLabelByOrnament({
                       label: fileRelativePath__forwardPathSeparatorsOnly,
-                      characterForIndentationAroundLabel: "",
+                      characterForIndentationAroundLabel: " ",
                       ornamentPatten: "─",
                       prependedPartCharactersCount: 3,
                       totalCharactersCount: HTML_Validator.DISPLAYING_MAXIMAL_COLUMNS_COUNT_IN_LOG
@@ -1097,7 +1097,7 @@ namespace HTML_Validator {
   /* ─── Initialization ───────────────────────────────────────────────────────────────────────────────────────────── */
   export type Requirements = Readonly<{
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
-    temporaryFileDirectoryAbsolutePath: string;
+    temporaryFilesDirectoryAbsolutePath: string;
     logging: Logging;
   }>;
 

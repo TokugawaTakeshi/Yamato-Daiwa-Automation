@@ -6,10 +6,16 @@ const StylesProcessingSettings__Default: Readonly<{
 
   periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
 
+  sourcemaps: Readonly<{
+    mustGenerate:
+      (compoundParameter: Readonly<{ consumingProjectBuildingMode: ConsumingProjectBuildingModes; }>) =>
+          boolean;
+  }>;
+
   revisioning: Readonly<{
-    mustExecute: (
-      compoundParameter: Readonly<{ consumingProjectBuildingMode: ConsumingProjectBuildingModes; }>
-    ) => boolean;
+    mustExecute:
+      (compoundParameter: Readonly<{ consumingProjectBuildingMode: ConsumingProjectBuildingModes; }>) =>
+          boolean;
     contentHashPostfixSeparator: string;
   }>;
 
@@ -34,6 +40,14 @@ const StylesProcessingSettings__Default: Readonly<{
 }> = {
 
   periodBetweenFileUpdatingAndRebuildingStarting__seconds: 1,
+
+  sourcemaps: {
+    mustGenerate: (
+      compoundParameter: Readonly<{ consumingProjectBuildingMode: ConsumingProjectBuildingModes; }>
+    ): boolean =>
+        compoundParameter.consumingProjectBuildingMode === ConsumingProjectBuildingModes.staticPreview ||
+        compoundParameter.consumingProjectBuildingMode === ConsumingProjectBuildingModes.localDevelopment
+  },
 
   revisioning: {
     mustExecute: (

@@ -1,3 +1,6 @@
+import ConsumingProjectBuildingModes from "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
+
+
 const ImagesProcessingSettings__Default: Readonly<{
 
   periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
@@ -8,6 +11,8 @@ const ImagesProcessingSettings__Default: Readonly<{
     filesWatcherEvents: boolean;
   }>;
 
+  mustOptimize: (consumingProjectBuildingMode: ConsumingProjectBuildingModes) => boolean;
+
 }> = {
 
   periodBetweenFileUpdatingAndRebuildingStarting__seconds: 1,
@@ -16,7 +21,12 @@ const ImagesProcessingSettings__Default: Readonly<{
     filesPaths: true,
     filesCount: true,
     filesWatcherEvents: true
-  }
+  },
+
+  mustOptimize:
+      (consumingProjectBuildingMode: ConsumingProjectBuildingModes): boolean =>
+          consumingProjectBuildingMode !== ConsumingProjectBuildingModes.staticPreview &&
+          consumingProjectBuildingMode !== ConsumingProjectBuildingModes.localDevelopment
 
 };
 

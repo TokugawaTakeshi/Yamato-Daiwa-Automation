@@ -10,6 +10,7 @@ import type RevisioningSettings__Normalized from
 
 /* ─── Third-party tools ──────────────────────────────────────────────────────────────────────────────────────────── */
 import type TypeScript from "typescript";
+import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
 
 
 type ECMA_ScriptLogicProcessingSettings__Normalized = Readonly<{
@@ -43,6 +44,7 @@ namespace ECMA_ScriptLogicProcessingSettings__Normalized {
         directoriesAliasesAndCorrespondingAbsolutePathsMap: ReadonlyMap<string, ReadonlyArray<string>>;
         revisioning: RevisioningSettings__Normalized;
         distributing?: EntryPointsGroup.Distributing;
+        preprocessorVariables: ArbitraryObject;
       }>;
 
   export namespace EntryPointsGroup {

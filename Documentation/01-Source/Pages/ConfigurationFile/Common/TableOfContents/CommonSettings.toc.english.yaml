@@ -14,14 +14,50 @@ selectiveExecutions:
 
       $heading: "<code>$browserLiveReloadingSetupID</code> — Browser Live Reloading Setup ID"
 
-    distributablePackageJSON_Generating:
-
-      $heading: "<code>$distributablePackageJSON_Generating</code> — Generating of \"package.json\" for Distributive"
-
     dockerSetupID:
 
       $heading: "<code>$dockerSetupID</code> — Docker Setup ID"
 
+    distributablePackageJSON_Generating:
+
+      $heading: "<code>$distributablePackageJSON_Generating</code> — Generating of \"package.json\" for the Distributive"
+
+    processingOnDemand:
+
+      $heading: "<code>$processingOnDemand</code> — Processing on Demand"
+
+      enable:
+
+        $heading: "<code>enable</code> — Enable or no"
+
+      fullInitialBuilding:
+
+        $heading: "<code>fullInitialBuilding</code> — Is Full Initial Building Required"
+
 publicDirectoriesRelativePaths:
 
   $heading: "<code>$publicDirectoriesRelativePaths</code> — Public Directories Relative Paths"
+
+filesWatching:
+
+  $heading: "<code>$filesWatching</code> — Files Watching"
+
+  excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+    $heading: "<code>excludeFilesWithPathsRelativeToProjectRootDirectory</code> — Relative Paths of Excluded Files"
+
+  excludeDirectoriesWithPathsRelativeToProjectRootDirectory:
+
+    $heading: "<code>excludeDirectoriesWithPathsRelativeToProjectRootDirectory</code> — Relative Paths of Excluded Directories"
+
+  buildingModeDependent:
+
+    $heading: "<code>buildingModeDependent</code> — Building Mode Dependent"
+
+    excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+      $heading: "<code>excludeFilesWithPathsRelativeToProjectRootDirectory</code> — Relative Paths of Excluded Files"
+
+    excludeDirectoriesWithPathsRelativeToProjectRootDirectory:
+
+      $heading: "<code>excludeDirectoriesWithPathsRelativeToProjectRootDirectory</code> — Relative Paths of Excluded Directories"

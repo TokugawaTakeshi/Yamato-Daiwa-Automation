@@ -53,7 +53,6 @@ import {
 } from "@yamato-daiwa/es-extensions-nodejs";
 import Stopwatch from "@Incubators/@yamato-daiwa/es-extensions/Stopwatch";
 import NativeToastMessageService from "node-notifier";
-import FileSystem from "fs";
 import { parse as parseHTML } from "node-html-parser";
 import type { HTMLElement } from "node-html-parser";
 
@@ -1016,10 +1015,11 @@ class AccessibilityInspector {
           {}
         );
 
-    FileSystem.writeFileSync(
-      this.CACHED_INSPECTIONS_RESULTS_FILE_ABSOLUTE_PATH,
-      JSON.stringify(cachedInspectionsResultsFileContent, null, 2)
-    );
+    ImprovedFileSystem.writeFileToPossiblyNotExistingDirectory({
+      filePath: this.CACHED_INSPECTIONS_RESULTS_FILE_ABSOLUTE_PATH,
+      content: JSON.stringify(cachedInspectionsResultsFileContent, null, 2),
+      synchronously: true
+    });
 
   }
 

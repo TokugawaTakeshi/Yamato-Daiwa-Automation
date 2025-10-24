@@ -21,7 +21,8 @@ import {
   ImprovedPath,
   ObjectDataFilesProcessor,
   FileNotFoundError,
-  isErrnoException
+  isErrnoException,
+  ImprovedFileSystem
 } from "@yamato-daiwa/es-extensions-nodejs";
 import FileSystem from "fs";
 import Path from "path";
@@ -29,7 +30,19 @@ import Path from "path";
 
 class SourceCodeSelectiveReprocessingHelper {
 
-  private static readonly DEBUGGING_MODE: boolean = false;
+  /** @description Intended to be enabled only during debugging. The inputted values are the examples. */
+  private static readonly debugging: Readonly<{
+    enabled: boolean;
+    onlyForFilesTypeInSingularForm?: string;
+    onlyForEntryPointsWhichPathIncludes?: string;
+  }> = {
+    enabled: false,
+    onlyForFilesTypeInSingularForm: "ECMAScript Logic",
+    onlyForEntryPointsWhichPathIncludes: "RendererProcessEntryPoint"
+  };
+
+  private static readonly MUST_OUTPUT_ERRORS_FOR_DEVELOPERS: boolean = true;
+
   private static readonly cachedMetadataFileContentSpecification: RawObjectDataProcessor.
       FixedSchemaObjectTypeDataSpecification =
           {
@@ -110,6 +123,7 @@ class SourceCodeSelectiveReprocessingHelper {
   private readonly CACHED_METADATA_FILE_ABSOLUTE_PATH: string;
   private readonly TARGET_FILES_TYPE_IN_SINGULAR_FORM: string;
 
+  private currentlyScannedEntryPointAbsolutePath__forwardSlashSeparators?: string;
   private currentChainOfRelativePathsInFilesTree: Array<string> = [];
 
 
@@ -238,7 +252,9 @@ class SourceCodeSelectiveReprocessingHelper {
       if (!(error instanceof FileNotFoundError)) {
 
         Logger.logError({
-          mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
+          mustOutputIf:
+              __IS_DEVELOPMENT_BUILDING_MODE__ ||
+              SourceCodeSelectiveReprocessingHelper.MUST_OUTPUT_ERRORS_FOR_DEVELOPERS,
           errorType: "CachedDataRetrievingFailedError",
           title: "Cached Data Retrieving Failed",
           description: `Unable to read the existing cache file at "${ this.CACHED_METADATA_FILE_ABSOLUTE_PATH }".`,
@@ -297,6 +313,8 @@ class SourceCodeSelectiveReprocessingHelper {
 
     for (const entryPointAbsolutePath__forwardSlashSeparators of targetEntryPointsAbsolutePaths__forwardSlashSeparators) {
 
+      this.currentlyScannedEntryPointAbsolutePath__forwardSlashSeparators = entryPointAbsolutePath__forwardSlashSeparators;
+
       const entryPointDirectoryAbsolutePath__forwardSlashSeparators: string = ImprovedPath.extractDirectoryFromFilePath({
         targetPath: entryPointAbsolutePath__forwardSlashSeparators,
         ambiguitiesResolution: {
@@ -313,6 +331,16 @@ class SourceCodeSelectiveReprocessingHelper {
             comparedPath: entryPointAbsolutePath__forwardSlashSeparators,
             alwaysForwardSlashSeparators: true
           });
+
+      Logger.logDebug({
+        mustOutputIf: this.mustOutputDebug,
+        title: "SourceCodeSelectiveReprocessingHelper, Scan Files Hierarchy Tree for Entry Point - 1",
+        description: entryPointAbsolutePath__forwardSlashSeparators,
+        additionalData: {
+          entryPointDirectoryAbsolutePath__forwardSlashSeparators,
+          entryPointPathRelativeToConsumingProjectRootDirectory__forwardSlashSeparators
+        }
+      });
 
       let entryPointLastModificationDateTime__ISO8601: string;
 
@@ -331,7 +359,9 @@ class SourceCodeSelectiveReprocessingHelper {
 
 
         Logger.logError({
-          mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
+          mustOutputIf:
+              __IS_DEVELOPMENT_BUILDING_MODE__ ||
+              SourceCodeSelectiveReprocessingHelper.MUST_OUTPUT_ERRORS_FOR_DEVELOPERS,
           errorType: "FileStatisticsRetrievingFailedError",
           title: "File Statistics Retrieving Failed Error",
           description:
@@ -354,11 +384,29 @@ class SourceCodeSelectiveReprocessingHelper {
       let absolutePathsOfExistingDirectChildrenFilesOfCurrentEntryPoint__forwardSlashSeparators: ReadonlySet<string> =
           new Set();
 
-      /* [ Theory ] This condition will could be truthy (but not always) only on initial pass. */
+      Logger.logDebug({
+        mustOutputIf: this.mustOutputDebug,
+        title: "SourceCodeSelectiveReprocessingHelper, Scan Files Hierarchy Tree for Entry Point - 2",
+        description:
+            isUndefined(cachedMetadataOfCurrentEntryPoint) ?
+                "No cached metadata for this entry point has been previously stored" :
+                "Has cached metadata for this entry point",
+        additionalData: {
+          ...isNotUndefined(cachedMetadataOfCurrentEntryPoint) ?
+              {
+                cachedMetadataOfCurrentEntryPoint,
+                hasMetadataOutdated:
+                    cachedMetadataOfCurrentEntryPoint.modificationDate__ISO8601 !== entryPointLastModificationDateTime__ISO8601
+              } :
+              null
+        }
+      });
+
+      /* [ Theory ] This condition may be truthy (but not always) only on initial pass. */
       if (cachedMetadataOfCurrentEntryPoint?.modificationDate__ISO8601 === entryPointLastModificationDateTime__ISO8601) {
 
         /* [ Theory ]
-         * Although the entry point file is existing and has not changed since last scan, its children files could
+         * Although the entry point file is existing and has not changed since the last scan, its children files could
          *  be added or deleted. */
         for (
           const pathRelativeToConsumingProjectRootDirectoryOfChildFileOfCurrentEntryPoint__forwardSlashSeparators of
@@ -471,7 +519,9 @@ class SourceCodeSelectiveReprocessingHelper {
       if (isErrnoException(error) && error.code === "ENOENT") {
 
         Logger.logError({
-          mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
+          mustOutputIf:
+              __IS_DEVELOPMENT_BUILDING_MODE__ ||
+              SourceCodeSelectiveReprocessingHelper.MUST_OUTPUT_ERRORS_FOR_DEVELOPERS,
           errorType: UnexpectedEventError.NAME,
           title: UnexpectedEventError.localization.defaultTitle,
           description:
@@ -488,7 +538,7 @@ class SourceCodeSelectiveReprocessingHelper {
 
 
       Logger.logError({
-        mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.DEBUGGING_MODE,
+        mustOutputIf: __IS_DEVELOPMENT_BUILDING_MODE__ || SourceCodeSelectiveReprocessingHelper.MUST_OUTPUT_ERRORS_FOR_DEVELOPERS,
         errorType: FileReadingFailedError.NAME,
         title: FileReadingFailedError.localization.defaultTitle,
         description: FileReadingFailedError.localization.
@@ -1004,10 +1054,11 @@ class SourceCodeSelectiveReprocessingHelper {
 
     };
 
-    FileSystem.writeFileSync(
-      this.CACHED_METADATA_FILE_ABSOLUTE_PATH,
-      JSON.stringify(outputData, null, 2)
-    );
+    ImprovedFileSystem.writeFileToPossiblyNotExistingDirectory({
+      filePath: this.CACHED_METADATA_FILE_ABSOLUTE_PATH,
+      content: JSON.stringify(outputData, null, 2),
+      synchronously: true
+    });
 
   }
 
@@ -1037,6 +1088,29 @@ class SourceCodeSelectiveReprocessingHelper {
       title: `${ this.TARGET_FILES_TYPE_IN_SINGULAR_FORM } Children Files and Respective Parent Entry Points Relationships`,
       description: accumulatingString.length > 0 ? accumulatingString : "No existing children files has been found."
     });
+
+  }
+
+  private get mustOutputDebug(): boolean {
+
+    if (!SourceCodeSelectiveReprocessingHelper.debugging.enabled) {
+      return false;
+    }
+
+
+    if (
+      isNonEmptyString(SourceCodeSelectiveReprocessingHelper.debugging.onlyForFilesTypeInSingularForm) &&
+          SourceCodeSelectiveReprocessingHelper.debugging.onlyForFilesTypeInSingularForm !==
+              this.TARGET_FILES_TYPE_IN_SINGULAR_FORM
+    ) {
+      return false;
+    }
+
+
+    return !(isNonEmptyString(SourceCodeSelectiveReprocessingHelper.debugging.onlyForEntryPointsWhichPathIncludes) &&
+        isString(this.currentlyScannedEntryPointAbsolutePath__forwardSlashSeparators) &&
+        !this.currentlyScannedEntryPointAbsolutePath__forwardSlashSeparators.
+            includes(SourceCodeSelectiveReprocessingHelper.debugging.onlyForEntryPointsWhichPathIncludes));
 
   }
 

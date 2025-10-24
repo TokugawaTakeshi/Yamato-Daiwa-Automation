@@ -2,8 +2,6 @@
 import MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRestrictions";
 import PROCESSABLE_FILES_POINTER_ALIAS_PREFIX from
     "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILES_POINTER_ALIAS_PREFIX";
-import PLAIN_COPIED_FILES_POINTER_ALIAS_PREFIX from
-    "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PLAIN_COPIED_FILES_POINTER_ALIAS_PREFIX";
 
 /* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
@@ -23,73 +21,85 @@ import {
   extractFileNameWithoutLastExtension,
   insertSubstringIf,
   replaceDoubleBackslashesWithForwardSlashes,
+  removeSpecifiedFileNameExtensionsFromPath,
   mergeSets,
   getExpectedToBeNonUndefinedMapValue,
-  isNotUndefined
+  isNotUndefined,
+  isUndefined,
+  Logger,
+  UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
-import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
 export default class MarkupProcessingSettingsRepresentative extends GulpStreamBasedSourceCodeProcessingConfigRepresentative<
   MarkupProcessingSettings__Normalized.Common, MarkupProcessingSettings__Normalized.EntryPointsGroup
 > {
 
-  /* [ Theory ] Below two fields could be even or not. */
+  /* ━━━ Fields ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ┅┅┅ Superclasses' Requirements ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+
+  /* [ Theory ] Below two fields may be even or not. */
   public readonly supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
   public readonly actualFileNameExtensionsWithoutLeadingDots: ReadonlySet<string>;
 
-  public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Markup";
   public readonly TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM: string = "Markup";
-  public readonly TASK_NAME_FOR_LOGGING: string = "Markup Processing";
-  public readonly PLAIN_COPIED_FILES_ALIAS_PREFIX: string = PLAIN_COPIED_FILES_POINTER_ALIAS_PREFIX;
-  public readonly WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS: number;
+  public readonly TARGET_FILES_KIND_FOR_LOGGING__PLURAL_FORM: string = "Markup";
 
-  public readonly entryPointsGroupsNormalizedSettingsMappedByReferences: ReadonlyMap<
-    string, MarkupProcessingSettings__Normalized.EntryPointsGroup
-  >;
+  /* ┅┅┅ Specific ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+  public readonly WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS: number;
 
   public readonly sourceCodeLintingCommonSettings: MarkupProcessingSettings__Normalized.Linting;
   public readonly importingFromTypeScriptSettings?: MarkupProcessingSettings__Normalized.ImportingFromTypeScript;
   public readonly importingFromJavaScriptSettings?: MarkupProcessingSettings__Normalized.ImportingFromJavaScript;
   public readonly staticPreviewSettings: MarkupProcessingSettings__Normalized.StaticPreview;
   public readonly routingSettings?: MarkupProcessingSettings__Normalized.Routing;
-  public readonly relevantEntryPointsGroupsSettings: ReadonlyMap<
-    SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID, MarkupProcessingSettings__Normalized.EntryPointsGroup
-  >;
+
+  public readonly relevantEntryPointsGroupsSettings:
+      ReadonlyMap<
+        SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
+        MarkupProcessingSettings__Normalized.EntryPointsGroup
+      >;
+
   public readonly loggingSettings: MarkupProcessingSettings__Normalized.Logging;
 
   public readonly mustValidateHTML: boolean;
   public readonly mustInspectAccessibility: boolean;
 
+  public readonly TASK_NAME_FOR_LOGGING: string = "Markup Processing";
+
+  public readonly entryPointsGroupsNormalizedSettingsMappedByReferences:
+      ReadonlyMap<string, MarkupProcessingSettings__Normalized.EntryPointsGroup>;
+
   protected readonly sourceCodeProcessingCommonSettings: MarkupProcessingSettings__Normalized.Common;
-  protected readonly mustResolveResourcesReferencesToAbsolutePath: boolean;
 
 
+  /* ━━━ Constructor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   public constructor(
-    normalizedMarkupProcessingSettings: MarkupProcessingSettings__Normalized,
+    markupProcessingSettings__normalized: MarkupProcessingSettings__Normalized,
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
 
     super(projectBuildingMasterConfigRepresentative);
 
-    this.sourceCodeLintingCommonSettings = normalizedMarkupProcessingSettings.linting;
-    this.importingFromTypeScriptSettings = normalizedMarkupProcessingSettings.importingFromTypeScript;
-    this.importingFromJavaScriptSettings = normalizedMarkupProcessingSettings.importingFromJavaScript;
-    this.staticPreviewSettings = normalizedMarkupProcessingSettings.staticPreview;
-    this.routingSettings = normalizedMarkupProcessingSettings.routing;
-    this.relevantEntryPointsGroupsSettings = normalizedMarkupProcessingSettings.relevantEntryPointsGroups;
-    this.loggingSettings = normalizedMarkupProcessingSettings.logging;
-
-    this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = normalizedMarkupProcessingSettings.common.
+    this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = markupProcessingSettings__normalized.common.
         supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots;
 
     this.actualFileNameExtensionsWithoutLeadingDots = mergeSets(
       this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
-      normalizedMarkupProcessingSettings.common.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles
+      markupProcessingSettings__normalized.common.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles
     );
 
-    this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS = normalizedMarkupProcessingSettings.common.
+    this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS = markupProcessingSettings__normalized.common.
         secondsBetweenFileUpdatingAndStartingOfRebuilding;
+
+    this.sourceCodeLintingCommonSettings = markupProcessingSettings__normalized.linting;
+    this.importingFromTypeScriptSettings = markupProcessingSettings__normalized.importingFromTypeScript;
+    this.importingFromJavaScriptSettings = markupProcessingSettings__normalized.importingFromJavaScript;
+    this.staticPreviewSettings = markupProcessingSettings__normalized.staticPreview;
+    this.routingSettings = markupProcessingSettings__normalized.routing;
+    this.relevantEntryPointsGroupsSettings = markupProcessingSettings__normalized.relevantEntryPointsGroups;
+    this.loggingSettings = markupProcessingSettings__normalized.logging;
 
     this.entryPointsGroupsNormalizedSettingsMappedByReferences = new Map<
       string, MarkupProcessingSettings__Normalized.EntryPointsGroup
@@ -114,13 +124,12 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
           entryPointsGroupSettings.accessibilityInspection.mustExecute
     );
 
-    this.sourceCodeProcessingCommonSettings = normalizedMarkupProcessingSettings.common;
-    this.mustResolveResourcesReferencesToAbsolutePath = normalizedMarkupProcessingSettings.common.
-        mustResolveResourcesReferencesToAbsolutePath;
+    this.sourceCodeProcessingCommonSettings = markupProcessingSettings__normalized.common;
 
   }
 
 
+  // ━━━ TODO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   /* ━━━ Common ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   public computeOutputFileNameExtension(
     compoundParameter: Readonly<
@@ -163,6 +172,80 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
 
     return insertSubstringIf(".", compoundParameter.mustPrependDotToFileNameExtension) +
         fileNameExtensionWithoutLeadingDot;
+
+  }
+
+  /* [ Approach ]
+   * The standard implementation cannot be used for a markup processing case because when source files selecting
+   *   settings including the specific penultimate filenames extensions, the corresponding entry points group normalized
+   *    settings will not be found if a localization filename extension has been dynamically appended what will break
+   *    Glob matching. */
+  public override getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(
+    targetSourceFileAbsolutePath: string
+  ):
+      MarkupProcessingSettings__Normalized.EntryPointsGroup
+  {
+
+    let entryPointsGroupsNormalizedSettingsRelevantForTargetSourceFile:
+        MarkupProcessingSettings__Normalized.EntryPointsGroup | undefined;
+
+    for (const entryPointsGroupNormalizedSettings of this.relevantEntryPointsGroupsSettings.values()) {
+
+      let targetSourceFileAbsolutePathWithoutLocalizationFileNamesExtensions: string;
+
+      if (entryPointsGroupNormalizedSettings.localization.locales.size > 0) {
+
+        const outputFileInterimNameLocalizationExtensionWithoutDots: ReadonlySet<string> = new Set(
+          Array.from(entryPointsGroupNormalizedSettings.localization.locales.values()).
+              map(
+                (
+                  { outputFileInterimNameExtensionWithoutDot }:
+                      MarkupProcessingSettings__Normalized.EntryPointsGroup.Localization.LocaleData
+                ): string =>
+                    outputFileInterimNameExtensionWithoutDot
+              )
+        );
+
+        targetSourceFileAbsolutePathWithoutLocalizationFileNamesExtensions =
+            removeSpecifiedFileNameExtensionsFromPath({
+              filePath: targetSourceFileAbsolutePath,
+              mustIgnoreLastOrSingleFileNameExtension: true,
+              filesNamesExtensions: outputFileInterimNameLocalizationExtensionWithoutDots,
+              pathsSeparatorMustBeUsedInOutputPathWhen2_KindsMixedInInitialPaths: "/"
+            });
+
+      } else {
+
+        targetSourceFileAbsolutePathWithoutLocalizationFileNamesExtensions = targetSourceFileAbsolutePath;
+
+      }
+
+
+      if (
+        ImprovedGlob.isFilePathMatchingWithAllGlobSelectors({
+          filePath: targetSourceFileAbsolutePathWithoutLocalizationFileNamesExtensions,
+          globSelectors: entryPointsGroupNormalizedSettings.sourceFilesGlobSelectors
+        })
+      ) {
+        entryPointsGroupsNormalizedSettingsRelevantForTargetSourceFile = entryPointsGroupNormalizedSettings;
+        break;
+      }
+
+    }
+
+
+    if (isUndefined(entryPointsGroupsNormalizedSettingsRelevantForTargetSourceFile)) {
+      Logger.throwErrorWithFormattedMessage({
+        errorInstance: new UnexpectedEventError(
+          `No output entry points group has been fond for file of the path:\n${ targetSourceFileAbsolutePath }`
+        ),
+        title: UnexpectedEventError.localization.defaultTitle,
+        occurrenceLocation: "GulpStreamBasedSourceCodeProcessingConfigRepresentative(Inheritor)." +
+            "getEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(targetSourceFileAbsolutePath)"
+      });
+    }
+
+    return entryPointsGroupsNormalizedSettingsRelevantForTargetSourceFile;
 
   }
 
@@ -441,6 +524,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
 
     return {
       mustInitialFileBeKept: !areLocalizedVersionsRequiredForCurrentFile,
+      initialSourceFileAbsolutePath: sourceFileAbsolutePath__forwardSlashesSeparators,
       sourceAndOutputAbsolutePathsOfAllVariations,
       absoluteSourcePathsOfAllVariations,
       dataForPugBySourceFilesAbsolutePaths

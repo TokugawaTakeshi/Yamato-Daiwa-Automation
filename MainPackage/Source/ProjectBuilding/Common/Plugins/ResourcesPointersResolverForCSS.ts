@@ -38,10 +38,7 @@ abstract class ResourcesPointersResolverForCSS extends ResourcesPointersResolver
   private static imagesSourceFilesGroupsTopDirectoriesAliasesAndRespectiveAbsolutePathsMap: ReadonlyMap<string, string> =
       new Map<string, string>();
 
-  /* [ Theory ]
-   * This class designed not only for CSS files but also for the CSS inside HTML fields.
-   * That is
-   * */
+  /* [ Theory ] This class is designed not only for CSS files but also for the CSS inside HTML fields. */
   public static resolve(
     {
       CSS_Code,

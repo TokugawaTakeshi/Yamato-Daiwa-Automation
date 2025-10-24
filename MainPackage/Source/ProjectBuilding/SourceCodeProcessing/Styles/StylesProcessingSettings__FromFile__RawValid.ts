@@ -53,7 +53,10 @@ namespace StylesProcessingSettings__FromFile__RawValid {
 
     export type BuildingModeDependent =
         SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup.BuildingModeDependent &
-        Readonly<{ revisioning?: RevisioningSettings__FromFile__RawValid; }>;
+        Readonly<{
+          mustGenerateSourcemaps?: boolean;
+          revisioning?: RevisioningSettings__FromFile__RawValid;
+        }>;
 
   }
 
@@ -124,7 +127,7 @@ namespace StylesProcessingSettings__FromFile__RawValid {
               $secondsBetweenFileUpdatingAndStartingOfRebuilding: {
                 newName: "secondsBetweenFileUpdatingAndStartingOfRebuilding",
                 type: Number,
-                numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                numbersSet: RawObjectDataProcessor.NumbersSets.positiveRealNumber,
                 isNaN_Forbidden: true,
                 isUndefinedForbidden: false,
                 isNullForbidden: true
@@ -157,6 +160,14 @@ namespace StylesProcessingSettings__FromFile__RawValid {
 
     ...SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.generatePropertiesSpecification({
       entryPointsGroupBuildingModeDependentSpecificSettingsLocalizedPropertiesSpecification: {
+
+        $sourcemaps: {
+          newName: "mustGenerateSourcemaps",
+          type: Boolean,
+          isUndefinedForbidden: false,
+          isNullForbidden: true
+        },
+
         $revisioning: {
           newName: "revisioning",
           type: Object,
@@ -164,6 +175,7 @@ namespace StylesProcessingSettings__FromFile__RawValid {
           mustTransformNullToUndefined: true,
           properties: RevisioningSettings__FromFile__RawValid.propertiesSpecification
         }
+
       }
     }),
 

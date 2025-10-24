@@ -34,6 +34,8 @@ import {
   UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+import removeLastFileNameExtensionFromPath from
+    "@Incubators/@yamato-daiwa/es-extensions/Strings/removeLastFileNameExtensionFromPath";
 
 
 /* [ Approach ] Because of the serious performance impact, the file watching has been delegated to an external watcher. */
@@ -95,10 +97,6 @@ export default abstract class WebpackConfigGenerator {
     const willBrowserJS_LibraryBeBuilt: boolean =
         entryPointsGroupSettings.distributing?.exposingOfExportsFromEntryPoints.mustExpose === true &&
         entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.browser;
-
-    const willNodeJS_LibraryBeBuilt: boolean =
-        entryPointsGroupSettings.distributing?.exposingOfExportsFromEntryPoints.mustExpose === true &&
-        entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.nodeJS;
 
     const willPugLibraryBeBuilt: boolean =
         entryPointsGroupSettings.distributing?.exposingOfExportsFromEntryPoints.mustExpose === true &&
@@ -200,8 +198,9 @@ export default abstract class WebpackConfigGenerator {
 
         ...isNotUndefined(webpackPublicPath) ? { publicPath: webpackPublicPath } : {},
 
-        filename: entryPointsGroupSettings.revisioning.mustExecute ?
-            `[name]${ entryPointsGroupSettings.revisioning.contentHashPostfixSeparator }[contenthash].js` : "[name].js",
+        filename:
+            entryPointsGroupSettings.revisioning.mustExecute ?
+                `[name]${ entryPointsGroupSettings.revisioning.contentHashPostfixSeparator }[contenthash].js` : "[name].js",
 
         chunkFilename: entryPointsGroupSettings.revisioning.mustExecute ?
             `[id]${ entryPointsGroupSettings.revisioning.contentHashPostfixSeparator }[contenthash].js` :
@@ -248,9 +247,11 @@ export default abstract class WebpackConfigGenerator {
               }
             })(),
 
-            ...willNodeJS_LibraryBeBuilt || willPugLibraryBeBuilt ? {
-              name: entryPointsGroupSettings.distributing.exposingOfExportsFromEntryPoints.namespace
-            } : null
+            /* [ Theory ]
+             * Must be unset when `target` is `browser` and `library.type` is `module`.
+             * Respected during configuration validation. */
+            name: entryPointsGroupSettings.distributing.exposingOfExportsFromEntryPoints.namespace
+
           }
         } : null,
 
@@ -316,8 +317,8 @@ export default abstract class WebpackConfigGenerator {
 
               configFile: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
 
-              /* [ Performance Optimization ] Type checking is been executed externally and once for all files. */
-              transpileOnly: false,
+              /* [ Performance Optimization ] Type checking is being executed externally and once for all files. */
+              transpileOnly: true,
 
               /* [ Theory ] This option allows TypeScript to process the code extracted from a single file component.
                * [ Reference ] https://github.com/Microsoft/TypeScript-Vue-Starter#single-file-components */
@@ -363,7 +364,10 @@ export default abstract class WebpackConfigGenerator {
 
               {
                 test: /\.ydur\.pug$/u,
-                loader: "@yamato-daiwa/universal-reactive-webpack-loader"
+                loader: "@yamato-daiwa/universal-reactive-webpack-loader",
+                options: {
+                  debug: false
+                }
               },
 
               {
@@ -436,6 +440,7 @@ export default abstract class WebpackConfigGenerator {
           ...WebpackSpecialist.convertPathsAliasesFromTypeScriptFormatToWebpackFormat({
             typeScriptPathsSettings: typeScriptCompilerOptions.paths,
             typeScriptBasicAbsolutePath:
+                /*  eslint-disable-next-line @typescript-eslint/no-deprecated -- Deprecated but may be used but YDA user. */
                 typeScriptCompilerOptions.baseUrl ??
                 ImprovedPath.extractDirectoryFromFilePath({
                   targetPath: entryPointsGroupSettings.typeScriptConfigurationFileAbsolutePath,
@@ -463,18 +468,25 @@ export default abstract class WebpackConfigGenerator {
 
         new Webpack.DefinePlugin({
 
-          __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__: masterConfigRepresentative.isLocalDevelopmentBuildingMode,
-          __IS_TESTING_BUILDING_MODE__: masterConfigRepresentative.isTestingBuildingMode,
-          __IS_STAGING_BUILDING_MODE__: masterConfigRepresentative.isStagingBuildingMode,
-          __IS_PRODUCTION_BUILDING_MODE__: masterConfigRepresentative.isProductionBuildingMode,
+          __PROJECT_ROOT_DIRECTORY__ALWAYS_FORWARD_SLASHES_PATH_SEPARATORS__YDA__:
+              JSON.stringify(masterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath),
+
+          __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__YDA__: masterConfigRepresentative.isLocalDevelopmentBuildingMode,
+          __IS_TESTING_BUILDING_MODE__YDA__: masterConfigRepresentative.isTestingBuildingMode,
+          __IS_STAGING_BUILDING_MODE__YDA__: masterConfigRepresentative.isStagingBuildingMode,
+          __IS_PRODUCTION_BUILDING_MODE__YDA__: masterConfigRepresentative.isProductionBuildingMode,
 
           /* [ Theory ] Settings for the Vue 3 which must be defined explicitly.
           * https://github.com/vuejs/core/tree/main/packages/vue#bundler-build-feature-flags */
-          ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.browser ? {
-            __VUE_OPTIONS_API__: true,
-            __VUE_PROD_DEVTOOLS__: false,
-            __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
-          } : null
+          ...entryPointsGroupSettings.targetRuntime.type === SupportedECMA_ScriptRuntimesTypes.browser ?
+              {
+                __VUE_OPTIONS_API__: true,
+                __VUE_PROD_DEVTOOLS__: false,
+                __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
+              } :
+              null,
+
+          ...entryPointsGroupSettings.preprocessorVariables
 
         }),
 
@@ -515,19 +527,18 @@ export default abstract class WebpackConfigGenerator {
             basePath: webpackContext
           });
 
-      const outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory: string =
-          removeAllFileNameExtensions(targetSourceFilePathRelativeToSourceEntryPointsTopDirectory);
+      const outputFilePathWithoutLastFilenameExtensionRelativeToBaseOutputDirectory: string =
+          removeLastFileNameExtensionFromPath(targetSourceFilePathRelativeToSourceEntryPointsTopDirectory);
 
       /* [ Webpack theory ] The key must be the output path without filename extension relative to 'output.path'.
-       *    The value must the source file path (relative or absolute), for example
+       *    The value must be the source file path (relative or absolute), for example
        * { 'HikariFrontend/StarterPugTemplate/StarterPugTemplate':
        *      'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/HikariFrontend/StarterPugTemplate.ts',
        *   'Minimal': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/Minimal.ts',
        *   'TopPage': 'D:/PhpStorm/InHouseDevelopment/hikari-documentation/0-Source/TopPage.ts'
        * } */
-      webpackEntryPoints__objectSyntax[
-        outputFilePathWithoutFilenameExtensionRelativeToBaseOutputDirectory
-      ] = entryPointSourceFileAbsolutePath;
+      webpackEntryPoints__objectSyntax[outputFilePathWithoutLastFilenameExtensionRelativeToBaseOutputDirectory] =
+          entryPointSourceFileAbsolutePath;
 
     }
 

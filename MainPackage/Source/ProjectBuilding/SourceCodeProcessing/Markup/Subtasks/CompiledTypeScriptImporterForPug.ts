@@ -100,6 +100,8 @@ export default class CompiledTypeScriptImporterForPug extends GulpStreamsBasedTa
         convertPathsAliasesFromTypeScriptFormatToWebpackFormat({
           typeScriptPathsSettings: typeScriptCompilerOptions.paths,
           typeScriptBasicAbsolutePath:
+              /* eslint-disable-next-line @typescript-eslint/no-deprecated --
+               * Although `baseUrl` has deprecated, it still exists and can be used in a consuming project. */
               typeScriptCompilerOptions.baseUrl ??
               ImprovedPath.extractDirectoryFromFilePath({
                 targetPath: compiledTypeScriptImportingSettings.typeScriptConfigurationFileAbsolutePath,
@@ -293,12 +295,13 @@ export default class CompiledTypeScriptImporterForPug extends GulpStreamsBasedTa
 
       plugins: [
         new Webpack.DefinePlugin({
-          __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__: projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
-          __IS_TESTING_BUILDING_MODE__: projectBuildingMasterConfigRepresentative.isTestingBuildingMode,
-          __IS_STAGING_BUILDING_MODE__: projectBuildingMasterConfigRepresentative.isStagingBuildingMode,
-          __IS_PRODUCTION_BUILDING_MODE__: projectBuildingMasterConfigRepresentative.isProductionBuildingMode
+          __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__YDA__: projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
+          __IS_TESTING_BUILDING_MODE__YDA__: projectBuildingMasterConfigRepresentative.isTestingBuildingMode,
+          __IS_STAGING_BUILDING_MODE__YDA__: projectBuildingMasterConfigRepresentative.isStagingBuildingMode,
+          __IS_PRODUCTION_BUILDING_MODE__YDA__: projectBuildingMasterConfigRepresentative.isProductionBuildingMode
         })
       ]
+
     };
 
   }

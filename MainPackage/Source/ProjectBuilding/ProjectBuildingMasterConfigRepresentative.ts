@@ -1,18 +1,20 @@
-/* --- Business rules ----------------------------------------------------------------------------------------------- */
-import ConsumingProjectBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Restrictions ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+import ConsumingProjectBuildingModes from "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ProjectBuildingConfig__Normalized from "@ProjectBuilding/ProjectBuildingConfig__Normalized";
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ┅┅┅ Settings Representatives ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+/* ╍╍╍ Source Code Processing ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 import StylesProcessingSettingsRepresentative from "@StylesProcessing/StylesProcessingSettingsRepresentative";
 import ECMA_ScriptLogicProcessingSettingsRepresentative from
       "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettingsRepresentative";
 
+/* ╍╍╍ Assets Management ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import ImagesProcessingSettingsRepresentative from
     "@ImagesProcessing/ImagesProcessingSettingsRepresentative";
 import FontsProcessingSettingsRepresentative from
@@ -22,6 +24,7 @@ import AudiosProcessingSettingsRepresentative from
 import VideosProcessingSettingsRepresentative from
     "@VideosProcessing/VideosProcessingSettingsRepresentative";
 
+/* ╍╍╍ Other ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import PlainCopyingSettingsRepresentative from "@ProjectBuilding/PlainCopying/PlainCopyingSettingsRepresentative";
 
 import BrowserLiveReloadingSettingsRepresentative from "@BrowserLiveReloading/BrowserLiveReloadingSettingsRepresentative";
@@ -31,68 +34,62 @@ import OutputPackageJSON_GeneratingSettingsRepresentative from
 
 import DockerSettingsRepresentative from "@ProjectBuilding/DockerCompose/DockerSettingsRepresentative";
 
-/* --- General auxiliaries ------------------------------------------------------------------------------------------ */
+/* ┅┅┅ Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import {
   Logger,
   ClassRedundantSubsequentInitializationError,
   isNotUndefined,
-  isNotNull,
   undefinedToNull
 } from "@yamato-daiwa/es-extensions";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 export default class ProjectBuildingMasterConfigRepresentative {
 
-  private static selfSoleInstance: ProjectBuildingMasterConfigRepresentative | null = null;
+  /* ━━━ Static Fields ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  private static hasBeenConstructedAtLeastOnce: boolean = false;
 
 
+  /* ┅┅┅ Public Instance Fields ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+  /* ╍╍╍ Settings Representatives ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+  /* ─── Source Code Processing ───────────────────────────────────────────────────────────────────────────────────── */
   public readonly markupProcessingSettingsRepresentative?: MarkupProcessingSettingsRepresentative;
   public readonly stylesProcessingSettingsRepresentative?: StylesProcessingSettingsRepresentative;
   public readonly ECMA_ScriptLogicProcessingSettingsRepresentative?:
       ECMA_ScriptLogicProcessingSettingsRepresentative;
 
+  /* ─── Assets Management ────────────────────────────────────────────────────────────────────────────────────────── */
   public readonly imagesProcessingSettingsRepresentative?: ImagesProcessingSettingsRepresentative;
   public readonly fontsProcessingSettingsRepresentative?: FontsProcessingSettingsRepresentative;
   public readonly audiosProcessingSettingsRepresentative?: AudiosProcessingSettingsRepresentative;
   public readonly videosProcessingSettingsRepresentative?: VideosProcessingSettingsRepresentative;
 
+
+  /* ─── Other ────────────────────────────────────────────────────────────────────────────────────────────────────── */
   public readonly plainCopyingSettingsRepresentative?: PlainCopyingSettingsRepresentative;
-
   public readonly browserLiveReloadingSettingsRepresentative?: BrowserLiveReloadingSettingsRepresentative;
-
   public readonly dockerComposeSettingsRepresentative?: DockerSettingsRepresentative;
-
   public readonly outputPackageJSON_GeneratingSettingsRepresentative?: OutputPackageJSON_GeneratingSettingsRepresentative;
 
 
+  /* ┅┅┅ Private Instance Fields ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   private readonly commonSettings: ProjectBuildingCommonSettings__Normalized;
 
 
-  public static initializeAndGetInstance(
-    projectBuilderConfig__normalized: ProjectBuildingConfig__Normalized
-  ): ProjectBuildingMasterConfigRepresentative {
+  /* ━━━ Constructor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  public constructor(projectBuilderNormalizedConfig: ProjectBuildingConfig__Normalized) {
 
-    if (isNotNull(ProjectBuildingMasterConfigRepresentative.selfSoleInstance)) {
+    if (ProjectBuildingMasterConfigRepresentative.hasBeenConstructedAtLeastOnce) {
       Logger.throwErrorWithFormattedMessage({
         errorInstance: new ClassRedundantSubsequentInitializationError({
           className: "ProjectBuildingMasterConfigRepresentative"
         }),
         title: ClassRedundantSubsequentInitializationError.localization.defaultTitle,
-        occurrenceLocation: "ProjectBuildingMasterConfigRepresentative" +
-            ".initializeAndGetInstance(projectBuilderConfig__normalized)"
+        occurrenceLocation: "ProjectBuildingMasterConfigRepresentative." +
+            "constructor(projectBuilderConfig__normalized)"
       });
     }
 
-
-    ProjectBuildingMasterConfigRepresentative.selfSoleInstance = new ProjectBuildingMasterConfigRepresentative(
-      projectBuilderConfig__normalized
-    );
-
-    return ProjectBuildingMasterConfigRepresentative.selfSoleInstance;
-  }
-
-
-  public constructor(projectBuilderNormalizedConfig: ProjectBuildingConfig__Normalized) {
 
     this.commonSettings = projectBuilderNormalizedConfig.commonSettings;
 
@@ -162,10 +159,12 @@ export default class ProjectBuildingMasterConfigRepresentative {
       );
     }
 
+    ProjectBuildingMasterConfigRepresentative.hasBeenConstructedAtLeastOnce = true;
+
   }
 
 
-  /* === Common settings ============================================================================================ */
+  /* ━━━ Common Settings Sharing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   public get consumingProjectRootDirectoryAbsolutePath(): string {
     return this.commonSettings.projectRootDirectoryAbsolutePath;
   }
@@ -183,7 +182,7 @@ export default class ProjectBuildingMasterConfigRepresentative {
   }
 
 
-  /* --- Project building mode -------------------------------------------------------------------------------------- */
+  /* ┅┅┅ Project Building Mode ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   public get consumingProjectBuildingMode(): string { return this.commonSettings.projectBuildingMode; }
 
   public get isStaticPreviewBuildingMode(): boolean {
@@ -211,61 +210,24 @@ export default class ProjectBuildingMasterConfigRepresentative {
       ConsumingProjectBuildingModes.testing,
       ConsumingProjectBuildingModes.staging,
       ConsumingProjectBuildingModes.production
-    ].includes(this.commonSettings.projectBuildingMode);
+    ].
+        includes(this.commonSettings.projectBuildingMode);
+  }
+
+  public get mustProvideIncrementalBuilding(): boolean {
+    return this.commonSettings.mustProvideIncrementalBuilding;
   }
 
 
-  /* --- Tasks execution requirement -------------------------------------------------------------------------------- */
-  /* eslint-disable @stylistic/brace-style -- In this case the Allman style provides symmetry. */
-  public get mustProcessMarkup(): boolean {
-    return isNotUndefined(this.markupProcessingSettingsRepresentative) &&
-        this.markupProcessingSettingsRepresentative.hasAtLeastOneRelevantEntryPointsGroup;
-  }
-
-  public get mustProvideMarkupLinting(): boolean {
-    return isNotUndefined(this.markupProcessingSettingsRepresentative);
-  }
-
-  public get mustProcessStyles(): boolean {
-    return isNotUndefined(this.stylesProcessingSettingsRepresentative) &&
-        this.stylesProcessingSettingsRepresentative.hasAtLeastOneRelevantEntryPointsGroup;
-  }
-
-  public getECMA_ScriptLogicProcessingSettingsRepresentativeIfMustProcessECMA_ScriptLogic():
-      ECMA_ScriptLogicProcessingSettingsRepresentative | null
-  {
-    return undefinedToNull(this.ECMA_ScriptLogicProcessingSettingsRepresentative);
-  }
-
+  /* ┅┅┅ Tasks Execution Requirement ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   public getECMA_ScriptLogicProcessingSettingsRepresentativeIfMustOrchestrateLocalDevelopmentServer():
       ECMA_ScriptLogicProcessingSettingsRepresentative | null
   {
     return isNotUndefined(
       this.ECMA_ScriptLogicProcessingSettingsRepresentative?.localDevelopmentServerOrchestrationSettings
-    ) && this.isLocalDevelopmentBuildingMode ? this.ECMA_ScriptLogicProcessingSettingsRepresentative : null;
+    ) && this.isLocalDevelopmentBuildingMode ?
+        this.ECMA_ScriptLogicProcessingSettingsRepresentative : null;
 
-  }
-
-  public get mustProcessImages(): boolean {
-    return isNotUndefined(this.imagesProcessingSettingsRepresentative);
-  }
-
-  public get mustProcessFonts(): boolean {
-    return isNotUndefined(this.fontsProcessingSettingsRepresentative);
-  }
-
-  public get mustProcessAudios(): boolean {
-    return isNotUndefined(this.audiosProcessingSettingsRepresentative);
-  }
-
-  public get mustProcessVideos(): boolean {
-    return isNotUndefined(this.videosProcessingSettingsRepresentative);
-  }
-
-  public get mustProvideLocalDevelopmentServerOrchestration(): boolean {
-    return isNotUndefined(this.ECMA_ScriptLogicProcessingSettingsRepresentative) &&
-        this.isLocalDevelopmentBuildingMode &&
-        isNotUndefined(this.ECMA_ScriptLogicProcessingSettingsRepresentative.localDevelopmentServerOrchestrationSettings);
   }
 
   public getBrowserLiveReloadingSettingsRepresentativeIfMustProvideBrowserLiveReloading():
@@ -273,12 +235,13 @@ export default class ProjectBuildingMasterConfigRepresentative {
   {
     return this.mustProvideIncrementalBuilding ? undefinedToNull(this.browserLiveReloadingSettingsRepresentative) : null;
   }
-  /* eslint-enable @stylistic/brace-style */
 
+  public get processingOnDemandSettings(): ProjectBuildingCommonSettings__Normalized.ProcessingOnDemand {
+    return this.commonSettings.processingOnDemand;
+  }
 
-  /* --- Other ------------------------------------------------------------------------------------------------------ */
-  public get mustProvideIncrementalBuilding(): boolean {
-    return this.commonSettings.mustProvideIncrementalBuilding;
+  public get CSS_ClassesMinificationOnFlySettings(): ProjectBuildingCommonSettings__Normalized.CSS_ClassesMinificationOnFly {
+    return this.commonSettings.CSS_ClassesMinificationOnFly;
   }
 
 }

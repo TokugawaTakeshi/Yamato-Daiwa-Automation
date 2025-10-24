@@ -1,5 +1,12 @@
 import VinylFile from "vinyl";
-import { Logger, InvalidParameterValueError, isNotUndefined, isNull, isArbitraryObject } from "@yamato-daiwa/es-extensions";
+import {
+  Logger,
+  InvalidParameterValueError,
+  UnexpectedEventError,
+  isNotUndefined,
+  isNull,
+  isArbitraryObject
+} from "@yamato-daiwa/es-extensions";
 
 
 /* eslint-disable-next-line @typescript-eslint/ban-ts-comment --
@@ -57,9 +64,19 @@ export default abstract class VinylFileClass extends VinylFile {
 
     /*  Looks like the TS2322 has been caused by the incompatibility of the types definitions (`@types/vinyl`) with the class.
      *  The `File.NullFile` will be when `contents: null` has been specified in the constructor while here the `contents`
-     *    has type `Buffer`. */
+     *    has the type `Buffer`. */
     /* @ts-ignore: TS2322 (See above) */
     this.contents = Buffer.from(contents);
+
+  }
+
+  public setBufferedContent(bufferedContent: Buffer): void {
+
+    /*  Looks like the TS2322 has been caused by the incompatibility of the types definitions (`@types/vinyl`) with the class.
+     *  The `File.NullFile` will be when `contents: null` has been specified in the constructor while here the `contents`
+     *    has the type `Buffer`. */
+    /* @ts-ignore: TS2322 (See above) */
+    this.contents = bufferedContent;
 
   }
 
@@ -74,6 +91,24 @@ export default abstract class VinylFileClass extends VinylFile {
         /* @ts-ignore: TS2339 (See ※ explanation) */
         "" : this.contents.toString();
         /* eslint-enable @typescript-eslint/no-unsafe-call */
+
+  }
+
+  public getContentsExpectedToBeBuffer(): Buffer {
+
+    /*  ※ Because of incompatibility of the types definitions (`@types/vinyl`) with the class, TypeScript think that
+     *    `this.contents` is either `null` or `never` and even `isArbitraryObject` type guard does not assure TypeScript.  */
+    /* @ts-ignore: TS2358 (See above) */
+    return isArbitraryObject(this.contents) && this.contents instanceof Buffer ?
+        this.contents :
+        ((): never => {
+          Logger.throwErrorWithFormattedMessage({
+            errorInstance:
+                new UnexpectedEventError("Contrary to expectations, the `contents` field is not an instance of Buffer"),
+            title: UnexpectedEventError.localization.defaultTitle,
+            occurrenceLocation: "VinylFileClass.getContentsExpectedToBeBuffer(targetVinylFile"
+          });
+        })();
 
   }
 

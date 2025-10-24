@@ -6,7 +6,7 @@ type ImagesProcessingSettings__Normalized = Readonly<{
   common: ImagesProcessingSettings__Normalized.Common;
   assetsGroups: ReadonlyMap<
     AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup.ID,
-    AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup
+    ImagesProcessingSettings__Normalized.AssetsGroup
   >;
   logging: AssetsProcessingSettingsGenericProperties__Normalized.Logging;
 }>;
@@ -14,9 +14,32 @@ type ImagesProcessingSettings__Normalized = Readonly<{
 
 namespace ImagesProcessingSettings__Normalized {
 
-  export type Common = AssetsProcessingSettingsGenericProperties__Normalized.Common;
+  export type Common =
+      AssetsProcessingSettingsGenericProperties__Normalized.Common &
+      Readonly<{
+        imagesOptimization: Common.ImagesOptimization;
+      }>;
 
-  export type AssetsGroup = AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup;
+  export namespace Common {
+    export type ImagesOptimization = Readonly<{
+      cachedOptimizedImagesDirectoryAbsolutePath: string;
+      ignoresFilesGlobs: ReadonlySet<string>;
+    }>;
+  }
+
+  export type AssetsGroup =
+      AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup &
+      Readonly<{
+        imagesOptimization: AssetsGroup.ImagesOptimization;
+      }>;
+
+  export namespace AssetsGroup {
+
+    export type ImagesOptimization = Readonly<{
+      mustOptimize: boolean;
+    }>;
+
+  }
 
   export type Logging = AssetsProcessingSettingsGenericProperties__Normalized.Logging;
 
