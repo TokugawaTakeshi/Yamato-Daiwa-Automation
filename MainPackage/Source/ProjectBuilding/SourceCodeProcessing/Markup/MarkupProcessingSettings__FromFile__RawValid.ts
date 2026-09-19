@@ -507,7 +507,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
                           RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
                     ): boolean =>
                         targetPropertyPathSegments[targetPropertyPathSegments.length - 2] === "$staticPreview",
-                  descriptionForLogging: "`project building mode is `$staticPreview`"
+                  descriptionForLogging: "project building mode is \"$staticPreview\""
                 },
                 isNullForbidden: true
               }
