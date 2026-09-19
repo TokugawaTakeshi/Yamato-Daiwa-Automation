@@ -497,7 +497,15 @@ export default abstract class WebpackConfigGenerator {
       optimization: {
         minimize: !masterConfigRepresentative.mustProvideIncrementalBuilding,
         emitOnErrors: masterConfigRepresentative.mustProvideIncrementalBuilding
-      }
+      },
+
+      // ...entryPointsGroupSettings.ID === "GUI_ComponentsRequirements" ?
+      //     {
+      //       externals: {
+      //         "@yamato-daiwa/es-extensions": "YDF"
+      //       }
+      //     } :
+      //     null
 
     };
 
