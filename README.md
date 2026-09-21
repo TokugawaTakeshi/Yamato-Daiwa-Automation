@@ -5,8 +5,8 @@
 ![MIT](https://img.shields.io/badge/MIT-green?style=for-the-badge)
 ![Node.js](https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 
-[![NPM Version](https://img.shields.io/npm/v/@yamato-daiwa/backend)](https://www.npmjs.com/package/@yamato-daiwa/automation)
-![Minimal Node Version](https://img.shields.io/badge/Minimal_Node.js_Version-20.0.0-brightgreen.svg?style=flat)
+[![NPM Version](https://img.shields.io/npm/v/@yamato-daiwa/automation)](https://www.npmjs.com/package/@yamato-daiwa/automation)
+![Minimal Node Version](https://img.shields.io/badge/Minimal_Node.js_Version-24.0.0-brightgreen.svg?style=flat)
 
 [![GitHub Sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#white)](https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation?sponsor=1)
 [![PAYPAL](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/tokugawatakeshi)
