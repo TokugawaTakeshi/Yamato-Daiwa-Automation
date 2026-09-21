@@ -63,6 +63,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
         associatedMarkupEntryPointsGroupID_ForDynamicModulesLoadingWithoutDevelopmentServer?: string;
         typeScriptConfigurationFileRelativePath?: string;
         preprocessorVariables?: ReadonlyParsedJSON_Object;
+        dependenciesViaGlobals?: EntryPointsGroup.DependenciesViaGlobals;
         distributing?: EntryPointsGroup.Distributing;
         buildingModeDependent: Readonly<{
           [projectBuildingMode in ConsumingProjectBuildingModes]:
@@ -127,6 +128,14 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
       }
 
+    }
+
+    export type DependenciesViaGlobals =
+        Readonly<{ [key: DependenciesViaGlobals.PackageID]: DependenciesViaGlobals.GlobalConstantName; }>;
+
+    export namespace DependenciesViaGlobals {
+      export type PackageID = string;
+      export type GlobalConstantName = string;
     }
 
     export type Distributing = Readonly<{
@@ -387,6 +396,23 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
            *   strategy is enabled for the RawObjectDataProcessor, all properties will be kept without validation.
            * */
           properties: {}
+
+        },
+
+        $dependenciesViaGlobals: {
+
+          newName: "dependenciesViaGlobals",
+          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+          areUndefinedTypeValuesForbidden: true,
+          areNullTypeValuesForbidden: true,
+          minimalEntriesCount: 1,
+
+          value: {
+            type: String,
+            minimalCharactersCount: 1
+          }
 
         },
 

@@ -410,7 +410,9 @@ export default class ECMA_ScriptLogicProcessingRawSettingsNormalizer extends Sou
             ...entryPointsGroupSettings__rawValid.
                 buildingModeDependent[this.consumingProjectBuildingMode].preprocessorVariables ??
                     {}
-          }
+          },
+
+      dependenciesViaGlobals: entryPointsGroupSettings__rawValid.dependenciesViaGlobals ?? {}
 
     };
 
