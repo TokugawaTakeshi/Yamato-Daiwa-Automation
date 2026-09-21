@@ -1,39 +1,90 @@
 selectiveExecutions:
 
   $heading: `selectiveExecutions.$heading`
-  $anchor: SELECTIVE_EXECUTIONS--SECTION
+  $anchor: selective_executions--section
 
   $children:
 
     settingUpOfEachItem:
 
       $heading: `selectiveExecutions.settingUpOfEachItem.$heading`
-      $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM--SECTION
+      $anchor: selective_executions-setting_up_of_each_item--section
 
       $children:
 
         tasksAndSourceFilesSelection:
 
           $heading: `selectiveExecutions.settingUpOfEachItem.tasksAndSourceFilesSelection.$heading`
-          $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-TASKS_AND_SOURCE_FILES_SELECTION--SECTION
+          $anchor: selective_executions-setting_up_of_each_item-tasks_and_source_files_selection--section
 
         browserLiveReloadingSetupID:
 
           $heading: `selectiveExecutions.settingUpOfEachItem.browserLiveReloadingSetupID.$heading`
-          $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-BROWSER_LIVE_RELOADING_SETUP_ID--SECTION
-
-        distributablePackageJSON_Generating:
-
-          $heading: `selectiveExecutions.settingUpOfEachItem.distributablePackageJSON_Generating.$heading`
-          $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-OUTPUT_PACKAGE_JSON_GENERATING--SECTION
+          $anchor: selective_executions-setting_up_of_each_item-browser_live_reloading_setup_id--section
 
         dockerSetupID:
 
           $heading: `selectiveExecutions.settingUpOfEachItem.dockerSetupID.$heading`
-          $anchor: SELECTIVE_EXECUTIONS-SETTING_UP_OF_EACH_ITEM-DOCKER_SETUP_ID--SECTION
+          $anchor: selective_executions-setting_up_of_each_item-docker_setup_id--section
+
+        distributablePackageJSON_Generating:
+
+          $heading: `selectiveExecutions.settingUpOfEachItem.distributablePackageJSON_Generating.$heading`
+          $anchor: selective_executions-setting_up_of_each_item-distributable_package_json_generating--section
+
+        processingOnDemand:
+
+          $heading: `selectiveExecutions.settingUpOfEachItem.processingOnDemand.$heading`
+          $anchor: selective_executions-setting_up_of_each_item-processing_on_demand--section
+
+          $children:
+
+            enable:
+
+              $heading: `selectiveExecutions.settingUpOfEachItem.processingOnDemand.enable.$heading`
+              $anchor: selective_executions-setting_up_of_each_item-processing_on_demand-enable--section
+
+            fullInitialBuilding:
+
+              $heading: `selectiveExecutions.settingUpOfEachItem.processingOnDemand.fullInitialBuilding.$heading`
+              $anchor: selective_executions-setting_up_of_each_item-processing_on_demand-full_initial_building--section
 
 
 publicDirectoriesRelativePaths:
 
   $heading: `publicDirectoriesRelativePaths.$heading`
-  $anchor: PUBLIC_DIRECTORIES_RELATIVE_PATHS--SECTION
+  $anchor: public_directories_relative_paths--section
+
+
+filesWatching:
+
+  $heading: `filesWatching.$heading`
+  $anchor: files_watching--section
+
+  $children:
+
+    excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+      $heading: `filesWatching.excludeFilesWithPathsRelativeToProjectRootDirectory.$heading`
+      $anchor: files_watching-relative_paths_of_excluded_files--section
+
+    excludeDirectoriesWithPathsRelativeToProjectRootDirectory:
+      $heading: `filesWatching.excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$heading`
+      $anchor: files_watching-relative_paths_of_exclude_directories--section
+
+    buildingModeDependent:
+
+      $heading: `filesWatching.buildingModeDependent.$heading`
+      $anchor: files_watching-building_mode_dependent--section
+
+      $children:
+
+        excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+          $heading: `filesWatching.buildingModeDependent.excludeFilesWithPathsRelativeToProjectRootDirectory.$heading`
+          $anchor: files_watching-building_mode_dependent-relative_paths_of_excluded_files--section
+
+        excludeDirectoriesWithPathsRelativeToProjectRootDirectory:
+
+          $heading: `filesWatching.buildingModeDependent.excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$heading`
+          $anchor: files_watching-building_mode_dependent-relative_paths_of_exclude_directories--section

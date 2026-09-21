@@ -31,6 +31,7 @@ namespace StylesProcessingSettings__Normalized {
   export type EntryPointsGroup =
       SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup &
       Readonly<{
+        mustGenerateSourcemaps: boolean;
         revisioning: RevisioningSettings__Normalized;
       }>;
 

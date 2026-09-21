@@ -1,8 +1,20 @@
 # Yamato Daiwa Automation 〔 YDA 〕
 
+[![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@yamato-daiwa/automation)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation)
+![MIT](https://img.shields.io/badge/MIT-green?style=for-the-badge)
+![Node.js](https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+
+[![NPM Version](https://img.shields.io/npm/v/@yamato-daiwa/backend)](https://www.npmjs.com/package/@yamato-daiwa/automation)
+![Minimal Node Version](https://img.shields.io/badge/Minimal_Node.js_Version-24.0.0-brightgreen.svg?style=flat)
+
+[![GitHub Sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#white)](https://github.com/TokugawaTakeshi/Yamato-Daiwa-Automation?sponsor=1)
+[![PAYPAL](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/tokugawatakeshi)
+[![LIBERAPAY](	https://img.shields.io/badge/Liberapay-F6C915?style=for-the-badge&logo=liberapay&logoColor=black)](https://liberapay.com/TokugawaT-YD)
+
 The project building tool with declarative YAML configuration based on Gulp and Webpack.
 Specializing on Pug, Stylus and TypeScript as source code languages; also works with images, fonts, videos and audios.
-Could be used for development of websites, web applications, console utilities and libraries.
+Can be used to develop websites, web applications, native application with HTML/CSS frontend, console utilities and libraries.
 
 ![Main visual of Yamato-Daiwa Automation tool](https://user-images.githubusercontent.com/41653501/167278259-b2ac61e9-b781-4d0c-93d6-4b9709387974.png)
 

@@ -78,7 +78,7 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
       const entryPointsGroupSettings__buildingModeDependent__rawValid:
           SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup.BuildingModeDependent | undefined =
-          entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode];
+              entryPointsGroupSettings__rawValid.buildingModeDependent[this.consumingProjectBuildingMode];
 
       if (isUndefined(entryPointsGroupSettings__buildingModeDependent__rawValid)) {
         continue;
@@ -138,8 +138,8 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
         currentEntryPointsGroupSourceFilesGlobSelectors.push(
           ...this.getSourceFilesGlobSelectorsForMultipleEntryPointsGroup({
-            entryPointsSourceFilesDirectoryAbsolutePath: entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
-            partialsRecognition: entryPointsGroupSettings__rawValid.partialsRecognition
+            entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
+            sourceFilesSelection: entryPointsGroupSettings__rawValid.sourceFilesSelection
           })
         );
 
@@ -185,60 +185,86 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
 
   }
 
+
   /* [ Theory ]
-   *  Generating of single glob with arbitrary conditions set is very difficult, and it's not a fact that it's even possible.
-   *  More rational approach is generate the array of globs consisting on main exclusive glob and exclusions. */
+   *  Generating of a single glob with arbitrary conditions set is very hard, and it's not a fact that it's even possible.
+   *  More rational approach is to generate the array of globs consisting of the main exclusive glob and exclusions. */
   private getSourceFilesGlobSelectorsForMultipleEntryPointsGroup(
     {
-      entryPointsSourceFilesDirectoryAbsolutePath,
-      partialsRecognition
+      entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
+      sourceFilesSelection:
+        {
+          onlyWithPenultimateFileNamesExtensions__withOrWithoutLeadingDots = [],
+          mustIgnoreAllSubdirectories = false,
+          ...sourceFilesSelection
+        } = {}
     }: Readonly<{
-      entryPointsSourceFilesDirectoryAbsolutePath: string;
-      partialsRecognition?: SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup.
-          EntryPointsRecognitionSettings;
+      entryPointsGroupSourceFilesTopDirectoryAbsolutePath: string;
+      sourceFilesSelection?:
+          SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup.SourceFilesSelection;
     }>
   ): Array<string> {
 
     const inclusiveMainGlobSelector: string = ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
-      basicDirectoryPath: entryPointsSourceFilesDirectoryAbsolutePath,
-      fileNamesExtensions: this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots
+      basicDirectoryPath: entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
+      fileNamesExtensions: this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+      penultimateFileNamesExtensions:
+          Array.isArray(onlyWithPenultimateFileNamesExtensions__withOrWithoutLeadingDots) ?
+              onlyWithPenultimateFileNamesExtensions__withOrWithoutLeadingDots :
+              [ onlyWithPenultimateFileNamesExtensions__withOrWithoutLeadingDots ]
     });
 
-    if (isUndefined(partialsRecognition)) {
-      return [ inclusiveMainGlobSelector ];
-    }
-
-
-    /* [ Specification ]
-     * If `partialsRecognition` has not been specified, all files with filename extensions
-     *   `this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots` below `entryPointsSourceFilesDirectoryAbsolutePath`
-     *   are being considered as entry points. */
     const sourceFilesGlobSelectorsForMultipleEntryPointsGroup: Array<string> = [ inclusiveMainGlobSelector ];
 
-    let prefixesOfFilesWhichMustBeExcluded: Array<string> | undefined;
+    let penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots: ReadonlyArray<string>;
 
-    if (Array.isArray(partialsRecognition.excludeFilesWithPrefixes)) {
-      prefixesOfFilesWhichMustBeExcluded = partialsRecognition.excludeFilesWithPrefixes;
-    } else if (isString(partialsRecognition.excludeFilesWithPrefixes)) {
-      prefixesOfFilesWhichMustBeExcluded = [ partialsRecognition.excludeFilesWithPrefixes ];
+    if (Array.isArray(sourceFilesSelection.penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots)) {
+      penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots =
+          sourceFilesSelection.penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots;
+    } else if (isString(sourceFilesSelection.penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots)) {
+      penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots =
+          [ sourceFilesSelection.penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots ];
+    } else {
+      penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots = [];
     }
 
-    if (isNotUndefined(prefixesOfFilesWhichMustBeExcluded)) {
+    if (penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots.length > 0) {
+      sourceFilesGlobSelectorsForMultipleEntryPointsGroup.push(
+        ImprovedGlob.buildExcludingOfDirectoryWithSubdirectoriesGlobSelector({
+          targetDirectoryPath: entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
+          fileNamesExtensions: this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+          penultimateFileNamesExtensions: penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots
+        })
+      );
+    }
+
+
+    let prefixesOfExcludeFiles: ReadonlyArray<string>;
+
+    if (Array.isArray(sourceFilesSelection.prefixesOfExcludeFiles)) {
+      prefixesOfExcludeFiles = sourceFilesSelection.prefixesOfExcludeFiles;
+    } else if (isString(sourceFilesSelection.prefixesOfExcludeFiles)) {
+      prefixesOfExcludeFiles = [ sourceFilesSelection.prefixesOfExcludeFiles ];
+    } else {
+      prefixesOfExcludeFiles = [];
+    }
+
+    if (prefixesOfExcludeFiles.length > 0) {
       sourceFilesGlobSelectorsForMultipleEntryPointsGroup.push(
         ImprovedGlob.buildExcludingOfFilesWithSpecificPrefixesGlobSelector({
-          basicDirectoryPath: entryPointsSourceFilesDirectoryAbsolutePath,
-          filesNamesPrefixes: prefixesOfFilesWhichMustBeExcluded,
+          basicDirectoryPath: entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
+          filesNamesPrefixes: prefixesOfExcludeFiles,
           filesNamesExtensions: this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots
         })
       );
     }
 
 
-    if (partialsRecognition.excludeAllSubdirectories === true) {
+    if (mustIgnoreAllSubdirectories) {
 
       sourceFilesGlobSelectorsForMultipleEntryPointsGroup.push(
         ImprovedGlob.buildAllFilesInCurrentDirectoryButNotBelowGlobSelector({
-          basicDirectoryPath: entryPointsSourceFilesDirectoryAbsolutePath,
+          basicDirectoryPath: entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
           fileNamesExtensions: this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots
         })
       );
@@ -248,38 +274,42 @@ abstract class SourceCodeProcessingRawSettingsNormalizer {
     }
 
 
-    let prefixesOfSubdirectoriesInWhichFilesMustBeExcluded: Array<string> | undefined;
+    let namesOfExcludeSubdirectories: ReadonlyArray<string>;
 
-    if (Array.isArray(partialsRecognition.excludeSubdirectoriesWithPrefixes)) {
-      prefixesOfSubdirectoriesInWhichFilesMustBeExcluded = partialsRecognition.excludeSubdirectoriesWithPrefixes;
-    } else if (isString(partialsRecognition.excludeSubdirectoriesWithPrefixes)) {
-      prefixesOfSubdirectoriesInWhichFilesMustBeExcluded = [ partialsRecognition.excludeSubdirectoriesWithPrefixes ];
+    if (Array.isArray(sourceFilesSelection.namesOfExcludeSubdirectories)) {
+      namesOfExcludeSubdirectories = sourceFilesSelection.namesOfExcludeSubdirectories;
+    } else if (isString(sourceFilesSelection.namesOfExcludeSubdirectories)) {
+      namesOfExcludeSubdirectories = [ sourceFilesSelection.namesOfExcludeSubdirectories ];
+    } else {
+      namesOfExcludeSubdirectories = [];
     }
 
-    if (isNotUndefined(prefixesOfSubdirectoriesInWhichFilesMustBeExcluded)) {
+    if (namesOfExcludeSubdirectories.length > 0) {
       sourceFilesGlobSelectorsForMultipleEntryPointsGroup.push(
-        ImprovedGlob.buildExcludingOfFilesInSubdirectoriesWithSpecificPrefixesGlobSelector({
-          basicDirectoryPath: entryPointsSourceFilesDirectoryAbsolutePath,
-          subdirectoriesPrefixes: prefixesOfSubdirectoriesInWhichFilesMustBeExcluded,
+        ImprovedGlob.buildExcludingOfFilesInSpecificSubdirectoriesGlobSelector({
+          basicDirectoryPath: entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
+          subdirectoriesNames: namesOfExcludeSubdirectories,
           filesNamesExtensions: this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots
         })
       );
     }
 
 
-    let namesOfSubdirectoriesInWhichFilesMustBeExcluded: Array<string> | undefined;
+    let prefixesOfExcludedSubdirectories: ReadonlyArray<string>;
 
-    if (Array.isArray(partialsRecognition.excludeSubdirectoriesWithNames)) {
-      namesOfSubdirectoriesInWhichFilesMustBeExcluded = partialsRecognition.excludeSubdirectoriesWithNames;
-    } else if (isString(partialsRecognition.excludeSubdirectoriesWithNames)) {
-      namesOfSubdirectoriesInWhichFilesMustBeExcluded = [ partialsRecognition.excludeSubdirectoriesWithNames ];
+    if (Array.isArray(sourceFilesSelection.prefixesOfExcludedSubdirectories)) {
+      prefixesOfExcludedSubdirectories = sourceFilesSelection.prefixesOfExcludedSubdirectories;
+    } else if (isString(sourceFilesSelection.prefixesOfExcludedSubdirectories)) {
+      prefixesOfExcludedSubdirectories = [ sourceFilesSelection.prefixesOfExcludedSubdirectories ];
+    } else {
+      prefixesOfExcludedSubdirectories = [];
     }
 
-    if (isNotUndefined(namesOfSubdirectoriesInWhichFilesMustBeExcluded)) {
+    if (prefixesOfExcludedSubdirectories.length > 0) {
       sourceFilesGlobSelectorsForMultipleEntryPointsGroup.push(
-        ImprovedGlob.buildExcludingOfFilesInSpecificSubdirectoriesGlobSelector({
-          basicDirectoryPath: entryPointsSourceFilesDirectoryAbsolutePath,
-          subdirectoriesNames: namesOfSubdirectoriesInWhichFilesMustBeExcluded,
+        ImprovedGlob.buildExcludingOfFilesInSubdirectoriesWithSpecificPrefixesGlobSelector({
+          basicDirectoryPath: entryPointsGroupSourceFilesTopDirectoryAbsolutePath,
+          subdirectoriesPrefixes: prefixesOfExcludedSubdirectories,
           filesNamesExtensions: this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots
         })
       );

@@ -38,10 +38,12 @@ import HTML_Validator from "./Plugins/HTML_Validator/HTML_Validator";
 import PointersReferencesResolverForHTML from "./Plugins/ResourcesPointersResolverForHTML/ResourcesPointersResolverForHTML";
 import AccessibilityInspector from "@MarkupProcessing/Plugins/AccessibilityInspector/AccessibilityInspector";
 import ImagesAspectRatioAffixer from "@MarkupProcessing/Plugins/ImagesAspectRatioAffixer";
-import SpacesNormalizerForCJK_Text from "@MarkupProcessing/Plugins/SpacesNormalizerForCJK_Text";
+import SpacesNormalizerForCJK_Text from "@MarkupProcessing/Plugins/DOM_Based/SpacesNormalizerForCJK_Text";
 import CodeListingPugFilter from "@MarkupProcessing/PugFilters/CodeListingPugFilter";
-import CodeFormatter from "js-beautify";
+import { html as formatHTML } from "js-beautify";
 import HTML_CodeMinifier from "htmlnano";
+import CSS_ClassesShortener from "@StylesProcessing/Plugins/CSS_ClassesShortener";
+import RazorCodeGenerator from "@MarkupProcessing/Plugins/VinylFileBased/RazorCodeGenerator";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import {
@@ -49,13 +51,16 @@ import {
   isUndefined,
   isNotUndefined,
   isNotNull,
-  SpaceCharacters,
-  splitString,
+  getExpectedToBeNonUndefinedMapValue,
+  removeSpecifiedFileNameExtensionsFromPath,
+  Logger,
+  UnexpectedEventError,
   type ArbitraryObject
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath, ImprovedGlob } from "@yamato-daiwa/es-extensions-nodejs";
 import { parse as parseHTML } from "node-html-parser";
 import type { HTMLElement } from "node-html-parser";
+import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
 
 
 export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
@@ -101,7 +106,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
     if (markupProcessingSettingsRepresentative.mustValidateHTML) {
 
       HTML_Validator.initialize({
-        temporaryFileDirectoryAbsolutePath: DotYDA_DirectoryManager.TEMPORARY_FILES_DIRECTORY_ABSOLUTE_PATH,
+        temporaryFilesDirectoryAbsolutePath: DotYDA_DirectoryManager.TEMPORARY_FILES_DIRECTORY_ABSOLUTE_PATH,
         projectBuildingMasterConfigRepresentative,
         logging: {
           validationStart: markupProcessingSettingsRepresentative.loggingSettings.HTML_Validation.starting,
@@ -170,6 +175,24 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
             handler: MarkupProcessor.onEntryPointFileDeleted
           });
 
+      if (projectBuildingMasterConfigRepresentative.processingOnDemandSettings.enabled) {
+
+        BrowserLiveReloader.addOnNewPageOpenedEventHandler({
+          handlerID: "ON_PAGE_CHANGE_EVENT_HANDLER--BY_MARKUP_PROCESSOR",
+          async handler(
+            { relatedSourcePugFileAbsolutePath__forwardSlashSeparators }: BrowserLiveReloader.OnPageChangedEventHandler.Payload
+          ): Promise<void> {
+            dataHoldingSelfInstance.processEntryPoints([ relatedSourcePugFileAbsolutePath__forwardSlashSeparators ])();
+            return Promise.resolve();
+          }
+        });
+
+        if (!projectBuildingMasterConfigRepresentative.processingOnDemandSettings.fullInitialBuilding) {
+          return createImmediatelyEndingEmptyStream();
+        }
+
+      }
+
     }
 
     return dataHoldingSelfInstance.processEntryPoints(
@@ -186,7 +209,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
     super({
       projectBuildingMasterConfigRepresentative,
-      taskTitleForLogging: "Markup Processing"
+      taskTitleForLogging: markupProcessingSettingsRepresentative.TASK_NAME_FOR_LOGGING
     });
 
     this.logging = {
@@ -253,15 +276,15 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
         pipe(
           gulpPug({
             locals: {
-              __IS_STATIC_PREVIEW_BUILDING_MODE__:
+              __IS_STATIC_PREVIEW_BUILDING_MODE__YDA__:
                   this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode,
-              __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__:
+              __IS_LOCAL_DEVELOPMENT_BUILDING_MODE__YDA__:
                   this.projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
-              __IS_TESTING_BUILDING_MODE__:
+              __IS_TESTING_BUILDING_MODE__YDA__:
                   this.projectBuildingMasterConfigRepresentative.isTestingBuildingMode,
-              __IS_STAGING_BUILDING_MODE__:
+              __IS_STAGING_BUILDING_MODE__YDA__:
                   this.projectBuildingMasterConfigRepresentative.isStagingBuildingMode,
-              __IS_PRODUCTION_BUILDING_MODE__:
+              __IS_PRODUCTION_BUILDING_MODE__YDA__:
                   this.projectBuildingMasterConfigRepresentative.isProductionBuildingMode,
               ...isNotUndefined(this.markupProcessingSettingsRepresentative.routingSettings) ? {
                   [this.markupProcessingSettingsRepresentative.routingSettings.variable]:
@@ -277,13 +300,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
         pipe(
           GulpStreamModifier.modifyForSingleVinylFileSubtype({
-            onStreamStartedEventHandler: MarkupProcessor.formatOrMinifyContentIfMust
-          })
-        ).
-
-        pipe(
-          GulpStreamModifier.modifyForSingleVinylFileSubtype({
-            onStreamStartedEventHandler: this.onOutputHTML_FileReady.bind(this)
+            onStreamStartedEventHandler: this.postProcessHTML_LikeCode.bind(this)
           })
         ).
 
@@ -336,6 +353,7 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
   }
 
+
   /* [ Theory ] The ampersand must be escaped first, otherwise the ampersand from which HTML other entities begins
   *    will be escaped too.  */
   private static convertApplicableCharactersToHTML_Entities(pugCode: string): string {
@@ -347,60 +365,19 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
         replace(/'/gu, "&apos;");
   }
 
-  private static async formatOrMinifyContentIfMust(
-    markupVinylFile: MarkupEntryPointVinylFile
-  ): Promise<GulpStreamModifier.CompletionSignals> {
-
-    if (markupVinylFile.actualEntryPointsGroupSettings.outputCodeFormatting.mustExecute) {
-
-      markupVinylFile.setContents(MarkupProcessor.formatHTML_Code(markupVinylFile));
-
-      return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-
-    }
-
-    if (markupVinylFile.actualEntryPointsGroupSettings.outputCodeMinifying.mustExecute) {
-
-      markupVinylFile.setContents(
-        await MarkupProcessor.minifyHTML_Code(markupVinylFile)
-      );
-
-      return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-
-    }
-
-
-    return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-
-  }
-
-
   /* eslint-disable @typescript-eslint/member-ordering --
-   * From now, static and non-static methods are following by the usage order. */
-  private async onOutputHTML_FileReady(
-    processedEntryPointVinylFile: MarkupEntryPointVinylFile
+   * The order is logical (pipeline-based), but not all methods need `this` thus should be static. */
+  private async postProcessHTML_LikeCode(
+    markupEntryPointVinylFile: MarkupEntryPointVinylFile
   ): Promise<GulpStreamModifier.CompletionSignals> {
 
-    const entryPointFileContentRelativeToConsumingProjectRootDirectory__forwardSlashesSeparatorsOnly: string =
-        ImprovedPath.computeRelativePath({
-          basePath: this.projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
-          comparedPath: processedEntryPointVinylFile.path,
-          alwaysForwardSlashSeparators: true
-        });
-
-    /** @description
-     * Pug gives neither good formatting nor good minification, thus the `stringifiedContents` is neither of.
-     * Depending on the settings, the `stringifiedContents` must be formatted or minified. */
-    let semiFinishedHTML_Code: string = processedEntryPointVinylFile.stringifiedContents;
-    const semiFinishedHTML_CodeMD5_Checksum: string = computeContentMD5_Checksum(semiFinishedHTML_Code);
-
-    let rootHTML_Element: HTMLElement = parseHTML(semiFinishedHTML_Code);
+    let rootHTML_Element: HTMLElement = parseHTML(markupEntryPointVinylFile.stringifiedContents);
 
     rootHTML_Element = PointersReferencesResolverForHTML.resolve({
       rootHTML_Element,
       projectBuildingMasterConfigRepresentative: this.projectBuildingMasterConfigRepresentative,
       markupProcessingSettingsRepresentative: this.markupProcessingSettingsRepresentative,
-      absolutePathOfOutputDirectoryForTargetHTML_File: processedEntryPointVinylFile.outputDirectoryAbsolutePath
+      absolutePathOfOutputDirectoryForTargetHTML_File: markupEntryPointVinylFile.outputDirectoryAbsolutePath
     });
 
     rootHTML_Element = ImagesAspectRatioAffixer.affix({
@@ -408,70 +385,123 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
       publicPath: this.projectBuildingMasterConfigRepresentative.actualPublicDirectoryAbsolutePath,
       consumingProjectRootDirectoryAbsolutePath: this.projectBuildingMasterConfigRepresentative.
           consumingProjectRootDirectoryAbsolutePath,
-      absolutePathOfOutputDirectoryForTargetHTML_File: processedEntryPointVinylFile.outputDirectoryAbsolutePath
+      absolutePathOfOutputDirectoryForTargetHTML_File: markupEntryPointVinylFile.outputDirectoryAbsolutePath
     });
 
     rootHTML_Element = SpacesNormalizerForCJK_Text.normalize(rootHTML_Element);
 
-    semiFinishedHTML_Code = rootHTML_Element.toString();
+    rootHTML_Element =
+          CSS_ClassesShortener.
+              replaceAllowedCSS_ClassesInMarkupAndSaveCorrespondencesIfMust(
+                rootHTML_Element,
+                this.projectBuildingMasterConfigRepresentative
+              );
 
-    if (
-      processedEntryPointVinylFile.actualEntryPointsGroupSettings.outputFormat ===
-          MarkupProcessingRestrictions.OutputFormats.handlebars &&
-      !this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode
-    ) {
+    markupEntryPointVinylFile.setContents(rootHTML_Element.toString());
+    let formattedHTML_CodeForReports: string | null = null;
 
-      processedEntryPointVinylFile.setContents(semiFinishedHTML_Code);
-      processedEntryPointVinylFile.extname = ".hbs";
+    /* [ Approach ]
+     * Pug gives neither good formatting nor good minification, thus the `stringifiedContents` is neither of.
+     * Depending on the settings, the `stringifiedContents` must be formatted or minified. */
+    if (markupEntryPointVinylFile.actualEntryPointsGroupSettings.outputCodeFormatting.mustExecute) {
 
-      return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+      switch (markupEntryPointVinylFile.actualEntryPointsGroupSettings.outputFormat) {
+
+        case MarkupProcessingRestrictions.OutputFormats.HTML: {
+          markupEntryPointVinylFile.setContents(MarkupProcessor.formatHTML_Code(markupEntryPointVinylFile));
+          formattedHTML_CodeForReports = markupEntryPointVinylFile.stringifiedContents;
+          break;
+        }
+
+        case MarkupProcessingRestrictions.OutputFormats.handlebars: {
+          markupEntryPointVinylFile.setContents(MarkupProcessor.formatHandlebarsCode(markupEntryPointVinylFile));
+          break;
+        }
+
+        case MarkupProcessingRestrictions.OutputFormats.razor: {
+
+          RazorCodeGenerator.generateAndSetContentForVinylFile(markupEntryPointVinylFile);
+
+        }
+
+      }
+
+    } else if (markupEntryPointVinylFile.actualEntryPointsGroupSettings.outputCodeMinifying.mustExecute) {
+
+      markupEntryPointVinylFile.setContents(
+        await MarkupProcessor.minifyHTML_Code(markupEntryPointVinylFile)
+      );
 
     }
 
     if (
-      processedEntryPointVinylFile.actualEntryPointsGroupSettings.outputFormat ===
+      markupEntryPointVinylFile.actualEntryPointsGroupSettings.outputFormat ===
           MarkupProcessingRestrictions.OutputFormats.razor
     ) {
 
-      processedEntryPointVinylFile.setContents(semiFinishedHTML_Code);
-      processedEntryPointVinylFile.extname = ".razor";
+      markupEntryPointVinylFile.basename = removeSpecifiedFileNameExtensionsFromPath({
+        filePath: markupEntryPointVinylFile.basename,
+        filesNamesExtensions: [ "razor" ],
+        mustIgnoreLastOrSingleFileNameExtension: true,
+        pathsSeparatorMustBeUsedInOutputPathWhen2_KindsMixedInInitialPaths: "/"
+      });
 
-      return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+      markupEntryPointVinylFile.extname = ".razor";
+
+      return GulpStreamModifier.CompletionSignals.PASSING_ON;
 
     }
 
 
-    let formattedHTML_CodeForReports: string | null =
-        processedEntryPointVinylFile.actualEntryPointsGroupSettings.outputCodeFormatting.mustExecute ?
-            semiFinishedHTML_Code : null;
+    if (
+      markupEntryPointVinylFile.actualEntryPointsGroupSettings.outputFormat ===
+          MarkupProcessingRestrictions.OutputFormats.handlebars &&
+              !this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode
+    ) {
 
-    if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.HTML_Validation.mustExecute) {
+      markupEntryPointVinylFile.extname = ".hbs";
+
+      return GulpStreamModifier.CompletionSignals.PASSING_ON;
+
+    }
+
+
+    const entryPointFileContentRelativeToConsumingProjectRootDirectory__forwardSlashesSeparatorsOnly: string =
+        ImprovedPath.computeRelativePath({
+          basePath: this.projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath,
+          comparedPath: markupEntryPointVinylFile.path,
+          alwaysForwardSlashSeparators: true
+        });
+
+    const MD5_ChecksumOfCompleteHTML_Code: string = computeContentMD5_Checksum(markupEntryPointVinylFile.stringifiedContents);
+
+    if (markupEntryPointVinylFile.actualEntryPointsGroupSettings.HTML_Validation.mustExecute) {
 
       formattedHTML_CodeForReports =
           formattedHTML_CodeForReports ??
-          MarkupProcessor.formatHTML_Code(processedEntryPointVinylFile);
+          MarkupProcessor.formatHTML_Code(markupEntryPointVinylFile);
 
       HTML_Validator.enqueueFileForValidation({
         formattedHTML_Content: formattedHTML_CodeForReports,
-        HTML_ContentMD5_Hash: semiFinishedHTML_CodeMD5_Checksum,
+        HTML_ContentMD5_Hash: MD5_ChecksumOfCompleteHTML_Code,
         originalHTML_FilePathRelativeToConsumingProjectRoot__forwardSlashesSeparatorsOnly:
             entryPointFileContentRelativeToConsumingProjectRootDirectory__forwardSlashesSeparatorsOnly
       });
 
     }
 
-    if (processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.mustExecute) {
+    if (markupEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.mustExecute) {
 
       formattedHTML_CodeForReports =
           formattedHTML_CodeForReports ??
-          MarkupProcessor.formatHTML_Code(processedEntryPointVinylFile);
+          MarkupProcessor.formatHTML_Code(markupEntryPointVinylFile);
 
       if (this.projectBuildingMasterConfigRepresentative.mustProvideIncrementalBuilding) {
 
         AccessibilityInspector.inspectAtBackgroundAndReportImmediatelyWithoutThrowingOfErrors({
           HTML_Code: formattedHTML_CodeForReports,
-          HTML_CodeMD5Checksum: semiFinishedHTML_CodeMD5_Checksum,
-          accessibilityStandard: processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.standard,
+          HTML_CodeMD5Checksum: MD5_ChecksumOfCompleteHTML_Code,
+          accessibilityStandard: markupEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.standard,
           targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
               entryPointFileContentRelativeToConsumingProjectRootDirectory__forwardSlashesSeparatorsOnly
         });
@@ -480,8 +510,8 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
         AccessibilityInspector.inspectAtBackgroundWithoutReporting({
           HTML_Code: formattedHTML_CodeForReports,
-          HTML_CodeMD5Checksum: semiFinishedHTML_CodeMD5_Checksum,
-          accessibilityStandard: processedEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.standard,
+          HTML_CodeMD5Checksum: MD5_ChecksumOfCompleteHTML_Code,
+          accessibilityStandard: markupEntryPointVinylFile.actualEntryPointsGroupSettings.accessibilityInspection.standard,
           targetHTML_FilePathRelativeToConsumingProjectRootDirectory:
           entryPointFileContentRelativeToConsumingProjectRootDirectory__forwardSlashesSeparatorsOnly
         });
@@ -489,8 +519,6 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
       }
 
     }
-
-    processedEntryPointVinylFile.setContents(semiFinishedHTML_Code);
 
     return GulpStreamModifier.CompletionSignals.PASSING_ON;
 
@@ -511,6 +539,28 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
     }
 
+    if (this.projectBuildingMasterConfigRepresentative.processingOnDemandSettings.enabled) {
+
+      try {
+
+        BrowserLiveReloader.reload();
+
+      } catch (error: unknown) {
+
+        Logger.logError({
+          errorType: UnexpectedEventError.NAME,
+          title: UnexpectedEventError.localization.defaultTitle,
+          description:
+              "The error has occurred during the attempt browser page reloading. " +
+              "If the browser page reloading functionality has been set up property, we are sorry but it is the bug.",
+          occurrenceLocation: "MarkupProcessor.onStreamEnded",
+          caughtError: error
+        });
+
+      }
+
+    }
+
   }
 
 
@@ -525,19 +575,44 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
 
 
     this.subsequentFilesStateChangeTimeout = setTimeout(
-      (): void => {
+      this.onSubsequentFilesStateChangeTimeoutExpired.bind(this),
+      secondsToMilliseconds(this.markupProcessingSettingsRepresentative.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS)
+    );
 
-        this.processEntryPoints(
-          this.sourceCodeSelectiveReprocessingHelper?.getAbsolutePathsOfEntryPointsWhichMustBeProcessed(
-            this.absolutePathOfFilesWaitingForReProcessing
-          ) ?? []
-        )();
+  }
+
+  private onSubsequentFilesStateChangeTimeoutExpired(): void {
+
+    if (this.projectBuildingMasterConfigRepresentative.processingOnDemandSettings.enabled) {
+
+      const currentHTML_FileAbsolutePath__forwardSlashesPathSeparators: string | null =
+          BrowserLiveReloader.currentHTML_FileAbsolutePath__forwardSlashesPathSeparators;
+
+      if (isNotNull(currentHTML_FileAbsolutePath__forwardSlashesPathSeparators)) {
+
+        this.processEntryPoints([
+          getExpectedToBeNonUndefinedMapValue(
+            MarkupProcessingSharedState.outputHTML_FilesAndSourcePugFilesAbsolutePathsCorrespondenceMap,
+            currentHTML_FileAbsolutePath__forwardSlashesPathSeparators
+          )
+        ])();
 
         this.absolutePathOfFilesWaitingForReProcessing.clear();
 
-      },
-      secondsToMilliseconds(this.markupProcessingSettingsRepresentative.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS)
-    );
+        return;
+
+      }
+
+    }
+
+
+    this.processEntryPoints(
+      this.sourceCodeSelectiveReprocessingHelper?.getAbsolutePathsOfEntryPointsWhichMustBeProcessed(
+        this.absolutePathOfFilesWaitingForReProcessing
+      ) ?? []
+    )();
+
+    this.absolutePathOfFilesWaitingForReProcessing.clear();
 
   }
 
@@ -562,15 +637,36 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
     /* [ Theory ]
      * + `indent_with_tabs` overrides `indent_size` and `indent_char` so not required.
      * */
-    return CodeFormatter.html(
+    return formatHTML(
       markupVinylFile.stringifiedContents,
       {
-        ...outputCodeFormattingSettings.indentationString.includes(SpaceCharacters.regularSpace) ?
-            { indent_size: splitString(outputCodeFormattingSettings.indentationString, "").length } : null,
+        indent_size: 2,
         indent_char: outputCodeFormattingSettings.indentationString,
         eol: outputCodeFormattingSettings.lineSeparators,
         end_with_newline: outputCodeFormattingSettings.mustGuaranteeTrailingEmptyLine,
         indent_body_inner_html: outputCodeFormattingSettings.mustIndentHeadAndBodyTags
+      }
+    );
+
+  }
+
+  private static formatHandlebarsCode(markupVinylFile: MarkupEntryPointVinylFile): string {
+
+    const { outputCodeFormatting: outputCodeFormattingSettings }: MarkupProcessingSettings__Normalized.EntryPointsGroup =
+        markupVinylFile.actualEntryPointsGroupSettings;
+
+    /* [ Theory ]
+     * + `indent_with_tabs` overrides `indent_size` and `indent_char` so not required.
+     * */
+    return formatHTML(
+      markupVinylFile.stringifiedContents,
+      {
+        indent_size: 2,
+        indent_char: outputCodeFormattingSettings.indentationString,
+        eol: outputCodeFormattingSettings.lineSeparators,
+        end_with_newline: outputCodeFormattingSettings.mustGuaranteeTrailingEmptyLine,
+        indent_body_inner_html: outputCodeFormattingSettings.mustIndentHeadAndBodyTags,
+        templating: [ "handlebars" ]
       }
     );
 

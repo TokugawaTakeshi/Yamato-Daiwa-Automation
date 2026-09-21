@@ -331,7 +331,7 @@ class ResourcesPointersResolverForHTML {
       supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots: this.markupProcessingSettingsRepresentative.
           supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
       sourceAndOutputFilesAbsolutePathsCorrespondenceMap: MarkupProcessingSharedState.
-          entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap,
+          entryPointsSourceAndOutputFilesAbsolutePathsCorrespondenceMap__includingFictiveOnes,
       fileTypeForLogging__singularForm: this.markupProcessingSettingsRepresentative.
           TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM,
       fileTypeForLogging__pluralForm: this.markupProcessingSettingsRepresentative.

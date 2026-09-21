@@ -466,6 +466,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
           minimalEntriesCount: 1,
 
           allowedKeys: [
+            "$staticPreview",
             "$localDevelopment",
             "$testing",
             "$staging",
@@ -473,6 +474,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
           ],
 
           keysRenamings: {
+            $staticPreview: ConsumingProjectBuildingModes.staticPreview,
             $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
             $testing: ConsumingProjectBuildingModes.testing,
             $staging: ConsumingProjectBuildingModes.staging,
@@ -488,7 +490,7 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
               $secondsBetweenFileUpdatingAndStartingOfRebuilding: {
                 newName: "secondsBetweenFileUpdatingAndStartingOfRebuilding",
                 type: Number,
-                numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                numbersSet: RawObjectDataProcessor.NumbersSets.positiveRealNumber,
                 isNaN_Forbidden: true,
                 isUndefinedForbidden: false,
                 isNullForbidden: true
@@ -498,6 +500,15 @@ namespace MarkupProcessingSettings__FromFile__RawValid {
                 newName: "mustResolveResourcesPointersToRelativePaths",
                 type: Boolean,
                 isUndefinedForbidden: false,
+                mustBeUndefinedIf: {
+                  predicate:
+                    (
+                      { targetPropertyPathSegments }:
+                          RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+                    ): boolean =>
+                        targetPropertyPathSegments[targetPropertyPathSegments.length - 2] === "$staticPreview",
+                  descriptionForLogging: "project building mode is \"$staticPreview\""
+                },
                 isNullForbidden: true
               }
 

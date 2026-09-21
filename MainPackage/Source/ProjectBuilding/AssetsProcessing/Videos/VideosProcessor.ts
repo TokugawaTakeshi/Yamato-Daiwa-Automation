@@ -1,31 +1,29 @@
-/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosProcessingSettings__Normalized";
 
-/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Settings Representatives ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type VideosProcessingSettingsRepresentative from "@VideosProcessing/VideosProcessingSettingsRepresentative";
 
-/* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
-import VideosSourceFilesWatcher from "@VideosProcessing/VideosSourceFilesWatcher";
-
-/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
-import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-
-/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Shared State ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import VideosProcessingSharedState from "@VideosProcessing/VideosProcessingSharedState";
 
-/* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Gulp & Plugins ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import Gulp from "gulp";
 import type VinylFile from "vinyl";
 
-/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Applied Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
 import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import VideosSourceFilesWatcher from "@VideosProcessing/VideosSourceFilesWatcher";
 import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
 import AssetVinylFile from "@ProjectBuilding/Common/VinylFiles/AssetVinylFile";
 
-/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ General Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import { isUndefined, readonlyArrayToMutableOne } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 export default class VideosProcessor extends GulpStreamsBasedAssetsProcessor<

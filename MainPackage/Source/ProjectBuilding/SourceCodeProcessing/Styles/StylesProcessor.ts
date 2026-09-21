@@ -24,6 +24,7 @@ import gulpStylus from "gulp-stylus";
 import gulpPostCSS from "gulp-postcss";
 import Autoprefixer from "autoprefixer";
 import CSS_Nano from "cssnano";
+import normalizeStylusCompatibleContainerQuerySyntax from "postcss-normalize-stylus-compatible-container-query-syntax";
 
 /* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import StylusPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/StylusPreProcessorSpecialist";
@@ -35,8 +36,7 @@ import SourceCodeSelectiveReprocessingHelper from "@Utils/SourceCodeSelectiveRep
 import DotYDA_DirectoryManager from "@Utils/DotYDA_DirectoryManager";
 import StylesEntryPointVinylFile from "@StylesProcessing/StylesEntryPointVinylFile";
 import FileNameRevisionPostfixer from "@Utils/FileNameRevisionPostfixer";
-import ContainerQueriesSyntaxNormalizerForStylus from
-    "@StylesProcessing/Plugins/ContainerQueriesSyntaxNormalizerForStylus/ContainerQueriesSyntaxNormalizerForStylus";
+import CSS_ClassesShortener from "@StylesProcessing/Plugins/CSS_ClassesShortener";
 import ResourcesPointersResolverForCSS from "@ProjectBuilding/Common/Plugins/ResourcesPointersResolverForCSS";
 
 /* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -176,8 +176,10 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
 
         pipe(
           gulpIf(
-            this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode ||
-                this.projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
+            (vinylFile: VinylFile): boolean =>
+                /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+                 * The TypeScript type does not respect the possible extedning from the Vinyl file. */
+                (vinylFile as StylesEntryPointVinylFile).actualEntryPointsGroupSettings.mustGenerateSourcemaps,
             gulpSourcemaps.init()
           )
         ).
@@ -187,18 +189,26 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
         pipe(
           gulpStylus({
 
-            /* [ Theory ] Allows to "@include XXX.css" which is critical for third-party libraries' usage. */
+            /* [ Theory ] Allows "@include XXX.css", which is critical for third-party libraries' usage. */
             "include css": true
 
           })
         ).
 
         pipe(
-          GulpStreamModifier.modify({
-            async onStreamStartedEventCommonHandler(stylesheet: VinylFile): Promise<GulpStreamModifier.CompletionSignals> {
-              ContainerQueriesSyntaxNormalizerForStylus.normalizeSyntax(stylesheet);
-              return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
-            }
+          GulpStreamModifier.modifyForSingleVinylFileSubtype({
+            onStreamStartedEventHandler:
+                async (stylesheet: StylesEntryPointVinylFile): Promise<GulpStreamModifier.CompletionSignals> => {
+
+                  CSS_ClassesShortener.
+                      replaceAllowedCSS_ClassesInStylesheetAndSaveCorrespondencesIfMust(
+                        stylesheet,
+                        this.projectBuildingMasterConfigRepresentative
+                      );
+
+                  return Promise.resolve(GulpStreamModifier.CompletionSignals.PASSING_ON);
+
+                }
           })
         ).
 
@@ -206,6 +216,7 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
           gulpPostCSS(
             (): { plugins: Array<unknown>; } => ({
               plugins: [
+                normalizeStylusCompatibleContainerQuerySyntax,
                 Autoprefixer,
                 CSS_Nano({
                   preset: [
@@ -223,8 +234,10 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
 
         pipe(
           gulpIf(
-            this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode ||
-                this.projectBuildingMasterConfigRepresentative.isLocalDevelopmentBuildingMode,
+            (vinylFile: VinylFile): boolean =>
+                /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+                 * The TypeScript type does not respect the possible extedning from the Vinyl file. */
+                (vinylFile as StylesEntryPointVinylFile).actualEntryPointsGroupSettings.mustGenerateSourcemaps,
             gulpSourcemaps.write()
           )
         ).

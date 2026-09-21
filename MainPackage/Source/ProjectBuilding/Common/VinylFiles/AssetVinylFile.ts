@@ -14,18 +14,22 @@ import VinylFileClass from "@Utils/VinylFileClass";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
 
 
-class AssetVinylFile extends VinylFileClass {
+class AssetVinylFile<
+  /* eslint-disable-next-line @stylistic/type-generic-spacing -- False positive */
+  ActualAssetsGroupSettings extends AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup =
+      AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup
+> extends VinylFileClass {
 
   public readonly sourceAbsolutePath: string;
   public readonly outputDirectoryAbsolutePath: string;
-  public readonly actualAssetsGroupSettings: AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup;
+  public readonly actualAssetsGroupSettings: ActualAssetsGroupSettings;
 
 
   public constructor(
     {
       initialPlainVinylFile,
       actualAssetsGroupSettings
-    }: AssetVinylFile.ConstructorParameter
+    }: AssetVinylFile.ConstructorParameter<ActualAssetsGroupSettings>
   ) {
 
     super({
@@ -50,10 +54,13 @@ class AssetVinylFile extends VinylFileClass {
 
 namespace AssetVinylFile {
 
-  export type ConstructorParameter = Readonly<{
-    initialPlainVinylFile: VinylFile;
-    actualAssetsGroupSettings: AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup;
-  }>;
+  export type ConstructorParameter<
+    ActualAssetsGroupSettings extends AssetsProcessingSettingsGenericProperties__Normalized.AssetsGroup
+  > =
+    Readonly<{
+      initialPlainVinylFile: VinylFile;
+      actualAssetsGroupSettings: ActualAssetsGroupSettings;
+    }>;
 
 }
 

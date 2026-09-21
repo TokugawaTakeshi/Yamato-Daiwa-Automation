@@ -470,6 +470,7 @@ abstract class ProjectBuilderRawConfigNormalizer {
           "Please check which selective executions you have defined in configuration file."
     };
   }
+
 }
 
 

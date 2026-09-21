@@ -57,6 +57,7 @@ abstract class GulpStreamModifier {
 
         const targetFile: VinylFile = chunk;
 
+        /* @ts-ignore: TS2345 The solving of this problem postponed until Gulp 4 ➝ Gulp 5 migration. */
         onStreamStartedEventHandler(targetFile, addNewFilesToStream).
 
             then((completionSignal: GulpStreamModifier.CompletionSignals): void => {

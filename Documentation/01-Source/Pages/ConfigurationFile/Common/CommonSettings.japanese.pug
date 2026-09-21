@@ -5,6 +5,15 @@ block append Requirements
 
   include ../../../SharedAssets/Markup/SharedAssets.japanese.pug
   include ../../../SharedComponents/SharedComponents.japanese.pug
+
+  -
+
+    /** @type { RawObjectDataProcessor.PropertiesSpecification } */
+    const $projectBuildingCommonSettingsSpecification =
+        YDF.ValuesDeepCopier.deeplyCloneArbitraryValueAsPossible(
+          $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification
+        );
+
   include Data/ProjectBuildingCommonSettings__FromFile__RawValid.japanese.pug
 
 
@@ -20,7 +29,8 @@ block append Metadata
     RegularWebPageTemplate__YDF.configure({
       metadata: {
         title: buildHTML_PageTitle(topHeading),
-        description: ""
+        description:
+            "プロジェクトビルドツール『Yamato Daiwa Automation』（省略は『YDA』）の一般設定は、特定のタスクに関連していないか、複数のタスクに同時に関連している。"
       },
       stylesSheetsURIs: [
         "$CommonStyles",
@@ -30,7 +40,7 @@ block append Metadata
       ]
     });
 
-    RoutingEmulator.setCurrentRoute("configurationFile.commonSettings");
+    YDF.RoutingEmulator.setCurrentRoute("configurationFile.commonSettings");
 
     LanguageDropDownList__YDF_DK.setLinks({
       english: routing.english.configurationFile.$children.commonSettings.$URI,
@@ -52,6 +62,666 @@ block append SpecificContent
     //- ━━━ `$common`　一般設定 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
 
-    +PageNotReadyApology--YDPD({
-      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    +PageNotReadyApology--YDPD({ currentState: PageNotReadyApology__YDPD.States.initialTextNotComplete })
+
+    p.Article-Paragraph
+      | 特定の
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.task.$URI
+      }) 課題
+      | と#[+Keyword--YDID 関連していない]か、複数の#[+Term--YDID 課題]と関連している設定は
+      | #[+ImportantEntity__Code--YDID $projectBuilding.$commonSettings]に定義出来る。
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            # 本ガイドに従って此処に一般設定を定義
+
+    +CompactTableOfContents--YDF_DK(localizedSectioning)
+
+
+    //- ━━━ `$selectiveExecutions` — 選択的実行（Selective Executions） ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    +Heading--YDF({
+      level: 2,
+      innerHTML: localizedSectioning.selectiveExecutions.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$anchor
+    }).Article-Heading2
+
+    +PropertyMetadata--YDF_DK(
+      Object.assign(
+        {},
+        $projectBuildingCommonSettingsSpecification,
+        {
+          value: {
+            type: {
+              name: "ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution",
+              anchorOrURI: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$URI
+            }
+          }
+        }
+      )
+    )
+
+    p.Article-Paragraph.
+      #[+Link--YDF({ internalURI: localizedRouting.terminology.$sectioning.selectiveExecution.$URI }) 選択的実行]定義
+        のに使われる#[+Term--YDID 連想配列系]の#[+Term__Contrast--YDID オブジェクト]。
+
+    p.Article-Paragraph.
+      #[+Keyword--YDID キー]に依り#[+Term--YDID 選択的実行]の#[+Keyword--YDID 識別子]を指定する事。
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              StaticPreview:
+
+                # 選択的実行「StaticPreview」の設定（詳細は後述）
+
+              Application:
+
+                # 選択的実行「Application」の設定（詳細は後述）
+
+    p.Article-Paragraph.
+      設定定義の規約に従い、#[+Term--YDID キー]の前に#[+ImportantEntity__Code--YDID $]記号が無い事は、其の名前が利用者に依り意識的に
+        選ばれ指定され、#[+Term--YDID API]の#[+Term__Contrast--YDID 予約済みキー]では#[+Keyword--YDID ない]事を意味する。
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID #[+Term--YDID 選択的実行]の#[+Keyword--YDID 妥当な]設定を定義した後は]、
+        #[+Term--YDID CLIユーティリティ]#[+ImportantEntity__Code--YDID yda]を呼び出す際、
+        #[+Term--YDID オプション]#[+ImportantEntity__Code--YDID --selectiveExecution]で
+        #[+Keyphrase--YDID 設定ファイルに定義された中の]#[+Keyphrase--YDID 何れかの]#[+Term--YDID 選択的実行]の識別子を指定出来る、例えば
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }).
+        yda build --selectiveExecution Application --mode LOCAL_DEVELOPMENT
+
+    p.Article-Paragraph.
+      #[+ImportantEntity__Code--YDID $selectiveExecutions]#[+Term__Contrast--YDID 連想配列]の#[+Term--YDID 値]は
+        #[+Term--YDID オブジェクト]であり、以下の規則に従って指定する必要が有る。
+
+
+    //- ╍╍╍ 各選択的実行の設定 ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$anchor
+    }).Article-Heading3
+
+    +ObjectTypeAbstract--YDF_DK({
+      typeName: "ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution",
+      localizedDescriptiveHeading: "個々の選択的実行の設定",
+      propertiesSpecification: $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties
     })
+
+
+    //- ─── `tasksAndSourceFilesSelection` 課題・ソースファイルの選択 ──────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          tasksAndSourceFilesSelection.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          tasksAndSourceFilesSelection.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$tasksAndSourceFilesSelection
+    )
+
+    p.Article-Paragraph
+      | #[+Term--YDID 連想配列系]の#[+Term__Contrast--YDID オブジェクト]であり、其の#[+Term--YDID キー]は
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.task.$URI
+      }) 課題
+      |   の名称、#[+Keyphrase--YDID 但し全#[+Term--YDID 課題]では#[+Keyword--YDID なく]、上記の概要に出たもの#[+Keyword--YDID のみ]]）
+      |   で、#[+Term--YDID 値]は
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.entryPointsAndChildrenFiles.$children.entryPointsGroup.$URI
+      }) 初期位置
+      |   群（#[+Term--YDID ソースコード]を処理する#[+Term--YDID 課題]の場合）か、
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.assets.$children.groups.$URI
+      }) アセット
+      |   群（
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.assets.$URI
+      }) アセット
+      | 処理課題の場合又は
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.configurationFile.$children.plainCopying.$URI
+      }) 単純コピー
+      |   の課題の場合）。
+      | 尚、#[+Term--YDID 選択的実行]に言及された#[+Term--YDID 課題]と#[+Term--YDID 群]（#[+Term__Contrast--YDID 初期位置]
+      |   又は#[+Term__Contrast--YDID アセット]）は、#[+Keyword--YDID 皆]#[+Keyword__Contrast--YDID 同じ]設定ファイル内で
+      |   宣言されている#[+Keyword--YDID 必要]が有る。
+
+    +CodeViewer--YDF
+
+      +CodeViewer-TabPanel--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML })
+
+        +CodeViewer-PartialListing--YDF: :code_listing--yda
+          $projectBuilding:
+
+            $commonSettings:
+
+              $selectiveExecutions:
+
+                StaticPreview:
+
+                  $tasksAndSourceFilesSelection:
+
+                    $markupProcessing: [ StaticPreviewAnywherePage, Pages ]
+                    $stylesProcessing: [ Shared, Layouts, Pages ]
+
+                Application:
+
+                  $tasksAndSourceFilesSelection:
+
+                    $markupProcessing: [ Pages, MVC_Fragments ]
+                    $stylesProcessing: [ Shared, Layouts, Pages ]
+        +CodeViewer-Explanation--YDF.
+          #[+Keyphrase--YDID #[+Term--YDID 選択的実行]を使用する場合それぞれの#[+Term--YDID 選択的実行]に対して規定では]
+            #[+Term--YDID 群]（#[+Term__Contrast--YDID エントリポイント]か#[+Term__Contrast--YDID アセット]）は
+            #[+Keyphrase--YDID 何も選択されていない]。
+          其の為、#[+Keyphrase--YDID 例え別の#[+Term--YDID 選択的実行]と同じ揃いであっても]、#[+Keyword--YDID 明示的に]指定する必要が有る儘。
+
+        +CodeViewer-PartialListing--YDF: :code_listing--yda(indentationMultiplier="6" indentationString="  ")
+                    $ECMA_ScriptLogicProcessing: [ Pages, FrontServerEntryPoint, TypeORM_Configuration ]
+        +CodeViewer-Explanation--YDF.
+          上記の設定通り機能させるには、上記の#[+Term--YDID 課題]#[+Keyword--YDID 及び]#[+Term--YDID リソース群]は宣言されている必要が有る。
+
+        +CodeViewer-PartialListing--YDF: :code_listing--yda(indentationMultiplier="2" indentationString="  ")
+            $markupProcessing: # マークアップ処理の設定方法は該当ドキュメントを参照
+
+              $entryPointsGroups:
+
+                StaticPreviewAnywherePage: # ...
+
+                Pages: # ...
+
+                MVC_Fragments: # ...
+
+            $stylesProcessing: # スタイル処理の設定方法は該当ドキュメントを参照
+
+              $entryPointsGroups:
+
+                Shared: # ...
+
+
+    //- ─── `$browserLiveReloadingSetupID` — ブラウザータブ自動リロード設定ID ───────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          browserLiveReloadingSetupID.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          browserLiveReloadingSetupID.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$browserLiveReloadingSetupID
+    )
+
+    p.Article-Paragraph
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.browserLiveReloading.$URI
+      }) ブラウザーの自動リロード
+      | 機能の関連している。
+      +Link--YDF({
+        internalURI: localizedRouting.configurationFile.$children.browserLiveReloading.$URI
+      }) 此の機能のAPI
+      |   では#[+Keyword--YDID 複数]の#[+Term--YDID プリセット]を定義出来、#[+Keyword--YDID それぞれ]に識別子が必要。
+      | 特定の#[+Term--YDID 選択的実行]でブラウザー自動リロード機能が必要な場合、#[+Term--YDID プロパティ]
+      |   #[+ImportantEntity__Code--YDID $browserLiveReloadingSetupID]で望ましい#[+Term--YDID プリセット]の識別子を指定する事。
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              StaticPreview:
+
+                $tasksAndSourceFilesSelection:
+
+                  # 上記を参照
+
+                $browserLiveReloadingSetupID: StaticPreview
+
+              Application:
+
+                $tasksAndSourceFilesSelection:
+
+                  # 上記を参照
+
+                $browserLiveReloadingSetupID: Application
+
+          $browserLiveReloading:
+
+            $setups:
+
+              StaticPreview:
+
+                # ブラウザー自動リロードの設定方法は該当ドキュメントを参照
+
+              Application:
+
+                # ブラウザー自動リロードの設定方法は該当ドキュメントを参照
+
+
+    //- ─── `$dockerSetupID` — Docker セットアップのID ──────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.dockerSetupID.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.dockerSetupID.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$dockerSetupID
+    )
+
+    p.Article-Paragraph
+      +Link--YDF({ internalURI: localizedRouting.functionality.$children.dockerIntegration.$URI }) Dockerとの連携
+      | 機能と関連している。
+      +Link--YDF({
+        internalURI: localizedRouting.configurationFile.$children.dockerLaunching.$URI
+      }) 此の機能のAPI
+      |   では#[+Keyword--YDID 複数]の#[+Term--YDID プリセット]を定義出来、#[+Keyword--YDID それぞれ]に識別子が必要。
+      | 特定の#[+Term--YDID 選択的実行]で#[+ImportantEntity--YDID Docker]の機能が必要な場合、#[+Term--YDID プロパティ]
+      |   #[+ImportantEntity__Code--YDID $dockerSetupID]で望ましい#[+Term--YDID プリセット]の識別子を指定する事。
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML}).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              SelectiveExecution1:
+
+                $tasksAndSourceFilesSelection:
+
+                  # 上記を参照
+
+                $dockerSetupID: DockerSetup1
+
+              SelectiveExecution2:
+
+                $tasksAndSourceFilesSelection:
+
+                  # 上記を参照
+
+                $dockerSetupID: DockerSetup2
+
+
+          $dockerLaunching:
+
+            DockerSetup1:
+
+              $composingOptions:
+
+                # Docker 起動の設定方法は該当ドキュメントを参照
+
+            DockerSetup2:
+
+              $composingOptions:
+
+                # Docker 起動の設定方法は該当ドキュメントを参照
+
+
+    //- ─── `$distributablePackageJSON_Generating` — 成果物専用「package.json」ファイルの生成 ──────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          distributablePackageJSON_Generating.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          distributablePackageJSON_Generating.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$distributablePackageJSON_Generating
+    )
+
+    p.Article-Paragraph
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.distributablePackageJSON_Generating.$URI
+      }) 成果物専用「package.json」ファイルの生成
+      | 機能と関連している。
+      | 此の#[+Term--YDID 真偽フラグ]は当該#[+Term--YDID 選択的実行]に対して#[+ImportantEntity--YDID package.json]の生成が必要かどうか
+      |   指定。
+      | 不要な時、明示的に#[+ImportantEntity__Code--YDID false]を指定する他に、指定しなくても良い。
+      | そして#[+ImportantEntity__Code--YDID true]に設定する場合は、#[+Keyword--YDID 同名]グループを
+      |   #[+ImportantEntity__Code--YDID $distributablePackageJSON_Generating]の設定に定義する事が#[+Keyword--YDID 必要]。
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              Application:
+
+                $distributablePackageJSON_Generating: true
+
+
+          $distributablePackageJSON_Generating:
+
+            # 出力されるpackage.jsonの設定方法は該当ドキュメントを参照
+
+
+    //- ─── `$processingOnDemand` 需要に応じて処理 ────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$processingOnDemand
+    )
+
+    p.Article-Paragraph
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.markupProcessing.$children.optimization.$URI
+      }) 構造設計記法（マークアップ）のオンデマンド処理
+      | 及び
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.browserLiveReloading.$URI
+      }) ブラウザタブの自動更新
+      | という#[+Keyword--YDID 最適化系の]機能に関連しているので、此の設定グループは#[+Keyword__Contrast--YDID 増分]
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI
+      }) プロジェクトビルドモード
+      | #[+Keyword--YDID のみ]対象となっている。
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID 規定では]#[+ImportantEntity--YDID YDA]は#[+Keyword--YDID 変更された]#[+Keyword__Contrast--YDID ソース]
+        #[+Term--YDID マークアップ]ファイルを保存する際、それらのファイルと#[+Term--YDID Pugディレクティブ]#[+ImportantEntity__Code--YDID include]
+        及び#[+ImportantEntity__Code--YDID extends]で関連付けられている#[+Term--YDID エントリポイント]#[+Keyword--YDID のみ]を処理する。
+      然し、多くの場合、此の最適化対策だけでは、1~2個の#[+Term--YDID Pugファイル]を編集した後に数十個の#[+Term--YDID エントリポイント]が再ビルドされる
+        のを防ぐには不十分な対策があり、効率的な開発の妨げになる可能性が高い。
+      其の場合、ブラウザで開いているページに該当している#[+Term--YDID エントリポイント]#[+Keyword--YDID のみ]を処理する最適化モードを有効に出来る。
+
+    +AdmonitionBlock--YDF({
+      SVG_Icon: true,
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning
+    }).
+      御客様に#[+Term--YDID 静的プレビュー]を見せる場合は、ファイルを送る前に#[+ImportantEntity__Code--YDID $processingOnDemand]
+        を#[+Keyword--YDID 一時的]に無効にするか、#[+ImportantEntity__Code--YDID $fullInitialBuilding]#[+Term--YDID オプション]
+        に#[+ImportantEntity__Code--YDID true]を指定しにないと、一部の#[+Term--YDID HTMLファイル]が古くなっている可能性が有る。
+
+    p.Article-Paragraph.
+      此の節では、#[+Keyphrase--YDID 特定の#[+Term--YDID 選択的実行]に関連する]#[+Term--YDID オンデマンド処理]の設定について
+        説明しているが、これらの設定はグローバル（#[+Term--YDID 選択的実行]に関係なく）に定義する事も出来る。
+
+
+    //- ┄┄┄ `$enable` 有効化するべきか ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+    +Heading--YDF({
+      level: 5,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$children.enable.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$children.enable.$anchor
+    }).Article-Heading5
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$processingOnDemand.properties.
+          $enable
+    )
+
+    p.Article-Paragraph.
+      #[+ImportantEntity__Code--YDID true]で指定してある場合、#[+Term--YDID オンデマンド処理]モードが有効。
+      無効にしたい場合は、明示的に#[+ImportantEntity__Code--YDID false]を指定しても良いが、#[+Keyword--YDID 規定値]なので、
+        明示的に指定する必要は無い。
+
+
+    //- ┄┄┄ `$fullInitialBuilding` 完全な初期構成が必要か ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+    +Heading--YDF({
+      level: 5,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$children.fullInitialBuilding.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$children.fullInitialBuilding.$anchor
+    }).Article-Heading5
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$processingOnDemand.properties.
+          $fullInitialBuilding
+    )
+
+    p.Article-Paragraph.
+      値を #[+ImportantEntity__Code--YDID true] に指定すると、#[+Keyword--YDID 初期] #[+Term--YDID プロジェクトビルド]
+        のプロセスで、現在の #[+Term--YDID 選択的実行] に関連する #[+Keyword--YDID すべて] の #[+Term--YDID エントリポイント]
+        が処理される。#[+Term--YDID エントリポイント] が数十個ある場合は、時間がかかる可能性がある。
+      #[+Keyphrase--YDID デフォルト値] は #[+ImportantEntity__Code--YDID false] である。其の場合、特定の
+        #[+Term--YDID Pugファイル] は、対応する #[+Term--YDID HTMLファイル] がブラウザで開かれたときに #[+Keyword--YDID のみ]
+        処理される。#[+Keyword--YDID 即座] ではないが、通常 #[+ImportantEntity--YDID 2〜3秒] 程度かかる。
+
+
+    //- ┅┅┅ 構成モード毎パブリックディジタルの早退パス ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+    +Heading--YDF({
+      level: 2,
+      innerHTML: localizedSectioning.publicDirectoriesRelativePaths.$heading,
+      HTML_ID: localizedSectioning.publicDirectoriesRelativePaths.$anchor
+    }).Article-Heading2
+
+    +PropertyMetadata--YDF_DK($projectBuildingCommonSettingsSpecification.$publicDirectoriesRelativePaths)
+
+    p.Article-Paragraph
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI
+      }) 資源ポインタパス算出
+      | 機能と関連している。
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.importantForYDA_ExistingTerms.$children.
+            publicPathAndShortenedAbsolutePath.$URI
+      }) 短縮絶対パス
+      | を算出する為に、其の#[+Term--YDID 短縮絶対パス]の#[+Keyword--YDID ルート]何方の#[+Term--YDID ディレクトリ]に該当しているか、指定する
+      |   事が#[+Keyword--YDID 必要]。
+      | 但し、#[+Term--YDID 静的プレビューモード]の概念上、#[+Term--YDID 静的プレビューモード]の場合#[+Term--YDID 絶対パス]が算出
+      |   #[+Keyword--YDID 不可能]。
+
+    p.Article-Paragraph.
+      上述のディレクトリの指定方法は、下記通り#[+Term--YDID プロジェクト]の#[+Keyword--YDID ルート]に対して#[+Keyword--YDID 相対]
+        #[+Term--YDID パス]を記載する事。
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $publicDirectoriesRelativePaths:
+
+              $localDevelopment: 03-LocalDevelopmentBuild/public
+              $staging: 04-StagingBuild/public
+              $production: 05-ProductionBuild/public
+
+
+    //- ┅┅┅ `$filesWatching` ファイル監視 ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+    +Heading--YDF({
+      level: 2,
+      innerHTML: localizedSectioning.filesWatching.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$anchor
+    }).Article-Heading2
+
+    +PropertyMetadata--YDF_DK($projectBuildingCommonSettingsSpecification.$filesWatching)
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID #[+Term--YDID 増分構成モード]の場合]プロジェクト再構成及びブラウザータブの自動更新の為に、ファイルとディレクトリの状態を
+        監視する事が#[+Keyword--YDID 必要]。
+      #[+Keyphrase--YDID 規定では下記の項目を除いて#[+ImportantEntity--YDID YDA]設定ファイルが配置されているディレクトリ配下]の全ての
+        ファイル及びディレクトリが監視される。
+
+    ul.Article-UnorderedList
+
+      li ドットで始まる名前のファイル及びディレクトリ
+
+      li 以下のファイル
+        ul.Article-UnorderedList
+          each fileName in $$YamatoDaiwaAutomationAPI.FilesWatchingRestrictions.relativePathsOfExcludeFiles
+            li= fileName
+
+      li 以下のディレクトリ
+        ul.Article-UnorderedList
+          each directoryName in $$YamatoDaiwaAutomationAPI.FilesWatchingRestrictions.relativePathsOfExcludeDirectories
+            li= directoryName
+
+    p.Article-Paragraph.
+      此れに加え、状態変化に対して#[+ImportantEntity--YDID YDA]が反応するべきではない全てのファイル（又は少なくとも其の大部分）を除外する事が推奨。
+      此の場外は両方の#[+Term--YDID 増分構成モード]に対しても、片方のモードに対しても設定可能である。
+      更に#[+Term--YDID 構成モード]に応じて、他の#[+Term--YDID 構成モード]に#[+Keyword--YDID 出力]されあたファイルを監視から除外する事が合理的。
+
+
+    //- ╍╍╍ `excludeFilesWithPathsRelativeToProjectRootDirectory` 除外ファイルの相対パス ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+    +Heading--YDF({
+      level: 3,
+      innerHTML: localizedSectioning.filesWatching.$children.excludeFilesWithPathsRelativeToProjectRootDirectory.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.excludeFilesWithPathsRelativeToProjectRootDirectory.$anchor
+    }).Article-Heading3
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$filesWatching.properties.
+          $excludeFilesWithPathsRelativeToProjectRootDirectory
+    )
+
+    p.Article-Paragraph.
+      階層の深さや実行されている#[+Keyword--YDID 増分]#[+Term--YDID 構成モード]に関係無く監視から#[+Keyword--YDID 除外]される
+        #[+Keyphrase--YDID ファイル]名。
+
+
+    //- ╍╍╍ `excludeDirectoriesWithPathsRelativeToProjectRootDirectory` 除外ディレクトリの相対パス ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+    +Heading--YDF({
+      level: 3,
+      innerHTML: localizedSectioning.filesWatching.$children.excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$anchor
+    }).Article-Heading3
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$filesWatching.properties.
+          $excludeDirectoriesWithPathsRelativeToProjectRootDirectory
+    )
+
+    p.Article-Paragraph.
+      階層の深さや実行されている#[+Keyword--YDID 増分]#[+Term--YDID 構成モード]に関係無く監視から#[+Keyword--YDID 除外]される
+        #[+Keyword--YDID ディレクトリ]名。
+      此処では通常、#[+Keyword--YDID 納品系]#[+Term--YDID プロジェクト構成]用のディレクトリを除外するのが合理的。
+
+
+    //- ╍╍╍ `buildingModeDependent` 構成モード毎 ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+    +Heading--YDF({
+      level: 3,
+      innerHTML: localizedSectioning.filesWatching.$children.buildingModeDependent.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.buildingModeDependent.$anchor
+    }).Article-Heading3
+
+    //- ─── `excludeFilesWithPathsRelativeToProjectRootDirectory` 除外ファイルの相対パス ─────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.filesWatching.$children.buildingModeDependent.$children.
+          excludeFilesWithPathsRelativeToProjectRootDirectory.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.buildingModeDependent.$children.
+          excludeFilesWithPathsRelativeToProjectRootDirectory.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$filesWatching.properties.$buildingModeDependent.value.properties.
+          $excludeFilesWithPathsRelativeToProjectRootDirectory
+    )
+
+    p.Article-Paragraph.
+      階層の深さに関係無く、
+        #[+Keyphrase--YDID #[+Keyword--YDID 指定された]#[+Term--YDID 構成モード]#[+Keyword--YDID のみ]で]
+        #[+Keyword--YDID 除外]される#[+Keyword--YDID ファイル]名。
+
+
+    //- ─── `excludeDirectoriesWithPathsRelativeToProjectRootDirectory` 除外ディレクトリの相対パス ─────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.filesWatching.$children.buildingModeDependent.$children.
+          excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.buildingModeDependent.$children.
+          excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$filesWatching.properties.$buildingModeDependent.value.properties.
+          $excludeDirectoriesWithPathsRelativeToProjectRootDirectory
+    )
+
+    p.Article-Paragraph.
+      階層の深さに関係無く、
+        #[+Keyphrase--YDID #[+Keyword--YDID 指定された]#[+Term--YDID 構成モード]#[+Keyword--YDID のみ]で]
+        #[+Keyword--YDID 除外]される#[+Keyword--YDID ディレクト]リ名。
+
+    p.Article-Paragraph.
+      下記の例を考察。
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+
+        $projectBuilding:
+
+          $commonSettings:
+
+            #...
+
+            $filesWatching:
+
+              $excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+                - TestingBuild
+                - StagingBuild
+                - ProductionBuild
+
+              $buildingModeDependent:
+
+                $staticPreview:
+
+                  $excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+                    - LocalDevelopmentBuild
+
+                $localDevelopment:
+
+                  $excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+                    - StaticPreviewBuild
+
+    ul.Article-UnorderedList
+
+      li.
+        ディレクトリ#[+SecondaryEntity--YDID TestingBuild]、#[+SecondaryEntity--YDID StagingBuild]及び#[+SecondaryEntity--YDID ProductionBuild]
+          には、該当する#[+Keyword--YDID 納品系]#[+Term--YDID モード]向けの#[+Term--YDID 成果物]が出力される。
+        これらのディレクトリを監視する意味は通常無い為、#[+Keyword--YDID 完全に]#[+Keyword__Contrast--YDID 無視]された。
+
+      li.
+        静的プレビュー#[+Term--YDID 構成モード]の場合、ローカル開発#[+Term--YDID モード]の#[+Term--YDID 成果物]ディレクトリを監視する意味は常に無い為、
+          静的プレビュー#[+Term--YDID 構成モード]の際ディレクトリ#[+SecondaryEntity--YDID LocalDevelopmentBuild]は
+          #[+Keyword--YDID 無視]された。
+        尚、此処で#[+SecondaryEntity--YDID StaticPreviewBuild]も無視すると、成果物ファイルの状態変更時が検知されなく成るので、ブラウザー・ページのの
+          自動リロードが発生しなく成る。
+
+      li.
+        逆に、ローカル開発#[+Term--YDID モード]の場合、静的プレビュー#[+Term--YDID モード]の#[+Term--YDID 成果物]を監視する意味は無い為、
+          ディレクトリ#[+SecondaryEntity--YDID StaticPreviewBuild]は#[+Keyword--YDID 無視]された。

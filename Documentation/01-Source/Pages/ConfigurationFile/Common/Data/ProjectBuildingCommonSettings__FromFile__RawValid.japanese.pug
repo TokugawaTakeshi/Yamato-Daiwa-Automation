@@ -1,13 +1,31 @@
 -
 
-  $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
-      $selectiveExecutions.value.properties.$tasksAndSourceFilesSelection.localizedInterpretation =
-          "課題・ソースファイルの標本";
-
-  $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
-      $selectiveExecutions.value.properties.$browserLiveReloadingSetupID.localizedInterpretation =
-          "ブラウザー自動リロードのプリセットID";
-
-  $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
-      $selectiveExecutions.value.properties.$distributablePackageJSON_Generating.localizedInterpretation =
-          "構成専用「package.json」の生成";
+  YDF.setObjectProperties(
+    $projectBuildingCommonSettingsSpecification,
+    {
+      "$selectiveExecutions.value.properties.$tasksAndSourceFilesSelection.localizedInterpretation":
+          { value: "課題・ソースファイルの標本" },
+      "$selectiveExecutions.value.properties.$browserLiveReloadingSetupID.localizedInterpretation":
+          { value: "ブラウザー自動リロードのプリセットID" },
+      "$selectiveExecutions.value.properties.$dockerSetupID.localizedInterpretation":
+          { value: "Dockerプリセットid" },
+      "$selectiveExecutions.value.properties.$distributablePackageJSON_Generating.localizedInterpretation":
+          { value: "構成専用「package.json」の生成" },
+      "$selectiveExecutions.value.properties.$processingOnDemand.localizedInterpretation":
+          { value: "要求に応じた処理" },
+      "$selectiveExecutions.value.properties.$processingOnDemand.properties.$enable.localizedInterpretation":
+          { value: "有効か" },
+      "$selectiveExecutions.value.properties.$processingOnDemand.properties.$fullInitialBuilding.localizedInterpretation":
+          { value: "完全な初期構成が必要か" },
+      "$filesWatching.properties.$excludeFilesWithPathsRelativeToProjectRootDirectory.localizedInterpretation":
+          { value: "プロジェクトのルート・ディレクトリに対して相対パスを持っているファイルを除外" },
+      "$filesWatching.properties.$excludeDirectoriesWithPathsRelativeToProjectRootDirectory.localizedInterpretation":
+          { value: "プロジェクトのルート・ディレクトリに対して相対パスを持っているディレクトリを除外" },
+      "$filesWatching.properties.$buildingModeDependent.localizedInterpretation":
+          { value: "プロジェクト構成モードに応じて" },
+      "$filesWatching.properties.$buildingModeDependent.value.properties.$excludeFilesWithPathsRelativeToProjectRootDirectory.localizedInterpretation":
+          { value: "プロジェクトのルート・ディレクトリに対して相対パスを持っているファイルを除外" },
+      "$filesWatching.properties.$buildingModeDependent.value.properties.$excludeDirectoriesWithPathsRelativeToProjectRootDirectory.localizedInterpretation":
+          { value: "プロジェクトのルート・ディレクトリに対して相対パスを持っているディレクトリを除外" }
+    }
+  );

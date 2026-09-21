@@ -7,7 +7,7 @@ import ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__R
     "@ProjectBuilding/Common/RawConfig/Reusables/ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
-import { RawObjectDataProcessor, isNonEmptyString } from "@yamato-daiwa/es-extensions";
+import { RawObjectDataProcessor, isNonEmptyString, isNotUndefined } from "@yamato-daiwa/es-extensions";
 
 
 namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
@@ -19,7 +19,7 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
         Readonly<{
           sourceFilesTopDirectoryRelativePath: string;
           sourceFilesTopDirectoryPathAliasName?: string;
-          partialsRecognition?: EntryPointsGroup.EntryPointsRecognitionSettings;
+          sourceFilesSelection: EntryPointsGroup.SourceFilesSelection;
         }> |
         Readonly<{
           singleEntryPointSourceFileRelativePath: string;
@@ -35,11 +35,13 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
 
   export namespace EntryPointsGroup {
 
-    export type EntryPointsRecognitionSettings = Readonly<{
-      excludeAllSubdirectories?: boolean;
-      excludeSubdirectoriesWithNames?: Array<string> | string;
-      excludeSubdirectoriesWithPrefixes?: Array<string> | string;
-      excludeFilesWithPrefixes?: Array<string> | string;
+    export type SourceFilesSelection = Readonly<{
+      onlyWithPenultimateFileNamesExtensions__withOrWithoutLeadingDots?: ReadonlyArray<string> | string;
+      penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots?: ReadonlyArray<string> | string;
+      mustIgnoreAllSubdirectories?: boolean;
+      namesOfExcludeSubdirectories?: ReadonlyArray<string> | string;
+      prefixesOfExcludedSubdirectories?: ReadonlyArray<string> | string;
+      prefixesOfExcludeFiles?: ReadonlyArray<string> | string;
     }>;
 
     export type BuildingModeDependent = ResourceFilesGroupBuildingModeDependentOutputGenericSettings__FromFile__RawValid;
@@ -51,7 +53,7 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
   export function generatePropertiesSpecification(
     {
       entryPointsGroupBuildingModeIndependentSpecificSettingsLocalizedPropertiesSpecification = {},
-      entryPointsGroupBuildingModeDependentSpecificSettingsLocalizedPropertiesSpecification = {}
+      entryPointsGroupBuildingModeDependentSpecificSettingsLocalizedPropertiesSpecification
     }: Readonly<{
       entryPointsGroupBuildingModeIndependentSpecificSettingsLocalizedPropertiesSpecification?:
           RawObjectDataProcessor.PropertiesSpecification;
@@ -83,35 +85,97 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
               minimalCharactersCount: 1
             },
 
-            $sourceFilesTopDirectoryPathAliasName: {
-              newName: "sourceFilesTopDirectoryPathAliasName",
-              type: String,
-              isUndefinedForbidden: false,
-              isNullForbidden: true,
-              minimalCharactersCount: 1
-            },
+            $sourceFilesSelection: {
 
-            $partialsRecognition: {
-
-              newName: "partialsRecognition",
+              newName: "sourceFilesSelection",
               type: Object,
               isUndefinedForbidden: false,
               mustTransformNullToUndefined: true,
 
               properties: {
 
-                $excludeAllSubdirectories: {
-                  newName: "excludeAllSubdirectories",
+                $onlyWithPenultimateFileNamesExtensions__withOrWithoutLeadingDots: {
+
+                  newName: "onlyWithPenultimateFileNamesExtensions__withOrWithoutLeadingDots",
+                  type: RawObjectDataProcessor.ValuesTypesIDs.polymorphic,
+                  isUndefinedForbidden: false,
+                  isNullForbidden: true,
+
+                  alternatives: [
+                    {
+                      type: Array,
+                      areUndefinedElementsForbidden: true,
+                      areNullElementsForbidden: true,
+                      minimalElementsCount: 1,
+                      element: {
+                        type: String,
+                        minimalCharactersCount: 1
+                      }
+                    },
+                    {
+                      type: String,
+                      minimalCharactersCount: 1
+                    }
+                  ]
+
+                },
+
+                $penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots: {
+
+                  newName: "penultimateNamesExtensionsOfExcludedFiles__withOrWithoutLeadingDots",
+                  type: RawObjectDataProcessor.ValuesTypesIDs.polymorphic,
+                  isUndefinedForbidden: false,
+                  mustBeUndefinedIf: {
+                    predicate:
+                      (
+                        { rawData__currentObjectDepth: sourceFilesSelection }:
+                            RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+                      ): boolean =>
+                          isNotUndefined(sourceFilesSelection.$onlyWithPenultimateFileNamesExtensions),
+                    descriptionForLogging: "`$onlyWithPenultimateFileNamesExtensions` has been specified"
+                  },
+                  isNullForbidden: true,
+
+                  alternatives: [
+                    {
+                      type: Array,
+                      areUndefinedElementsForbidden: true,
+                      areNullElementsForbidden: true,
+                      minimalElementsCount: 1,
+                      element: {
+                        type: String,
+                        minimalCharactersCount: 1
+                      }
+                    },
+                    {
+                      type: String,
+                      minimalCharactersCount: 1
+                    }
+                  ]
+
+                },
+
+                $mustIgnoreAllSubdirectories: {
+                  newName: "mustIgnoreAllSubdirectories",
                   type: Boolean,
                   isUndefinedForbidden: false,
                   isNullForbidden: true
                 },
 
-                $excludeSubdirectoriesWithNames: {
+                $namesOfExcludeSubdirectories: {
 
-                  newName: "excludeSubdirectoriesWithNames",
+                  newName: "namesOfExcludeSubdirectories",
                   type: RawObjectDataProcessor.ValuesTypesIDs.polymorphic,
                   isUndefinedForbidden: false,
+                  mustBeUndefinedIf: {
+                    predicate:
+                        (
+                          { rawData__currentObjectDepth: sourceFilesSelection }:
+                              RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+                        ): boolean =>
+                            sourceFilesSelection.$mustIgnoreAllSubdirectories === true,
+                    descriptionForLogging: "`$mustIgnoreAllSubdirectories` has been specified with true"
+                  },
                   isNullForbidden: true,
 
                   alternatives: [
@@ -133,11 +197,20 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
 
                 },
 
-                $excludeSubdirectoriesWithPrefixes: {
+                $prefixesOfExcludedSubdirectories: {
 
-                  newName: "excludeSubdirectoriesWithPrefixes",
+                  newName: "prefixesOfExcludedSubdirectories",
                   type: RawObjectDataProcessor.ValuesTypesIDs.polymorphic,
                   isUndefinedForbidden: false,
+                  mustBeUndefinedIf: {
+                    predicate:
+                        (
+                          { rawData__currentObjectDepth: sourceFilesSelection }:
+                              RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+                        ): boolean =>
+                            sourceFilesSelection.$mustIgnoreAllSubdirectories === true,
+                    descriptionForLogging: "`$mustIgnoreAllSubdirectories` has been specified with true"
+                  },
                   isNullForbidden: true,
 
                   alternatives: [
@@ -159,9 +232,9 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
 
                 },
 
-                $excludeFilesWithPrefixes: {
+                $prefixesOfExcludeFiles: {
 
-                  newName: "excludeFilesWithPrefixes",
+                  newName: "prefixesOfExcludeFiles",
                   type: RawObjectDataProcessor.ValuesTypesIDs.polymorphic,
                   isUndefinedForbidden: false,
                   isNullForbidden: true,
@@ -186,6 +259,14 @@ namespace SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid {
 
               }
 
+            },
+
+            $sourceFilesTopDirectoryPathAliasName: {
+              newName: "sourceFilesTopDirectoryPathAliasName",
+              type: String,
+              isUndefinedForbidden: false,
+              isNullForbidden: true,
+              minimalCharactersCount: 1
             },
 
             $singleEntryPointSourceFileRelativePath: {

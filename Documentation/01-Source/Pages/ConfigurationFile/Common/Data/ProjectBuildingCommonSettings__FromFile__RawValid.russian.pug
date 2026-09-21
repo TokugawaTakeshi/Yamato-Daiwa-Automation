@@ -1,13 +1,32 @@
 -
 
-  $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
-      $selectiveExecutions.value.properties.$tasksAndSourceFilesSelection.localizedInterpretation =
-          "Выборка задач и исходных файлов";
+  YDF.setObjectProperties(
+    $projectBuildingCommonSettingsSpecification,
+    {
+      "$selectiveExecutions.value.properties.$tasksAndSourceFilesSelection.localizedInterpretation":
+          { value: "Выборка задач и исходных файлов" },
+      "$selectiveExecutions.value.properties.$browserLiveReloadingSetupID.localizedInterpretation":
+          { value: "ID пресета автоматической перезагрузки браузера" },
+      "$selectiveExecutions.value.properties.$dockerSetupID.localizedInterpretation":
+          { value: "ID пресета Docker" },
+      "$selectiveExecutions.value.properties.$distributablePackageJSON_Generating.localizedInterpretation":
+          { value: "Генерация файла \"package.json\" для дистрибутива" },
+      "$selectiveExecutions.value.properties.$processingOnDemand.localizedInterpretation":
+          { value: "Обработка по запросу" },
+      "$selectiveExecutions.value.properties.$processingOnDemand.properties.$enable.localizedInterpretation":
+          { value: "Активна ли" },
+      "$selectiveExecutions.value.properties.$processingOnDemand.properties.$fullInitialBuilding.localizedInterpretation":
+          { value: "Требуется полная начальная сборка" },
+      "$filesWatching.properties.$excludeFilesWithPathsRelativeToProjectRootDirectory.localizedInterpretation":
+          { value: "Исключить файлы с путями относительными корневой директории проекта" },
+      "$filesWatching.properties.$excludeDirectoriesWithPathsRelativeToProjectRootDirectory.localizedInterpretation":
+          { value: "Исключить директории с путями относительными корневой директории проекта" },
+      "$filesWatching.properties.$buildingModeDependent.localizedInterpretation":
+          { value: "В зависимости от режима сборки" },
+      "$filesWatching.properties.$buildingModeDependent.value.properties.$excludeFilesWithPathsRelativeToProjectRootDirectory.localizedInterpretation":
+          { value: "Исключить файлы с путями относительными корневой директории проекта" },
+      "$filesWatching.properties.$buildingModeDependent.value.properties.$excludeDirectoriesWithPathsRelativeToProjectRootDirectory.localizedInterpretation":
+          { value: "Исключить директории с путями относительными корневой директории проекта" }
+    }
+  );
 
-  $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
-      $selectiveExecutions.value.properties.$browserLiveReloadingSetupID.localizedInterpretation =
-          "ID пресета автоматической перезагрузки браузера";
-
-  $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification.
-      $selectiveExecutions.value.properties.$distributablePackageJSON_Generating.localizedInterpretation =
-          "Генерация файла \"package.json\" для дистрибутива";

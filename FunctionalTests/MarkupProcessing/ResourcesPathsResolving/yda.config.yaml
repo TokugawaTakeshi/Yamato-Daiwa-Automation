@@ -1,46 +1,46 @@
-projectBuilding:
+$projectBuilding:
 
-  markupProcessing:
+  $markupProcessing:
 
-    entryPointsGroups:
+    $entryPointsGroups:
 
       StaticPreview:
 
-        sourceFilesTopDirectoryRelativePath: 01-Source/Pages
+        $sourceFilesTopDirectoryRelativePath: 01-Source/Pages
 
-        buildingModeDependent:
-          STATIC_PREVIEW:
-            outputTopDirectoryRelativePath: 02-StaticPreviewBuild
+        $buildingModeDependent:
+          $staticPreview:
+            $outputTopDirectoryRelativePath: 02-StaticPreviewBuild
 
-  stylesProcessing:
+  $stylesProcessing:
 
-    entryPointsGroups:
+    $entryPointsGroups:
 
       Main:
 
-        singleEntryPointSourceFileRelativePath: 01-Source/SharedAssets/Main.styl
+        $singleEntryPointSourceFileRelativePath: 01-Source/SharedAssets/Main.styl
 #        customReferenceName: MainStylesheet
 
-        buildingModeDependent:
-          STATIC_PREVIEW:
-            outputTopDirectoryRelativePath: 02-StaticPreviewBuild/styles
+        $buildingModeDependent:
+          $staticPreview:
+            $outputTopDirectoryRelativePath: 02-StaticPreviewBuild/styles
 
-  imagesProcessing:
+  $imagesProcessing:
 
-    assetsGroups:
+    $assetsGroups:
 
       Shared:
 
-        sourceFilesTopDirectoryRelativePath: 01-Source/SharedAssets/Images
-        buildingModeDependent:
-          STATIC_PREVIEW:
-            outputTopDirectoryRelativePath: 02-StaticPreviewBuild/images
+        $sourceFilesTopDirectoryRelativePath: 01-Source/SharedAssets/Images
+        $buildingModeDependent:
+          $staticPreview:
+            $outputTopDirectoryRelativePath: 02-StaticPreviewBuild/images
 
-  browserLiveReloading:
+  $browserLiveReloading:
 
-    setups:
+    $setups:
 
       StaticPreview:
 
-        localServer:
-          rootDirectoryRelativePath: 02-StaticPreviewBuild
+        $localServer:
+          $rootDirectoryRelativePath: 02-StaticPreviewBuild

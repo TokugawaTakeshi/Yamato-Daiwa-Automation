@@ -61,7 +61,12 @@ abstract class ProjectBuilder {
             RawObjectDataProcessor.process(
               rawConfigFromFile,
               ProjectBuildingConfig__FromFile__RawValid.propertiesSpecification,
-              { processingApproach: RawObjectDataProcessor.ProcessingApproaches.assemblingOfNewObject }
+              {
+
+                /* [ Approach ] Need to keep some settings with unknown at advance schema. */
+                processingApproach: RawObjectDataProcessor.ProcessingApproaches.manipulationsWithSourceObject
+                
+              }
             );
 
     if (rawDataProcessingResult.isRawDataInvalid) {

@@ -4,6 +4,7 @@ import ECMA_ScriptLogicProcessingSharedState from "@ECMA_ScriptProcessing/ECMA_S
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type ECMA_ScriptLogicProcessingSettingsRepresentative from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettingsRepresentative";
+import ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRestrictions";
 
 /* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
 import ECMA_ScriptSpecialist from "@ThirdPartySolutionsSpecialists/ECMA_ScriptSpecialist";
@@ -45,7 +46,7 @@ class ECMA_ScriptLogicProcessor {
       "ECMA_ScriptEntryPointsAndAffiliatedFilesMappingCache.json";
 
   private readonly projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
-  private readonly ECMA_ScriptLogicProcessingConfigRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
+  private readonly ECMAScriptLogicProcessingSettingsRepresentative: ECMA_ScriptLogicProcessingSettingsRepresentative;
 
   private readonly webpackConfigurationsForExistingEntryPoints: ReadonlyArray<WebpackConfiguration>;
   private readonly webpackMultiCompiler: Webpack.MultiCompiler;
@@ -112,7 +113,7 @@ class ECMA_ScriptLogicProcessor {
     masterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ) {
 
-    this.ECMA_ScriptLogicProcessingConfigRepresentative = ecmaScriptLogicProcessingConfigRepresentative;
+    this.ECMAScriptLogicProcessingSettingsRepresentative = ecmaScriptLogicProcessingConfigRepresentative;
     this.projectBuildingMasterConfigRepresentative = masterConfigRepresentative;
 
     const webpackConfigurationsForExistingEntryPoints: Array<WebpackConfiguration> = [];
@@ -122,7 +123,7 @@ class ECMA_ScriptLogicProcessor {
 
     for (
       const ECMA_ScriptLogicEntryPointsGroupSettings of
-          this.ECMA_ScriptLogicProcessingConfigRepresentative.relevantEntryPointsGroupsSettings.values()
+          this.ECMAScriptLogicProcessingSettingsRepresentative.relevantEntryPointsGroupsSettings.values()
     ) {
 
       const entryPointsSourceFilesAbsolutePaths: ReadonlyArray<string> = ImprovedGlob.getFilesAbsolutePathsSynchronously(
@@ -148,7 +149,7 @@ class ECMA_ScriptLogicProcessor {
         WebpackConfigGenerator.generateWebpackConfigurationForEntryPointsGroupWithExistingFiles({
           entryPointsSourceFilesAbsolutePaths,
           ECMA_ScriptLogicEntryPointsGroupSettings,
-          ECMA_ScriptLogicProcessingConfigRepresentative: this.ECMA_ScriptLogicProcessingConfigRepresentative,
+          ECMA_ScriptLogicProcessingConfigRepresentative: this.ECMAScriptLogicProcessingSettingsRepresentative,
           masterConfigRepresentative: this.projectBuildingMasterConfigRepresentative
         })
       );
@@ -197,24 +198,26 @@ class ECMA_ScriptLogicProcessor {
 
       this.sourceCodeSelectiveReprocessingHelper = new SourceCodeSelectiveReprocessingHelper({
         initialEntryPointsSourceFilesAbsolutePaths:
-            this.ECMA_ScriptLogicProcessingConfigRepresentative.initialRelevantEntryPointsSourceFilesAbsolutePaths,
+            this.ECMAScriptLogicProcessingSettingsRepresentative.initialRelevantEntryPointsSourceFilesAbsolutePaths,
         childrenFilesResolutionRules: {
           childrenFilesIncludingDeclarationsPatterns: ECMA_ScriptSpecialist.partialFilesIncludingDeclarationPatterns,
           implicitFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles:
-              this.ECMA_ScriptLogicProcessingConfigRepresentative.
-              supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots
+              this.ECMAScriptLogicProcessingSettingsRepresentative.
+              supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+          additionalExplicitFileNameExtensionsWithoutLeadingDotsOfChildrenFiles:
+              ECMA_ScriptLogicProcessingRestrictions.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles
         },
         directoriesAliasesAndTheirAbsolutePatsMap: ECMA_ScriptLogicProcessor.
             generateUnifiedDirectoriesAliasesAndTheirAbsolutePatsMapForSourceCodeSelectiveReprocessingHelper(
-              this.ECMA_ScriptLogicProcessingConfigRepresentative
+              this.ECMAScriptLogicProcessingSettingsRepresentative
             ),
-        isEntryPoint: this.ECMA_ScriptLogicProcessingConfigRepresentative.
+        isEntryPoint: this.ECMAScriptLogicProcessingSettingsRepresentative.
             isEntryPoint.
-            bind(this.ECMA_ScriptLogicProcessingConfigRepresentative),
+            bind(this.ECMAScriptLogicProcessingSettingsRepresentative),
         logging: {
-          mustEnable: this.ECMA_ScriptLogicProcessingConfigRepresentative.loggingSettings.
+          mustEnable: this.ECMAScriptLogicProcessingSettingsRepresentative.loggingSettings.
               partialFilesAndParentEntryPointsCorrespondence,
-          targetFilesTypeInSingularForm: this.ECMA_ScriptLogicProcessingConfigRepresentative.
+          targetFilesTypeInSingularForm: this.ECMAScriptLogicProcessingSettingsRepresentative.
               TARGET_FILES_KIND_FOR_LOGGING__SINGULAR_FORM
         },
         consumingProjectRootDirectoryAbsolutePath:
@@ -227,7 +230,7 @@ class ECMA_ScriptLogicProcessor {
 
       ECMA_ScriptSourceFilesWatcher.
           initializeIfRequiredAndGetInstance({
-            ecmaScriptLogicProcessingSettingsRepresentative: this.ECMA_ScriptLogicProcessingConfigRepresentative,
+            ecmaScriptLogicProcessingSettingsRepresentative: this.ECMAScriptLogicProcessingSettingsRepresentative,
             projectBuildingMasterConfigRepresentative: this.projectBuildingMasterConfigRepresentative
           }).
           addOnAnyEventRelatedWithActualFilesHandler({
@@ -312,7 +315,7 @@ class ECMA_ScriptLogicProcessor {
         addEntriesToMap({
           targetMap: ECMA_ScriptLogicProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap,
           newEntries: ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator.generate(
-            this.ECMA_ScriptLogicProcessingConfigRepresentative
+            this.ECMAScriptLogicProcessingSettingsRepresentative
           ),
           mutably: true
         });

@@ -47,7 +47,18 @@ abstract class GulpStreamsBasedTaskExecutor {
 
         Logger.logErrorLikeMessage({
           title: ERROR_MESSAGE_TITLE,
-          description: error.message
+          description: error.message,
+          additionalData: {
+
+            /* [ Theory ]
+             * If to stringify the full error, it may overflow the console.
+             * Some errors include `stdout` and `stderr` with Buffer, but the `message` property may be only
+             *   something like "write EOF". */
+            ...JSON.parse(JSON.stringify(error)),
+            stdout: "(OMITTED)",
+            stderr: "(OMITTED)"
+
+          }
         });
 
         clearTimeout(nullToUndefined(this.waitingForErrorToastNotificationsWillBePermittedAgain));

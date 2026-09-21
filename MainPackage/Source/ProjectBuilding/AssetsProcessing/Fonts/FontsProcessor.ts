@@ -1,31 +1,29 @@
-/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type FontsProcessingSettings__Normalized from "@FontsProcessing/FontsProcessingSettings__Normalized";
 
-/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Settings Representatives ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type FontsProcessingSettingsRepresentative from "@FontsProcessing/FontsProcessingSettingsRepresentative";
 
-/* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
-import FontsSourceFilesWatcher from "@FontsProcessing/FontsSourceFilesWatcher";
-
-/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
-import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
-
-/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Shared State ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import FontsProcessingSharedState from "@FontsProcessing/FontsProcessingSharedState";
 
-/* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Gulp & Plugins ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import Gulp from "gulp";
 import type VinylFile from "vinyl";
 
-/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Applied Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+import GulpStreamsBasedAssetsProcessor from "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBasedAssetsProcessor";
 import GulpStreamModifier from "@Utils/GulpStreamModifier";
+import FontsSourceFilesWatcher from "@FontsProcessing/FontsSourceFilesWatcher";
 import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
 import AssetVinylFile from "@ProjectBuilding/Common/VinylFiles/AssetVinylFile";
 
-/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ General Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import { isUndefined, readonlyArrayToMutableOne } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 export default class FontsProcessor extends GulpStreamsBasedAssetsProcessor<

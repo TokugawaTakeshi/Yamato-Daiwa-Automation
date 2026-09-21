@@ -1,7 +1,7 @@
 namespace ECMA_ScriptLogicProcessingRestrictions {
 
   export const supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots: ReadonlySet<string> = new Set([
-    "js", "mjs", "ts", "mts"
+    "js", "mjs", "ts", "mts", "jsx", "tsx"
   ]);
 
   export const supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles: ReadonlySet<string> = new Set([

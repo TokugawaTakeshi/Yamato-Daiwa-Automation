@@ -14,14 +14,51 @@ selectiveExecutions:
 
       $heading: "<code>$browserLiveReloadingSetupID</code> — ID настроек автоматической перезагрузки вкладки браузера"
 
-    distributablePackageJSON_Generating:
-
-      $heading: "<code>$distributablePackageJSON_Generating</code> — Генерация файла «package.json» для дистрибутива"
-
     dockerSetupID:
 
       $heading: "<code>$dockerSetupID</code> — ID настроек Docker"
 
+    distributablePackageJSON_Generating:
+
+      $heading: "<code>$distributablePackageJSON_Generating</code> — Генерация файла «package.json» для дистрибутива"
+
+    processingOnDemand:
+
+      $heading: "<code>$processingOnDemand</code> — Обработка по требованию"
+
+      enable:
+
+        $heading: "<code>enable</code> — Нужно ли активировать"
+
+      fullInitialBuilding:
+
+        $heading: "<code>fullInitialBuilding</code>　—　Требуется ли полная начальная сборка"
+
+
 publicDirectoriesRelativePaths:
 
   $heading: "<code>$publicDirectoriesRelativePaths</code> — Относительные пути публичных директорий"
+
+filesWatching:
+
+  $heading: "<code>$filesWatching</code> — Отслеживание файлов"
+
+  excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+    $heading: "<code>excludeFilesWithPathsRelativeToProjectRootDirectory</code> — Относительные пути исключённых файлов"
+
+  excludeDirectoriesWithPathsRelativeToProjectRootDirectory:
+
+    $heading: "<code>excludeDirectoriesWithPathsRelativeToProjectRootDirectory</code> — Относительные пути исключённых директорий"
+
+  buildingModeDependent:
+
+    $heading: "<code>buildingModeDependent</code> — В зависимости от режима сборки"
+
+    excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+      $heading: "<code>excludeFilesWithPathsRelativeToProjectRootDirectory</code> — Относительные пути исключённых файлов"
+
+    excludeDirectoriesWithPathsRelativeToProjectRootDirectory:
+
+      $heading: "<code>excludeDirectoriesWithPathsRelativeToProjectRootDirectory</code> — Относительные пути исключённых директорий"

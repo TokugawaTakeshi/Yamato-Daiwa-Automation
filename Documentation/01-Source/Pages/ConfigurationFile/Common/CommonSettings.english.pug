@@ -6,6 +6,14 @@ block append Requirements
   include ../../../SharedAssets/Markup/SharedAssets.english.pug
   include ../../../SharedComponents/SharedComponents.english.pug
 
+  -
+
+    /** @type { RawObjectDataProcessor.PropertiesSpecification } */
+    const $projectBuildingCommonSettingsSpecification =
+        YDF.ValuesDeepCopier.deeplyCloneArbitraryValueAsPossible(
+          $$YamatoDaiwaAutomationAPI.ProjectBuildingCommonSettings__FromFile__RawValid.propertiesSpecification
+        );
+
 
 block append Metadata
 
@@ -19,7 +27,9 @@ block append Metadata
     RegularWebPageTemplate__YDF.configure({
       metadata: {
         title: buildHTML_PageTitle(topHeading),
-        description: ""
+        description:
+          "The commot settings of the project build tool “Yamato Daiwa Automation” (abbreviated as “YDA”) either " +
+              "not related with a specific task, or related to several tasks at once."
       },
       stylesSheetsURIs: [
         "$CommonStyles",
@@ -29,7 +39,7 @@ block append Metadata
       ]
     });
 
-    RoutingEmulator.setCurrentRoute("configurationFile.commonSettings");
+    YDF.RoutingEmulator.setCurrentRoute("configurationFile.commonSettings");
 
     LanguageDropDownList__YDF_DK.setLinks({
       japanese: routing.japanese.configurationFile.$children.commonSettings.$URI,
@@ -51,6 +61,738 @@ block append SpecificContent
     //- ━━━ `$common` — Common Settings ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     h1.Article-Heading1!= topHeading
 
-    +PageNotReadyApology--YDPD({
-      currentState: PageNotReadyApology__YDPD.States.initialTextNotWritten
+    +PageNotReadyApology--YDPD({ currentState: PageNotReadyApology__YDPD.States.initialTextNotComplete })
+
+    p.Article-Paragraph
+      | Settings that #[+Keyword--YDID do]&nbsp;not relate to a specific
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.task.$URI
+      }) task
+      |
+      |   or relate to several #[+Term--YDID tasks] can be defined in
+      |   #[+ImportantEntity__Code--YDID $projectBuilding.$commonSettings]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            # Define common settings here in accordance with this guide
+
+    +CompactTableOfContents--YDF_DK(localizedSectioning)
+
+
+    //- ┅┅┅ `$selectiveExecutions` — Selective Executions ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+    +Heading--YDF({
+      level: 2,
+      innerHTML: localizedSectioning.selectiveExecutions.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$anchor
+    }).Article-Heading2
+
+    +PropertyMetadata--YDF_DK(
+      Object.assign(
+        {},
+        $projectBuildingCommonSettingsSpecification,
+        {
+          value: {
+            type: {
+              name: "ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution",
+              anchorOrURI: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$URI
+            }
+          }
+        }
+      )
+    )
+
+    p.Article-Paragraph
+      | The #[+Term--YDID object] of #[+Term--YDID associative array] #[+Term__Contrast--YDID type] used to define the
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.selectiveExecution.$URI
+      }) selective executions
+      | .
+
+    p.Article-Paragraph.
+      The #[+Keyword--YDID identifiers] of #[+Term--YDID selective executions] must be specified via
+        #[+Keyword--YDID keys]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              StaticPreview:
+
+                # Configuration of "StaticPreview" selective execution (see details below)
+
+              Application:
+
+                # Configuration of "Application" selective execution (see details below)
+
+    p.Article-Paragraph.
+      According to the settings definition convention, the absence of the #[+ImportantEntity__Code--YDID $] character
+        before these #[+Term--YDID keys] means that their names are user-chosen and are #[+Keyword--YDID not]&nbsp;
+        #[+Term--YDID reserved keys] in the #[+Term__Contrast--YDID API].
+
+    p.Article-Paragraph
+      +Keyphrase--YDID.
+        After #[+Keyword--YDID valid] settings for the #[+Term--YDID selective executions] have been defined
+      |  , when invoking the #[+Term--YDID CLI utility] #[+ImportantEntity__Code--YDID yda], via the
+      |  #[+ImportantEntity__Code--YDID --selectiveExecution] #[+Term--YDID option] you can specify the
+      |   #[+Keyphrase--YDID one of] #[+Term--YDID selective executions identifiers]
+      |   #[+Keyphrase--YDID declared in the configuration file], for example:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.Bash }).
+        yda build --selectiveExecution Application --mode LOCAL_DEVELOPMENT
+
+    p.Article-Paragraph.
+      The #[+Term--YDID values] of the #[+Term__Contrast--YDID associative array]
+        #[+ImportantEntity__Code--YDID $selectiveExecutions] are #[+Term--YDID objects] that
+        #[+Keyword--YDID must] be specified in accordance with the constraints given below.
+
+
+    //- ╍╍╍ Settings of Each Selective Execution ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+    +Heading--YDF({
+      level: 3,
+      text: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$anchor
+    }).Article-Heading3
+
+    +ObjectTypeAbstract--YDF_DK({
+      typeName: "ProjectBuildingCommonSettings__FromFile__RawValid.SelectiveExecution",
+      localizedDescriptiveHeading: "Settings of a particular selective execution",
+      propertiesSpecification: $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties
     })
+
+
+    //- ─── `tasksAndSourceFilesSelection` — selecting task and source files ───────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          tasksAndSourceFilesSelection.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          tasksAndSourceFilesSelection.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$tasksAndSourceFilesSelection
+    )
+
+    p.Article-Paragraph
+      | #[+Term--YDID Object] of #[+Term__Contrast--YDID type] #[+Term--YDID "associative array"], #[+Term--YDID keys]
+      |   of which are the names of
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.task.$URI
+      }) tasks
+      |   (#[+Keyphrase--YDID but #[+Keyword--YDID not]&nbsp;all of them, only those mentioned in the abstract above]),
+      |   and the #[+Term--YDID values] are #[+Term--YDID arrays] of names of
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.entryPointsAndChildrenFiles.$children.entryPointsGroup.$URI
+      }) entry points groups
+      |   (for #[+Term--YDID tasks] of processing #[+Term--YDID source code]) or
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.assets.$children.groups.$URI
+      }) assets groups
+      |   (for tasks of processing
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.assets.$URI
+      }) assets
+      | or
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.configurationFile.$children.plainCopying.$URI
+      }) simple file copying
+      | ).
+      | Herewith, #[+Keyword--YDID all] #[+Term--YDID tasks] and #[+Term--YDID groups] of #[+Term__Contrast--YDID entry points]
+      |   or #[+Term__Contrast--YDID assets] #[+Keyphrase--YDID mentioned in the #[+Term--YDID selective execution]]
+      |   #[+Keyword--YDID must] be declared in the #[+Keyword--YDID same] configuration file:
+
+    +CodeViewer--YDF
+
+      +CodeViewer-TabPanel--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML })
+
+        +CodeViewer-PartialListing--YDF: :code_listing--yda
+          $projectBuilding:
+
+            $commonSettings:
+
+              $selectiveExecutions:
+
+                StaticPreview:
+
+                  $tasksAndSourceFilesSelection:
+
+                    $markupProcessing: [ StaticPreviewAnywherePage, Pages ]
+                    $stylesProcessing: [ Shared, Layouts, Pages ]
+
+                Application:
+
+                  $tasksAndSourceFilesSelection:
+
+                    $markupProcessing: [ Pages, MVC_Fragments ]
+                    $stylesProcessing: [ Shared, Layouts, Pages ]
+        +CodeViewer-Explanation--YDF
+          | #[+Keyphrase--YDID If #[+Term--YDID selective executions] are used], then
+          |   #[+Keyphrase--YDID for each of them by default] #[+Keyword--YDID no]&nbsp;#[+Term--YDID groups] of
+          |   #[+Term__Contrast--YDID entry points] or #[+Term__Contrast--YDID assets] will be selected, therefore
+          |
+          +Keyphrase--YDID.
+            even if the set of these #[+Term--YDID groups] is the same as in another #[+Term--YDID selective execution]
+          | , it still #[+Keyword--YDID must] be specified #[+Keyword--YDID explicitly].
+
+        +CodeViewer-PartialListing--YDF: :code_listing--yda(indentationMultiplier="6" indentationString="  ")
+                    $ECMA_ScriptLogicProcessing: [ Pages, FrontServerEntryPoint, TypeORM_Configuration ]
+        +CodeViewer-Explanation--YDF.
+          For the settings specified above to work, all the #[+Term--YDID tasks] #[+Keyword--YDID and]
+            #[+Term--YDID resource groups] mentioned above #[+Keyword--YDID must] be declared:
+
+        +CodeViewer-PartialListing--YDF: :code_listing--yda(indentationMultiplier="2" indentationString="  ")
+            $markupProcessing: # See the documentation on configuring markup processing
+
+              $entryPointsGroups:
+
+                StaticPreviewAnywherePage: # ...
+
+                Pages: # ...
+
+                MVC_Fragments: # ...
+
+            $stylesProcessing: # See the documentation on configuring styles processing
+
+              $entryPointsGroups:
+
+                Shared: # ...
+
+                Layouts: # ...
+
+                Pages: # ...
+
+            $ECMA_ScriptLogicProcessing: # See the documentation on configuring ECMAScript logic processing
+
+              $entryPointsGroups:
+
+                Pages: # ...
+
+                FrontServerEntryPoint: # ...
+
+                TypeORM_Configuration: # ...
+
+
+    //- ─── `$browserLiveReloadingSetupID` — Browser Live Reloading Setup ID ───────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          browserLiveReloadingSetupID.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          browserLiveReloadingSetupID.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$browserLiveReloadingSetupID
+    )
+
+    p.Article-Paragraph
+      | Relates to the
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.browserLiveReloading.$URI
+      }) automatic browser reloading
+      |   functionality.
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.configurationFile.$children.browserLiveReloading.$URI
+      }) The API of this functionality
+      |   allows defining #[+Keyword--YDID several] #[+Term--YDID presets], and #[+Keyword--YDID each] of them
+      |   #[+Keyword--YDID must] have an identifier.
+      | Then, if a particular #[+Term--YDID selective execution] requires the browser live reloading functionality,
+      |   via the #[+Term--YDID property]
+      |   #[+ImportantEntity__Code--YDID $browserLiveReloadingSetupID] you #[+Keyword--YDID must] specify
+      |   the identifier of the required #[+Term--YDID preset]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              StaticPreview:
+
+                $tasksAndSourceFilesSelection:
+
+                  # See above
+
+                $browserLiveReloadingSetupID: StaticPreview
+
+              Application:
+
+                $tasksAndSourceFilesSelection:
+
+                  # See above
+
+                $browserLiveReloadingSetupID: Application
+
+          $browserLiveReloading:
+
+            $setups:
+
+              StaticPreview:
+
+                # See the configuring browser live reloading documentation
+
+              Application:
+
+                # See the configuring browser live reloading documentation
+
+
+    //- ─── `$dockerSetupID` — Docker Setup ID ─────────────────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.dockerSetupID.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.dockerSetupID.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$dockerSetupID
+    )
+
+    p.Article-Paragraph
+      | Relates to the
+      |
+      +Link--YDF({ internalURI: localizedRouting.functionality.$children.dockerIntegration.$URI }) integration with Docker
+      |   functionality.
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.configurationFile.$children.dockerLaunching.$URI
+      }) The API of this functionality
+      |   allows defining #[+Keyword--YDID several] #[+Term--YDID presets], and #[+Keyword--YDID each] of them
+      |   #[+Keyword--YDID must] have an identifier.
+      | Then, if a particular #[+Term--YDID selective execution] requires the #[+ImportantEntity--YDID Docker]
+      |   functionality, via the #[+Term--YDID property]
+      |   #[+ImportantEntity__Code--YDID $dockerSetupID] you #[+Keyword--YDID must] specify
+      |   the identifier of the required #[+Term--YDID preset]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML}).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              SelectiveExecution1:
+
+                $tasksAndSourceFilesSelection:
+
+                  # See above
+
+                $dockerSetupID: DockerSetup1
+
+              SelectiveExecution2:
+
+                $tasksAndSourceFilesSelection:
+
+                  # See above
+
+                $dockerSetupID: DockerSetup2
+
+
+          $dockerLaunching:
+
+            DockerSetup1:
+
+              $composingOptions:
+
+                # See the configuring Docker launching documentation
+
+            DockerSetup2:
+
+              $composingOptions:
+
+                # See the configuring Docker launching documentation
+
+
+    //- ─── `$distributablePackageJSON_Generating` — Generating of \"package.json\" for the Distributive ───────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          distributablePackageJSON_Generating.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          distributablePackageJSON_Generating.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$distributablePackageJSON_Generating
+    )
+
+    p.Article-Paragraph
+      | Relates to the
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.distributablePackageJSON_Generating.$URI
+      })  functionality of generating package.json for the distributable
+      | .
+      | This #[+Term--YDID boolean flag] defines whether for this #[+Term--YDID selective execution]
+      |   #[+ImportantEntity--YDID package.json] should be generated, although if it is #[+Keyword--YDID not] needed,
+      |   you can simply omit this option.
+      | If this flag is set to #[+ImportantEntity__Code--YDID true], then you #[+Keyword--YDID must]
+      |   define the settings of the #[+Keyword--YDID homonymous] group
+      |   #[+ImportantEntity__Code--YDID $distributablePackageJSON_Generating]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+
+        $projectBuilding:
+
+          $commonSettings:
+
+            $selectiveExecutions:
+
+              Application:
+
+                $distributablePackageJSON_Generating: true
+
+
+          $distributablePackageJSON_Generating:
+
+            # See the documentation on configuring the output package.json file
+
+
+    //- ─── `$processingOnDemand` — Processing on Demand ──────────────────────────────────────────────────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$processingOnDemand
+    )
+
+    p.Article-Paragraph
+      | Relates to the
+      |
+      +Keyword--YDID optimization
+      |
+      | functionality of the
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.markupProcessing.$children.optimization.$URI
+      }) markup processing on demand
+      | , and also to the
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.browserLiveReloading.$URI
+      }) browser live reloading
+      | . Therefore, this group of settings is relevant #[+Keyword--YDID only] for #[+Keyword__Contrast--YDID incremental]
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.projectBuildingMode.$URI
+      }) project building modes
+      | .
+
+    p.Article-Paragraph.
+      #[+Keyphrase--YDID By default], when saving #[+Keyword--YDID changed] #[+Keyword__Contrast--YDID source]
+        #[+Term--YDID markup] files, #[+ImportantEntity--YDID YDA] processes #[+Keyword--YDID only] those
+        #[+Term--YDID entry points] that are related to these files via #[+Term--YDID Pug directives]
+        #[+ImportantEntity__Code--YDID include] and #[+ImportantEntity__Code--YDID extends].
+      However, in many cases, this optimization measure may&nbsp;not be enough to prevent the rebuilding of several dozen
+        #[+Term--YDID entry points] after editing one or two #[+Term--YDID Pug files], which can hinder productive
+        development.
+      In this case, you can activate the optimization mode where only the #[+Term--YDID entry point] corresponding to the
+        page open in the browser is processed.
+
+    +AdmonitionBlock--YDF({
+      SVG_Icon: true,
+      geometricVariation: AdmonitionBlock__YDF.GeometricVariations.stickyNoteLike,
+      decorativeVariation: AdmonitionBlock__YDF.DecorativeVariations.warning
+    }).
+      If you are going to show a #[+Term--YDID static preview] to a client, then before sending the files, restart the
+        project building either with #[+ImportantEntity__Code--YDID $processingOnDemand] #[+Keyword--YDID temporarily]
+        disabled, or set #[+ImportantEntity__Code--YDID true] value to #[+ImportantEntity__Code--YDID $fullInitialBuilding]
+        #[+Term--YDID option], otherwise some #[+Term--YDID HTML files] may be outdated.
+
+    p.Article-Paragraph.
+      This section discusses the #[+Term--YDID processing on demand] settings
+        #[+Keyphrase--YDID relevant to a specific #[+Term--YDID selective execution]]; however, these same settings
+          can also be defined globally (independent of #[+Term--YDID selective executions]).
+
+
+    //- ┄┄┄ `$enable` — Whether it is active ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+    +Heading--YDF({
+      level: 5,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$children.enable.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$children.enable.$anchor
+    }).Article-Heading5
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$processingOnDemand.properties.
+          $enable
+    )
+
+    p.Article-Paragraph.
+      If has been set with #[+ImportantEntity__Code--YDID true], then the #[+Term--YDID processing on demand] mode will be
+        enabled.
+      If you want this mode to be disabled, you can explicitly specify #[+ImportantEntity__Code--YDID false],
+        but it is the #[+Keyphrase--YDID default] value.
+
+
+    //- ┄┄┄ `$fullInitialBuilding` — Whether full initial building is required ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+    +Heading--YDF({
+      level: 5,
+      innerHTML: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$children.fullInitialBuilding.$heading,
+      HTML_ID: localizedSectioning.selectiveExecutions.$children.settingUpOfEachItem.$children.
+          processingOnDemand.$children.fullInitialBuilding.$anchor
+    }).Article-Heading5
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$selectiveExecutions.value.properties.$processingOnDemand.properties.
+          $fullInitialBuilding
+    )
+
+    p.Article-Paragraph.
+      If the value is #[+ImportantEntity__Code--YDID true], then during the #[+Keyword--YDID initial]
+        #[+Term--YDID project build] process, #[+Keyword--YDID all] #[+Term--YDID entry points] relevant to the current
+        #[+Term--YDID selective execution] will be processed, which may take some time if you have several dozen
+        #[+Term--YDID entry points].
+      The #[+Keyword--YDID default] value is #[+ImportantEntity__Code--YDID false]; in this case, a specific
+        #[+Term--YDID Pug file] will be processed #[+Keyword--YDID only] when its corresponding #[+Term--YDID HTML file]
+        is opened in the browser, which, although #[+Keyword--YDID not] instantaneous, usually takes about
+        #[+ImportantEntity--YDID 2-3 seconds].
+
+
+    //- ┅┅┅ `$publicDirectoriesRelativePaths` — Public Directories Relative Paths ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+    +Heading--YDF({
+      level: 2,
+      innerHTML: localizedSectioning.publicDirectoriesRelativePaths.$heading,
+      HTML_ID: localizedSectioning.publicDirectoriesRelativePaths.$anchor
+    }).Article-Heading2
+
+    +PropertyMetadata--YDF_DK($projectBuildingCommonSettingsSpecification.$publicDirectoriesRelativePaths)
+
+    p.Article-Paragraph
+      | Relates to the functionality of
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.functionality.$children.markupProcessing.$children.resourcesPointersResolving.$URI
+      }) resource pointers resolving
+      | .
+      | In order to resolve the
+      |
+      +Link--YDF({
+        internalURI: localizedRouting.terminology.$sectioning.importantForYDA_ExistingTerms.$children.
+            publicPathAndShortenedAbsolutePath.$URI
+      }) shortened absolute path
+      |
+      | (#[+Keyword--YDID impossible] for the #[+Term--YDID build mode] #[+Term__Contrast--YDID static preview] due to its
+      |   concept), it is #[+Keyword--YDID necessary] to specify which #[+Term--YDID directory] corresponds to the
+      |   #[+Keyword--YDID root] of the #[+Term--YDID shortened absolute path].
+      | This #[+Term--YDID directory] #[+Keyword--YDID must] be specified as a #[+Term--YDID path]
+      |   #[+Keyword--YDID relative] to the #[+Term--YDID project directory]:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+        $projectBuilding:
+
+          $commonSettings:
+
+            $publicDirectoriesRelativePaths:
+
+              $localDevelopment: 03-LocalDevelopmentBuild/public
+              $staging: 04-StagingBuild/public
+              $production: 05-ProductionBuild/public
+
+
+    //- ┅┅┅ `$filesWatching` — Files Watching ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+    +Heading--YDF({
+      level: 2,
+      innerHTML: localizedSectioning.filesWatching.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$anchor
+    }).Article-Heading2
+
+    +PropertyMetadata--YDF_DK($projectBuildingCommonSettingsSpecification.$filesWatching)
+
+    p.Article-Paragraph
+      | For project rebuilding as well as automatic reloading of the browser page in
+      |   #[+Term--YDID incremental building modes], it is #[+Keyword--YDID necessary] to watch the state of files and
+      |   directories.
+      | #[+Keyphrase--YDID By default], all files and directories
+      |
+      +Keyphrase--YDID.
+        below the directory containing the #[+ImportantEntity--YDID YDA] configuration file are watched, #[+Keyword--YDID except]:
+
+    ul.Article-UnorderedList
+
+      li Files and directories whose names start with a dot
+
+      li The following files:
+        ul.Article-UnorderedList
+          each fileName in $$YamatoDaiwaAutomationAPI.FilesWatchingRestrictions.relativePathsOfExcludeFiles
+            li= fileName
+
+      li The following directories:
+        ul.Article-UnorderedList
+          each directoryName in $$YamatoDaiwaAutomationAPI.FilesWatchingRestrictions.relativePathsOfExcludeDirectories
+            li= directoryName
+
+    p.Article-Paragraph.
+      In addition to this, all files (or at least most of them) to whose state changes #[+ImportantEntity--YDID YDA]
+        should&nbsp;not react in any way should be excluded.
+      This can be done either for both #[+Term--YDID incremental building modes] or for one of them; moreover, depending
+        on the #[+Term--YDID building mode], it makes sense to exclude from watching the #[+Keyword--YDID output] files
+        for other #[+Term--YDID building modes].
+
+
+    //- ╍╍╍ `excludeFilesWithPathsRelativeToProjectRootDirectory` — Relative Paths of Excluded Files ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+    +Heading--YDF({
+      level: 3,
+      innerHTML: localizedSectioning.filesWatching.$children.excludeFilesWithPathsRelativeToProjectRootDirectory.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.excludeFilesWithPathsRelativeToProjectRootDirectory.$anchor
+    }).Article-Heading3
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$filesWatching.properties.
+          $excludeFilesWithPathsRelativeToProjectRootDirectory
+    )
+
+    p.Article-Paragraph.
+      The names of #[+Keyword--YDID files] that will be #[+Keyword--YDID excluded] from the watching regardless of the
+        depth at which they are located and which specific #[+Keyword--YDID incremental] #[+Term--YDID building mode] is
+        running.
+
+
+    //- ╍╍╍ `excludeDirectoriesWithPathsRelativeToProjectRootDirectory` — Relative Paths of Excluded Directories ╍╍╍╍╍╍╍╍╍
+    +Heading--YDF({
+      level: 3,
+      innerHTML: localizedSectioning.filesWatching.$children.excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$anchor
+    }).Article-Heading3
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$filesWatching.properties.
+          $excludeDirectoriesWithPathsRelativeToProjectRootDirectory
+    )
+
+    p.Article-Paragraph.
+      The names of #[+Keyword--YDID directories] that will be #[+Keyword--YDID excluded] from the watching regardless
+        of the depth at which they are located and which specific #[+Keyword--YDID incremental]
+        #[+Term--YDID building mode] is running.
+      Here usually it makes sense to exclude directories for #[+Keyword--YDID production-like] #[+Term--YDID project builds].
+
+
+    //- ╍╍╍ `buildingModeDependent` — Building Mode Dependent ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+    +Heading--YDF({
+      level: 3,
+      innerHTML: localizedSectioning.filesWatching.$children.buildingModeDependent.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.buildingModeDependent.$anchor
+    }).Article-Heading3
+
+    //- ─── `excludeFilesWithPathsRelativeToProjectRootDirectory` — Relative Paths of Excluded Files ───────────────────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.filesWatching.$children.buildingModeDependent.$children.
+          excludeFilesWithPathsRelativeToProjectRootDirectory.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.buildingModeDependent.$children.
+          excludeFilesWithPathsRelativeToProjectRootDirectory.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$filesWatching.properties.$buildingModeDependent.value.properties.
+          $excludeFilesWithPathsRelativeToProjectRootDirectory
+    )
+
+    p.Article-Paragraph.
+      The names of #[+Keyword--YDID files] that will be #[+Keyword--YDID excluded] regardless of the depth at which they
+        are located, but
+        #[+Keyphrase--YDID #[+Keyword--YDID only] for the #[+Keyword__Contrast--YDID specified] #[+Term--YDID building mode]].
+
+
+    //- ─── `excludeDirectoriesWithPathsRelativeToProjectRootDirectory` — Relative Paths of Excluded Directories ───────
+    +Heading--YDF({
+      level: 4,
+      innerHTML: localizedSectioning.filesWatching.$children.buildingModeDependent.$children.
+          excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$heading,
+      HTML_ID: localizedSectioning.filesWatching.$children.buildingModeDependent.$children.
+          excludeDirectoriesWithPathsRelativeToProjectRootDirectory.$anchor
+    }).Article-Heading4
+
+    +PropertyMetadata--YDF_DK(
+      $projectBuildingCommonSettingsSpecification.$filesWatching.properties.$buildingModeDependent.value.properties.
+          $excludeDirectoriesWithPathsRelativeToProjectRootDirectory
+    )
+
+    p.Article-Paragraph.
+      The names of #[+Keyword--YDID directories] that will be #[+Keyword--YDID excluded] regardless of the depth at which
+        they are located, but
+        #[+Keyphrase--YDID #[+Keyword--YDID only] for the #[+Keyword__Contrast--YDID specified] #[+Term--YDID building mode]].
+
+    p.Article-Paragraph.
+      Consider the following example:
+
+    +CodeViewer--YDF
+      +CodeViewer-Listing--YDF({ codeLanguage: CodeViewer__YDF.SupportedCodesLanguages.YAML }).
+
+        $projectBuilding:
+
+          $commonSettings:
+
+            #...
+
+            $filesWatching:
+
+              $excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+                - TestingBuild
+                - StagingBuild
+                - ProductionBuild
+
+              $buildingModeDependent:
+
+                $staticPreview:
+
+                  $excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+                    - LocalDevelopmentBuild
+
+                $localDevelopment:
+
+                  $excludeFilesWithPathsRelativeToProjectRootDirectory:
+
+                    - StaticPreviewBuild
+
+    ul.Article-UnorderedList
+
+      li.
+        The #[+SecondaryEntity--YDID TestingBuild], #[+SecondaryEntity--YDID StagingBuild], and
+          #[+SecondaryEntity--YDID ProductionBuild] directories contain #[+Term--YDID builds] for the corresponding
+          #[+Keyword--YDID production-like] #[+Term--YDID modes].
+        Usually, there is no&nbsp;need to watch these directories, so they are #[+Keyword--YDID completely]
+          #[+Keyword__Contrast--YDID ignored].
+
+      li.
+        For the static preview #[+Term--YDID building mode] case, there is no point in watching the #[+Term--YDID build]
+          for the local development #[+Term--YDID mode], so for static preview #[+Term--YDID building mode]
+           #[+SecondaryEntity--YDID LocalDevelopmentBuild] directory is ignored.
+        Note that if we also ignore #[+SecondaryEntity--YDID StaticPreviewBuild] here, the browser page live
+          reloading will&nbsp;#[+Keyword--YDID not] occur, since it is performed when the status of build files changes.
+
+      li.
+        For the "local development" #[+Term--YDID building mode], #[+Keyword--YDID conversely], there is no point in watching
+          the #[+Term--YDID build] for the static preview #[+Term--YDID mode], so the
+          #[+SecondaryEntity--YDID StaticPreviewBuild] directory is #[+Keyword--YDID ignored].

@@ -1,8 +1,7 @@
 /* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
 import ECMA_ScriptLogicProcessingRestrictions from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRestrictions";
 import SupportedECMA_ScriptRuntimesTypes = ECMA_ScriptLogicProcessingRestrictions.SupportedECMA_ScriptRuntimesTypes;
-import type ConsumingProjectBuildingModes from
-    "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
+import ConsumingProjectBuildingModes from "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 import LintingSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/LintingSettings__FromFile__RawValid";
 
@@ -13,11 +12,16 @@ import RevisioningSettings__FromFile__RawValid from
     "@ProjectBuilding/Common/RawConfig/Reusables/RevisioningSettings__FromFile__RawValid";
 
 /* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
-import { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
-import type { ArbitraryObject } from "@yamato-daiwa/es-extensions";
+import {
+  RawObjectDataProcessor,
+  getObjectPropertySafely,
+  type ArbitraryObject,
+  type ReadonlyParsedJSON_Object
+} from "@yamato-daiwa/es-extensions";
 
 
 type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid = Readonly<{
+  common?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Common;
   linting?: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.Linting;
   entryPointsGroups: Readonly<{ [groupID: string]: ECMA_ScriptLogicProcessingSettings__FromFile__RawValid.EntryPointsGroup; }>;
   localDevelopmentServerOrchestration?:
@@ -31,17 +35,35 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
   /* ━━━ Types ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   /* ┅┅┅ Common ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
-  /* ╍╍╍ Linting ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+  export type Common = Readonly<{
+    preprocessorVariables?: Common.PreprocessorVariables;
+  }>;
+
+  export namespace Common {
+
+    export type PreprocessorVariables =
+        Readonly<{
+          forAllProjectBuildingModes?: ReadonlyParsedJSON_Object;
+          buildingModeDependent?:
+              Readonly<{ [projectBuildingMode in ConsumingProjectBuildingModes]?: ReadonlyParsedJSON_Object; }>;
+        }>;
+
+  }
+
+
+  /* ┅┅┅ Linting ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   export type Linting = LintingSettings__FromFile__RawValid;
 
 
-  /* ╍╍╍ Entry Points Group ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+  /* ┅┅┅ Entry Points Group ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   export type EntryPointsGroup =
       SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.EntryPointsGroup &
       Readonly<{
         targetRuntime: EntryPointsGroup.Runtime;
         associatedMarkupEntryPointsGroupID_ForDynamicModulesLoadingWithoutDevelopmentServer?: string;
         typeScriptConfigurationFileRelativePath?: string;
+        preprocessorVariables?: ReadonlyParsedJSON_Object;
+        dependenciesViaGlobals?: EntryPointsGroup.DependenciesViaGlobals;
         distributing?: EntryPointsGroup.Distributing;
         buildingModeDependent: Readonly<{
           [projectBuildingMode in ConsumingProjectBuildingModes]:
@@ -108,6 +130,14 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
 
     }
 
+    export type DependenciesViaGlobals =
+        Readonly<{ [key: DependenciesViaGlobals.PackageID]: DependenciesViaGlobals.GlobalConstantName; }>;
+
+    export namespace DependenciesViaGlobals {
+      export type PackageID = string;
+      export type GlobalConstantName = string;
+    }
+
     export type Distributing = Readonly<{
       exposingOfExportsFromEntryPoints?: Distributing.ExposingOfExportsFromEntryPoints;
       externalizingDependencies?: ReadonlyArray<Distributing.ExternalizingDependencies.PackageName>;
@@ -140,12 +170,13 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
           revisioning?: RevisioningSettings__FromFile__RawValid;
           dynamicallyLoadedFilesSubdirectory?: string;
           dynamicallyLoadedFilesNamesTemplate?: string;
+          preprocessorVariables?: ReadonlyParsedJSON_Object;
         }>;
 
   }
 
 
-  /* ╍╍╍ Local Development Server Orchestration ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+  /* ┅┅┅ Local Development Server Orchestration ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   export type LocalDevelopmentServerOrchestration = Readonly<{
     targetSingularEntryPointsGroupID: string;
     arguments?: ReadonlyArray<string>;
@@ -154,7 +185,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
   }>;
 
 
-  /* ╍╍╍ Electron ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+  /* ┅┅┅ Electron ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   export type Electron = Readonly<{
     hotReloadingForLocalDevelopmentMode: Electron.HotReloadingForLocalDevelopmentMode;
   }>;
@@ -169,7 +200,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
   }
 
 
-  /* ╍╍╍ Logging ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+  /* ┅┅┅ Logging ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   export type Logging = Readonly<{
 
     filesPaths?: boolean;
@@ -188,6 +219,76 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
   /* ━━━ Properties Specification ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export const propertiesSpecification: RawObjectDataProcessor.PropertiesSpecification = {
 
+    /* ┅┅┅ Common ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+    $common: {
+
+      newName: "common",
+      type: Object,
+      isUndefinedForbidden: false,
+      mustTransformNullToUndefined: true,
+
+      properties: {
+
+        $forAllProjectBuildingModes: {
+
+          newName: "forAllProjectBuildingModes",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          /* [ Theory ]
+           * This schema is unknown in advance, thus cannot be validated. While manipulating with the initial object
+           *   strategy is enabled for the RawObjectDataProcessor, all properties will be kept without validation.
+           * */
+          properties: {}
+
+        },
+
+        $buildingModeDependent: {
+
+          newName: "buildingModeDependent",
+          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+          areUndefinedTypeValuesForbidden: true,
+          areNullTypeValuesForbidden: true,
+          minimalEntriesCount: 1,
+
+          allowedKeys: [
+            "$staticPreview",
+            "$localDevelopment",
+            "$testing",
+            "$staging",
+            "$production"
+          ],
+
+          keysRenamings: {
+            $staticPreview: ConsumingProjectBuildingModes.staticPreview,
+            $localDevelopment: ConsumingProjectBuildingModes.localDevelopment,
+            $testing: ConsumingProjectBuildingModes.testing,
+            $staging: ConsumingProjectBuildingModes.staging,
+            $production: ConsumingProjectBuildingModes.production
+          },
+
+          value: {
+
+            type: Object,
+
+            /* [ Theory ]
+             * This schema is unknown in advance, thus cannot be validated. While manipulating with the initial object
+             *   strategy is enabled for the RawObjectDataProcessor, all properties will be kept without validation.
+             * */
+            properties: {}
+
+          }
+
+        }
+
+      }
+
+    },
+
+
     /* ┅┅┅ Linting ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
     $linting: {
       newName: "linting",
@@ -197,7 +298,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
       properties: LintingSettings__FromFile__RawValid.propertiesSpecification
     },
 
-    /* ╍╍╍ Entry Points Group ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+    /* ┅┅┅ Entry Points Group ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
     ...SourceCodeProcessingSettingsGenericProperties__FromFile__RawValid.generatePropertiesSpecification({
 
       entryPointsGroupBuildingModeIndependentSpecificSettingsLocalizedPropertiesSpecification: {
@@ -254,7 +355,7 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
                   type: Number,
                   isUndefinedForbidden: false,
                   isNullForbidden: true,
-                  numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumber,
+                  numbersSet: RawObjectDataProcessor.NumbersSets.naturalNumberOrZero,
                   isNaN_Forbidden: true
                 }
 
@@ -281,6 +382,38 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
           isUndefinedForbidden: false,
           isNullForbidden: true,
           minimalCharactersCount: 1
+        },
+
+        $preprocessorVariables: {
+
+          newName: "preprocessorVariables",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          /* [ Theory ]
+           * This schema is unknown in advance, thus cannot be validated. While manipulating with the initial object
+           *   strategy is enabled for the RawObjectDataProcessor, all properties will be kept without validation.
+           * */
+          properties: {}
+
+        },
+
+        $dependenciesViaGlobals: {
+
+          newName: "dependenciesViaGlobals",
+          type: RawObjectDataProcessor.ValuesTypesIDs.associativeArray,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+          areUndefinedTypeValuesForbidden: true,
+          areNullTypeValuesForbidden: true,
+          minimalEntriesCount: 1,
+
+          value: {
+            type: String,
+            minimalCharactersCount: 1
+          }
+
         },
 
         $distributing: {
@@ -311,12 +444,39 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
                   newName: "namespace",
                   type: String,
                   isUndefinedForbidden: false,
+                  mustBeUndefinedIf: {
+                    predicate:
+                      (
+                        {
+                          rawData__currentObjectDepth,
+                          targetPropertyPathSegments,
+                          rawData__full
+                        }:
+                            RawObjectDataProcessor.ConditionAssociatedWithProperty.Predicate.Parameter
+                      ): boolean =>
+                          rawData__currentObjectDepth.$mustAssignToWindowObject !== true &&
+                              getObjectPropertySafely(
+                                rawData__full,
+                                /* eslint-disable-next-line @typescript-eslint/no-magic-numbers --
+                                * The name with enough reasonable length (<= 120 characters) has not been decided.
+                                * `-3` expresses the relational depth of the `$targetRuntime.$type` property. */
+                                [ ...targetPropertyPathSegments.slice(0, -3), "$targetRuntime", "$type" ]
+                              ) ===
+                                  SupportedECMA_ScriptRuntimesTypes.browser,
+
+                    /* [ Theory ]
+                     * If has been set, the Webpack will fail with "Library name must be unset. Common configuration
+                     *   options that specific library names are 'output.library[.name]', 'entry.xyz.library[.name]',
+                     *   'ModuleFederationPlugin.name' and 'ModuleFederationPlugin.library[.name]'.` error for the browser
+                     *   runtime case. */
+                    descriptionForLogging: "`targetRuntime` is browser"
+                  },
                   isNullForbidden: true
                 },
 
                 $mustAssignToWindowObject: {
                   newName: "mustAssignToWindowObject",
-                  type: String,
+                  type: Boolean,
                   isUndefinedForbidden: false,
                   isNullForbidden: true
                 }
@@ -395,6 +555,21 @@ namespace ECMA_ScriptLogicProcessingSettings__FromFile__RawValid {
           isUndefinedForbidden: false,
           isNullForbidden: true,
           minimalCharactersCount: 1
+        },
+
+        $preprocessorVariables: {
+
+          newName: "preprocessorVariables",
+          type: Object,
+          isUndefinedForbidden: false,
+          mustTransformNullToUndefined: true,
+
+          /* [ Theory ]
+           * This schema is unknown in advance, thus cannot be validated. While manipulating with the initial object
+           *   strategy is enabled for the RawObjectDataProcessor, all properties will be kept without validation.
+           * */
+          properties: {}
+
         }
 
       }

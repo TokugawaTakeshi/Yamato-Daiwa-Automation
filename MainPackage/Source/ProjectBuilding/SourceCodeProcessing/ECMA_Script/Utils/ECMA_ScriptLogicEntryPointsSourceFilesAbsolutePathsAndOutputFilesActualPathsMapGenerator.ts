@@ -1,18 +1,23 @@
-/* --- Normalized settings ------------------------------------------------------------------------------------------ */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Normalized";
 
-/* --- Settings representatives ------------------------------------------------------------------------------------- */
+/* ┅┅┅ Settings Representatives ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ECMA_ScriptLogicProcessingSettingsRepresentative from
-      "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettingsRepresentative";
+    "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettingsRepresentative";
 
-/* --- Utils -------------------------------------------------------------------------------------------------------- */
+/* ┅┅┅ Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import {
   Logger,
   AlgorithmMismatchError,
-  stringifyAndFormatArbitraryValue
+  stringifyAndFormatArbitraryValue,
+  extractFileNameWithAllExtensionsFromPath
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+import removeLastFileNameExtensionFromPath from
+    "@Incubators/@yamato-daiwa/es-extensions/Strings/removeLastFileNameExtensionFromPath";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutputFilesActualPathsMapGenerator {
@@ -127,10 +132,10 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
             basePath: entryPointsGroupNormalizedSettings.sourceFilesTopDirectoryAbsolutePath
           }),
           `${ 
-            ImprovedPath.extractFileNameWithoutExtensionFromPath({
-              targetPath: sourceFileAbsolutePath,
-              mustThrowErrorIfLastPathSegmentHasNoDots: true
-            })
+            extractFileNameWithAllExtensionsFromPath({ 
+              targetPath: removeLastFileNameExtensionFromPath(sourceFileAbsolutePath),
+              mustThrowErrorIfLastPathSegmentHasNoDots: false
+            }) 
           }.js`
         ],
         { alwaysForwardSlashSeparators: true }
@@ -139,6 +144,7 @@ export default class ECMA_ScriptLogicEntryPointsSourceFilesAbsolutePathsAndOutpu
 
 
     return correspondingOutputFileAbsolutePath;
+
   }
 
 }

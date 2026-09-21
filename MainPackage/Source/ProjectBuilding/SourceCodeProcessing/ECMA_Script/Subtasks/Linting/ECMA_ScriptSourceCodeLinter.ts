@@ -236,7 +236,7 @@ class ECMA_ScriptSourceCodeLinter extends LinterLikeTaskExecutor<ECMA_ScriptSour
         ),
 
         /* [ ESLint theory ]
-         * In there are files and/or directories ignored in ESLint configuration they also must be excluded from
+         * In there are files and/or directories ignored in ESLint configuration, they also must be excluded from
          *   the Gulp pipelines otherwise ESLint will emit the warning for ignored files. */
         ...ESLintSpecialist.generateExcludingGlobSelectorsOfIgnoredFiles(
           projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath

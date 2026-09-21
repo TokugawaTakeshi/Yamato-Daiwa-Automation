@@ -93,7 +93,7 @@ const MarkupProcessingSettings__Default: Readonly<{
       }>
     ): boolean =>
         outputFormat === MarkupProcessingRestrictions.OutputFormats.razor,
-    indentationString: "  ",
+    indentationString: " ",
     lineSeparators: LineSeparators.lineFeed,
     mustGuaranteeTrailingEmptyLine: true,
     mustIndentHeadAndBodyTags: true

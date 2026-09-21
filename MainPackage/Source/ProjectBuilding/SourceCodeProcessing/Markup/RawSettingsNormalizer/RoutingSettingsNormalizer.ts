@@ -19,7 +19,8 @@ import {
   nullToUndefined,
   removeSpecificCharacterFromCertainPosition,
   replaceMatchesWithRegularExpressionToDynamicValue,
-  type ReplacingOfMatchesWithRegularExpressionToDynamicValue
+  type ReplacingOfMatchesWithRegularExpressionToDynamicValue,
+  cropArray
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath, ObjectDataFilesProcessor } from "@yamato-daiwa/es-extensions-nodejs";
 
@@ -147,13 +148,27 @@ class RoutingSettingsNormalizer {
       });
     }
 
-    RoutingSettingsNormalizer.routingPathSegments.push(
-      ...RoutingSettingsNormalizer.routingPathSegments.length === 0 ? [ "" ] : [ "$children", "" ]
-    );
+    let countOfElementMustBeRemovedFromRoutingPathSegmentsArrayOnceLoopEnded: number;
+    let routeKeyIndexInRoutingPathSegments: number;
+
+    /* [ Approach ]
+     * Pre-allocate the position with empty string for the element for knowing in advance to position with which index
+     *   the element must be set inside the following loop. */
+    if (RoutingSettingsNormalizer.routingPathSegments.length > 0) {
+
+      countOfElementMustBeRemovedFromRoutingPathSegmentsArrayOnceLoopEnded = 2;
+      routeKeyIndexInRoutingPathSegments = RoutingSettingsNormalizer.routingPathSegments.push("$children", "") - 1;
+
+    } else {
+
+      countOfElementMustBeRemovedFromRoutingPathSegmentsArrayOnceLoopEnded = 1;
+      routeKeyIndexInRoutingPathSegments = RoutingSettingsNormalizer.routingPathSegments.push("") - 1;
+
+    }
 
     for (const [ routeKey, rawRoute ] of Object.entries(rawRoutingOfSpecificDepthLevel)) {
 
-      RoutingSettingsNormalizer.routingPathSegments[RoutingSettingsNormalizer.routingPathSegments.length - 1] = routeKey;
+      RoutingSettingsNormalizer.routingPathSegments[routeKeyIndexInRoutingPathSegments] = routeKey;
 
       if (!isArbitraryObject(rawRoute)) {
         Logger.throwErrorWithFormattedMessage({
@@ -187,7 +202,14 @@ class RoutingSettingsNormalizer {
 
     }
 
-    RoutingSettingsNormalizer.routingPathSegments.pop();
+    cropArray({
+      targetArray: RoutingSettingsNormalizer.routingPathSegments,
+      mutably: true,
+      fromEnd: true,
+      fromRightmostElement: true,
+      elementsCount: countOfElementMustBeRemovedFromRoutingPathSegmentsArrayOnceLoopEnded,
+      mustThrowErrorIfSpecifiedElementsNumbersAreOutOfRange: true
+    });
 
     return outputWorkpiece;
 

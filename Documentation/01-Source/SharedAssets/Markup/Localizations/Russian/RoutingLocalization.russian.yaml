@@ -5,6 +5,10 @@ topPage:
   $heading: "Главная страница"
   $URI: @All/Top/TopPage.russian
 
+startingFromScratch:
+
+  $heading: "Развёртывание проекта с нуля"
+
 terminology:
 
   $heading: "Терминология"
@@ -48,6 +52,10 @@ functionality:
       stateDependentPagesVariations:
 
         $heading: "Вариации страниц по состояниям"
+
+    optimization:
+
+      $heading: "Оптимизация обработки разметки"
 
   browserLiveReloading:
 

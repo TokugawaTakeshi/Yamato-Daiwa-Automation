@@ -14,6 +14,17 @@ terminology:
       japanese: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.japanese.yaml
       russian: 01-Source/Pages/Terminology/TableOfContents/Terminology.toc.russian.yaml
 
+startingFromScratch:
+
+  $heading: `startingFromScratch.$heading`
+  $URI: `@All/StartingFromScratch/StartingFromScratch.${ fileNameLocalizationExtensions }`
+  $sectioning:
+    $specificationFileRelativePath: 01-Source/Pages/StartingFromScratch/TableOfContents/StartingFromScratch.toc.yaml
+    $localizations:
+      english: 01-Source/Pages/StartingFromScratch/TableOfContents/StartingFromScratch.toc.english.yaml
+      japanese: 01-Source/Pages/StartingFromScratch/TableOfContents/StartingFromScratch.toc.japanese.yaml
+      russian: 01-Source/Pages/StartingFromScratch/TableOfContents/StartingFromScratch.toc.russian.yaml
+
 functionality:
 
   $heading: `functionality.$heading`
@@ -105,6 +116,17 @@ functionality:
                 english: 01-Source/Pages/Functionality/MarkupProcessing/StaticPreview/StateDependentPagesVariations/TableOfContents/StateDependentPagesVariations.toc.english.yaml
                 japanese: 01-Source/Pages/Functionality/MarkupProcessing/StaticPreview/StateDependentPagesVariations/TableOfContents/StateDependentPagesVariations.toc.japanese.yaml
                 russian: 01-Source/Pages/Functionality/MarkupProcessing/StaticPreview/StateDependentPagesVariations/TableOfContents/StateDependentPagesVariations.toc.russian.yaml
+
+        optimization:
+
+          $heading: `functionality.markupProcessing.optimization.$heading`
+          $URI: `@All/Functionality/MarkupProcessing/Optimization/Optimization-Markup.${ fileNameLocalizationExtensions }`
+#          $sectioning:
+#            $specificationFileRelativePath: 01-Source/Pages/Functionality/MarkupProcessing/Optimization/TableOfContents/Optimization-Markup.toc.yaml
+#            $optimizations:
+#              english: 01-Source/Pages/Functionality/MarkupProcessing/Optimization/TableOfContents/Optimization-Markup.toc.english.yaml
+#              japanese: 01-Source/Pages/Functionality/MarkupProcessing/Optimization/TableOfContents/Optimization-Markup.toc.japanese.yaml
+#              russian: 01-Source/Pages/Functionality/MarkupProcessing/Optimization/TableOfContents/Optimization-Markup.toc.russian.yaml
 
     browserLiveReloading:
 

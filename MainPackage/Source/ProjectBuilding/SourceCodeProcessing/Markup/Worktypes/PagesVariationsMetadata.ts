@@ -9,6 +9,7 @@ namespace PagesVariationsMetadata {
   export type SourceFileAbsolutePath__ForwardSlashesPathSeparators = string;
 
   export type Page = Readonly<{
+    initialSourceFileAbsolutePath: string;
     mustInitialFileBeKept: boolean;
     sourceAndOutputAbsolutePathsOfAllVariations: ReadonlyMap<string, string>;
     absoluteSourcePathsOfAllVariations: ReadonlySet<string>;

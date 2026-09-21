@@ -5,9 +5,12 @@ import {
   RawObjectDataProcessor,
   InvalidExternalDataError,
   Logger,
+  explodeURI_PathToSegments,
   isUndefined,
   isNull,
-  getMatchingWithFirstRegularExpressionCapturingGroup
+  isNotNull,
+  getMatchingWithFirstRegularExpressionCapturingGroup,
+  getLastElementOfArray
 } from "@yamato-daiwa/es-extensions";
 
 
@@ -84,9 +87,12 @@ export default abstract class ESLintSpecialist {
     }
 
 
-    const filesIgnoringPatternsRawExpression: string | null = getMatchingWithFirstRegularExpressionCapturingGroup(
-      configurationFileContent, /ignores:\s*(?<array>\[(?:.|\s)+?\])/gu
-    );
+    const filesIgnoringPatternsRawExpression: string | null =
+
+        /** [ Theory ]
+         * Ignore the "Single character alternation in RegExp" warning from the IntelliJ IDEA, it will brake the capturing
+         *   of to apply. See: https://regex101.com/r/FI0Bsn/1 */
+        getMatchingWithFirstRegularExpressionCapturingGroup(configurationFileContent, /ignores:\s*(?<array>\[(?:.|\s)+?\])/gu);
 
     if (isNull(filesIgnoringPatternsRawExpression)) {
       return [];
@@ -141,39 +147,73 @@ export default abstract class ESLintSpecialist {
     }
 
     /* [ Theory ] Known Patterns from ESLint Documentation & Experiments
-     * 1. ".config/*": ignore subdirectory ".config" in directory below root, but not ".config" recursively
+     * 1. ".config/*": ignore subdirectory ".config" in the directory below the root, but not ".config" recursively
      * 2. ".config/": equivalent of 1
      * 2. ".config": equivalent of 1
      * 3. "＊＊/.config/": recursive ignoring of ".config"
-     * 4. config.js - ignoring of specific file
+     * 4. config.js - ignoring of a specific file
      * See https://eslint.org/docs/latest/use/configure/ignore#ignoring-files
      * */
     return processingResult.processedData.
 
         /* [ Theory ]
-         * ESLint ignores "node_modules" as default, so it must be ignored whatever it has been specified in ESLint
+         * ESLint ignores "node_modules" as default, so it must be ignored whether it has been specified in ESLint
          *   configuration file or no. */
         filter((ignoredFilesPattern: string): boolean => !ignoredFilesPattern.includes("node_module")).
 
-        map(
-          (ignoredFilesPattern: string): string => {
+        flatMap(
+          (ignoredFilesPattern: string): Array<string> => {
 
             if (ignoredFilesPattern.startsWith("**/")) {
-              return ImprovedGlob.buildExcludingOfDirectoryWithSubdirectoriesGlobSelector(
-                Path.join(
-                  consumingProjectRootDirectoryAbsolutePath,
-                  ignoredFilesPattern.replace(/^\*\*\//gu, "")
+              return [
+                ImprovedGlob.buildExcludingOfDirectoryWithSubdirectoriesGlobSelector(
+                  Path.join(
+                    consumingProjectRootDirectoryAbsolutePath,
+                    ignoredFilesPattern.replace(/^\*\*\//gu, "")
+                  )
                 )
-              );
+              ];
             }
 
 
-            return ImprovedGlob.buildExcludingOfDirectoryWithSubdirectoriesGlobSelector(
-              Path.join(
-                consumingProjectRootDirectoryAbsolutePath,
-                ignoredFilesPattern.replace(/\*/gu, "")
+            /* [ Theory ]
+             * If something like the file path (including the dot in the last path segment like "wwwroot/YDF.global.js")
+             *  specified, then it is applicable to the specific file, and the files with a specified name will not be
+             *  excluded recursively. */
+
+            const pathPatternSegments: ReadonlyArray<string> = explodeURI_PathToSegments(ignoredFilesPattern);
+            const lastPathPatternSegment: string | null = getLastElementOfArray(pathPatternSegments);
+
+            if (isNotNull(lastPathPatternSegment) && lastPathPatternSegment.includes(".")) {
+
+              const targetAbsolutePath: string = ImprovedPath.joinPathSegments(
+                [ consumingProjectRootDirectoryAbsolutePath, ignoredFilesPattern ],
+                { alwaysForwardSlashSeparators: true }
+              );
+
+              /* [ Theory ]
+               * Although something like "wwwroot/YDF.global.js" seems to be the file path, it also may be the directory,
+               *   so the corresponding potential directory must be excluded too. */
+              return [
+                ImprovedGlob.includingGlobSelectorToExcludingOne(targetAbsolutePath),
+                ImprovedGlob.buildExcludingOfDirectoryWithSubdirectoriesGlobSelector(
+                  Path.join(
+                    consumingProjectRootDirectoryAbsolutePath,
+                    ignoredFilesPattern.replace(/\*/gu, "")
+                  )
+                )
+              ];
+
+            }
+
+            return [
+              ImprovedGlob.buildExcludingOfDirectoryWithSubdirectoriesGlobSelector(
+                Path.join(
+                  consumingProjectRootDirectoryAbsolutePath,
+                  ignoredFilesPattern.replace(/\*/gu, "")
+                )
               )
-            );
+            ];
 
           }
         );

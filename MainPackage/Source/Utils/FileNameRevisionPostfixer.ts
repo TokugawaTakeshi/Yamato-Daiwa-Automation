@@ -14,10 +14,11 @@ export default class FileNameRevisionPostfixer {
 
       Logger.logWarning({
         title: "Unable to add revision hash",
-        description: `The 'content' property of Target Vinyl file '${ targetFile.path }' is null.`
+        description: `The "content" property of Target Vinyl file "${ targetFile.path }" is null.`
       });
 
       return;
+
     }
 
 
@@ -36,5 +37,6 @@ export default class FileNameRevisionPostfixer {
 
     targetFile.stem = `${ targetFile.stem }${ options.contentHashPostfixSeparator }` +
         generateRevisionHash(targetFile.contents);
+
   }
 }
