@@ -29,17 +29,17 @@ abstract class FilesMasterWatcher {
     return (callback: (error?: Error | null) => void): void => {
 
       Gulp.
-          watch([
+          watch(
             ImprovedGlob.buildAllFilesInCurrentDirectoryAndBelowGlobSelector({
               basicDirectoryPath: projectBuildingMasterConfigRepresentative.consumingProjectRootDirectoryAbsolutePath
             }),
-            ...ImprovedGlob.includingGlobSelectorsToExcludingOnes(
-              Array.from(projectBuildingMasterConfigRepresentative.filesWatchingSettings.excludedFilesGlobSelectors)
-            ),
-            ...ImprovedGlob.includingGlobSelectorsToExcludingOnes(
-              Array.from(projectBuildingMasterConfigRepresentative.filesWatchingSettings.excludedDirectoriesGlobSelectors)
-            )
-          ]).
+            {
+              ignored: [
+                ...Array.from(projectBuildingMasterConfigRepresentative.filesWatchingSettings.excludedFilesGlobSelectors),
+                ...Array.from(projectBuildingMasterConfigRepresentative.filesWatchingSettings.excludedDirectoriesGlobSelectors)
+              ]
+            }
+          ).
           on("all", FilesMasterWatcher.onAnyChokidarEvent.bind(this));
 
       callback();

@@ -1,40 +1,40 @@
-projectBuilding:
+$projectBuilding:
 
-  commonSettings:
+  $commonSettings:
 
-    selectiveExecutions:
+    $selectiveExecutions:
 
       StaticPreview:
 
-        tasksAndSourceFilesSelection:
+        $tasksAndSourceFilesSelection:
 
-          markupProcessing: [ StaticPreview, Pages ]
+          $markupProcessing: [ StaticPreview, Pages ]
 
       Application:
 
-        tasksAndSourceFilesSelection:
+        $tasksAndSourceFilesSelection:
 
-          markupProcessing: [ SingePageApplicationEntryPoint ]
+          $markupProcessing: [ SingePageApplicationEntryPoint ]
 
 
-  markupProcessing:
+  $markupProcessing:
 
-    entryPointsGroups:
+    $entryPointsGroups:
 
       StaticPreview:
 
-        singleEntryPointSourceFileRelativePath: 01-Source/StaticPreview/StaticPreviewAnywherePage.pug
-        buildingModeDependent:
-          STATIC_PREVIEW:
-            outputTopDirectoryRelativePath: 02-StaticPreviewBuild
+        $singleEntryPointSourceFileRelativePath: 01-Source/StaticPreview/StaticPreviewAnywherePage.pug
+        $buildingModeDependent:
+          $staticPreview:
+            $outputTopDirectoryRelativePath: 02-StaticPreviewBuild
 
       Pages:
 
-        sourceFilesTopDirectoryRelativePath: 01-Source/Pages
-        partialsRecognition:
-          excludeSubdirectoriesWithPrefixes: "_"
-          excludeFilesWithPrefixes: "_"
+        $sourceFilesTopDirectoryRelativePath: 01-Source/Pages
+        $sourceFilesSelection:
+          $prefixesOfExcludedSubdirectories: "_"
+          $prefixesOfExcludeFiles: "_"
 
-        buildingModeDependent:
-          STATIC_PREVIEW:
-            outputTopDirectoryRelativePath: 02-StaticPreviewBuild
+        $buildingModeDependent:
+          $staticPreview:
+            $outputTopDirectoryRelativePath: 02-StaticPreviewBuild
