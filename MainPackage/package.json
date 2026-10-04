@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.10.0-alpha.3",
+  "version": "0.10.0-alpha.4",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",
@@ -22,13 +22,13 @@
   "dependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "4.8.1",
     "@stylistic/eslint-plugin": "5.10.0",
-    "@typescript-eslint/eslint-plugin": "8.70.0",
-    "@typescript-eslint/parser": "8.70.0",
+    "@typescript-eslint/eslint-plugin": "8.71.0",
+    "@typescript-eslint/parser": "8.71.0",
     "@vue/compiler-sfc": "3.5.43",
     "@webdiscus/pug-loader": "2.11.1",
     "@yamato-daiwa/es-extensions": "1.9.3",
     "@yamato-daiwa/es-extensions-nodejs": "1.9.3",
-    "@yamato-daiwa/style_guides": "0.14.5",
+    "@yamato-daiwa/style_guides": "0.14.7",
     "@yamato-daiwa/universal-reactive-webpack-loader": "0.1.0",
     "autoprefixer": "10.6.1",
     "browser-sync": "3.0.4",
@@ -37,7 +37,7 @@
     "dotenv": "17.4.2",
     "eslint": "9.39.4",
     "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-n": "18.3.0",
+    "eslint-plugin-n": "18.4.1",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-vue": "9.33.0",
     "eslint-plugin-vue-pug": "0.6.2",
