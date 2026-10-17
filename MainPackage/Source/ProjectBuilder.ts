@@ -1,42 +1,53 @@
-/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Restrictions ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* ─── Raw Valid Config ───────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Raw Valid Configuration ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import ProjectBuildingConfig__FromFile__RawValid from
     "./ProjectBuilding/ProjectBuildingConfig__FromFile__RawValid";
 
-/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ProjectBuildingConfig__Normalized from "./ProjectBuilding/ProjectBuildingConfig__Normalized";
 import ProjectBuilderRawConfigNormalizer from "./ProjectBuilding/ProjectBuilderRawConfigNormalizer";
 import ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 
-/* ─── Tasks Runners ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Tasks Runners ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+/* ╍╍╍ Code Processing ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+/* ─── Markup ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import MarkupProcessor from "@MarkupProcessing/MarkupProcessor";
 import MarkupSourceCodeLinter from "@MarkupProcessing/Subtasks/Linting/MarkupSourceCodeLinter";
-import TypeScriptTypesChecker from "@ECMA_ScriptProcessing/Subtasks/TypeScriptTypesChecker";
 import CompiledTypeScriptImporterForPug from "@MarkupProcessing/Subtasks/CompiledTypeScriptImporterForPug";
 import JavaScriptImporterForPug from "@MarkupProcessing/Subtasks/JavaScriptImporterForPug";
+
+/* ─── Styles ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import StylesProcessor from "@StylesProcessing/StylesProcessor";
+
+/* ─── ECMAScript Logic ───────────────────────────────────────────────────────────────────────────────────────────── */
 import ECMA_ScriptLogicProcessor from "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessor";
 import ECMA_ScriptSourceCodeLinter from "@ECMA_ScriptProcessing/Subtasks/Linting/ECMA_ScriptSourceCodeLinter";
+import TypeScriptTypesChecker from "@ECMA_ScriptProcessing/Subtasks/TypeScriptTypesChecker";
+import LocalDevelopmentServerOrchestrator from
+    "@ECMA_ScriptProcessing/Subtasks/LocalDevelopmentServerOrchestration/LocalDevelopmentServerOrchestrator";
+
+/* ╍╍╍ Assets Management ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import ImagesProcessor from "@ImagesProcessing/ImagesProcessor";
 import FontsProcessor from "@FontsProcessing/FontsProcessor";
 import VideosProcessor from "@VideosProcessing/VideosProcessor";
 import AudiosProcessor from "@AudiosProcessing/AudiosProcessor";
 import PlainCopier from "@ProjectBuilding/PlainCopying/PlainCopier";
-import LocalDevelopmentServerOrchestrator from
-    "@ECMA_ScriptProcessing/Subtasks/LocalDevelopmentServerOrchestration/LocalDevelopmentServerOrchestrator";
+
+/* ╍╍╍ Other ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
 import DockerComposeLauncher from "@ProjectBuilding/DockerCompose/DockerComposeLauncher";
 import ElectronCoordinator from "@ECMA_ScriptProcessing/Subtasks/ElectronCoordinator";
 import OutputPackageJSON_Generator from "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_Generator";
 
-/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Applied Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import Gulp from "gulp";
 import FilesMasterWatcher from "@ProjectBuilding/FilesWatching/Watchers/FilesMasterWatcher";
 
-/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ General Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import {
   RawObjectDataProcessor,
   isNeitherUndefinedNorNull,
@@ -44,6 +55,7 @@ import {
   InvalidConfigError,
   UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 abstract class ProjectBuilder {
@@ -65,7 +77,7 @@ abstract class ProjectBuilder {
 
                 /* [ Approach ] Need to keep some settings with unknown at advance schema. */
                 processingApproach: RawObjectDataProcessor.ProcessingApproaches.manipulationsWithSourceObject
-                
+
               }
             );
 

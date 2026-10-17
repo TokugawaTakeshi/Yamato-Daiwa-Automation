@@ -1,15 +1,19 @@
-/* ─── Raw Valid Config ───────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Raw Valid Configuration ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding/Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
-
 import ProjectBuildingCommonSettings__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/ProjectBuildingCommonSettings__FromFile__RawValid";
+
+/* ╍╍╍ Source Code Processing ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import MarkupProcessingSettings__FromFile__RawValid from
     "@MarkupProcessing/MarkupProcessingSettings__FromFile__RawValid";
 import StylesProcessingSettings__FromFile__RawValid from
     "@StylesProcessing/StylesProcessingSettings__FromFile__RawValid";
 import ECMA_ScriptLogicProcessingSettings__FromFile__RawValid from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__FromFile__RawValid";
+
+/* ╍╍╍ Assets Management ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import ImagesProcessingSettings__FromFile__RawValid from
     "@ImagesProcessing/ImagesProcessingSettings__FromFile__RawValid";
 import FontsProcessingSettings__FromFile__RawValid from
@@ -18,6 +22,8 @@ import VideosProcessingSettings__FromFile__RawValid from
     "@VideosProcessing/VideosProcessingSettings__FromFile__RawValid";
 import AudiosProcessingSettings__FromFile__RawValid from
     "@AudiosProcessing/AudiosProcessingSettings__FromFile__RawValid";
+
+/* ╍╍╍ Other ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import PlainCopyingSettings__FromFile__RawValid from
     "@ProjectBuilding/PlainCopying/PlainCopyingSettings__FromFile__RawValid";
 import BrowserLiveReloadingSettings__FromFile__RawValid from
@@ -27,8 +33,9 @@ import OutputPackageJSON_GeneratingSettings__FromFile__RawValid from
 import DockerComposeSettings__FromFile__RawValid from
     "@ProjectBuilding/DockerCompose/DockerComposeSettings__FromFile__RawValid";
 
-/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import { RawObjectDataProcessor } from "@yamato-daiwa/es-extensions";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 type ProjectBuildingConfig__FromFile__RawValid = {

@@ -1,20 +1,25 @@
-/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Restrictions ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ConsumingProjectBuildingModes from
     "@ProjectBuilding/Common/Restrictions/ConsumingProjectBuildingModes";
 
-/* ─── Raw Valid Settings ─────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Raw Valid Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import { ProjectBuildingTasksIDsForConfigFile } from
     "@ProjectBuilding:Common/RawConfig/Enumerations/ProjectBuildingTasksIDsForConfigFile";
 import type ProjectBuildingConfig__FromFile__RawValid from
     "./ProjectBuildingConfig__FromFile__RawValid";
 import type ProjectBuildingCommonSettings__FromFile__RawValid from
     "@ProjectBuilding:Common/RawConfig/ProjectBuildingCommonSettings__FromFile__RawValid";
+
+/* ╍╍╍ Source Code Processing ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import type MarkupProcessingSettings__FromFile__RawValid from
     "@MarkupProcessing/MarkupProcessingSettings__FromFile__RawValid";
 import type StylesProcessingSettings__FromFile__RawValid from
     "@StylesProcessing/StylesProcessingSettings__FromFile__RawValid";
 import type ECMA_ScriptLogicProcessingSettings__FromFile__RawValid from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__FromFile__RawValid";
+
+/* ╍╍╍ Assets Management ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import type ImagesProcessingSettings__FromFile__RawValid from
     "@ImagesProcessing/ImagesProcessingSettings__FromFile__RawValid";
 import type FontsProcessingSettings__FromFile__RawValid from
@@ -25,45 +30,72 @@ import type AudiosProcessingSettings__FromFile__RawValid from
     "@AudiosProcessing/AudiosProcessingSettings__FromFile__RawValid";
 import type PlainCopyingSettings__FromFile__RawValid from
     "@ProjectBuilding/PlainCopying/PlainCopyingSettings__FromFile__RawValid";
+
+/* ╍╍╍ Other ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
 import type BrowserLiveReloadingSettings__FromFile__RawValid from
     "./BrowserLiveReloading/BrowserLiveReloadingSettings__FromFile__RawValid";
 
-/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ProjectBuildingConfig__Normalized from "./ProjectBuildingConfig__Normalized";
 import type ProjectBuildingCommonSettings__Normalized from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettings__Normalized";
 import ProjectBuildingCommonSettingsNormalizer from
     "@ProjectBuilding:Common/NormalizedConfig/ProjectBuildingCommonSettingsNormalizer";
+
+/* ╍╍╍ Source Code Processing ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+/* ─── Markup ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 import MarkupProcessingRawSettingsNormalizer from "@MarkupProcessing/RawSettingsNormalizer/MarkupProcessingRawSettingsNormalizer";
+
+/* ─── Styles ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import type StylesProcessingSettings__Normalized from "@StylesProcessing/StylesProcessingSettings__Normalized";
 import StylesProcessingRawSettingsNormalizer from "@StylesProcessing/StylesProcessingRawSettingsNormalizer";
+
+/* ─── ECMAScript Logic ───────────────────────────────────────────────────────────────────────────────────────────── */
 import type ECMA_ScriptLogicProcessingSettings__Normalized from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingSettings__Normalized";
 import ECMA_ScriptLogicProcessingRawSettingsNormalizer from
     "@ECMA_ScriptProcessing/ECMA_ScriptLogicProcessingRawSettingsNormalizer";
+
+/* ╍╍╍ Assets Management ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+/* ─── Images ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import type ImagesProcessingSettings__Normalized from "@ImagesProcessing/ImagesProcessingSettings__Normalized";
 import ImagesProcessingRawSettingsNormalizer from "@ImagesProcessing/ImagesProcessingRawSettingsNormalizer";
+
+/* ─── Fonts ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import type FontsProcessingSettings__Normalized from "@FontsProcessing/FontsProcessingSettings__Normalized";
 import FontsProcessingSettingsRawSettingsNormalizer from "@FontsProcessing/FontsProcessingRawSettingsNormalizer";
+
+/* ─── Videos ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import type VideosProcessingSettings__Normalized from "@VideosProcessing/VideosProcessingSettings__Normalized";
 import VideosProcessingRawSettingsNormalizer from "@VideosProcessing/VideosProcessingRawSettingsNormalizer";
+
+/* ─── Audios ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
 import type AudiosProcessingSettings__Normalized from "@AudiosProcessing/AudiosProcessingSettings__Normalized";
 import AudiosProcessingRawSettingsNormalizer from "@AudiosProcessing/AudiosProcessingRawSettingsNormalizer";
+
+/* ╍╍╍ Other ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ */
+/* ─── Plain Copying ──────────────────────────────────────────────────────────────────────────────────────────────── */
 import type PlainCopyingSettings__Normalized from "@ProjectBuilding/PlainCopying/PlainCopyingSettings__Normalized";
 import PlainCopyingRawSettingsNormalizer from "@ProjectBuilding/PlainCopying/PlainCopyingRawSettingsNormalizer";
+
+/* ─── Browser Live Reloading ─────────────────────────────────────────────────────────────────────────────────────── */
 import type BrowserLiveReloadingSettings__Normalized from
     "@BrowserLiveReloading/BrowserLiveReloadingSettings__Normalized";
 import BrowserLiveReloadingSettingsNormalizer from
     "@BrowserLiveReloading/RawSettingsNormalizer/BrowserLiveReloadingSettingsNormalizer";
+
+/* ─── Docker Compose ─────────────────────────────────────────────────────────────────────────────────────────────── */
 import type DockerComposeSettings__Normalized from "@ProjectBuilding/DockerCompose/DockerComposeSettings__Normalized";
 import DockerComposeSettingsNormalizer from "@ProjectBuilding/DockerCompose/DockerComposeSettingsNormalizer";
+
+/* ─── Output package.json Generating ─────────────────────────────────────────────────────────────────────────────── */
 import type OutputPackageJSON_GeneratingSettings__Normalized from
     "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettings__Normalized";
 import OutputPackageJSON_GeneratingSettingsNormalizer from
     "@ProjectBuilding/OutputPackageJSON_Generating/OutputPackageJSON_GeneratingSettingsNormalizer";
 
-/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import {
   Logger,
   InvalidParameterValueError,
@@ -71,13 +103,10 @@ import {
   isUndefined, isNotNull
 } from "@yamato-daiwa/es-extensions";
 import { InvalidConsoleCommandError } from "@yamato-daiwa/es-extensions-nodejs";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
-abstract class ProjectBuilderRawConfigNormalizer {
-
-  private static localization: ProjectBuilderRawConfigNormalizer.Localization =
-      ProjectBuilderRawConfigNormalizer.getDefaultLocalization();
-
+export default abstract class ProjectBuilderRawConfigNormalizer {
 
   public static normalize(
     {
@@ -395,10 +424,6 @@ abstract class ProjectBuilderRawConfigNormalizer {
     };
   }
 
-  public static setLocalization(newLocalization: ProjectBuilderRawConfigNormalizer.Localization): void {
-    ProjectBuilderRawConfigNormalizer.localization = newLocalization;
-  }
-
   private static determineActualSelectiveExecution(
     {
       commonSettings__fromFile__rawValid,
@@ -422,10 +447,9 @@ abstract class ProjectBuilderRawConfigNormalizer {
       if (isUndefined(selectiveExecutions)) {
         Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidConsoleCommandError({
-            customMessage: ProjectBuilderRawConfigNormalizer.localization.
-                generateNoSelectiveExecutionsHasBeenDefinedErrorMessage({
-                  specifiedInConsoleCommandSelectiveExecutionID: projectBuildingConfig__fromConsole.selectiveExecutionID
-                })
+            customMessage:
+              `The selective execution "${ projectBuildingConfig__fromConsole.selectiveExecutionID }" has been demanded ` +
+                "by the console command while no selective executions has been defined in configuration file."
           }),
           occurrenceLocation: "ProjectBuilderRawConfigNormalizer.determineActualSelectiveExecution(parametersObject)",
           title: InvalidParameterValueError.localization.defaultTitle
@@ -438,10 +462,9 @@ abstract class ProjectBuilderRawConfigNormalizer {
       if (isUndefined(actualSelectiveExecution)) {
         Logger.throwErrorWithFormattedMessage({
           errorInstance: new InvalidConsoleCommandError({
-            customMessage: ProjectBuilderRawConfigNormalizer.localization.
-                generateUndefinedSelectiveExecutionID_ErrorMessage({
-                  specifiedInConsoleCommandSelectiveExecutionID: projectBuildingConfig__fromConsole.selectiveExecutionID
-                })
+            customMessage:
+                `The selective execution "${ projectBuildingConfig__fromConsole.selectiveExecutionID }" is undefined. ` +
+                "Please check which selective executions you have defined in configuration file."
           }),
           occurrenceLocation: "ProjectBuilderRawConfigNormalizer.determineActualSelectiveExecution(parametersObject)",
           title: InvalidParameterValueError.localization.defaultTitle
@@ -455,38 +478,4 @@ abstract class ProjectBuilderRawConfigNormalizer {
 
   }
 
-
-  private static getDefaultLocalization(): ProjectBuilderRawConfigNormalizer.Localization {
-    return {
-      generateNoSelectiveExecutionsHasBeenDefinedErrorMessage: (
-        { specifiedInConsoleCommandSelectiveExecutionID }: { specifiedInConsoleCommandSelectiveExecutionID: string; }
-      ): string =>
-          `The selective execution '${ specifiedInConsoleCommandSelectiveExecutionID }' has been demanded in the console ` +
-          "command while no selective executions has been defined in configuration file.",
-      generateUndefinedSelectiveExecutionID_ErrorMessage: (
-        { specifiedInConsoleCommandSelectiveExecutionID }: { specifiedInConsoleCommandSelectiveExecutionID: string; }
-      ): string =>
-          `The selective execution '${ specifiedInConsoleCommandSelectiveExecutionID }' is undefined. ` +
-          "Please check which selective executions you have defined in configuration file."
-    };
-  }
-
 }
-
-
-namespace ProjectBuilderRawConfigNormalizer {
-
-  export type Localization = {
-
-    generateNoSelectiveExecutionsHasBeenDefinedErrorMessage: (
-      parametersObject: { specifiedInConsoleCommandSelectiveExecutionID: string; }
-    ) => string;
-
-    generateUndefinedSelectiveExecutionID_ErrorMessage: (
-      parametersObject: { specifiedInConsoleCommandSelectiveExecutionID: string; }
-    ) => string;
-  };
-}
-
-
-export default ProjectBuilderRawConfigNormalizer;

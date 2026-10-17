@@ -1,5 +1,5 @@
 /* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
-import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/Chokidar/ChokidarSpecialist";
+import ChokidarSpecialist from "@ThirdPartySolutionsSpecialists/ChokidarSpecialist";
 
 /* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";

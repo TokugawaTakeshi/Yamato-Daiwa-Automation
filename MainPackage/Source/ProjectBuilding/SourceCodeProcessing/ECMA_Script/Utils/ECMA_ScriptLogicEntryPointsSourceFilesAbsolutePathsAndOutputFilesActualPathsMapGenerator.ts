@@ -12,11 +12,10 @@ import {
   Logger,
   AlgorithmMismatchError,
   stringifyAndFormatArbitraryValue,
-  extractFileNameWithAllExtensionsFromPath
+  extractFileNameWithAllExtensionsFromPath,
+  removeLastFileNameExtensionFromPath
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
-import removeLastFileNameExtensionFromPath from
-    "@Incubators/@yamato-daiwa/es-extensions/Strings/removeLastFileNameExtensionFromPath";
 /* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
