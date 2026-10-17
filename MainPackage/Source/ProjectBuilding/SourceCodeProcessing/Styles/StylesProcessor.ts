@@ -236,7 +236,7 @@ export default class StylesProcessor extends GulpStreamsBasedTaskExecutor {
           gulpIf(
             (vinylFile: VinylFile): boolean =>
                 /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
-                 * The TypeScript type does not respect the possible extedning from the Vinyl file. */
+                 * The TypeScript type does not respect the possible extending from the Vinyl file. */
                 (vinylFile as StylesEntryPointVinylFile).actualEntryPointsGroupSettings.mustGenerateSourcemaps,
             gulpSourcemaps.write()
           )
