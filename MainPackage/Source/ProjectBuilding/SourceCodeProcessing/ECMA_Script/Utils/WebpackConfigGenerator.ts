@@ -30,12 +30,11 @@ import {
   isUndefined,
   isNotUndefined,
   removeAllFileNameExtensions,
+  removeLastFileNameExtensionFromPath,
   Logger,
   UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
-import removeLastFileNameExtensionFromPath from
-    "@Incubators/@yamato-daiwa/es-extensions/Strings/removeLastFileNameExtensionFromPath";
 
 
 /* [ Approach ] Because of the serious performance impact, the file watching has been delegated to an external watcher. */

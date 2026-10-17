@@ -1,4 +1,4 @@
-import addPenultimateFileNameExtension from "@Incubators/@yamato-daiwa/es-extensions/Strings/addPenultimateFileNameExtension";
+import { addPenultimateFileNameExtension } from "@yamato-daiwa/es-extensions";
 
 
 namespace MarkupProcessingRestrictions {
