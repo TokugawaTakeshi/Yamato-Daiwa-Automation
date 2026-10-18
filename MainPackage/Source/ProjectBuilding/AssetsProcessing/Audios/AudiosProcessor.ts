@@ -102,7 +102,7 @@ export default class AudiosProcessor extends GulpStreamsBasedAssetsProcessor<
 
     return (): NodeJS.ReadWriteStream => Gulp.
 
-        src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
+        src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths), { encoding: false }).
 
         pipe(super.handleErrorIfItWillOccur()).
         pipe(super.logInputFilesIfMust()).
