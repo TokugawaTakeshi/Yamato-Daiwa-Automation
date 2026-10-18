@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.10.0-alpha.10",
+  "version": "0.10.0-alpha.11",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",
@@ -34,7 +34,7 @@
     "browser-sync": "3.0.4",
     "css-loader": "7.1.5",
     "cssnano": "9.9.0",
-    "dotenv": "17.4.2",
+    "dotenv": "18.0.8",
     "eslint": "9.39.4",
     "eslint-plugin-import": "2.32.0",
     "eslint-plugin-n": "18.4.1",
@@ -53,7 +53,7 @@
     "gulp-stylus": "3.0.1",
     "htmlnano": "3.6.1",
     "imagemin-pngquant": "9.0.2",
-    "js-beautify": "1.15.4",
+    "js-beautify": "2.0.3",
     "json5-loader": "4.0.1",
     "nanoid": "6.0.2",
     "node-html-parser": "7.1.0",
