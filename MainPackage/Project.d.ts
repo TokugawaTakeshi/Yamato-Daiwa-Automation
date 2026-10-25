@@ -68,46 +68,6 @@ declare module "gulp-data" {
 
 }
 
-/* Although Stlint has type definitions, is does not match with actual package structure and has TypeScript errors.
-*  Below definitions are not full - they include required ports only. */
-declare module "stlint" {
-
-  export class Linter {
-
-    public options: Options;
-    public reporter: Reporter;
-
-    public constructor(options?: { [option: string]: unknown; });
-
-    public lint(filePath: string, content?: string | null): void;
-  }
-
-  export interface Options {
-    extends?: Array<string>;
-  }
-
-  export interface Reporter {
-    response: {
-      passed: boolean;
-      errors?: Array<MessagePack>;
-    };
-  }
-
-  export interface MessagePack {
-    message: ErrorMessage;
-  }
-
-  export interface ErrorMessage {
-    rule: string;
-    descr: string;
-    path: string;
-    line: number;
-    endline: number;
-    start: number;
-    end: number;
-  }
-}
-
 
 declare module "stream-combiner2" {
   import ReadWriteStream = NodeJS.ReadWriteStream;
