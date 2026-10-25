@@ -44,6 +44,12 @@ export default function generateConfiguration(
     devtool: false,
 
     externals: [
+
+      /* [ Theory ]
+       * The "gulp-imagemin" is the ESM module with top-level await, thus it could not be loaded by "require()".
+       * The "import" type makes Webpack to keep the native "import()" instead of replacing it with "require()". */
+      { "gulp-imagemin": "import gulp-imagemin" },
+
       NodeExternalsPlugin({
         allowlist: [
           "rev-hash"

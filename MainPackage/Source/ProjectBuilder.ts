@@ -129,6 +129,8 @@ abstract class ProjectBuilder {
             PlainCopier.providePlainCopierIfMust(masterConfigRepresentative)
           ]),
 
+          ImagesProcessor.provideESM_DependenciesLoadingIfMust(masterConfigRepresentative),
+
           /* [ Theory ] The following 4 tasks are heavy thus it is better to not run them at parallel. */
           ImagesProcessor.provideImagesProcessingIfMust(masterConfigRepresentative),
           FontsProcessor.provideFontsProcessingIfMust(masterConfigRepresentative),

@@ -1,3 +1,5 @@
+# Answer 1
+
 I'll look at the package, Webpack and TypeScript config, and where imagemin is used before suggesting anything.
 
 I've finished investigating. Below is the cause and the fix I suggest. I haven't changed any code.
@@ -52,3 +54,77 @@ The core packages are already installed as `gulp-imagemin`'s dependencies and lo
 - **Stale bundle:** the current `EntryPoint.js` still embeds `"gulp-imagemin":"7.1.0"` / `"imagemin-pngquant":"9.0.2"` (it bundles `package.json` data). It wasn't rebuilt after the upgrade, so check the consuming project only after a fresh build.
 
 I'd pick **A** if you want to stay on the official plugin, or **B** if you'd rather not have async loading in the build pipeline. Tell me which one and I'll implement it.
+
+
+
+# Answer 2
+
+Applying Solution A now. First I'll check the existing types and how async tasks are written in this codebase.
+
+Now editing `ImagesProcessor.ts`.
+
+The file changed on disk since I last read it, so I'll re-read it and confirm the error class I used actually exists.
+
+I'll store the loaded exports in a typed object and read it lazily when the stream is created.
+
+Now the helper method (placed beside `postProcessFile`) and the import:
+
+Building the package in production mode (this runs type-checking and ESLint):
+
+Next, the merged namespace at the end of the file (the codebase already uses this idiom, e.g. `GulpStreamModifier.CompletionSignals`):
+
+`require-atomic-updates` is still a false positive here: nothing is read before the `await`, and the assignment happens once. I'll suppress it with a justification and remove the unused directive.
+
+Startup works; previously it crashed while loading. I'll look for a functional-test project with images to run a real build.
+
+I'll set up a throwaway consuming project in a temp directory with PNG, JPG, SVG and GIF images and run a real production build against it.
+
+The config parser expects `$`-prefixed keys (the functional-test configs seem outdated). Retrying with that format:
+
+My script had a bug; rewriting it with `pathToFileURL`:
+
+Confirmed. Running `git diff` for the final summary, and removing the temp project.
+
+I applied Solution A. The package builds cleanly, and a real consuming-project build now runs image processing without `ERR_REQUIRE_ASYNC_MODULE`. That test also turned up a separate, older bug that corrupts binary images, described below. I haven't fixed it yet.
+
+## Changes
+
+**`webpack.config.ts`**
+- Added `{ "gulp-imagemin": "import gulp-imagemin" }` before `NodeExternalsPlugin(...)`, with a `[ Theory ]` comment. The bundle now contains a native `import("gulp-imagemin")` instead of `require("gulp-imagemin")`.
+
+**`ImagesProcessor.ts`**
+- `gulp-imagemin` is now a type-only import, so it emits no `require`.
+- New `provideESM_DependenciesLoadingIfMust(...)`: a Gulp task that loads `gulp-imagemin` with `await import(...)` and keeps the default export and the `mozjpeg`, `gifsicle` and `svgo` named exports in a static field. It does nothing if image processing isn't configured.
+- New `createImagesOptimizationStream()`: builds the `gulpImagemin([...])` stream from that field. It's called only when the stream is created, which is after loading. If loading never happened, it throws `ClassRequiredInitializationHasNotBeenExecutedError`, following the pattern in `AccessibilityInspector`.
+- The v8-style `gulpImagemin.mozjpeg(...)` calls now use the v9 named exports. The old `@ts-ignore` for TS2769 isn't needed any more.
+- Added a merged `namespace ImagesProcessor` with a `GulpImageminPluginsFactories` type.
+- Added one `eslint-disable-next-line require-atomic-updates` with a justification. It's a false positive: the field is set once and doesn't depend on its previous value.
+
+**`ProjectBuilder.ts`**
+- Added `ImagesProcessor.provideESM_DependenciesLoadingIfMust(...)` to the `Gulp.series`, right before the images task.
+
+`package.json` and `tsconfig.json` are unchanged, and everything stays CommonJS. `AI_Suggestion.md` also shows as modified in `git status`, but I didn't touch it.
+
+## Verification
+
+- `tsc --noEmit` reports no errors in the changed files. ESLint is clean, and `npm run "Production Building"` compiled successfully.
+- `node Executable --help` starts normally. Before, it crashed while loading.
+- I built a throwaway consuming project with PNG, JPG, SVG and GIF images in PRODUCTION mode (since deleted). It exited 0, and `gulp-imagemin` ran all four plugins.
+
+## Separate bug: Gulp 5 corrupts binary files
+
+The test output was wrong:
+- the GIF came out as **0 bytes**
+- the JPG grew from 542 kB to **990 kB**
+- the PNG grew from 6.5 kB to **11.9 kB**
+
+The plugins aren't the cause. Run directly on the same files, they work correctly: the JPG goes to 110 kB, the PNG shrinks slightly, and the GIF is unchanged. The cause is Gulp 5: `Gulp.src()` now reads files as UTF-8 by default. I confirmed it on the same JPG:
+
+```
+Gulp.src(file)                       → 989684 bytes  (corrupted)
+Gulp.src(file, { encoding: false })  → 542091 bytes  (original)
+```
+
+This bug came in with Gulp 5, not with the imagemin upgrade. Probably nobody noticed because the images processor couldn't run at all until now.
+
+The fix is to pass `{ encoding: false }` to `Gulp.src(...)` wherever binary files are read. That covers `ImagesProcessor` and very likely `FontsProcessor`, `AudiosProcessor`, `VideosProcessor` and `PlainCopier` too. Should I apply it?

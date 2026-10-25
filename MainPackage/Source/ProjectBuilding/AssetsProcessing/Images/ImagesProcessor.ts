@@ -16,7 +16,7 @@ import type ImagesProcessingTypes from "@ImagesProcessing/ImagesProcessingTypes"
 import Gulp from "gulp";
 import type VinylFile from "vinyl";
 import gulpIf from "gulp-if";
-import gulpImagemin from "gulp-imagemin";
+import type GulpImagemin from "gulp-imagemin";
 import pngQuant from "imagemin-pngquant";
 
 /* ┅┅┅ Applied Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
@@ -31,6 +31,7 @@ import HTML_Validator from "@MarkupProcessing/Plugins/HTML_Validator/HTML_Valida
 /* ┅┅┅ General Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import {
   RawObjectDataProcessor,
+  ClassRequiredInitializationHasNotBeenExecutedError,
   Logger,
   readonlyArrayToMutableOne,
   isUndefined
@@ -83,6 +84,17 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
             }
           };
 
+  /* ┅┅┅ ESM Dependencies ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+  /* [ Theory ]
+   * The "gulp-imagemin" is the ESM module with top-level await thus it could not be loaded by "require()" even in
+   *   the Node.js versions supporting the "require(esm)". The dynamic "import()" is the only way to load it from
+   *   the CommonJS, thus it must be called before the images processing (the "gulp-imagemin" must be marked as the
+   *   "import" type external in the Webpack config, otherwise the "import()" will be replaced with "require()"). */
+  private static gulpImageminModule: Readonly<
+    { gulpImagemin: typeof GulpImagemin; } & ImagesProcessor.GulpImageminPluginsFactories
+  > | null = null;
+
+  /* ┅┅┅ Optimized Images Caching ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   private readonly CACHED_OPTIMIZED_IMAGES_DIRECTORY_ABSOLUTE_PATH: string;
   private readonly CACHED_OPTIMIZED_IMAGES_METADATA_FILE_ABSOLUTE_PATH: string;
 
@@ -90,6 +102,33 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
 
 
   /* ━━━ Public Methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  public static provideESM_DependenciesLoadingIfMust(
+    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
+  ): () => Promise<void> {
+
+    if (isUndefined(projectBuildingMasterConfigRepresentative.imagesProcessingSettingsRepresentative)) {
+      return async (): Promise<void> => Promise.resolve();
+    }
+
+
+    return async (): Promise<void> => {
+
+      const {
+        default: gulpImagemin,
+        mozjpeg,
+        gifsicle,
+        svgo
+      }: Readonly<{ default: typeof GulpImagemin; } & ImagesProcessor.GulpImageminPluginsFactories> =
+          await import("gulp-imagemin");
+
+      /* eslint-disable-next-line require-atomic-updates --
+       * The value is not depending on the previous state thus the race condition is not possible. */
+      ImagesProcessor.gulpImageminModule = { gulpImagemin, mozjpeg, gifsicle, svgo };
+
+    };
+
+  }
+
   public static provideImagesProcessingIfMust(
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): () => NodeJS.ReadWriteStream {
@@ -233,15 +272,7 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
                  * The TypeScript type does not respect the possible extending from the Vinyl file. */
                 (vinylFile as ImageVinyFile).mustBeOptimizedDuringCurrentExecution,
 
-            gulpImagemin([
-
-              gulpImagemin.mozjpeg({ progressive: true }),
-              gulpImagemin.gifsicle({ interlaced: true }),
-              gulpImagemin.svgo({}),
-
-              /* @ts-ignore: TS2769 Will be fixed when update "gulp-imagemin" package. */
-              pngQuant()
-            ])
+            ImagesProcessor.createImagesOptimizationStream()
 
           )
         ).
@@ -367,6 +398,37 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
 
   }
 
+  private static createImagesOptimizationStream(): NodeJS.ReadWriteStream {
+
+    if (ImagesProcessor.gulpImageminModule === null) {
+      Logger.throwErrorWithFormattedMessage({
+        errorInstance: new ClassRequiredInitializationHasNotBeenExecutedError({
+          className: "ImagesProcessor",
+          initializingMethodName: "provideESM_DependenciesLoadingIfMust"
+        }),
+        title: ClassRequiredInitializationHasNotBeenExecutedError.localization.defaultTitle,
+        occurrenceLocation: "ImagesProcessor.createImagesOptimizationStream()"
+      });
+    }
+
+
+    const {
+      gulpImagemin,
+      mozjpeg,
+      gifsicle,
+      svgo
+    }: Readonly<{ gulpImagemin: typeof GulpImagemin; } & ImagesProcessor.GulpImageminPluginsFactories> =
+        ImagesProcessor.gulpImageminModule;
+
+    return gulpImagemin([
+      mozjpeg({ progressive: true }),
+      gifsicle({ interlaced: true }),
+      svgo({}),
+      pngQuant()
+    ]);
+
+  }
+
   private static async postProcessFile(processedImageFile: ImageVinyFile): Promise<GulpStreamModifier.CompletionSignals> {
 
     ImagesProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.set(
@@ -388,5 +450,16 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
     this.absolutePathOfFilesWaitingForReProcessing.delete(targetVideoFileAbsolutePath);
     ImagesProcessingSharedState.sourceFilesAbsolutePathsAndOutputFilesActualPathsMap.delete(targetVideoFileAbsolutePath);
   }
+
+}
+
+
+namespace ImagesProcessor {
+
+  export type GulpImageminPluginsFactories = Readonly<{
+    mozjpeg: typeof GulpImagemin.mozjpeg;
+    gifsicle: typeof GulpImagemin.gifsicle;
+    svgo: typeof GulpImagemin.svgo;
+  }>;
 
 }
