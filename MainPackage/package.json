@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.10.0-alpha.15",
+  "version": "0.10.0-alpha.16",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",
@@ -65,7 +65,7 @@
     "postcss-selector-parser": "7.1.7",
     "probe-image-size": "7.4.0",
     "pug-lint": "2.7.0",
-    "puppeteer": "25.14.0",
+    "puppeteer": "25.16.0",
     "razor-by-pug": "0.1.0",
     "require-from-string": "2.0.2",
     "rev-hash": "4.1.0",
@@ -137,6 +137,7 @@
     "optipng-bin@6.0.0": true,
     "pngquant-bin@6.0.1": true,
     "vnu-jar@26.3.10": true,
-    "puppeteer@25.14.0": true
+    "puppeteer@25.16.0": true,
+    "nodemon@2.0.18": true
   }
 }
