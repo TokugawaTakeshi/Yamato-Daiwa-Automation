@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.10.0-alpha.16",
+  "version": "0.10.0-alpha.17",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",
@@ -72,7 +72,7 @@
     "stream-combiner2": "1.1.1",
     "style-loader": "4.0.0",
     "stylus": "0.63.0",
-    "stylus-loader": "8.1.3",
+    "stylus-loader": "9.0.0",
     "ts-loader": "9.6.2",
     "vinyl": "3.0.1",
     "vnu-jar": "26.3.10",
