@@ -31,10 +31,13 @@ import HTML_Validator from "@MarkupProcessing/Plugins/HTML_Validator/HTML_Valida
 /* ┅┅┅ General Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import {
   RawObjectDataProcessor,
-  ClassRequiredInitializationHasNotBeenExecutedError,
   Logger,
   readonlyArrayToMutableOne,
-  isUndefined
+  isUndefined,
+  isNull,
+  isNotNull,
+  UnexpectedEventError,
+  PoliteErrorsMessagesBuilder
 } from "@yamato-daiwa/es-extensions";
 import {
   FileNotFoundError,
@@ -90,9 +93,9 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
    *   the Node.js versions supporting the "require(esm)". The dynamic "import()" is the only way to load it from
    *   the CommonJS, thus it must be called before the images processing (the "gulp-imagemin" must be marked as the
    *   "import" type external in the Webpack config, otherwise the "import()" will be replaced with "require()"). */
-  private static gulpImageminModule: Readonly<
-    { gulpImagemin: typeof GulpImagemin; } & ImagesProcessor.GulpImageminPluginsFactories
-  > | null = null;
+  private static gulpImageminModule:
+      Readonly<{ gulpImagemin: typeof GulpImagemin; } & ImagesProcessor.GulpImageminPluginsFactories> | null =
+          null;
 
   /* ┅┅┅ Optimized Images Caching ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   private readonly CACHED_OPTIMIZED_IMAGES_DIRECTORY_ABSOLUTE_PATH: string;
@@ -102,33 +105,6 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
 
 
   /* ━━━ Public Methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  public static provideESM_DependenciesLoadingIfMust(
-    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
-  ): () => Promise<void> {
-
-    if (isUndefined(projectBuildingMasterConfigRepresentative.imagesProcessingSettingsRepresentative)) {
-      return async (): Promise<void> => Promise.resolve();
-    }
-
-
-    return async (): Promise<void> => {
-
-      const {
-        default: gulpImagemin,
-        mozjpeg,
-        gifsicle,
-        svgo
-      }: Readonly<{ default: typeof GulpImagemin; } & ImagesProcessor.GulpImageminPluginsFactories> =
-          await import("gulp-imagemin");
-
-      /* eslint-disable-next-line require-atomic-updates --
-       * The value is not depending on the previous state thus the race condition is not possible. */
-      ImagesProcessor.gulpImageminModule = { gulpImagemin, mozjpeg, gifsicle, svgo };
-
-    };
-
-  }
-
   public static provideImagesProcessingIfMust(
     projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative
   ): () => NodeJS.ReadWriteStream {
@@ -242,6 +218,8 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
   /* ┅┅┅ Pipeline ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   protected processAssets(sourceFilesAbsolutePaths: ReadonlyArray<string>): () => NodeJS.ReadWriteStream {
 
+    console.log("CHECKPOINT A");
+
     /* [ Theory ]
      * If to pass the empty array to 'Gulp.src(".")' error will occur, but the cause will not be told clearly.
      * However, the empty array is the usual scenario (for instance, when the user declared the configuration but
@@ -253,7 +231,7 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
 
     return (): NodeJS.ReadWriteStream => Gulp.
 
-        src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths)).
+        src(readonlyArrayToMutableOne(sourceFilesAbsolutePaths), { encoding: false }).
 
         pipe(super.handleErrorIfItWillOccur()).
         pipe(super.logInputFilesIfMust()).
@@ -272,7 +250,7 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
                  * The TypeScript type does not respect the possible extending from the Vinyl file. */
                 (vinylFile as ImageVinyFile).mustBeOptimizedDuringCurrentExecution,
 
-            ImagesProcessor.createImagesOptimizationStream()
+            ImagesProcessor.optimizeImages()
 
           )
         ).
@@ -398,15 +376,48 @@ export default class ImagesProcessor extends GulpStreamsBasedAssetsProcessor<
 
   }
 
-  private static createImagesOptimizationStream(): NodeJS.ReadWriteStream {
+  protected static async loadImageminModuleIfNotLoadedYet(): Promise<GulpStreamModifier.CompletionSignals> {
 
-    if (ImagesProcessor.gulpImageminModule === null) {
+    console.log("CHECKPOINT B");
+
+    if (isNotNull(ImagesProcessor.gulpImageminModule)) {
+      return GulpStreamModifier.CompletionSignals.PASSING_ON;
+    }
+
+
+    const {
+      default: gulpImagemin,
+      mozjpeg,
+      gifsicle,
+      svgo
+    }: Readonly<{ default: typeof GulpImagemin; } & ImagesProcessor.GulpImageminPluginsFactories> =
+        await import("gulp-imagemin");
+
+    /* eslint-disable-next-line require-atomic-updates --
+     * The value is not depending on the previous state thus the race condition is not possible. */
+    ImagesProcessor.gulpImageminModule = { gulpImagemin, mozjpeg, gifsicle, svgo };
+
+    return GulpStreamModifier.CompletionSignals.PASSING_ON;
+
+  }
+
+  private static optimizeImages(): NodeJS.ReadWriteStream {
+
+    console.log("CHECKPOINT C");
+    if (isNull(ImagesProcessor.gulpImageminModule)) {
       Logger.throwErrorWithFormattedMessage({
-        errorInstance: new ClassRequiredInitializationHasNotBeenExecutedError({
-          className: "ImagesProcessor",
-          initializingMethodName: "provideESM_DependenciesLoadingIfMust"
-        }),
-        title: ClassRequiredInitializationHasNotBeenExecutedError.localization.defaultTitle,
+        errorInstance:
+            new UnexpectedEventError(
+              PoliteErrorsMessagesBuilder.buildMessage({
+                technicalDetails:
+                    "`ImagesProcessor.gulpImageminModule` expected to be initialized when invoking " +
+                      "`ImagesProcessor.optimizeImages()` but it is still the null.",
+                politeExplanation:
+                    "The problem has occurred with the dependency which can not be loaded directly",
+                isTechnicalsDetailOnlyMode: __IS_DEVELOPMENT_BUILDING_MODE__
+              })
+            ),
+        title: UnexpectedEventError.localization.defaultTitle,
         occurrenceLocation: "ImagesProcessor.createImagesOptimizationStream()"
       });
     }
