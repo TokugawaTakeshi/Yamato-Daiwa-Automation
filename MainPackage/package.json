@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.10.0-rc.0",
+  "version": "0.10.0-rc.1",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",
@@ -63,7 +63,7 @@
     "postcss-loader": "8.2.1",
     "postcss-normalize-stylus-compatible-container-query-syntax": "1.1.2",
     "postcss-selector-parser": "7.1.7",
-    "probe-image-size": "7.4.0",
+    "probe-image-size": "7.5.0",
     "pug-lint": "2.7.0",
     "puppeteer": "25.16.0",
     "razor-by-pug": "0.1.0",
@@ -72,7 +72,7 @@
     "stream-combiner2": "1.1.1",
     "style-loader": "4.0.0",
     "stylus": "0.63.0",
-    "stylus-loader": "9.0.0",
+    "stylus-loader": "9.1.0",
     "ts-loader": "9.6.2",
     "vinyl": "3.0.1",
     "vnu-jar": "26.3.10",
@@ -108,11 +108,13 @@
     "eslint-webpack-plugin": "6.0.0",
     "ts-node": "10.9.2",
     "typescript": "6.0.3",
-    "webpack-cli": "7.2.3"
+    "webpack-cli": "7.3.1"
   },
   "scripts": {
     "Incremental Development Building": "webpack --mode development",
     "Production Building": "webpack --mode production",
+    "Rebuild Distributable and Realize Alpha": "npm run \"Production Building\" && npm publish --tag alpha",
+    "Rebuild Distributable and Realize RC": "npm run \"Production Building\" && npm publish --tag rc",
     "Linting": "eslint Source",
     "Build Distributable for Documentation": "webpack --config webpack.config.documentation.ts --mode production",
     "Project Structure Visualizing": "wsl tree -I \".git|.idea|node_modules\" || tree -I \".git|.idea|node_modules\""
