@@ -40,7 +40,7 @@ export default abstract class PlainCopier {
 
     return (): NodeJS.ReadWriteStream =>
 
-        Gulp.src(targetSourceFilesAbsolutePaths).
+        Gulp.src(targetSourceFilesAbsolutePaths, { encoding: false }).
 
             pipe(
               GulpStreamModifier.modify({

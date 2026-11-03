@@ -70,7 +70,7 @@ $projectBuilding:
 
         $sourceFilesSelection:
           $prefixesOfExcludeFiles: "_"
-          $namesOfExcludeSubdirectories: "_"
+          $prefixesOfExcludedSubdirectories: "_"
 
         $buildingModeDependent:
           $localDevelopment:
