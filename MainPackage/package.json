@@ -1,6 +1,6 @@
 {
   "name": "@yamato-daiwa/automation",
-  "version": "0.10.0-rc.3",
+  "version": "0.10.0",
   "description": "The project building tool with declarative YAML configuration specializing on Pug, Stylus and TypeScript as source code languages.",
   "keywords": [
     "build",
@@ -28,7 +28,7 @@
     "@webdiscus/pug-loader": "2.11.1",
     "@yamato-daiwa/es-extensions": "1.10.0-alpha.0",
     "@yamato-daiwa/es-extensions-nodejs": "1.10.0-alpha.0",
-    "@yamato-daiwa/style_guides": "0.16.0",
+    "@yamato-daiwa/style_guides": "0.16.1",
     "@yamato-daiwa/universal-reactive-webpack-loader": "0.2.0",
     "autoprefixer": "10.6.2",
     "browser-sync": "3.0.4",
@@ -57,7 +57,7 @@
     "json5-loader": "4.0.1",
     "nanoid": "6.0.2",
     "node-html-parser": "9.0.6",
-    "node-notifier": "12.0.0",
+    "node-notifier": "12.1.0",
     "pa11y": "10.0.0",
     "postcss": "8.5.32",
     "postcss-loader": "8.2.1",
