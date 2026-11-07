@@ -11,7 +11,8 @@ namespace MarkupProcessingRestrictions {
   export enum OutputFormats {
     HTML = "HTML",
     handlebars = "handlebars",
-    razor = "razor"
+    razor = "razor",
+    CSHTML = "CSHTML"
   }
 
   export enum SupportedAccessibilityStandards {

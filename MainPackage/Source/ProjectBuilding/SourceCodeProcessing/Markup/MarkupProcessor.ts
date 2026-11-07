@@ -1,33 +1,34 @@
-/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Restrictions ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRestrictions";
 
-/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 
-/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Settings Representatives ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import type MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 
-/* ─── Source Files Watcher ───────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Source Files Watcher ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import MarkupSourceFilesWatcher from "@MarkupProcessing/MarkupSourceFilesWatcher";
 
-/* ─── Superclass ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Superclass ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import GulpStreamsBasedTaskExecutor from
     "@ProjectBuilding/Common/TasksExecutors/GulpStreamsBased/GulpStreamsBasedTaskExecutor";
 
-/* ─── Shared State ───────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Shared State ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import MarkupProcessingSharedState from "@MarkupProcessing/MarkupProcessingSharedState";
 
-/* ─── Gulp & Plugins ─────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Gulp & Plugins ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import Gulp from "gulp";
 import type VinylFile from "vinyl";
 import gulpData from "gulp-data";
 import gulpPug from "gulp-pug";
 
-/* ─── Third-party Solutions Specialists ──────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Third-party Solutions Specialists ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import PugPreProcessorSpecialist from "@ThirdPartySolutionsSpecialists/PugPreProcessorSpecialist";
 
-/* ─── Applied Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Applied Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import GulpStreamModifier from "@Utils/GulpStreamModifier";
 import createImmediatelyEndingEmptyStream from "@Utils/createImmediatelyEndingEmptyStream";
 import MarkupEntryPointVinylFile from "@MarkupProcessing/MarkupEntryPointVinylFile";
@@ -45,7 +46,7 @@ import HTML_CodeMinifier from "htmlnano";
 import CSS_ClassesShortener from "@StylesProcessing/Plugins/CSS_ClassesShortener";
 import RazorCodeGenerator from "@MarkupProcessing/Plugins/VinylFileBased/RazorCodeGenerator";
 
-/* ─── General Utils ──────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ General Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import {
   secondsToMilliseconds,
   isUndefined,
@@ -61,6 +62,7 @@ import { ImprovedPath, ImprovedGlob } from "@yamato-daiwa/es-extensions-nodejs";
 import { parse as parseHTML } from "node-html-parser";
 import type { HTMLElement } from "node-html-parser";
 import BrowserLiveReloader from "@BrowserLiveReloading/BrowserLiveReloader";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
@@ -418,7 +420,8 @@ export default class MarkupProcessor extends GulpStreamsBasedTaskExecutor {
           break;
         }
 
-        case MarkupProcessingRestrictions.OutputFormats.razor: {
+        case MarkupProcessingRestrictions.OutputFormats.razor:
+        case MarkupProcessingRestrictions.OutputFormats.CSHTML:{
 
           RazorCodeGenerator.generateAndSetContentForVinylFile(markupEntryPointVinylFile);
 

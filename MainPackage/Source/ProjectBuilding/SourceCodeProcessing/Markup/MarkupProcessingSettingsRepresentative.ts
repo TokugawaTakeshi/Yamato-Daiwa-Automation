@@ -1,22 +1,23 @@
-/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Restrictions ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRestrictions";
 import PROCESSABLE_FILES_POINTER_ALIAS_PREFIX from
     "@ProjectBuilding/Common/Restrictions/ResourcesReferences/PROCESSABLE_FILES_POINTER_ALIAS_PREFIX";
 
-/* ─── Normalized Settings ────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 import type SourceCodeProcessingGenericProperties__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
 
-/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Settings Representatives ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 import GulpStreamBasedSourceCodeProcessingConfigRepresentative from
     "@ProjectBuilding/Common/SettingsRepresentatives/GulpStreamBasedSourceCodeProcessingConfigRepresentative";
 
-/* ─── Worktypes ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Worktypes ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type PagesVariationsMetadata from "@MarkupProcessing/Worktypes/PagesVariationsMetadata";
 
-/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import {
   extractFileNameWithoutLastExtension,
   insertSubstringIf,
@@ -30,11 +31,15 @@ import {
   UnexpectedEventError
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedGlob, ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
-export default class MarkupProcessingSettingsRepresentative extends GulpStreamBasedSourceCodeProcessingConfigRepresentative<
-  MarkupProcessingSettings__Normalized.Common, MarkupProcessingSettings__Normalized.EntryPointsGroup
-> {
+export default class MarkupProcessingSettingsRepresentative extends
+    GulpStreamBasedSourceCodeProcessingConfigRepresentative<
+      MarkupProcessingSettings__Normalized.Common,
+      MarkupProcessingSettings__Normalized.EntryPointsGroup
+    >
+{
 
   /* ━━━ Fields ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   /* ┅┅┅ Superclasses' Requirements ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
@@ -82,16 +87,21 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
 
     super(projectBuildingMasterConfigRepresentative);
 
-    this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots = markupProcessingSettings__normalized.common.
-        supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots;
+    this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots =
+        markupProcessingSettings__normalized.
+            common.
+            supportedEntryPointsSourceFilesNamesExtensionsWithoutLeadingDots;
 
-    this.actualFileNameExtensionsWithoutLeadingDots = mergeSets(
-      this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
-      markupProcessingSettings__normalized.common.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles
-    );
+    this.actualFileNameExtensionsWithoutLeadingDots =
+        mergeSets(
+          this.supportedEntryPointsSourceFileNameExtensionsWithoutLeadingDots,
+          markupProcessingSettings__normalized.common.supportedAdditionalFilesNamesExtensionsWithoutLeadingDotsOfChildrenFiles
+        );
 
-    this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS = markupProcessingSettings__normalized.common.
-        secondsBetweenFileUpdatingAndStartingOfRebuilding;
+    this.WAITING_FOR_SUBSEQUENT_FILES_WILL_SAVED_PERIOD__SECONDS =
+        markupProcessingSettings__normalized.
+            common.
+            secondsBetweenFileUpdatingAndStartingOfRebuilding;
 
     this.sourceCodeLintingCommonSettings = markupProcessingSettings__normalized.linting;
     this.importingFromTypeScriptSettings = markupProcessingSettings__normalized.importingFromTypeScript;
@@ -101,43 +111,50 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
     this.relevantEntryPointsGroupsSettings = markupProcessingSettings__normalized.relevantEntryPointsGroups;
     this.loggingSettings = markupProcessingSettings__normalized.logging;
 
-    this.entryPointsGroupsNormalizedSettingsMappedByReferences = new Map<
-      string, MarkupProcessingSettings__Normalized.EntryPointsGroup
-    >(
-      Array.from(this.relevantEntryPointsGroupsSettings.values()).map(
-        (entryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup):
-            [string, MarkupProcessingSettings__Normalized.EntryPointsGroup] =>
-                [
-                  `${ PROCESSABLE_FILES_POINTER_ALIAS_PREFIX }${ entryPointsGroupSettings.ID }`,
-                  entryPointsGroupSettings
-                ]
-      )
-    );
+    this.entryPointsGroupsNormalizedSettingsMappedByReferences =
 
-    this.mustValidateHTML = Array.from(this.relevantEntryPointsGroupsSettings.values()).some(
-      (entryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup): boolean =>
-          entryPointsGroupSettings.HTML_Validation.mustExecute
-    );
+        new Map<string, MarkupProcessingSettings__Normalized.EntryPointsGroup>(
+          Array.from(this.relevantEntryPointsGroupsSettings.values()).
+              map(
+                (entryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup):
+                    [ string, MarkupProcessingSettings__Normalized.EntryPointsGroup ] =>
+                        [
+                          `${ PROCESSABLE_FILES_POINTER_ALIAS_PREFIX }${ entryPointsGroupSettings.ID }`,
+                          entryPointsGroupSettings
+                        ]
+              )
+        );
 
-    this.mustInspectAccessibility = Array.from(this.relevantEntryPointsGroupsSettings.values()).some(
-      (entryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup): boolean =>
-          entryPointsGroupSettings.accessibilityInspection.mustExecute
-    );
+    this.mustValidateHTML =
+        Array.from(this.relevantEntryPointsGroupsSettings.values()).
+            some(
+              (entryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup): boolean =>
+                  entryPointsGroupSettings.HTML_Validation.mustExecute
+            );
+
+    this.mustInspectAccessibility =
+        Array.from(this.relevantEntryPointsGroupsSettings.values()).
+            some(
+              (entryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup): boolean =>
+                  entryPointsGroupSettings.accessibilityInspection.mustExecute
+            );
 
     this.sourceCodeProcessingCommonSettings = markupProcessingSettings__normalized.common;
 
   }
 
 
-  /* ━━━ Common ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ━━━ Methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ┅┅┅ Common ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   public computeOutputFileNameExtension(
-    compoundParameter: Readonly<
-      (
-        { targetFilePath: string; } |
-        { entryPointsGroupSettingsActualForTargetFile: MarkupProcessingSettings__Normalized.EntryPointsGroup; }
-      ) &
-      { mustPrependDotToFileNameExtension: boolean; }
-    >
+    compoundParameter:
+        Readonly<
+          (
+            { targetFilePath: string; } |
+            { entryPointsGroupSettingsActualForTargetFile: MarkupProcessingSettings__Normalized.EntryPointsGroup; }
+          ) &
+          { mustPrependDotToFileNameExtension: boolean; }
+        >
   ): string {
 
     const actualEntryPointsGroupSettings: MarkupProcessingSettings__Normalized.EntryPointsGroup =
@@ -157,13 +174,17 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
       }
 
       case MarkupProcessingRestrictions.OutputFormats.handlebars: {
+
         fileNameExtensionWithoutLeadingDot =
             this.projectBuildingMasterConfigRepresentative.isStaticPreviewBuildingMode ?
                 "html" : "hbs";
+
         break;
+
       }
 
-      case MarkupProcessingRestrictions.OutputFormats.razor: {
+      case MarkupProcessingRestrictions.OutputFormats.razor:
+      case MarkupProcessingRestrictions.OutputFormats.CSHTML: {
         fileNameExtensionWithoutLeadingDot = "razor";
       }
 
@@ -194,16 +215,17 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
 
       if (entryPointsGroupNormalizedSettings.localization.locales.size > 0) {
 
-        const outputFileInterimNameLocalizationExtensionWithoutDots: ReadonlySet<string> = new Set(
-          Array.from(entryPointsGroupNormalizedSettings.localization.locales.values()).
-              map(
-                (
-                  { outputFileInterimNameExtensionWithoutDot }:
-                      MarkupProcessingSettings__Normalized.EntryPointsGroup.Localization.LocaleData
-                ): string =>
-                    outputFileInterimNameExtensionWithoutDot
-              )
-        );
+        const outputFileInterimNameLocalizationExtensionWithoutDots: ReadonlySet<string> =
+            new Set(
+              Array.from(entryPointsGroupNormalizedSettings.localization.locales.values()).
+                  map(
+                    (
+                      { outputFileInterimNameExtensionWithoutDot }:
+                          MarkupProcessingSettings__Normalized.EntryPointsGroup.Localization.LocaleData
+                    ): string =>
+                        outputFileInterimNameExtensionWithoutDot
+                  )
+            );
 
         targetSourceFileAbsolutePathWithoutLocalizationFileNamesExtensions =
             removeSpecifiedFileNameExtensionsFromPath({
@@ -235,9 +257,10 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
 
     if (isUndefined(entryPointsGroupsNormalizedSettingsRelevantForTargetSourceFile)) {
       Logger.throwErrorWithFormattedMessage({
-        errorInstance: new UnexpectedEventError(
-          `No output entry points group has been fond for file of the path:\n${ targetSourceFileAbsolutePath }`
-        ),
+        errorInstance:
+            new UnexpectedEventError(
+              `No output entry points group has been fond for file of the path:\n${ targetSourceFileAbsolutePath }`
+            ),
         title: UnexpectedEventError.localization.defaultTitle,
         occurrenceLocation: "GulpStreamBasedSourceCodeProcessingConfigRepresentative(Inheritor)." +
             "getEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(targetSourceFileAbsolutePath)"
@@ -249,11 +272,13 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
   }
 
 
-  /* ━━━ Static Preview ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ┅┅┅ Static Preview ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   public getStateDependentVariationsForEntryPointWithAbsolutePath(
     targetFileAbsolutePath: string
   ): MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.StateDependent.Page | undefined {
-    return this.staticPreviewSettings.pagesVariations.stateDependent.
+    return this.staticPreviewSettings.
+        pagesVariations.
+        stateDependent.
         get(replaceDoubleBackslashesWithForwardSlashes(targetFileAbsolutePath));
   }
 
@@ -262,13 +287,13 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
   }
 
 
-  /* ━━━ Logging ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ┅┅┅ Logging ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   public get mustLogSourceFilesWatcherEvents(): boolean {
     return this.loggingSettings.filesWatcherEvents;
   }
 
 
-  /* ━━━ Pages Variations ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* ┅┅┅ Pages Variations ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
   public createPagesVariationsMetadata(
     sourceFilesAbsolutePaths__forwardSlashesSeparators: ReadonlyArray<string>
   ): PagesVariationsMetadata {
@@ -290,13 +315,16 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
 
     const sourceAndOutputAbsolutePathsOfAllVariations: Map<string, string> = new Map();
     const absoluteSourcePathsOfAllVariations: Set<string> = new Set();
-    const dataForPugBySourceFilesAbsolutePaths: Map<
-      PagesVariationsMetadata.SourceFileAbsolutePath__ForwardSlashesPathSeparators,
-      Readonly<{
-        localizationData?: object;
-        pageStateDependentVariationData?: object;
-      }>
-    > = new Map();
+
+    const dataForPugBySourceFilesAbsolutePaths:
+        Map<
+          PagesVariationsMetadata.SourceFileAbsolutePath__ForwardSlashesPathSeparators,
+          Readonly<{
+            localizationData?: object;
+            pageStateDependentVariationData?: object;
+          }>
+        > =
+            new Map();
 
     const markupEntryPointsGroupSettingsActualForCurrentFile: MarkupProcessingSettings__Normalized.EntryPointsGroup =
         this.getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(
@@ -316,15 +344,17 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
         locales.size > 0 &&
         !excludedFilesAbsolutePaths.includes(sourceFileAbsolutePath__forwardSlashesSeparators);
 
-    const outputFileNameWithLastExtensionWithLeadingDot: string = this.computeOutputFileNameExtension({
-      entryPointsGroupSettingsActualForTargetFile: markupEntryPointsGroupSettingsActualForCurrentFile,
-      mustPrependDotToFileNameExtension: false
-    });
+    const outputFileNameWithLastExtensionWithLeadingDot: string =
+        this.computeOutputFileNameExtension({
+          entryPointsGroupSettingsActualForTargetFile: markupEntryPointsGroupSettingsActualForCurrentFile,
+          mustPrependDotToFileNameExtension: false
+        });
 
-    const outputDirectoryForCurrentMarkupFileAndDerivedOnes: string = MarkupProcessingSettingsRepresentative.
-        computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
-          sourceFileAbsolutePath__forwardSlashesSeparators, markupEntryPointsGroupSettingsActualForCurrentFile
-        );
+    const outputDirectoryForCurrentMarkupFileAndDerivedOnes: string =
+        MarkupProcessingSettingsRepresentative.
+            computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
+              sourceFileAbsolutePath__forwardSlashesSeparators, markupEntryPointsGroupSettingsActualForCurrentFile
+            );
 
     const entryPointStateDependentVariationsSpecification:
         MarkupProcessingSettings__Normalized.StaticPreview.PagesVariations.StateDependent.Page | undefined =
@@ -341,11 +371,12 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
         } of locales.values()
       ) {
 
-        const absolutePathOfLocalizedEntryPointSourceFile: string = MarkupProcessingRestrictions.
-            addLocaleIdentifyingPenultimateFileNameToAbsolutePathOfMarkupEntryPointSourceFile({
-              initialAbsolutePathOfMarkupEntryPointSourceFile: sourceFileAbsolutePath__forwardSlashesSeparators,
-              localeIdentifyingPenultimateFileNameExtensionWithoutLeadingDot: outputFileInterimNameExtensionWithoutDot
-            });
+        const absolutePathOfLocalizedEntryPointSourceFile: string =
+            MarkupProcessingRestrictions.
+                addLocaleIdentifyingPenultimateFileNameToAbsolutePathOfMarkupEntryPointSourceFile({
+                  initialAbsolutePathOfMarkupEntryPointSourceFile: sourceFileAbsolutePath__forwardSlashesSeparators,
+                  localeIdentifyingPenultimateFileNameExtensionWithoutLeadingDot: outputFileInterimNameExtensionWithoutDot
+                });
 
         sourceAndOutputAbsolutePathsOfAllVariations.set(
           absolutePathOfLocalizedEntryPointSourceFile,
@@ -368,18 +399,23 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
         dataForPugBySourceFilesAbsolutePaths.set(
           absolutePathOfLocalizedEntryPointSourceFile,
           {
-            localizationData: {
-              ...isNotUndefined(localeConstantName) && isNotUndefined(localeConstantValue) ?
-                  { [localeConstantName]: localeConstantValue } : null,
-              ...isNotUndefined(localizedStringResourcesConstantName) && isNotUndefined(stringResources) ?
-                  { [localizedStringResourcesConstantName]: stringResources } : null,
-              ...isNotUndefined(nameOfConstantForInterpolationToLangHTML_Attribute) &&
-                  isNotUndefined(valueOfConstantForInterpolationToLangHTML_Attribute) ?
-                      {
-                        [nameOfConstantForInterpolationToLangHTML_Attribute]:
-                            valueOfConstantForInterpolationToLangHTML_Attribute
-                      } : null
-            },
+
+            localizationData:
+
+                {
+                  ...isNotUndefined(localeConstantName) && isNotUndefined(localeConstantValue) ?
+                      { [localeConstantName]: localeConstantValue } : null,
+                  ...isNotUndefined(localizedStringResourcesConstantName) && isNotUndefined(stringResources) ?
+                      { [localizedStringResourcesConstantName]: stringResources } : null,
+                  ...isNotUndefined(nameOfConstantForInterpolationToLangHTML_Attribute) &&
+                      isNotUndefined(valueOfConstantForInterpolationToLangHTML_Attribute) ?
+                          {
+                            [nameOfConstantForInterpolationToLangHTML_Attribute]:
+                                valueOfConstantForInterpolationToLangHTML_Attribute
+                          } :
+                          null
+                },
+
             ...isNotUndefined(entryPointStateDependentVariationsSpecification) ?
               {
                 pageStateDependentVariationData: {
@@ -387,6 +423,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
                 }
               } :
               null
+
           }
         );
 
@@ -427,8 +464,8 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
           } of locales.values()
         ) {
 
-          const absolutePathOfLocalizeEntryPointSourceFile: string = MarkupProcessingRestrictions.
-              addLocaleIdentifyingPenultimateFileNameToAbsolutePathOfMarkupEntryPointSourceFile({
+          const absolutePathOfLocalizeEntryPointSourceFile: string =
+              MarkupProcessingRestrictions.addLocaleIdentifyingPenultimateFileNameToAbsolutePathOfMarkupEntryPointSourceFile({
                 initialAbsolutePathOfMarkupEntryPointSourceFile: derivedSourceFileAbsolutePath,
                 localeIdentifyingPenultimateFileNameExtensionWithoutLeadingDot: outputFileInterimNameExtensionWithoutDot
               });
@@ -453,18 +490,22 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
           dataForPugBySourceFilesAbsolutePaths.set(
             absolutePathOfLocalizeEntryPointSourceFile,
             {
-              localizationData: {
-                ...isNotUndefined(localeConstantName) && isNotUndefined(localeConstantValue) ?
-                    { [localeConstantName]: localeConstantValue } : null,
-                ...isNotUndefined(localizedStringResourcesConstantName) && isNotUndefined(stringResources) ?
-                    { [localizedStringResourcesConstantName]: stringResources } : null,
-                ...isNotUndefined(nameOfConstantForInterpolationToLangHTML_Attribute) &&
-                    isNotUndefined(valueOfConstantForInterpolationToLangHTML_Attribute) ?
-                        {
-                          [nameOfConstantForInterpolationToLangHTML_Attribute]:
-                              valueOfConstantForInterpolationToLangHTML_Attribute
-                        } : null
-              },
+
+              localizationData:
+
+                  {
+                    ...isNotUndefined(localeConstantName) && isNotUndefined(localeConstantValue) ?
+                        { [localeConstantName]: localeConstantValue } : null,
+                    ...isNotUndefined(localizedStringResourcesConstantName) && isNotUndefined(stringResources) ?
+                        { [localizedStringResourcesConstantName]: stringResources } : null,
+                    ...isNotUndefined(nameOfConstantForInterpolationToLangHTML_Attribute) &&
+                        isNotUndefined(valueOfConstantForInterpolationToLangHTML_Attribute) ?
+                            {
+                              [nameOfConstantForInterpolationToLangHTML_Attribute]:
+                                  valueOfConstantForInterpolationToLangHTML_Attribute
+                            } : null
+                  },
+
               ...isNotUndefined(entryPointStateDependentVariationsSpecification) ?
                   {
                     pageStateDependentVariationData: {
@@ -476,6 +517,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
                     }
                   } :
                   null
+
             }
           );
 
@@ -500,9 +542,7 @@ export default class MarkupProcessingSettingsRepresentative extends GulpStreamBa
         dataForPugBySourceFilesAbsolutePaths.set(
           derivedSourceFileAbsolutePath,
           {
-            localizationData: {
-
-            },
+            localizationData: {},
             ...isNotUndefined(entryPointStateDependentVariationsSpecification) ?
                 {
                   pageStateDependentVariationData: {

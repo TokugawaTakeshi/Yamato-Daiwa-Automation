@@ -1,26 +1,28 @@
-/* ─── Normalized Settings ───────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Normalized Settings ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type MarkupProcessingSettings__Normalized from "@MarkupProcessing/MarkupProcessingSettings__Normalized";
 
-/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Settings Representatives ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 
-/* ─── State Management ───────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ State Management ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import MarkupProcessingSharedState from "@MarkupProcessing/MarkupProcessingSharedState";
 
-/* ─── Worktypes ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Worktypes ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type PagesVariationsMetadata from "@MarkupProcessing/Worktypes/PagesVariationsMetadata";
 
-/* ─── Vinyl FS ──────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Vinyl FS ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import VinylFile from "vinyl";
 import VinylFileClass from "@Utils/VinylFileClass";
 
-/* ─── Utils ─────────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import {
   type ArbitraryObject,
   getExpectedToBeNonUndefinedMapValue,
   isNotUndefined
 } from "@yamato-daiwa/es-extensions";
 import { ImprovedPath } from "@yamato-daiwa/es-extensions-nodejs";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 class MarkupEntryPointVinylFile extends VinylFileClass {
@@ -57,16 +59,18 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
 
     this.markupProcessingSettingsRepresentative = markupProcessingSettingsRepresentative;
 
-    this.actualEntryPointsGroupSettings = this.markupProcessingSettingsRepresentative.
-        getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(initialPlainVinylFile.path);
+    this.actualEntryPointsGroupSettings =
+        this.markupProcessingSettingsRepresentative.
+            getExpectedToExistEntryPointsGroupSettingsRelevantForSpecifiedSourceFileAbsolutePath(initialPlainVinylFile.path);
 
-    this.outputDirectoryAbsolutePath = MarkupProcessingSettingsRepresentative.
-        computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
+    this.outputDirectoryAbsolutePath =
+        MarkupProcessingSettingsRepresentative.computeRelevantOutputDirectoryAbsolutePathForTargetSourceFile(
           this.sourceAbsolutePath, this.actualEntryPointsGroupSettings
         );
 
-    this.pageStateDependentVariationsSpecification = this.markupProcessingSettingsRepresentative.
-        getStateDependentVariationsForEntryPointWithAbsolutePath(initialPlainVinylFile.path);
+    this.pageStateDependentVariationsSpecification =
+        this.markupProcessingSettingsRepresentative.
+            getStateDependentVariationsForEntryPointWithAbsolutePath(initialPlainVinylFile.path);
 
     if (isNotUndefined(this.pageStateDependentVariationsSpecification)) {
       this.pageStateDependentVariationData = { [this.pageStateDependentVariationsSpecification.stateVariableName]: {} };
@@ -83,9 +87,8 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
 
   public manageVariations(): MarkupEntryPointVinylFile.VariationsManagement {
 
-    const actualPageVariationsMetadata: PagesVariationsMetadata.Page = getExpectedToBeNonUndefinedMapValue(
-      MarkupProcessingSharedState.pagesVariationsMetadata, this.sourceAbsolutePath
-    );
+    const actualPageVariationsMetadata: PagesVariationsMetadata.Page =
+        getExpectedToBeNonUndefinedMapValue(MarkupProcessingSharedState.pagesVariationsMetadata, this.sourceAbsolutePath);
 
     if (
       actualPageVariationsMetadata.mustInitialFileBeKept &&
@@ -140,21 +143,23 @@ class MarkupEntryPointVinylFile extends VinylFileClass {
 
 namespace MarkupEntryPointVinylFile {
 
-  export type ConstructorParameter = Readonly<{
-    initialPlainVinylFile: VinylFile;
-    markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
-    pageStateDependentVariationsSpecification?: MarkupProcessingSettings__Normalized.StaticPreview.
-        PagesVariations.StateDependent.Page;
-    pageStateDependentVariationData?: PageStateDependentVariationData;
-    localizationData?: Readonly<{ [variableName: string]: unknown; }>;
-  }>;
+  export type ConstructorParameter =
+      Readonly<{
+        initialPlainVinylFile: VinylFile;
+        markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
+        pageStateDependentVariationsSpecification?: MarkupProcessingSettings__Normalized.StaticPreview.
+            PagesVariations.StateDependent.Page;
+        pageStateDependentVariationData?: PageStateDependentVariationData;
+        localizationData?: Readonly<{ [variableName: string]: unknown; }>;
+      }>;
 
   export type PageStateDependentVariationData = Readonly<{ [stateVariableName: string]: ArbitraryObject; }>;
 
-  export type VariationsManagement = Readonly<{
-    newFiles: Array<MarkupEntryPointVinylFile>;
-    mustInitialFileBeDeleted: boolean;
-  }>;
+  export type VariationsManagement =
+      Readonly<{
+        newFiles: Array<MarkupEntryPointVinylFile>;
+        mustInitialFileBeDeleted: boolean;
+      }>;
 
 }
 

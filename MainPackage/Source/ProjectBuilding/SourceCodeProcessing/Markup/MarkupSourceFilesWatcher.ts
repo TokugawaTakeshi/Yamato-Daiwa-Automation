@@ -1,22 +1,21 @@
-/* ─── Related Classes ────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 import CodeSourceFilesWatcher from "@ProjectBuilding/FilesWatching/Watchers/CodeSourceFilesWatcher";
 import FilesMasterWatcher from "@ProjectBuilding/FilesWatching/Watchers/FilesMasterWatcher";
 
-/* ─── Settings Representatives ───────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Settings Representatives ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type MarkupProcessingSettingsRepresentative from "@MarkupProcessing/MarkupProcessingSettingsRepresentative";
 import type ProjectBuildingMasterConfigRepresentative from "@ProjectBuilding/ProjectBuildingMasterConfigRepresentative";
 
-/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import { isNull } from "@yamato-daiwa/es-extensions";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 class MarkupSourceFilesWatcher extends CodeSourceFilesWatcher {
 
   protected static selfSoleInstance: MarkupSourceFilesWatcher | null = null;
 
-
   protected readonly settingsRepresentative: MarkupProcessingSettingsRepresentative;
-
 
   public static initializeIfRequiredAndGetInstance(
     initializationRequirements: MarkupSourceFilesWatcher.InitializationRequirements
@@ -30,7 +29,6 @@ class MarkupSourceFilesWatcher extends CodeSourceFilesWatcher {
     return MarkupSourceFilesWatcher.selfSoleInstance;
 
   }
-
 
   private constructor(
     {
@@ -58,10 +56,11 @@ class MarkupSourceFilesWatcher extends CodeSourceFilesWatcher {
 
 namespace MarkupSourceFilesWatcher {
 
-  export type InitializationRequirements = Readonly<{
-    markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
-    projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
-  }>;
+  export type InitializationRequirements =
+      Readonly<{
+        markupProcessingSettingsRepresentative: MarkupProcessingSettingsRepresentative;
+        projectBuildingMasterConfigRepresentative: ProjectBuildingMasterConfigRepresentative;
+      }>;
 
 }
 

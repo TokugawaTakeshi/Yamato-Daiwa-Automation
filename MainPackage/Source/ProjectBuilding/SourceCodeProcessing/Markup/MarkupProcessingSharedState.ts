@@ -1,8 +1,10 @@
-/* ─── Work Types ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Worktypes ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type PagesVariationsMetadata from "@MarkupProcessing/Worktypes/PagesVariationsMetadata";
 
-/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import { addEntriesToMap, type ArbitraryObject } from "@yamato-daiwa/es-extensions";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
 export default abstract class MarkupProcessingSharedState {
@@ -26,6 +28,7 @@ export default abstract class MarkupProcessingSharedState {
   {
     return Array.from(MarkupProcessingSharedState.pagesVariationsMetadata.values()).
         reduce(
+
           (
             interimConcatenatedMap: Map<string, string>,
             { sourceAndOutputAbsolutePathsOfAllVariations }: PagesVariationsMetadata.Page
@@ -35,28 +38,33 @@ export default abstract class MarkupProcessingSharedState {
                 mutably: true,
                 newEntries: sourceAndOutputAbsolutePathsOfAllVariations
               }),
+
           new Map<string, string>()
+
         );
   }
 
   public static get outputHTML_FilesAndSourcePugFilesAbsolutePathsCorrespondenceMap(): ReadonlyMap<string, string> {
     return Array.from(MarkupProcessingSharedState.pagesVariationsMetadata.values()).
-      reduce(
-        (
-          interimConcatenatedMap: Map<string, string>,
-          { initialSourceFileAbsolutePath, sourceAndOutputAbsolutePathsOfAllVariations }: PagesVariationsMetadata.Page
-        ): Map<string, string> =>
-            addEntriesToMap({
-              targetMap: interimConcatenatedMap,
-              mutably: true,
-              newEntries: Array.from(sourceAndOutputAbsolutePathsOfAllVariations.values()).
-                  map(
-                    (outputHTML_FieldAbsolutePath: string): [ string, string ] =>
-                        [ outputHTML_FieldAbsolutePath, initialSourceFileAbsolutePath ]
-                  )
-            }),
-        new Map<string, string>()
-      );
+        reduce(
+
+          (
+            interimConcatenatedMap: Map<string, string>,
+            { initialSourceFileAbsolutePath, sourceAndOutputAbsolutePathsOfAllVariations }: PagesVariationsMetadata.Page
+          ): Map<string, string> =>
+              addEntriesToMap({
+                targetMap: interimConcatenatedMap,
+                mutably: true,
+                newEntries: Array.from(sourceAndOutputAbsolutePathsOfAllVariations.values()).
+                    map(
+                      (outputHTML_FieldAbsolutePath: string): [ string, string ] =>
+                          [ outputHTML_FieldAbsolutePath, initialSourceFileAbsolutePath ]
+                    )
+              }),
+
+          new Map<string, string>()
+
+        );
   }
 
 }

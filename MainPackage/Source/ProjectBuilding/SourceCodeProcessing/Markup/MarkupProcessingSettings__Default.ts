@@ -7,73 +7,84 @@ const MarkupProcessingSettings__Default: Readonly<{
 
   periodBetweenFileUpdatingAndRebuildingStarting__seconds: number;
 
-  staticPreview: Readonly<{
-    typeScriptConfigurationFileRelativePath: string;
-  }>;
+  staticPreview: Readonly<{ typeScriptConfigurationFileRelativePath: string; }>;
 
-  outputCodeFormatting: Readonly<{
-    mustExecute: (
-      factors: Readonly<{
-        consumingProjectBuildingMode: ConsumingProjectBuildingModes;
-        outputFormat: MarkupProcessingRestrictions.OutputFormats;
-      }>
-    ) => boolean;
-    indentationString: string;
-    lineSeparators: LineSeparators;
-    mustGuaranteeTrailingEmptyLine: boolean;
-    mustIndentHeadAndBodyTags: boolean;
-  }>;
+  outputCodeFormatting:
 
-  outputCodeMinifying: Readonly<{
-    mustExecute: (
-      factors: Readonly<{
-        consumingProjectBuildingMode: ConsumingProjectBuildingModes;
-        outputFormat: MarkupProcessingRestrictions.OutputFormats;
-      }>
-    ) => boolean;
-    attributesExtraWhitespacesCollapsing: boolean;
-    attributesValuesDeduplication: boolean;
-    commentsRemoving: boolean;
-  }>;
+      Readonly<{
 
-  linting: Readonly<{
-    mustExecute: boolean;
-  }>;
+        mustExecute:
+            (
+              factors:
+                  Readonly<{
+                    consumingProjectBuildingMode: ConsumingProjectBuildingModes;
+                    outputFormat: MarkupProcessingRestrictions.OutputFormats;
+                  }>
+            ) => boolean;
 
-  HTML_Validation: Readonly<{
-    mustExecute: boolean;
-  }>;
+        indentationString: string;
+        lineSeparators: LineSeparators;
+        mustGuaranteeTrailingEmptyLine: boolean;
+        mustIndentHeadAndBodyTags: boolean;
 
-  accessibilityInspection: Readonly<{
-    mustExecute: boolean;
-    standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
-  }>;
+      }>;
+
+  outputCodeMinifying:
+
+    Readonly<{
+
+      mustExecute:
+
+          (
+            factors:
+                Readonly<{
+                  consumingProjectBuildingMode: ConsumingProjectBuildingModes;
+                  outputFormat: MarkupProcessingRestrictions.OutputFormats;
+                }>
+          ) => boolean;
+
+      attributesExtraWhitespacesCollapsing: boolean;
+      attributesValuesDeduplication: boolean;
+      commentsRemoving: boolean;
+
+    }>;
+
+  linting: Readonly<{ mustExecute: boolean; }>;
+
+  HTML_Validation: Readonly<{ mustExecute: boolean; }>;
+
+  accessibilityInspection:
+
+      Readonly<{
+        mustExecute: boolean;
+        standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
+      }>;
 
   outputFormat: MarkupProcessingRestrictions.OutputFormats;
 
-  logging: Readonly<{
+  logging:
 
-    filesPaths: boolean;
-    filesCount: boolean;
-    partialFilesAndParentEntryPointsCorrespondence: boolean;
-    filesWatcherEvents: boolean;
+      Readonly<
 
-    linting: Readonly<{
-      starting: boolean;
-      completionWithoutIssues: boolean;
-    }>;
-
-    HTML_Validation: Readonly<{
-      starting: boolean;
-      completionWithoutIssues: boolean;
-    }>;
-
-    accessibilityChecking: Readonly<{
-      starting: boolean;
-      completionWithoutIssues: boolean;
-    }>;
-
-  }>;
+        {
+          filesPaths: boolean;
+          filesCount: boolean;
+          partialFilesAndParentEntryPointsCorrespondence: boolean;
+          filesWatcherEvents: boolean;
+        } &
+        {
+          [
+            keys in
+              "linting" |
+              "HTML_Validation" |
+              "accessibilityChecking"
+          ]:
+              Readonly<{
+                starting: boolean;
+                completionWithoutIssues: boolean;
+              }>;
+          }
+      >;
 
 }> = {
 
@@ -84,34 +95,40 @@ const MarkupProcessingSettings__Default: Readonly<{
   },
 
   outputCodeFormatting: {
-    mustExecute: (
-      {
-        outputFormat
-      }: Readonly<{
-        consumingProjectBuildingMode: ConsumingProjectBuildingModes;
-        outputFormat: MarkupProcessingRestrictions.OutputFormats;
-      }>
-    ): boolean =>
-        outputFormat === MarkupProcessingRestrictions.OutputFormats.razor,
+
+    mustExecute:
+        (
+          { outputFormat }:
+              Readonly<{
+                consumingProjectBuildingMode: ConsumingProjectBuildingModes;
+                outputFormat: MarkupProcessingRestrictions.OutputFormats;
+              }>
+        ): boolean =>
+            outputFormat === MarkupProcessingRestrictions.OutputFormats.razor,
+
     indentationString: " ",
     lineSeparators: LineSeparators.lineFeed,
     mustGuaranteeTrailingEmptyLine: true,
     mustIndentHeadAndBodyTags: true
+
   },
 
   outputCodeMinifying: {
-    mustExecute: (
-      {
-        outputFormat
-      }: Readonly<{
-        outputFormat: MarkupProcessingRestrictions.OutputFormats;
-      }>
-    ): boolean =>
-        outputFormat === MarkupProcessingRestrictions.OutputFormats.HTML ||
-        outputFormat === MarkupProcessingRestrictions.OutputFormats.handlebars,
+
+    mustExecute:
+        (
+          { outputFormat }:
+              Readonly<{
+                outputFormat: MarkupProcessingRestrictions.OutputFormats;
+              }>
+        ): boolean =>
+            outputFormat === MarkupProcessingRestrictions.OutputFormats.HTML ||
+            outputFormat === MarkupProcessingRestrictions.OutputFormats.handlebars,
+
     attributesExtraWhitespacesCollapsing: true,
     attributesValuesDeduplication: true,
     commentsRemoving: true
+
   },
 
   linting: {
