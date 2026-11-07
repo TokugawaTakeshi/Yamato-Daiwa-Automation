@@ -1,59 +1,77 @@
-/* ─── Restrictions ───────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ━━━ < Imports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ┅┅┅ Restrictions ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type MarkupProcessingRestrictions from "@MarkupProcessing/MarkupProcessingRestrictions";
 
-/* ─── Normalized config ──────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Normalized Configuration ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type SourceCodeProcessingGenericProperties__Normalized from
     "@ProjectBuilding/Common/NormalizedConfig/SourceCodeProcessingGenericProperties__Normalized";
 import type LintingSettings__Normalized from "@ProjectBuilding/Common/NormalizedConfig/LintingSettings__Normalized";
 
-/* ─── Utils ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ┅┅┅ Utils ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
 import type { ArbitraryObject, LineSeparators } from "@yamato-daiwa/es-extensions";
+/* ━━━ Imports > ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 
-type MarkupProcessingSettings__Normalized = Readonly<{
-  common: MarkupProcessingSettings__Normalized.Common;
-  linting: MarkupProcessingSettings__Normalized.Linting;
-  importingFromTypeScript?: MarkupProcessingSettings__Normalized.ImportingFromTypeScript;
-  importingFromJavaScript?: MarkupProcessingSettings__Normalized.ImportingFromJavaScript;
-  staticPreview: MarkupProcessingSettings__Normalized.StaticPreview;
-  routing?: MarkupProcessingSettings__Normalized.Routing;
-  relevantEntryPointsGroups: ReadonlyMap<
-    SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
-    MarkupProcessingSettings__Normalized.EntryPointsGroup
-  >;
-  logging: MarkupProcessingSettings__Normalized.Logging;
-}>;
+type MarkupProcessingSettings__Normalized =
+
+    Readonly<{
+      common: MarkupProcessingSettings__Normalized.Common;
+      linting: MarkupProcessingSettings__Normalized.Linting;
+      importingFromTypeScript?: MarkupProcessingSettings__Normalized.ImportingFromTypeScript;
+      importingFromJavaScript?: MarkupProcessingSettings__Normalized.ImportingFromJavaScript;
+      staticPreview: MarkupProcessingSettings__Normalized.StaticPreview;
+      routing?: MarkupProcessingSettings__Normalized.Routing;
+      relevantEntryPointsGroups: ReadonlyMap<
+        SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup.ID,
+        MarkupProcessingSettings__Normalized.EntryPointsGroup
+      >;
+      logging: MarkupProcessingSettings__Normalized.Logging;
+    }>;
 
 
 namespace MarkupProcessingSettings__Normalized {
 
+  /* ━━━ Common ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Common =
+
       SourceCodeProcessingGenericProperties__Normalized.Common &
+
       Readonly<{
         mustResolveResourcesReferencesToAbsolutePath: boolean;
         secondsBetweenFileUpdatingAndStartingOfRebuilding: number;
       }>;
 
 
+  /* ━━━ Linting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Linting = LintingSettings__Normalized;
 
 
-  export type ImportingFromTypeScript = Readonly<{
-    typeScriptConfigurationFileAbsolutePath: string;
-    sourceFileAbsolutePath: string;
-    importedNamespace: string;
-  }>;
+  /* ━━━ Imports from TypeScript ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export type ImportingFromTypeScript =
 
-  export type ImportingFromJavaScript = Readonly<{
-    sourceFileAbsolutePath: string;
-    nameOfGlobalConstantForStoringOfImports: string;
-  }>;
+      Readonly<{
+        typeScriptConfigurationFileAbsolutePath: string;
+        sourceFileAbsolutePath: string;
+        importedNamespace: string;
+      }>;
 
 
-  export type StaticPreview = Readonly<{
-    pagesVariations: StaticPreview.PagesVariations;
-    importsFromStaticDataFiles: StaticPreview.ImportsFromStaticDataFiles;
-  }>;
+  /* ━━━ Imports from JavaScript ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export type ImportingFromJavaScript =
+
+      Readonly<{
+        sourceFileAbsolutePath: string;
+        nameOfGlobalConstantForStoringOfImports: string;
+      }>;
+
+
+  /* ━━━ Static Preview ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export type StaticPreview =
+
+      Readonly<{
+        pagesVariations: StaticPreview.PagesVariations;
+        importsFromStaticDataFiles: StaticPreview.ImportsFromStaticDataFiles;
+      }>;
 
   export namespace StaticPreview {
 
@@ -84,14 +102,18 @@ namespace MarkupProcessingSettings__Normalized {
   }
 
 
+  /* ━━━ Routing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type Routing = Readonly<{
     variable: string;
     routes: ArbitraryObject;
   }>;
 
 
+  /* ━━━ Entry Points Group ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   export type EntryPointsGroup =
+
       SourceCodeProcessingGenericProperties__Normalized.EntryPointsGroup &
+
       Readonly<{
         outputFormat: MarkupProcessingRestrictions.OutputFormats;
         localization: EntryPointsGroup.Localization;
@@ -103,13 +125,16 @@ namespace MarkupProcessingSettings__Normalized {
 
   export namespace EntryPointsGroup {
 
-    export type Localization = Readonly<{
-      localizedStringResourcesConstantName?: string;
-      localeConstantName?: string;
-      nameOfConstantForInterpolationToLangHTML_Attribute?: string;
-      locales: Localization.Locales;
-      excludedFilesAbsolutePaths: ReadonlyArray<string>;
-    }>;
+    /* ┅┅┅ Localization ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+    export type Localization =
+
+        Readonly<{
+          localizedStringResourcesConstantName?: string;
+          localeConstantName?: string;
+          nameOfConstantForInterpolationToLangHTML_Attribute?: string;
+          locales: Localization.Locales;
+          excludedFilesAbsolutePaths: ReadonlyArray<string>;
+        }>;
 
     export namespace Localization {
 
@@ -117,73 +142,99 @@ namespace MarkupProcessingSettings__Normalized {
 
       export type LocaleKey = string;
 
-      export type LocaleData = Readonly<{
-        outputFileInterimNameExtensionWithoutDot: string;
-        stringResources?: unknown;
-        localeConstantValue?: string;
-        valueOfConstantForInterpolationToLangHTML_Attribute?: string;
-      }>;
+      export type LocaleData =
+
+          Readonly<{
+            outputFileInterimNameExtensionWithoutDot: string;
+            stringResources?: unknown;
+            localeConstantValue?: string;
+            valueOfConstantForInterpolationToLangHTML_Attribute?: string;
+          }>;
 
     }
 
-    export type HTML_Validation = Readonly<{
-      mustExecute: boolean;
-      ignoring: Readonly<{
-        filesAbsolutePaths: ReadonlyArray<string>;
-        directoriesAbsolutePaths: ReadonlyArray<string>;
-      }>;
-    }>;
 
-    export type AccessibilityInspection = Readonly<{
-      mustExecute: boolean;
-      standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
-      ignoring: Readonly<{
-        filesAbsolutePaths: ReadonlyArray<string>;
-        directoriesAbsolutePaths: ReadonlyArray<string>;
-      }>;
-    }>;
+    /* ┅┅┅ HTML Validation ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+    export type HTML_Validation =
 
-    export type OutputCodeFormatting = Readonly<{
-      mustExecute: boolean;
-      indentationString: string;
-      lineSeparators: LineSeparators;
-      mustGuaranteeTrailingEmptyLine: boolean;
-      mustIndentHeadAndBodyTags: boolean;
-    }>;
+        Readonly<{
+          mustExecute: boolean;
+          ignoring:
+              Readonly<{
+                filesAbsolutePaths: ReadonlyArray<string>;
+                directoriesAbsolutePaths: ReadonlyArray<string>;
+              }>;
+        }>;
 
-    export type OutputCodeMinifying = Readonly<{
-      mustExecute: boolean;
-      attributesExtraWhitespacesCollapsing: boolean;
-      attributesValuesDeduplication: boolean;
-      commentsRemoving: boolean;
-    }>;
+
+    /* ┅┅┅ Accessibility Inspection ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+    export type AccessibilityInspection =
+
+        Readonly<{
+          mustExecute: boolean;
+          standard: MarkupProcessingRestrictions.SupportedAccessibilityStandards;
+          ignoring:
+              Readonly<{
+                filesAbsolutePaths: ReadonlyArray<string>;
+                directoriesAbsolutePaths: ReadonlyArray<string>;
+              }>;
+        }>;
+
+
+    /* ┅┅┅ Output Code Formatting ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+    export type OutputCodeFormatting =
+
+        Readonly<{
+          mustExecute: boolean;
+          indentationString: string;
+          lineSeparators: LineSeparators;
+          mustGuaranteeTrailingEmptyLine: boolean;
+          mustIndentHeadAndBodyTags: boolean;
+        }>;
+
+
+    /* ┅┅┅ Output Code Minifying ┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅ */
+    export type OutputCodeMinifying =
+
+        Readonly<{
+          mustExecute: boolean;
+          attributesExtraWhitespacesCollapsing: boolean;
+          attributesValuesDeduplication: boolean;
+          commentsRemoving: boolean;
+        }>;
 
   }
 
 
-  export type Logging = Readonly<{
+  /* ━━━ Logging ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  export type Logging =
 
-    filesPaths: boolean;
-    filesCount: boolean;
-    partialFilesAndParentEntryPointsCorrespondence: boolean;
-    filesWatcherEvents: boolean;
+      Readonly<
 
-    linting: Readonly<{
-      starting: boolean;
-      completionWithoutIssues: boolean;
-    }>;
+        {
 
-    HTML_Validation: Readonly<{
-      starting: boolean;
-      completionWithoutIssues: boolean;
-    }>;
+          filesPaths: boolean;
+          filesCount: boolean;
+          partialFilesAndParentEntryPointsCorrespondence: boolean;
+          filesWatcherEvents: boolean;
 
-    accessibilityChecking: Readonly<{
-      starting: boolean;
-      completionWithoutIssues: boolean;
-    }>;
+        } &
 
-  }>;
+        {
+
+          [
+            keys in
+              "linting" |
+              "HTML_Validation" |
+              "accessibilityChecking"
+          ]:
+            Readonly<{
+              starting: boolean;
+              completionWithoutIssues: boolean;
+            }>;
+        }
+
+      >;
 
 }
 
